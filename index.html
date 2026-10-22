@@ -100,10 +100,10 @@
 </head>
 <body class="bg-slate-100 text-slate-800 font-sans antialiased pb-16">
 
-    <!-- SPLASH SCREEN INTRO -->
+    <!-- SPLASH SCREEN INTRO (AUTOPLAY FIX) -->
     <div id="splash-screen" class="fixed inset-0 bg-slate-950 z-50 flex flex-col items-center justify-center p-6 text-center space-y-6 transition-opacity duration-500">
         <div class="relative w-full max-w-sm h-56 rounded-2xl overflow-hidden shadow-2xl border border-emerald-500/40 bg-slate-900 flex items-center justify-center pointer-events-none">
-            <video autoplay muted playsinline loop class="w-full h-full object-cover">
+            <video autoplay muted playsinline loop id="intro-video" class="w-full h-full object-cover">
                 <source src="https://assets.mixkit.co/videos/preview/mixkit-digital-animation-of-screens-and-lights-31955-large.mp4" type="video/mp4">
             </video>
             <div class="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-transparent to-transparent flex items-end justify-center pb-4">
@@ -155,7 +155,7 @@
             </div>
         </div>
 
-        <!-- KATALOG MODEL TAS BERJAJAR KE SAMPING -->
+        <!-- KATALOG MODEL TAS BERJAJAR KE SAMPING (BACKGROUND TRANSPARAN/PUTIH BERSIH) -->
         <div class="space-y-2.5">
             <div class="flex items-center justify-between px-1">
                 <h3 class="text-xs font-bold text-slate-700 uppercase tracking-wide flex items-center gap-1.5">
@@ -250,7 +250,7 @@
                 </div>
             </div>
 
-            <!-- BOX 1: Preview Mockup Tas -->
+            <!-- BOX 1: Preview Mockup Tas (Background Putih Bersih / Transparan) -->
             <div class="bg-white p-4 rounded-2xl shadow-md border border-slate-200 relative space-y-3">
                 <h2 class="text-sm font-semibold text-slate-700 flex items-center gap-2">
                     <span>🛍️</span> Box 1: Preview Mockup Tas (Customer View)
@@ -385,7 +385,7 @@
 
             <!-- TOMBOL KIRIM KE WHATSAPP -->
             <button type="button" onclick="saveOrderAndSendWhatsApp()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-3.5 px-4 rounded-xl shadow-lg flex items-center justify-center gap-2.5 transition text-sm cursor-pointer">
-                <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/></svg></path></svg>
+                <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/></svg>
                 <span>Simpan PO & Kirim Pesan ke WhatsApp Owner</span>
             </button>
 
@@ -468,7 +468,7 @@
 
             <!-- Kelola Model Tas & Ukuran -->
             <div class="bg-slate-800 p-3 rounded-xl border border-amber-500/30 space-y-3">
-                <label class="block text-xs font-semibold text-amber-300">📦 Kelola Model Tas (OVAL, HLS, HLB BOX, HLB KOTAK)</label>
+                <label class="block text-xs font-semibold text-amber-300">📦 Kelola Model Tas</label>
                 <div class="flex gap-1.5 mb-2">
                     <input type="text" id="new-model-name" placeholder="Nama Model Baru" class="flex-1 bg-slate-900 rounded-lg px-3 py-2 text-xs text-white outline-none border border-slate-700">
                     <button type="button" onclick="addNewBagModel()" class="bg-amber-500 text-slate-950 px-3 py-2 rounded-lg text-xs font-semibold cursor-pointer">Tambah Model</button>
@@ -529,6 +529,7 @@
 
     <!-- Script Utama -->
     <script>
+        // Gambar SVG transparan bersih (tanpa background hijau silau)
         const cleanDefaultBagSvg = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 500'><path d='M100 150 L100 100 C100 70 120 50 200 50 C280 50 300 70 300 100 L300 150 Z' fill='none' stroke='%23334155' stroke-width='16'/><path d='M60 150 L340 150 C360 150 370 160 370 180 L340 450 C340 470 330 480 310 480 L90 480 C70 480 60 470 60 450 L30 180 C30 160 40 150 60 150 Z' fill='%23ffffff' stroke='%23334155' stroke-width='6'/></svg>";
 
         const defaultBagModels = [
@@ -722,7 +723,6 @@
 
             const queueCount = pendingOrders.length;
 
-            // 🌟 KONDISIONAL: Sembunyikan jika antrean < 2 (0 atau 1), tampilkan jika >= 2
             if (queueCount < 2) {
                 queueBox.classList.add('hidden');
                 return;
@@ -776,6 +776,7 @@
             });
         }
 
+        // Fungsi membersihkan background foto sampel agar transparan / putih bersih sempurna
         function cleanOuterBackground(file, maxWidth = 350, quality = 0.6) {
             return new Promise((resolve) => {
                 const reader = new FileReader();
@@ -793,7 +794,20 @@
                         const ctx = canvas.getContext('2d');
                         ctx.clearRect(0, 0, w, h);
                         ctx.drawImage(img, 0, 0, w, h);
-                        resolve(canvas.toDataURL('image/jpeg', quality));
+
+                        const imgData = ctx.getImageData(0, 0, w, h);
+                        const data = imgData.data;
+                        const rBg = data[0], gBg = data[1], bBg = data[2];
+
+                        for (let i = 0; i < data.length; i += 4) {
+                            let r = data[i], g = data[i+1], b = data[i+2];
+                            // Deteksi warna background luar (misal hijau silau atau warna solid) dan jadikan transparan
+                            if (Math.abs(r - rBg) < 50 && Math.abs(g - gBg) < 50 && Math.abs(b - bBg) < 50) {
+                                data[i+3] = 0;
+                            }
+                        }
+                        ctx.putImageData(imgData, 0, 0);
+                        resolve(canvas.toDataURL('image/png', quality));
                     };
                     img.src = e.target.result;
                 };
@@ -991,7 +1005,7 @@
             bagModels.forEach((item, idx) => {
                 grid.innerHTML += `
                     <div class="min-w-[150px] w-[150px] bg-white p-2.5 rounded-2xl shadow-sm border border-slate-200 flex flex-col items-center text-center shrink-0 space-y-2">
-                        <div class="relative w-full h-24 bg-slate-50 rounded-xl flex items-center justify-center overflow-hidden p-1">
+                        <div class="relative w-full h-24 bg-white rounded-xl flex items-center justify-center overflow-hidden p-1 border border-slate-100">
                             <span class="absolute top-1 left-1 bg-emerald-800 text-amber-300 font-bold text-[9px] w-4 h-4 rounded-full flex items-center justify-center shadow">${idx + 1}</span>
                             <img src="${item.image || cleanDefaultBagSvg}" alt="${item.name}" class="w-full h-full object-contain">
                         </div>
@@ -1048,9 +1062,9 @@
 
                     card.innerHTML = `
                         <div class="flex items-center justify-between border-b border-slate-800 pb-1.5"><span class="font-bold text-amber-300 text-sm">${item.name}</span> <button type="button" onclick="deleteBagModel(${mIndex})" class="text-rose-400 font-bold text-[10px] cursor-pointer">Hapus Model</button></div>
-                        <div><label class="block text-[10px] text-slate-400 mb-1">Upload Foto Katalog & Mockup:</label><input type="file" accept="image/*" onchange="uploadModelSample(event, ${mIndex})" class="w-full text-[10px] text-slate-400 file:mr-2 file:py-1 file:px-2 file:rounded-lg file:border-0 file:bg-amber-500 file:text-slate-950 cursor-pointer"></div>
+                        <div><label class="block text-[10px] text-slate-400 mb-1">Upload Foto Sampel Tas Jadi (Transparan Otomatis):</label><input type="file" accept="image/*" onchange="uploadModelSample(event, ${mIndex})" class="w-full text-[10px] text-slate-400 file:mr-2 file:py-1 file:px-2 file:rounded-lg file:border-0 file:bg-amber-500 file:text-slate-950 cursor-pointer"></div>
                         <div class="text-[10px] ${isCustomImg ? 'text-emerald-400 font-semibold' : 'text-slate-400'} italic">
-                            ${isCustomImg ? '✅ Berhasil Di-upload & Terkunci di Sistem' : 'ℹ️ Menggunakan foto default'}
+                            ${isCustomImg ? '✅ Berhasil Di-upload (Background Transparan)' : 'ℹ️ Menggunakan foto default'}
                         </div>
                         <div class="space-y-1 mt-1">${sizeRows}
                             <div class="flex gap-1.5 mt-2"><input type="text" id="new-s-name-${mIndex}" placeholder="Ukuran" class="flex-1 bg-slate-800 rounded-lg px-2 py-1 text-[11px] text-white outline-none"><input type="number" id="new-s-price-${mIndex}" placeholder="Harga" class="w-20 bg-slate-800 rounded-lg px-2 py-1 text-[11px] text-white outline-none"><button type="button" onclick="addSizeToModel(${mIndex})" class="bg-amber-500 text-slate-950 px-2.5 py-1 rounded-lg text-[11px] font-semibold cursor-pointer">Tambah Size</button></div>
@@ -1074,7 +1088,7 @@
             }
 
             if(videoStatus) {
-                videoStatus.textContent = "ℹ️ Menggunakan video intro ringan & cepat";
+                videoStatus.textContent = "ℹ️ Menggunakan video intro autoplay ringan";
                 videoStatus.className = "text-[10px] text-emerald-400 font-semibold italic";
             }
 
@@ -1307,7 +1321,7 @@
         }
 
         async function uploadIntroVideo(e) {
-            alert("Untuk performa website yang cepat & bebas macet, video intro menggunakan tautan cloud optimal bawaan sistem.");
+            alert("Video intro akan diputar otomatis menggunakan format ringan & kompatibel.");
         }
 
         async function uploadStampImage(e) {
@@ -1469,6 +1483,7 @@
             saveCustomerDataMemory();
         }
 
+        // Render Canvas Tas dengan background putih bersih / transparan, hanya kain tas yang berubah warna
         function updateBagCanvas() {
             const mIndex = document.getElementById('bag-model-select').value || 0;
             const currentModel = bagModels[mIndex] || bagModels[0];
@@ -1481,6 +1496,7 @@
                 canvas.height = img.height;
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
 
+                // Background putih bersih di dalam canvas mockup
                 ctx.fillStyle = "#ffffff";
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
 
@@ -2144,6 +2160,14 @@
                 window.initCloudSync();
             }
             updateWibClock();
+            
+            // Memastikan video intro langsung autoplay
+            const videoEl = document.getElementById('intro-video');
+            if(videoEl) {
+                videoEl.play().catch(e => {
+                    console.log("Autoplay dicegah browser, diatasi dengan interaksi pengguna:", e);
+                });
+            }
         };
     </script>
 </body>
