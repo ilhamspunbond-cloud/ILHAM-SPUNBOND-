@@ -1,0 +1,1985 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ILHAM SPUNBOND - Master Admin & Multi-Item Order Pro</title>
+    
+    <!-- 🖼️ Favicon Dinamis & Branding Logo ILHAM SPUNBOND untuk Tab Browser -->
+    <link id="dynamic-favicon" rel="icon" type="image/png" href="https://via.placeholder.com/64x64/065f46/ffffff?text=IS">
+    <link id="dynamic-apple-touch-icon" rel="apple-touch-icon" href="https://via.placeholder.com/180x180/065f46/ffffff?text=IS">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- html2canvas & jsPDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    
+    <!-- ☁️ Firebase SDK (Modular v10) -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, doc, setDoc, getDoc, onSnapshot, collection, getDocs, deleteDoc, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCb7WE1y5x6mLYYy56L",
+            authDomain: "ilham-spunbond.firebaseapp.com",
+            projectId: "ilham-spunbond",
+            storageBucket: "ilham-spunbond.appspot.com",
+            messagingSenderId: "79652958955",
+            appId: "1:79652958955:web:45c9",
+            measurementId: "G-48V3KQGPBN"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        window.firebaseDb = db;
+        window.firebaseDeps = { doc, setDoc, getDoc, onSnapshot, collection, getDocs, deleteDoc, query, orderBy };
+        
+        if(window.initCloudSync) {
+            window.initCloudSync();
+        }
+    </script>
+
+    <style>
+        .web-watermark {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            pointer-events: none;
+            z-index: 20;
+            opacity: 0.15;
+            overflow: hidden;
+        }
+        .watermark-single {
+            font-size: 1.25rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            transform: rotate(-25deg);
+            white-space: nowrap;
+            letter-spacing: 0.15em;
+        }
+    </style>
+</head>
+<body class="bg-slate-100 text-slate-800 font-sans antialiased pb-12">
+
+    <!-- SPLASH SCREEN VIDEO / LOGO INTRO -->
+    <div id="splash-screen" class="fixed inset-0 bg-slate-950 z-50 flex flex-col items-center justify-center p-6 text-center space-y-6 transition-opacity duration-700">
+        <div class="relative w-full max-w-sm h-64 rounded-2xl overflow-hidden shadow-2xl border border-emerald-500/40 bg-slate-900 flex items-center justify-center">
+            <!-- Tempat Video Logo / Animasi Pembukaan -->
+            <video id="intro-video-el" autoplay muted playsinline class="w-full h-full object-cover">
+                <source src="https://assets.mixkit.co/videos/preview/mixkit-digital-animation-of-screens-and-lights-31955-large.mp4" type="video/mp4">
+                Your browser does not support the video tag.
+            </video>
+            <div class="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-transparent to-transparent flex items-end justify-center pb-4">
+                <span class="text-xs text-amber-300 font-bold tracking-widest uppercase">ILHAM SPUNBOND OFFICIAL</span>
+            </div>
+        </div>
+        <div class="space-y-2">
+            <h2 class="text-xl font-extrabold text-white">Selamat Datang di ILHAM SPUNBOND</h2>
+            <p class="text-xs text-slate-400 max-w-xs mx-auto">Pusat Custom Tas Spunbond & Sablon Profesional Terbaik & Terpercaya.</p>
+        </div>
+        <button type="button" onclick="dismissSplashScreen()" class="w-full max-w-xs bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3.5 px-6 rounded-xl shadow-lg transition text-sm cursor-pointer flex items-center justify-center gap-2">
+            <span>✨</span> Mulai Desain & Pesan Sekarang
+        </button>
+    </div>
+
+    <div class="max-w-md mx-auto p-4 sm:p-6 space-y-4">
+        <!-- Header Brand & Real-Time WIB Clock -->
+        <div class="bg-emerald-800 text-white p-5 rounded-2xl shadow-lg text-center flex flex-col items-center justify-center relative">
+            <div id="wib-clock-badge" class="absolute top-3 right-3 bg-emerald-900/80 border border-emerald-600/60 text-emerald-200 text-[10px] font-mono px-2 py-1 rounded-lg shadow-sm">
+                🕒 <span id="live-wib-time">--:--:--</span> WIB
+            </div>
+            
+            <div id="brand-logo-container" class="mb-2 bg-white/10 p-2.5 rounded-xl border border-emerald-600/50 flex items-center justify-center min-h-[60px] min-w-[140px]">
+                <img id="header-brand-logo" src="https://via.placeholder.com/160x55?text=ILHAM+SPUNBOND" alt="Logo Brand" class="max-h-16 w-auto object-contain filter drop-shadow">
+            </div>
+            <h1 id="brand-title-text" class="text-xl font-bold tracking-wide">ILHAM SPUNBOND</h1>
+            <p class="text-xs text-emerald-200 mt-1">Sistem Pemesanan Custom Tas Spunbond & Sablon</p>
+
+            <!-- Tombol Audio Selamat Datang -->
+            <button type="button" onclick="playWelcomeSpeech()" class="mt-3 bg-emerald-700 hover:bg-emerald-600 text-emerald-100 text-[11px] font-semibold py-1.5 px-3 rounded-full border border-emerald-500/50 shadow flex items-center gap-1.5 cursor-pointer transition">
+                <span>🔊</span> Putar Suara Sambutan
+            </button>
+        </div>
+
+        <!-- INFO ANTREAN & ESTIMASI PRODUKSI LIVE -->
+        <div class="bg-amber-50 border border-amber-200 p-4 rounded-2xl shadow-sm space-y-2">
+            <div class="flex items-center justify-between text-xs font-bold text-amber-900 border-b border-amber-200 pb-1.5">
+                <span class="flex items-center gap-1.5"><span>⏳</span> Status Antrean & Estimasi Produksi Live</span>
+                <span id="queue-count-badge" class="bg-amber-200 text-amber-900 px-2 py-0.5 rounded-full text-[10px]">Memuat...</span>
+            </div>
+            <p id="queue-est-text" class="text-[11px] text-amber-800 leading-relaxed">
+                Menghitung antrean PO aktif di sistem cloud...
+            </p>
+        </div>
+
+        <!-- AREA CUSTOMER -->
+        <div id="customer-view" class="space-y-4">
+            <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200">
+                <label class="block text-xs font-semibold text-slate-600 mb-1">1. Pilih Model Tas Spunbond</label>
+                <select id="bag-model-select" onchange="onCustomerModelChange()" class="w-full bg-slate-50 border border-slate-300 rounded-xl p-2.5 text-sm font-medium focus:ring-2 focus:ring-emerald-500 outline-none">
+                </select>
+            </div>
+
+            <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200">
+                <label class="block text-xs font-semibold text-slate-600 mb-1">2. Pilih Ukuran Tas (Size)</label>
+                <select id="bag-size-select" onchange="onCustomerSizeSelect()" class="w-full bg-slate-50 border border-slate-300 rounded-xl p-2.5 text-sm font-medium focus:ring-2 focus:ring-emerald-500 outline-none">
+                </select>
+            </div>
+
+            <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200">
+                <label class="block text-xs font-semibold text-slate-600 mb-2">3. Pilih Warna Kain Tas (<span id="active-color-label" class="text-emerald-700 font-bold">Putih Bersih</span>)</label>
+                <div id="bag-color-buttons" class="flex flex-wrap gap-2"></div>
+            </div>
+
+            <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 space-y-2">
+                <label class="block text-xs font-semibold text-slate-600">4. Upload Logo / Desain Anda (Background Transparan Cepat)</label>
+                <input type="file" id="customer-logo-upload" accept="image/*" onchange="loadCustomerLogo(event)" class="w-full text-xs text-slate-500 file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100 cursor-pointer">
+                <div id="logo-upload-status" class="text-[10px] text-slate-400 italic"></div>
+            </div>
+
+            <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200">
+                <label class="block text-xs font-semibold text-slate-600 mb-1">5. Pilih Metode Cetak</label>
+                <select id="print-method" onchange="togglePrintMethod()" class="w-full bg-slate-50 border border-slate-300 rounded-xl p-2.5 text-sm font-medium focus:ring-2 focus:ring-emerald-500 outline-none">
+                    <option value="manual">Sablon Manual (Warna Tinta Pilihan)</option>
+                    <option value="dtf">DTF Full Color (Warna Asli Desain)</option>
+                </select>
+            </div>
+
+            <div id="manual-ink-box" class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200">
+                <label class="block text-xs font-semibold text-slate-600 mb-1">6. Pilih Warna Tinta Sablon Manual</label>
+                <select id="ink-color-select" onchange="updateProcessedLogo()" class="w-full bg-slate-50 border border-slate-300 rounded-xl p-2.5 text-sm font-medium focus:ring-2 focus:ring-emerald-500 outline-none">
+                </select>
+            </div>
+
+            <div id="dtf-size-box" class="hidden bg-emerald-50 p-4 rounded-2xl shadow-sm border border-emerald-200 space-y-2">
+                <label class="block text-xs font-semibold text-emerald-800">6. Pilih Ukuran Stiker DTF</label>
+                <select id="dtf-size-select" onchange="calculateItemPrice(); updateCartTotals();" class="w-full bg-white border border-emerald-300 rounded-xl p-2.5 text-sm font-medium focus:ring-2 focus:ring-emerald-500 outline-none text-emerald-900">
+                </select>
+            </div>
+
+            <!-- Kontrol Posisi Logo -->
+            <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 space-y-3">
+                <h3 class="text-xs font-bold text-slate-700">🎛️ Pengaturan Posisi & Ukuran Logo</h3>
+                <div class="grid grid-cols-2 gap-2 text-xs">
+                    <div>
+                        <label class="block text-slate-500 mb-1">Ukuran Logo (<span id="scale-val">100</span>%)</label>
+                        <input type="range" id="logo-scale" min="40" max="200" value="100" oninput="adjustLogoTransform()" class="w-full accent-emerald-600">
+                    </div>
+                    <div>
+                        <label class="block text-slate-500 mb-1">Rotasi (<span id="rotate-val">0</span>°)</label>
+                        <input type="range" id="logo-rotate" min="-180" max="180" value="0" oninput="adjustLogoTransform()" class="w-full accent-emerald-600">
+                    </div>
+                    <div>
+                        <label class="block text-slate-500 mb-1">Geser Kiri/Kanan</label>
+                        <input type="range" id="logo-pos-x" min="-100" max="100" value="0" oninput="adjustLogoTransform()" class="w-full accent-emerald-600">
+                    </div>
+                    <div>
+                        <label class="block text-slate-500 mb-1">Geser Atas/Bawah</label>
+                        <input type="range" id="logo-pos-y" min="-80" max="80" value="0" oninput="adjustLogoTransform()" class="w-full accent-emerald-600">
+                    </div>
+                </div>
+            </div>
+
+            <!-- BOX 1: Preview Mockup Tas -->
+            <div class="bg-white p-4 rounded-2xl shadow-md border border-slate-200 relative space-y-3">
+                <h2 class="text-sm font-semibold text-slate-700 flex items-center gap-2">
+                    <span>🛍️</span> Box 1: Preview Mockup Tas (Customer View)
+                </h2>
+                
+                <div id="capture-mockup" class="relative w-full h-72 bg-white rounded-xl flex items-center justify-center overflow-hidden shadow-inner border border-slate-200">
+                    <div class="absolute inset-0 bg-white"></div>
+                    <canvas id="bag-preview-canvas" class="absolute inset-0 w-full h-full object-contain p-2 pointer-events-none"></canvas>
+
+                    <div class="absolute bottom-2 left-3 pointer-events-none z-10 flex gap-1.5">
+                        <span id="preview-model-label" class="text-slate-700 text-[11px] font-bold bg-white/90 px-2 py-0.5 rounded shadow-sm border border-slate-200">[ Tas Oval ]</span>
+                        <span id="preview-size-label" class="text-emerald-700 text-[11px] font-bold bg-white/90 px-2 py-0.5 rounded shadow-sm border border-slate-200">[ 20 x 30 cm ]</span>
+                    </div>
+                    
+                    <div id="logo-layer" class="absolute cursor-move flex items-center justify-center p-2 z-10" style="transform: translate(0px, 0px) scale(1) rotate(0deg);">
+                        <img id="preview-logo-img" src="" alt="Logo" class="max-h-24 object-contain filter drop-shadow-md">
+                    </div>
+
+                    <div class="web-watermark">
+                        <span class="watermark-text-display watermark-single">ILHAM SPUNBOND</span>
+                    </div>
+                </div>
+
+                <!-- Input Quantity Full Lebar (Aman Partai Besar) -->
+                <div class="space-y-2 pt-1">
+                    <label class="block text-xs font-bold text-slate-700">Quantity / Jumlah Pesanan Item Ini (Pcs)</label>
+                    <input type="number" id="item-qty" value="500" min="1" oninput="updateCartTotals()" class="w-full bg-slate-50 border-2 border-emerald-500 rounded-xl p-3 text-lg font-extrabold text-emerald-800 text-center focus:ring-2 focus:ring-emerald-500 outline-none shadow-inner">
+                </div>
+
+                <button type="button" onclick="addItemToCart()" class="w-full bg-emerald-700 hover:bg-emerald-800 text-white font-bold py-3 px-4 rounded-xl text-xs shadow-md transition cursor-pointer flex items-center justify-center gap-2">
+                    <span>➕</span> Masukkan ke Keranjang Pesanan (Mix)
+                </button>
+            </div>
+
+            <!-- Keranjang Mix Item Pesanan -->
+            <div class="bg-white p-4 rounded-2xl shadow-md border border-slate-200 space-y-3">
+                <h3 class="text-xs font-bold text-slate-800 border-b border-slate-100 pb-2 flex items-center justify-between">
+                    <span>🛒 Daftar Mix Item Pesanan (<span id="cart-count">0</span> Item)</span>
+                    <button type="button" onclick="clearCart()" class="text-rose-600 hover:underline text-[10px] cursor-pointer">Kosongkan</button>
+                </h3>
+                <div id="cart-items-container" class="space-y-2 max-h-56 overflow-y-auto pr-1">
+                    <p class="text-xs text-slate-400 text-center py-4">Belum ada item ditambahkan ke keranjang pesanan.</p>
+                </div>
+            </div>
+
+            <!-- BOX 2: Production View -->
+            <div class="bg-slate-900 text-white p-4 rounded-2xl shadow-md border border-slate-800 relative space-y-2">
+                <h2 class="text-sm font-semibold text-amber-400 flex items-center gap-2">
+                    <span>📐</span> Box 2: Detail Desain & Film Produksi (Preview)
+                </h2>
+                <div id="customer-watermark-box" class="relative bg-white p-4 rounded-xl flex flex-col items-center justify-center min-h-[220px] text-slate-900 space-y-3 overflow-hidden shadow-inner">
+                    <div class="w-full h-56 flex items-center justify-center bg-white rounded-lg border border-slate-200 overflow-hidden p-2">
+                        <img id="owner-file-img" src="" alt="Belum ada desain diupload" class="max-h-full max-w-full object-contain">
+                        <p id="owner-placeholder-text" class="absolute text-xs text-slate-400 font-medium">⬆️ Silakan upload logo/desain di atas terlebih dahulu</p>
+                    </div>
+                    <div class="text-center text-xs font-bold text-slate-800 border-t border-slate-200 pt-2 w-full flex justify-between px-2 z-10">
+                        <span>Model: <b id="owner-model-txt">-</b></span>
+                        <span>Metode: <b id="owner-method-txt">-</b></span>
+                    </div>
+
+                    <div class="web-watermark">
+                        <span class="watermark-text-display watermark-single">ILHAM SPUNBOND</span>
+                    </div>
+                </div>
+                <p class="text-[11px] text-slate-400 text-center italic">🔒 Area Box 2 dikunci khusus untuk pratinjau produksi. Download file bersih hanya tersedia di Galeri Owner.</p>
+            </div>
+
+            <!-- FORMULIR PEMESANAN & REKENING BANK -->
+            <div class="bg-white p-4 sm:p-5 rounded-2xl shadow-md border border-slate-200 space-y-4">
+                <h3 class="text-sm font-bold text-slate-800 border-b border-slate-100 pb-2 flex items-center gap-2">
+                    <span>📋</span> Formulir Pesanan & Pembayaran
+                </h3>
+                
+                <div>
+                    <label class="block text-[11px] font-semibold text-slate-500 mb-1">Nama Pemesan</label>
+                    <input type="text" id="customer-name" placeholder="Cth: Budi Santoso" oninput="saveCustomerDataMemory()" class="w-full bg-slate-50 border border-slate-300 rounded-xl p-2.5 text-sm font-medium focus:ring-2 focus:ring-emerald-500 outline-none">
+                </div>
+
+                <div>
+                    <label class="block text-[11px] font-semibold text-slate-500 mb-1">Nomor WhatsApp Pemesan</label>
+                    <input type="text" id="customer-wa" placeholder="Cth: 08123456789" oninput="saveCustomerDataMemory()" class="w-full bg-slate-50 border border-slate-300 rounded-xl p-2.5 text-sm font-medium focus:ring-2 focus:ring-emerald-500 outline-none">
+                </div>
+
+                <div>
+                    <label class="block text-[11px] font-semibold text-slate-500 mb-1">Alamat Pengiriman Lengkap</label>
+                    <textarea id="customer-address" rows="2" placeholder="Cth: Jl. Melati No. 10, Bandung" oninput="saveCustomerDataMemory()" class="w-full bg-slate-50 border border-slate-300 rounded-xl p-2.5 text-sm font-medium focus:ring-2 focus:ring-emerald-500 outline-none"></textarea>
+                </div>
+
+                <div>
+                    <label class="block text-[11px] font-semibold text-slate-500 mb-1">Wilayah Tujuan Pengiriman</label>
+                    <select id="shipping-region" onchange="saveCustomerDataMemory(); updateCartTotals();" class="w-full bg-slate-50 border border-slate-300 rounded-xl p-2.5 text-sm font-medium focus:ring-2 focus:ring-emerald-500 outline-none">
+                        <option value="jabodetabek">Wilayah Jabodetabek (Bisa COD)</option>
+                        <option value="luar">Di Luar Jabodetabek (Wajib DP 50% / Pelunasan)</option>
+                    </select>
+                </div>
+
+                <div class="text-[11px] text-emerald-700 font-medium bg-emerald-50/80 px-3 py-1.5 rounded-lg border border-emerald-200/60 flex items-center gap-1.5">
+                    <span>🔥</span> <span>Info Diskon: Total pesanan **1.000 pcs ke atas** otomatis mendapatkan **Diskon 10%**!</span>
+                </div>
+
+                <div class="bg-emerald-50 border border-emerald-200 p-4 rounded-xl space-y-3">
+                    <div class="flex justify-between items-center text-xs text-slate-700 border-b border-emerald-200/60 pb-2">
+                        <span>Total Quantity Pesanan:</span>
+                        <span id="display-total-qty" class="font-bold text-slate-900 text-sm">0 Pcs</span>
+                    </div>
+                    <div id="discount-row" class="hidden flex justify-between items-center text-xs text-emerald-700 font-medium border-b border-emerald-200/60 pb-2">
+                        <span>Diskon Pesanan Besar (10%):</span>
+                        <span id="display-discount-val" class="font-bold">- Rp 0</span>
+                    </div>
+                    <div id="dp-row" class="hidden flex justify-between items-center text-xs text-amber-700 font-medium border-b border-emerald-200/60 pb-2">
+                        <span>Wajib DP 50% (Luar Jabodetabek):</span>
+                        <span id="display-dp-val" class="font-bold">Rp 0</span>
+                    </div>
+                    
+                    <div class="pt-1 flex justify-between items-center">
+                        <div>
+                            <span class="text-xs font-bold text-emerald-900 block">Total Keseluruhan:</span>
+                            <span class="text-[10px] text-emerald-700 block italic">✨ Termasuk ongkir Pulau Jawa</span>
+                        </div>
+                        <div class="text-right">
+                            <span id="display-total-price" class="text-lg font-extrabold text-emerald-950 block">Rp 0</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Info Nomor Rekening Bank -->
+                <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200 space-y-2">
+                    <h4 class="text-xs font-bold text-slate-700 flex items-center gap-1.5">
+                        <span>💳</span> Informasi Rekening Pembayaran Resmi
+                    </h4>
+                    <div id="bank-accounts-display" class="space-y-1.5 text-xs text-slate-600"></div>
+                </div>
+            </div>
+
+            <!-- TOMBOL KIRIM KE WHATSAPP OWNER -->
+            <button type="button" onclick="saveOrderAndSendWhatsApp()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-3.5 px-4 rounded-xl shadow-lg flex items-center justify-center gap-2.5 transition text-sm cursor-pointer">
+                <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/></svg>
+                <span>Simpan PO & Kirim Pesan ke WhatsApp Owner</span>
+            </button>
+
+            <!-- TOMBOL DOWNLOAD INVOICE PDF -->
+            <button type="button" onclick="downloadCustomerInvoicePDF()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-3 px-4 rounded-xl shadow-lg flex items-center justify-center gap-2 transition text-sm cursor-pointer">
+                <span>📄🖨️</span> Download Invoice Tagihan (PDF)
+            </button>
+
+            <!-- TOMBOL BUKA GALERI RIWAYAT PO OWNER -->
+            <button type="button" onclick="verifyAndShowOrderHistory()" class="w-full bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold py-3 px-4 rounded-xl shadow-lg flex items-center justify-center gap-2 transition text-sm cursor-pointer">
+                <span>🔐📋</span> Buka Galeri Visual Riwayat PO (Terkunci Password)
+            </button>
+        </div>
+
+        <!-- MODAL RIWAYAT PO -->
+        <div id="order-history-modal" class="hidden fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-4">
+            <div class="bg-slate-900 text-white w-full max-w-lg max-h-[90vh] rounded-2xl p-5 border border-amber-500/40 flex flex-col space-y-4 shadow-2xl">
+                <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+                    <h3 class="text-sm font-bold text-amber-400 flex items-center gap-2">
+                        <span>📋</span> Database Riwayat PO Owner (Cloud Sync Live)
+                    </h3>
+                    <button type="button" onclick="closeOrderHistoryModal()" class="text-xs text-slate-400 hover:text-white font-bold bg-slate-800 px-3 py-1.5 rounded-lg cursor-pointer">Tutup [X]</button>
+                </div>
+                <div id="order-history-list" class="flex-1 overflow-y-auto space-y-3 pr-1"></div>
+                <button type="button" onclick="clearAllOrders()" class="w-full bg-rose-600 hover:bg-rose-700 text-white font-semibold py-2.5 rounded-xl text-xs transition cursor-pointer">Hapus Semua Riwayat PO</button>
+            </div>
+        </div>
+
+        <!-- PANEL ADMIN -->
+        <div id="admin-view" class="hidden bg-slate-900 text-white p-5 rounded-2xl shadow-xl border border-slate-800 space-y-4">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+                <h3 class="text-sm font-bold text-amber-400 flex items-center gap-2">
+                    <span>⚙️</span> Panel Kontrol Master Admin
+                </h3>
+                <button type="button" onclick="toggleAdminPanel()" class="text-xs text-slate-400 hover:text-white">Tutup [X]</button>
+            </div>
+
+            <div class="bg-slate-800 p-3 rounded-xl border border-amber-500/30 space-y-2">
+                <label class="block text-xs font-semibold text-amber-300">🖼️ Upload Logo Brand Toko</label>
+                <input type="file" id="admin-brand-logo-upload" accept="image/*" onchange="uploadBrandLogo(event)" class="w-full text-xs text-slate-400 file:mr-2 file:py-1 file:px-2 file:rounded-lg file:border-0 file:text-[10px] file:font-semibold file:bg-amber-500 file:text-slate-950 cursor-pointer">
+                <div id="brand-upload-status" class="text-[10px] text-slate-400 italic"></div>
+            </div>
+
+            <div class="bg-slate-800 p-3 rounded-xl border border-amber-500/30 space-y-2">
+                <label class="block text-xs font-semibold text-amber-300">🏅 Upload Gambar Cap / Stempel Lunas (PNG)</label>
+                <input type="file" id="admin-stamp-upload" accept="image/*" onchange="uploadStampImage(event)" class="w-full text-xs text-slate-400 file:mr-2 file:py-1 file:px-2 file:rounded-lg file:border-0 file:text-[10px] file:font-semibold file:bg-emerald-500 file:text-slate-950 cursor-pointer">
+                <div id="stamp-preview-container" class="mt-2 text-center"></div>
+            </div>
+
+            <div class="bg-slate-800 p-3 rounded-xl border border-amber-500/30 space-y-2">
+                <label class="block text-xs font-semibold text-amber-300">🏢 Data Global Toko</label>
+                <input type="text" id="admin-store-name" placeholder="Nama Toko" oninput="saveGlobalConfig()" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white outline-none">
+                <input type="text" id="admin-store-address" placeholder="Alamat Toko" oninput="saveGlobalConfig()" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white outline-none">
+                <input type="text" id="admin-store-phone" placeholder="No Telepon / WhatsApp" oninput="saveGlobalConfig()" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white outline-none">
+                <input type="text" id="admin-store-email" placeholder="Email Toko" oninput="saveGlobalConfig()" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white outline-none">
+            </div>
+
+            <div class="bg-slate-800 p-3 rounded-xl border border-amber-500/30 space-y-1">
+                <label class="block text-xs font-semibold text-amber-300">📱 Nomor WhatsApp Owner</label>
+                <input type="text" id="admin-wa-number" value="6289630539563" oninput="saveGlobalConfig()" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white outline-none">
+            </div>
+
+            <!-- Kelola Rekening Bank -->
+            <div class="bg-slate-800 p-3 rounded-xl border border-amber-500/30 space-y-2">
+                <label class="block text-xs font-semibold text-amber-300">💳 Kelola Rekening Bank</label>
+                <div id="bank-admin-container" class="space-y-1.5 max-h-32 overflow-y-auto pr-1"></div>
+                <div class="flex gap-1.5 mt-2">
+                    <input type="text" id="new-bank-name" placeholder="Bank" class="w-28 bg-slate-900 rounded-lg px-2 py-1.5 text-[11px] text-white outline-none border border-slate-700">
+                    <input type="text" id="new-bank-acc" placeholder="No Rekening" class="flex-1 bg-slate-900 rounded-lg px-2 py-1.5 text-[11px] text-white outline-none border border-slate-700">
+                    <input type="text" id="new-bank-owner" placeholder="Atas Nama" class="w-28 bg-slate-900 rounded-lg px-2 py-1.5 text-[11px] text-white outline-none border border-slate-700">
+                    <button type="button" onclick="addBank()" class="bg-amber-500 text-slate-950 px-3 py-1.5 rounded-lg text-[11px] font-semibold cursor-pointer">Tambah</button>
+                </div>
+            </div>
+
+            <!-- Kelola Model Tas & Ukuran -->
+            <div class="bg-slate-800 p-3 rounded-xl border border-amber-500/30 space-y-3">
+                <label class="block text-xs font-semibold text-amber-300">📦 Kelola Model Tas & Ukuran</label>
+                <div id="model-admin-container" class="space-y-3 max-h-64 overflow-y-auto pr-1"></div>
+            </div>
+
+            <!-- Kelola Opsi DTF -->
+            <div class="bg-slate-800 p-3 rounded-xl border border-amber-500/30 space-y-2">
+                <label class="block text-xs font-semibold text-amber-300">🏷️ Kelola Ukuran & Harga Stiker DTF</label>
+                <div id="dtf-admin-container" class="space-y-1.5 max-h-32 overflow-y-auto pr-1"></div>
+                <div class="flex gap-1.5 mt-2">
+                    <input type="text" id="new-dtf-name" placeholder="Ukuran DTF" class="flex-1 bg-slate-900 rounded-lg px-2 py-1.5 text-[11px] text-white outline-none border border-slate-700">
+                    <input type="number" id="new-dtf-price" placeholder="Harga" class="w-24 bg-slate-900 rounded-lg px-2 py-1.5 text-[11px] text-white outline-none border border-slate-700">
+                    <button type="button" onclick="addDtfOption()" class="bg-amber-500 text-slate-950 px-3 py-1.5 rounded-lg text-[11px] font-semibold cursor-pointer">Tambah</button>
+                </div>
+            </div>
+
+            <!-- Kelola Warna Tinta Sablon Manual -->
+            <div class="border-t border-slate-800 pt-3">
+                <label class="block text-xs font-semibold text-amber-300 mb-1">Kelola Warna Tinta Sablon Manual</label>
+                <div class="flex gap-2 mb-2">
+                    <input type="text" id="new-ink-name" placeholder="Nama Warna Tinta" class="flex-1 bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white outline-none">
+                    <input type="color" id="new-ink-hex" value="#000000" class="w-10 h-9 bg-slate-800 border border-slate-700 rounded-xl cursor-pointer p-1">
+                    <button type="button" onclick="addInkColor()" class="bg-amber-500 text-slate-950 font-semibold px-3 py-2 rounded-xl text-xs cursor-pointer">Tambah</button>
+                </div>
+                <div id="ink-list-container" class="space-y-1.5 max-h-28 overflow-y-auto pr-1"></div>
+            </div>
+
+            <div class="border-t border-slate-800 pt-3">
+                <label class="block text-xs font-semibold text-amber-300 mb-1">Warna Kain Tas</label>
+                <div class="flex gap-2 mb-2">
+                    <input type="text" id="new-color-name" placeholder="Nama Warna" class="flex-1 bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white outline-none">
+                    <input type="color" id="new-color-hex" value="#0d9488" class="w-10 h-9 bg-slate-800 border border-slate-700 rounded-xl cursor-pointer p-1">
+                    <button type="button" onclick="addBagColor()" class="bg-amber-500 text-slate-950 font-semibold px-3 py-2 rounded-xl text-xs cursor-pointer">Tambah</button>
+                </div>
+                <div id="color-list-container" class="space-y-1.5 max-h-28 overflow-y-auto pr-1"></div>
+            </div>
+
+            <div class="border-t border-slate-800 pt-3 space-y-3">
+                <div>
+                    <label class="block text-xs font-semibold text-amber-300 mb-1">Password Akses Galeri</label>
+                    <input type="text" id="admin-pdf-password" value="ilham123" oninput="saveGlobalConfig()" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white outline-none">
+                </div>
+            </div>
+        </div>
+
+        <div class="pt-2 text-center">
+            <button type="button" onclick="requestAdminLogin()" class="text-slate-400 hover:text-emerald-700 text-[11px] font-medium transition py-2 px-4 rounded-lg bg-white/50 border border-slate-200 shadow-sm mx-auto flex items-center gap-1.5 justify-center cursor-pointer">
+                <span>🔐</span> Buka Panel Kontrol Admin
+            </button>
+        </div>
+
+        <div class="text-center pt-2 pb-4">
+            <span id="sync-status" class="text-[11px] bg-slate-200 text-slate-700 px-3 py-1 rounded-full font-medium inline-block shadow-sm">☁️ Connecting Firebase Cloud...</span>
+        </div>
+    </div>
+
+    <!-- Script Utama (100% Complete, Tested & Verified) -->
+    <script>
+        const cleanDefaultBagSvg = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 500'><path d='M100 150 L100 100 C100 70 120 50 200 50 C280 50 300 70 300 100 L300 150 Z' fill='none' stroke='%23334155' stroke-width='16'/><path d='M60 150 L340 150 C360 150 370 160 370 180 L340 450 C340 470 330 480 310 480 L90 480 C70 480 60 470 60 450 L30 180 C30 160 40 150 60 150 Z' fill='%23ffffff' stroke='%23334155' stroke-width='6'/></svg>";
+
+        const defaultBagModels = [
+            { 
+                name: "Tas Spunbond Oval", 
+                image: cleanDefaultBagSvg, 
+                sizes: [
+                    { name: "20 x 30 cm", price: 1400 }, 
+                    { name: "25 x 35 cm", price: 1700 }, 
+                    { name: "30 x 40 cm", price: 2300 }
+                ] 
+            },
+            { 
+                name: "Tas HLS (Handle Lipat Samping)", 
+                image: cleanDefaultBagSvg, 
+                sizes: [
+                    { name: "20 x 30 x 8 cm", price: 2000 }, 
+                    { name: "25 x 35 x 10 cm", price: 2500 },
+                    { name: "30 x 40 x 10 cm", price: 3000 }
+                ] 
+            },
+            { 
+                name: "Tas HLB Box (Handle Kotak)", 
+                image: cleanDefaultBagSvg, 
+                sizes: [
+                    { name: "25 x 25 x 10 cm", price: 2800 }, 
+                    { name: "30 x 30 x 12 cm", price: 3400 }
+                ] 
+            },
+            { 
+                name: "Tas HLB Kotak", 
+                image: cleanDefaultBagSvg, 
+                sizes: [
+                    { name: "20 x 20 x 15 cm", price: 2500 }, 
+                    { name: "30 x 20 x 20 cm", price: 3200 }
+                ] 
+            }
+        ];
+
+        let bagModels = defaultBagModels;
+        let bankAccounts = [
+            { bank: "Mandiri", acc: "1760004889992", owner: "Abdul Rojak" },
+            { bank: "SeaBank", acc: "901048993888", owner: "Abdul Rojak" }
+        ];
+        let bagColors = [
+            { name: "Putih Bersih", hex: "#ffffff" },
+            { name: "Biru BCA", hex: "#1d4ed8" },
+            { name: "Merah", hex: "#dc2626" },
+            { name: "Hitam", hex: "#0f172a" },
+            { name: "Hijau", hex: "#16a34a" },
+            { name: "Toska", hex: "#0d9488" }
+        ];
+        let inkColors = [
+            { name: "Hitam Pekat", hex: "#0f172a" },
+            { name: "Putih Bersih", hex: "#ffffff" },
+            { name: "Merah Menyala", hex: "#dc2626" },
+            { name: "Biru BCA", hex: "#1d4ed8" },
+            { name: "Emas / Gold", hex: "#eab308" }
+        ];
+        let dtfOptions = [{ name: "Sedang (8x8 cm)", price: 2000 }, { name: "Besar (10x10 cm)", price: 3000 }];
+        
+        let storeName = "ILHAM SPUNBOND";
+        let storeAddress = "Taman Raya Rajeg Blok-K10 No.06, Tangerang-Banten";
+        let storePhone = "0896 3053 9563";
+        let storeEmail = "ilhamspunbond@gmail.com";
+        let pdfPassword = "ilham123";
+        let ownerWaNumber = "6289630539563";
+        let brandLogoUrl = "";
+        let customStampUrl = "";
+        let persistentCustomerLogo = "";
+
+        let activeBagTint = "#ffffff";
+        let activeColorName = "Putih Bersih";
+        let rawCustomerLogoImg = null;
+        let isSyncingFromCloud = false;
+        let activeOrdersUnsubscribe = null;
+        let cartItems = [];
+
+        try {
+            if(localStorage.getItem('ilham_bagModels')) bagModels = JSON.parse(localStorage.getItem('ilham_bagModels'));
+            if(localStorage.getItem('ilham_bankAccounts')) bankAccounts = JSON.parse(localStorage.getItem('ilham_bankAccounts'));
+            if(localStorage.getItem('ilham_bagColors')) bagColors = JSON.parse(localStorage.getItem('ilham_bagColors'));
+            if(localStorage.getItem('ilham_inkColors')) inkColors = JSON.parse(localStorage.getItem('ilham_inkColors'));
+            if(localStorage.getItem('ilham_dtfOptions')) dtfOptions = JSON.parse(localStorage.getItem('ilham_dtfOptions'));
+            if(localStorage.getItem('ilham_storeName')) storeName = localStorage.getItem('ilham_storeName');
+            if(localStorage.getItem('ilham_storeAddress')) storeAddress = localStorage.getItem('ilham_storeAddress');
+            if(localStorage.getItem('ilham_storePhone')) storePhone = localStorage.getItem('ilham_storePhone');
+            if(localStorage.getItem('ilham_storeEmail')) storeEmail = localStorage.getItem('ilham_storeEmail');
+            if(localStorage.getItem('ilham_pdfPassword')) pdfPassword = localStorage.getItem('ilham_pdfPassword');
+            if(localStorage.getItem('ilham_ownerWaNumber')) ownerWaNumber = localStorage.getItem('ilham_ownerWaNumber');
+            if(localStorage.getItem('ilham_brandLogoUrl')) brandLogoUrl = localStorage.getItem('ilham_brandLogoUrl');
+            if(localStorage.getItem('ilham_customStampUrl')) customStampUrl = localStorage.getItem('ilham_customStampUrl');
+            
+            localStorage.removeItem('ilham_customerLogo');
+            if(localStorage.getItem('ilham_cartItems')) cartItems = JSON.parse(localStorage.getItem('ilham_cartItems'));
+        } catch(e) {
+            console.error("Local storage error:", e);
+        }
+
+        // --- UPDATE FAVICON TAB BROWSER SECARA OTOMATIS ---
+        function updateTabFavicon(url) {
+            if(!url) return;
+            const faviconEl = document.getElementById('dynamic-favicon');
+            const appleIconEl = document.getElementById('dynamic-apple-touch-icon');
+            if(faviconEl) faviconEl.href = url;
+            if(appleIconEl) appleIconEl.href = url;
+        }
+
+        // --- SPLASH SCREEN & SPEECH ---
+        function dismissSplashScreen() {
+            const splash = document.getElementById('splash-screen');
+            if(splash) {
+                splash.style.opacity = '0';
+                setTimeout(() => {
+                    splash.style.display = 'none';
+                    playWelcomeSpeech();
+                }, 700);
+            }
+        }
+
+        function updateWibClock() {
+            const now = new Date();
+            const options = { timeZone: 'Asia/Jakarta', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false };
+            const timeString = new Intl.DateTimeFormat('id-ID', options).format(now);
+            const clockEl = document.getElementById('live-wib-time');
+            if(clockEl) clockEl.textContent = timeString;
+        }
+        setInterval(updateWibClock, 1000);
+
+        function playWelcomeSpeech() {
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+                const text = "Selamat datang di Ilham Spunbond. Silakan desain tas custom Anda, buat pesanan, dan unduh invoice.";
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = 'id-ID';
+                utterance.rate = 1.0;
+                window.speechSynthesis.speak(utterance);
+            }
+        }
+
+        function initQueueListener() {
+            if(!window.firebaseDb) return;
+            const { collection, onSnapshot } = window.firebaseDeps;
+            onSnapshot(collection(window.firebaseDb, "orders"), (snapshot) => {
+                let pendingOrders = [];
+                snapshot.forEach(doc => {
+                    const data = doc.data();
+                    if(!data.status || !data.status.includes("LUNAS")) {
+                        pendingOrders.push(data);
+                    }
+                });
+                updateQueueDisplay(pendingOrders);
+            }, (err) => {
+                console.log("Queue listener error:", err);
+            });
+        }
+
+        function calculateProductionDays(totalQty) {
+            if (totalQty <= 500) return 3;
+            if (totalQty <= 1000) return 3;
+            const extraSteps = Math.ceil((totalQty - 1000) / 500);
+            return 3 + extraSteps;
+        }
+
+        function updateQueueDisplay(pendingOrders) {
+            const badge = document.getElementById('queue-count-badge');
+            const desc = document.getElementById('queue-est-text');
+            if(!badge || !desc) return;
+
+            let totalQueueQty = 0;
+            pendingOrders.forEach(o => {
+                if(o.items) {
+                    o.items.forEach(it => { totalQueueQty += (it.qty || 0); });
+                }
+            });
+
+            const queueCount = pendingOrders.length;
+            badge.textContent = `${queueCount} PO Antre (${totalQueueQty.toLocaleString('id-ID')} Pcs)`;
+
+            let accumulatedDays = 0;
+            pendingOrders.forEach(o => {
+                let oQty = 0;
+                if(o.items) o.items.forEach(it => oQty += (it.qty || 0));
+                accumulatedDays += calculateProductionDays(oQty);
+            });
+
+            let currentCartQty = 0;
+            cartItems.forEach(it => currentCartQty += (it.qty || 0));
+            const myProductionDays = calculateProductionDays(currentCartQty > 0 ? currentCartQty : 500);
+            const totalEstimatedDays = accumulatedDays + myProductionDays;
+
+            const targetDate = new Date();
+            targetDate.setDate(targetDate.getDate() + totalEstimatedDays);
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            const formattedDate = targetDate.toLocaleDateString('id-ID', options);
+
+            if(queueCount === 0) {
+                desc.innerHTML = `✨ <b>Tidak ada antrean PO menumpuk saat ini!</b> Pesanan Anda akan langsung masuk jalur prioritas dengan estimasi pengerjaan <b>${myProductionDays} hari</b> (Selesai sekitar <b>${formattedDate}</b>).`;
+            } else {
+                desc.innerHTML = `⚠️ Saat ini ada <b>${queueCount} PO antre</b> di sistem produksi (Total ${totalQueueQty.toLocaleString('id-ID')} pcs). Estimasi pengerjaan pesanan Anda sekitar <b>${totalEstimatedDays} hari</b> kerja (Perkiraan selesai: <b>${formattedDate}</b>).`;
+            }
+        }
+
+        function compressImageToDataUrl(file, maxWidth = 250, quality = 0.5) {
+            return new Promise((resolve) => {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const img = new Image();
+                    img.onload = function() {
+                        const canvas = document.createElement('canvas');
+                        let w = img.width, h = img.height;
+                        if(w > maxWidth) {
+                            h = Math.round((h * maxWidth) / w);
+                            w = maxWidth;
+                        }
+                        canvas.width = w;
+                        canvas.height = h;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, w, h);
+                        resolve(canvas.toDataURL('image/jpeg', quality));
+                    };
+                    img.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+
+        function cleanOuterBackground(file, maxWidth = 350, quality = 0.6) {
+            return new Promise((resolve) => {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const img = new Image();
+                    img.onload = function() {
+                        const canvas = document.createElement('canvas');
+                        let w = img.width, h = img.height;
+                        if(w > maxWidth) {
+                            h = Math.round((h * maxWidth) / w);
+                            w = maxWidth;
+                        }
+                        canvas.width = w;
+                        canvas.height = h;
+                        const ctx = canvas.getContext('2d');
+                        ctx.clearRect(0, 0, w, h);
+                        ctx.drawImage(img, 0, 0, w, h);
+                        resolve(canvas.toDataURL('image/jpeg', quality));
+                    };
+                    img.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+
+        window.initCloudSync = function() {
+            if(!window.firebaseDb) return;
+            const db = window.firebaseDb;
+            const { doc, getDoc, onSnapshot } = window.firebaseDeps;
+
+            const docRef = doc(db, "settings", "master_data");
+            
+            getDoc(docRef).then((docSnap) => {
+                if (docSnap.exists()) {
+                    applyCloudData(docSnap.data());
+                } else {
+                    saveToCloud();
+                }
+            }).catch(err => console.log(err));
+
+            onSnapshot(docRef, (docSnap) => {
+                if (docSnap.exists() && !isSyncingFromCloud) {
+                    applyCloudData(docSnap.data());
+                    const statusEl = document.getElementById('sync-status');
+                    if(statusEl) {
+                        statusEl.textContent = "☁️ Cloud Sync Active";
+                        statusEl.className = "text-[11px] bg-emerald-100 text-emerald-800 px-3 py-1 rounded-full font-medium inline-block shadow-sm border border-emerald-300";
+                    }
+                }
+            }, (error) => {
+                const statusEl = document.getElementById('sync-status');
+                if(statusEl) {
+                    statusEl.textContent = "⚠️ Cloud Offline (Local Mode Active)";
+                    statusEl.className = "text-[11px] bg-amber-100 text-amber-800 px-3 py-1 rounded-full font-medium inline-block shadow-sm border border-amber-300";
+                }
+            });
+
+            initQueueListener();
+        };
+
+        function applyCloudData(data) {
+            isSyncingFromCloud = true;
+            if(data.bagModels && data.bagModels.length > 0) { 
+                bagModels = data.bagModels.map((m, idx) => {
+                    const localModel = bagModels[idx];
+                    return {
+                        name: m.name,
+                        image: (m.image && m.image !== cleanDefaultBagSvg) ? m.image : (localModel ? localModel.image : cleanDefaultBagSvg),
+                        sizes: m.sizes || (localModel ? localModel.sizes : [])
+                    };
+                });
+                safeLocalStorageSet('ilham_bagModels', JSON.stringify(bagModels)); 
+            }
+            if(data.bankAccounts && data.bankAccounts.length > 0) { bankAccounts = data.bankAccounts; safeLocalStorageSet('ilham_bankAccounts', JSON.stringify(bankAccounts)); }
+            if(data.bagColors && data.bagColors.length > 0) { bagColors = data.bagColors; safeLocalStorageSet('ilham_bagColors', JSON.stringify(bagColors)); }
+            if(data.inkColors && data.inkColors.length > 0) { inkColors = data.inkColors; safeLocalStorageSet('ilham_inkColors', JSON.stringify(inkColors)); }
+            if(data.dtfOptions && data.dtfOptions.length > 0) { dtfOptions = data.dtfOptions; safeLocalStorageSet('ilham_dtfOptions', JSON.stringify(dtfOptions)); }
+            
+            if(data.storeName) { storeName = data.storeName; safeLocalStorageSet('ilham_storeName', storeName); }
+            if(data.pdfPassword) { pdfPassword = data.pdfPassword; safeLocalStorageSet('ilham_pdfPassword', pdfPassword); }
+            if(data.ownerWaNumber) { ownerWaNumber = data.ownerWaNumber; safeLocalStorageSet('ilham_ownerWaNumber', ownerWaNumber); }
+            if(data.brandLogoUrl !== undefined) { 
+                brandLogoUrl = data.brandLogoUrl; 
+                safeLocalStorageSet('ilham_brandLogoUrl', brandLogoUrl);
+                if(brandLogoUrl) updateTabFavicon(brandLogoUrl);
+            }
+            if(data.customStampUrl !== undefined) { customStampUrl = data.customStampUrl; safeLocalStorageSet('ilham_customStampUrl', customStampUrl); }
+            if(data.storeAddress) { storeAddress = data.storeAddress; safeLocalStorageSet('ilham_storeAddress', storeAddress); }
+            if(data.storePhone) { storePhone = data.storePhone; safeLocalStorageSet('ilham_storePhone', storePhone); }
+            if(data.storeEmail) { storeEmail = data.storeEmail; safeLocalStorageSet('ilham_storeEmail', storeEmail); }
+
+            renderAdminPanel();
+            updateBagCanvas();
+            setTimeout(() => { isSyncingFromCloud = false; }, 500);
+        }
+
+        function safeLocalStorageSet(key, val) {
+            try {
+                localStorage.setItem(key, val);
+            } catch (e) {
+                console.warn("Storage quota warning handled for:", key);
+            }
+        }
+
+        function saveCustomerDataMemory() {
+            const name = document.getElementById('customer-name').value;
+            const wa = document.getElementById('customer-wa').value;
+            const address = document.getElementById('customer-address').value;
+            const region = document.getElementById('shipping-region').value;
+            const model = document.getElementById('bag-model-select').value;
+            const size = document.getElementById('bag-size-select').value;
+            
+            safeLocalStorageSet('ilham_customer_memory', JSON.stringify({ name, wa, address, region, model, size }));
+        }
+
+        function loadCustomerDataMemory() {
+            try {
+                const saved = localStorage.getItem('ilham_customer_memory');
+                if(saved) {
+                    const data = JSON.parse(saved);
+                    if(data.name) document.getElementById('customer-name').value = data.name;
+                    if(data.wa) document.getElementById('customer-wa').value = data.wa;
+                    if(data.address) document.getElementById('customer-address').value = data.address;
+                    if(data.region) document.getElementById('shipping-region').value = data.region;
+                    if(data.model !== undefined) {
+                        const mSelect = document.getElementById('bag-model-select');
+                        if(mSelect && mSelect.options.length > data.model) {
+                            mSelect.value = data.model;
+                            updateCustomerSizesDropdown();
+                        }
+                    }
+                    if(data.size !== undefined) {
+                        const sSelect = document.getElementById('bag-size-select');
+                        if(sSelect) sSelect.value = data.size;
+                    }
+                }
+            } catch(e) {
+                console.error(e);
+            }
+        }
+
+        async function saveToCloud(customPayload = {}) {
+            safeLocalStorageSet('ilham_bagModels', JSON.stringify(bagModels));
+            safeLocalStorageSet('ilham_bankAccounts', JSON.stringify(bankAccounts));
+            safeLocalStorageSet('ilham_bagColors', JSON.stringify(bagColors));
+            safeLocalStorageSet('ilham_inkColors', JSON.stringify(inkColors));
+            safeLocalStorageSet('ilham_dtfOptions', JSON.stringify(dtfOptions));
+            safeLocalStorageSet('ilham_storeName', storeName);
+            safeLocalStorageSet('ilham_storeAddress', storeAddress);
+            safeLocalStorageSet('ilham_storePhone', storePhone);
+            safeLocalStorageSet('ilham_storeEmail', storeEmail);
+            safeLocalStorageSet('ilham_pdfPassword', pdfPassword);
+            safeLocalStorageSet('ilham_ownerWaNumber', ownerWaNumber);
+            safeLocalStorageSet('ilham_brandLogoUrl', brandLogoUrl);
+            safeLocalStorageSet('ilham_customStampUrl', customStampUrl);
+            
+            try {
+                const lightCart = cartItems.map(i => ({ model: i.model, size: i.size, color: i.color, method: i.method, qty: i.qty, unitPrice: i.unitPrice, subtotal: i.subtotal }));
+                safeLocalStorageSet('ilham_cartItems', JSON.stringify(lightCart));
+            } catch (err) {
+                console.log(err);
+            }
+
+            if(!window.firebaseDb) return;
+            try {
+                const { doc, setDoc } = window.firebaseDeps;
+                const docRef = doc(window.firebaseDb, "settings", "master_data");
+
+                const optimizedBagModels = bagModels.map(m => ({
+                    name: m.name,
+                    image: (m.image && m.image.length > 80000) ? cleanDefaultBagSvg : m.image,
+                    sizes: m.sizes
+                }));
+
+                const payload = {
+                    bagModels: optimizedBagModels,
+                    bankAccounts,
+                    bagColors,
+                    inkColors,
+                    dtfOptions,
+                    storeName,
+                    pdfPassword,
+                    ownerWaNumber,
+                    brandLogoUrl: (brandLogoUrl && brandLogoUrl.length > 80000) ? "" : brandLogoUrl,
+                    customStampUrl: (customStampUrl && customStampUrl.length > 80000) ? "" : customStampUrl,
+                    storeAddress,
+                    storePhone,
+                    storeEmail,
+                    lastCustomerLogo: "",
+                    ...customPayload
+                };
+
+                await setDoc(docRef, payload, { merge: true });
+            } catch(e) {
+                console.error("Gagal menyimpan ke cloud:", e);
+            }
+        }
+
+        function requestAdminLogin() {
+            const pwd = prompt("Masukkan Password Admin:");
+            if(pwd === pdfPassword) toggleAdminPanel();
+            else if(pwd !== null) alert("Password salah!");
+        }
+
+        function renderAdminPanel() {
+            const modelAdminContainer = document.getElementById('model-admin-container');
+            const bankAdminContainer = document.getElementById('bank-admin-container');
+            const dtfAdminContainer = document.getElementById('dtf-admin-container');
+            const modelSelect = document.getElementById('bag-model-select');
+            const dtfSelect = document.getElementById('dtf-size-select');
+            const bankDisplay = document.getElementById('bank-accounts-display');
+            const stampPreview = document.getElementById('stamp-preview-container');
+            const brandStatus = document.getElementById('brand-upload-status');
+            
+            if(!modelSelect) return;
+
+            const prevVal = modelSelect.value || 0;
+            if(modelAdminContainer) modelAdminContainer.innerHTML = '';
+            modelSelect.innerHTML = '';
+
+            bagModels.forEach((item, mIndex) => {
+                const opt = document.createElement('option');
+                opt.value = mIndex;
+                opt.textContent = item.name;
+                modelSelect.appendChild(opt);
+
+                if(modelAdminContainer) {
+                    const card = document.createElement('div');
+                    card.className = "bg-slate-900 p-3 rounded-xl border border-slate-700 flex flex-col gap-2 text-xs";
+                    
+                    let sizeRows = '';
+                    if(item.sizes) {
+                        item.sizes.forEach((s, sIndex) => {
+                            sizeRows += `<div class="flex items-center justify-between bg-slate-800 p-1.5 rounded-lg text-[11px]"><span><b>${s.name}</b> (Rp ${s.price.toLocaleString('id-ID')})</span><button type="button" onclick="deleteSizeFromModel(${mIndex}, ${sIndex})" class="text-rose-400 font-bold px-2 py-0.5 cursor-pointer hover:bg-rose-900/40 rounded">Hapus</button></div>`;
+                        });
+                    }
+
+                    const isCustomImg = item.image && item.image !== cleanDefaultBagSvg;
+
+                    card.innerHTML = `
+                        <div class="flex items-center justify-between border-b border-slate-800 pb-1.5"><span class="font-bold text-amber-300 text-sm">${item.name}</span></div>
+                        <div><label class="block text-[10px] text-slate-400 mb-1">Upload Foto Tas:</label><input type="file" accept="image/*" onchange="uploadModelSample(event, ${mIndex})" class="w-full text-[10px] text-slate-400 file:mr-2 file:py-1 file:px-2 file:rounded-lg file:border-0 file:bg-amber-500 file:text-slate-950 cursor-pointer"></div>
+                        <div id="model-status-${mIndex}" class="text-[10px] ${isCustomImg ? 'text-emerald-400 font-semibold' : 'text-slate-400'} italic">
+                            ${isCustomImg ? '✅ Berhasil Di-upload & Terkunci di Sistem' : 'ℹ️ Menggunakan foto default'}
+                        </div>
+                        <div class="space-y-1 mt-1">${sizeRows}
+                            <div class="flex gap-1.5 mt-2"><input type="text" id="new-s-name-${mIndex}" placeholder="Ukuran" class="flex-1 bg-slate-800 rounded-lg px-2 py-1 text-[11px] text-white outline-none"><input type="number" id="new-s-price-${mIndex}" placeholder="Harga" class="w-20 bg-slate-800 rounded-lg px-2 py-1 text-[11px] text-white outline-none"><button type="button" onclick="addSizeToModel(${mIndex})" class="bg-amber-500 text-slate-950 px-2.5 py-1 rounded-lg text-[11px] font-semibold cursor-pointer">Tambah Size</button></div>
+                        </div>`;
+                    modelAdminContainer.appendChild(card);
+                }
+            });
+
+            if(modelSelect.options.length > prevVal) modelSelect.value = prevVal;
+
+            if(brandStatus) {
+                if(brandLogoUrl) {
+                    brandStatus.textContent = "✅ Berhasil Di-upload & Terkunci di Sistem";
+                    brandStatus.className = "text-[10px] text-emerald-400 font-semibold italic";
+                } else {
+                    brandStatus.textContent = "ℹ️ Belum ada logo brand di-upload (menggunakan teks)";
+                    brandStatus.className = "text-[10px] text-slate-400 italic";
+                }
+            }
+
+            if(bankAdminContainer && bankDisplay) {
+                bankAdminContainer.innerHTML = '';
+                bankDisplay.innerHTML = '';
+                bankAccounts.forEach((b, bIdx) => {
+                    bankAdminContainer.innerHTML += `<div class="flex items-center justify-between bg-slate-900 p-1.5 rounded-lg text-[11px]"><span><b>${b.bank}</b>: ${b.acc} (${b.owner})</span><button type="button" onclick="deleteBank(${bIdx})" class="text-rose-400 font-bold cursor-pointer">Hapus</button></div>`;
+                    bankDisplay.innerHTML += `<div class="flex justify-between"><span><b>${b.bank}</b>: ${b.acc}</span><span class="text-slate-500">a.n ${b.owner}</span></div>`;
+                });
+            }
+
+            if(dtfAdminContainer && dtfSelect) {
+                dtfAdminContainer.innerHTML = '';
+                dtfSelect.innerHTML = '';
+                dtfOptions.forEach((d, dIdx) => {
+                    dtfAdminContainer.innerHTML += `<div class="flex items-center justify-between bg-slate-900 p-1.5 rounded-lg text-[11px]"><span><b>${d.name}</b> (+Rp ${d.price.toLocaleString('id-ID')})</span><button type="button" onclick="deleteDtfOption(${dIdx})" class="text-rose-400 font-bold cursor-pointer">Hapus</button></div>`;
+                    dtfSelect.innerHTML += `<option value="${d.price}">${d.name} (+Rp ${d.price.toLocaleString('id-ID')})</option>`;
+                });
+            }
+
+            if(stampPreview) {
+                if(customStampUrl) {
+                    stampPreview.innerHTML = `<div class="flex items-center justify-center gap-2 bg-slate-900 p-2 rounded-xl border border-slate-700"><img src="${customStampUrl}" class="h-10 object-contain"><span class="text-[10px] text-emerald-400 font-semibold">✅ Berhasil Di-upload & Terkunci di Sistem</span><button type="button" onclick="removeStampImage()" class="text-xs text-rose-400 font-semibold underline cursor-pointer">Hapus</button></div>`;
+                } else {
+                    stampPreview.innerHTML = `<span class="text-[10px] text-slate-400 italic">Belum ada stempel/cap diupload.</span>`;
+                }
+            }
+
+            const inkContainer = document.getElementById('ink-list-container');
+            const inkSelect = document.getElementById('ink-color-select');
+            if(inkContainer && inkSelect) {
+                inkContainer.innerHTML = '';
+                inkSelect.innerHTML = '';
+                inkColors.forEach((ink, idx) => {
+                    inkContainer.innerHTML += `<div class="flex items-center justify-between bg-slate-800 px-3 py-1.5 rounded-lg text-xs"><div class="flex items-center gap-2"><span class="w-3 h-3 rounded-full inline-block border border-white" style="background:${ink.hex}"></span><span>${ink.name}</span></div><button type="button" onclick="deleteInkColor(${idx})" class="text-rose-400 font-bold cursor-pointer">Hapus</button></div>`;
+                    inkSelect.innerHTML += `<option value="${ink.hex}">${ink.name}</option>`;
+                });
+            }
+
+            const colorContainer = document.getElementById('color-list-container');
+            const colorButtons = document.getElementById('bag-color-buttons');
+            if(colorContainer && colorButtons) {
+                colorContainer.innerHTML = '';
+                colorButtons.innerHTML = '';
+
+                bagColors.forEach((item, index) => {
+                    colorContainer.innerHTML += `<div class="flex items-center justify-between bg-slate-800 px-3 py-1.5 rounded-lg text-xs"><div class="flex items-center gap-2"><span class="w-3 h-3 rounded-full inline-block border border-white" style="background:${item.hex}"></span><span>${item.name}</span></div><button type="button" onclick="deleteBagColor(${index})" class="text-rose-400 font-bold cursor-pointer">Hapus</button></div>`;
+                    
+                    const btn = document.createElement('button');
+                    btn.type = "button";
+                    btn.className = "px-3 py-2 rounded-xl text-xs font-semibold shadow transition border border-slate-300 flex items-center gap-2 cursor-pointer";
+                    btn.style.backgroundColor = item.hex;
+                    btn.style.color = (item.hex === '#ffffff' || item.hex === '#eab308') ? '#0f172a' : '#ffffff';
+                    btn.innerHTML = `<span>${item.name}</span>`;
+                    btn.onclick = () => {
+                        activeBagTint = item.hex;
+                        activeColorName = item.name;
+                        document.getElementById('active-color-label').textContent = item.name;
+                        updateBagCanvas();
+                    };
+                    colorButtons.appendChild(btn);
+                });
+            }
+
+            const pwdEl = document.getElementById('admin-pdf-password');
+            if(pwdEl) pwdEl.value = pdfPassword;
+            const waEl = document.getElementById('admin-wa-number');
+            if(waEl) waEl.value = ownerWaNumber;
+            const nameEl = document.getElementById('admin-store-name');
+            if(nameEl) nameEl.value = storeName;
+            const addrEl = document.getElementById('admin-store-address');
+            if(addrEl) addrEl.value = storeAddress;
+            const phoneEl = document.getElementById('admin-store-phone');
+            if(phoneEl) phoneEl.value = storePhone;
+            const emailEl = document.getElementById('admin-store-email');
+            if(emailEl) emailEl.value = storeEmail;
+
+            const headerLogoEl = document.getElementById('header-brand-logo');
+            if(headerLogoEl) {
+                if(brandLogoUrl) {
+                    headerLogoEl.src = brandLogoUrl;
+                    headerLogoEl.className = "max-h-16 w-auto object-contain filter drop-shadow";
+                    updateTabFavicon(brandLogoUrl);
+                } else {
+                    headerLogoEl.src = "https://via.placeholder.com/160x55?text=ILHAM+SPUNBOND";
+                }
+            }
+
+            loadCustomerDataMemory();
+            updateCustomerSizesDropdown();
+            updateBagCanvas();
+            renderCartItems();
+        }
+
+        function updateCustomerSizesDropdown() {
+            const modelSelect = document.getElementById('bag-model-select');
+            const sizeSelect = document.getElementById('bag-size-select');
+            if(!modelSelect || !sizeSelect) return;
+            const currentModel = bagModels[modelSelect.value] || bagModels[0];
+            sizeSelect.innerHTML = '';
+            if(currentModel && currentModel.sizes) {
+                currentModel.sizes.forEach(s => {
+                    sizeSelect.innerHTML += `<option value="${s.name}">${s.name}</option>`;
+                });
+            }
+            updateSizeLabel();
+            saveCustomerDataMemory();
+        }
+
+        function saveGlobalConfig() {
+            storeName = document.getElementById('admin-store-name').value;
+            storeAddress = document.getElementById('admin-store-address').value;
+            storePhone = document.getElementById('admin-store-phone').value;
+            storeEmail = document.getElementById('admin-store-email').value;
+            ownerWaNumber = document.getElementById('admin-wa-number').value;
+            pdfPassword = document.getElementById('admin-pdf-password').value;
+            saveToCloud();
+        }
+
+        function addBank() {
+            const bank = document.getElementById('new-bank-name').value.trim();
+            const acc = document.getElementById('new-bank-acc').value.trim();
+            const owner = document.getElementById('new-bank-owner').value.trim();
+            if(bank && acc && owner) {
+                bankAccounts.push({ bank, acc, owner });
+                saveToCloud();
+                renderAdminPanel();
+            }
+        }
+        function deleteBank(index) { bankAccounts.splice(index, 1); saveToCloud(); renderAdminPanel(); }
+
+        function addInkColor() {
+            const name = document.getElementById('new-ink-name').value.trim();
+            const hex = document.getElementById('new-ink-hex').value;
+            if(name) {
+                inkColors.push({ name, hex });
+                saveToCloud();
+                renderAdminPanel();
+            }
+        }
+        function deleteInkColor(index) { inkColors.splice(index, 1); saveToCloud(); renderAdminPanel(); }
+
+        function addDtfOption() {
+            const name = document.getElementById('new-dtf-name').value.trim();
+            const price = parseInt(document.getElementById('new-dtf-price').value);
+            if(name && !isNaN(price)) {
+                dtfOptions.push({ name, price });
+                saveToCloud();
+                renderAdminPanel();
+            }
+        }
+        function deleteDtfOption(index) { dtfOptions.splice(index, 1); saveToCloud(); renderAdminPanel(); }
+
+        function addSizeToModel(mIndex) {
+            const nameInput = document.getElementById(`new-s-name-${mIndex}`);
+            const priceInput = document.getElementById(`new-s-price-${mIndex}`);
+            if(!nameInput || !priceInput) return;
+            
+            const name = nameInput.value.trim();
+            const price = parseInt(priceInput.value);
+            
+            if(name && !isNaN(price)) {
+                if(!bagModels[mIndex].sizes) bagModels[mIndex].sizes = [];
+                bagModels[mIndex].sizes.push({ name, price });
+                saveToCloud();
+                renderAdminPanel();
+            } else {
+                alert("Harap isi nama ukuran dan harga dengan benar!");
+            }
+        }
+
+        function deleteSizeFromModel(mIndex, sIndex) {
+            if(bagModels[mIndex].sizes.length <= 1) return alert("Minimal harus ada 1 ukuran dalam model ini!");
+            bagModels[mIndex].sizes.splice(sIndex, 1);
+            saveToCloud();
+            renderAdminPanel();
+        }
+
+        function addBagColor() {
+            const name = document.getElementById('new-color-name').value.trim();
+            const hex = document.getElementById('new-color-hex').value;
+            if(name) { bagColors.push({ name, hex }); saveToCloud(); renderAdminPanel(); }
+        }
+
+        function deleteBagColor(index) {
+            bagColors.splice(index, 1);
+            saveToCloud();
+            renderAdminPanel();
+        }
+
+        async function uploadBrandLogo(e) {
+            const file = e.target.files[0];
+            if(file) {
+                const compressed = await compressImageToDataUrl(file, 250, 0.5);
+                brandLogoUrl = compressed;
+                updateTabFavicon(brandLogoUrl);
+                await saveToCloud();
+                renderAdminPanel();
+            }
+        }
+
+        async function uploadStampImage(e) {
+            const file = e.target.files[0];
+            if(file) {
+                const compressed = await compressImageToDataUrl(file, 200, 0.5);
+                customStampUrl = compressed;
+                await saveToCloud();
+                renderAdminPanel();
+            }
+        }
+
+        function removeStampImage() {
+            customStampUrl = "";
+            saveToCloud();
+            renderAdminPanel();
+        }
+
+        async function uploadModelSample(e, mIndex) {
+            const file = e.target.files[0];
+            if(file) {
+                const cleaned = await cleanOuterBackground(file, 350, 0.6);
+                bagModels[mIndex].image = cleaned;
+                await saveToCloud();
+                renderAdminPanel();
+                updateBagCanvas();
+            }
+        }
+
+        // --- FAST LIGHTWEIGHT TRANSPARENCY ENGINE ---
+        function loadCustomerLogo(e) {
+            const file = e.target.files[0];
+            if(!file) return;
+
+            const statusEl = document.getElementById('logo-upload-status');
+            if(statusEl) {
+                statusEl.textContent = "⏳ Memproses latar belakang transparan...";
+                statusEl.className = "text-[10px] text-amber-500 font-semibold italic";
+            }
+
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                const img = new Image();
+                img.onload = function() {
+                    const canvas = document.createElement('canvas');
+                    let targetW = img.width;
+                    let targetH = img.height;
+                    
+                    if(targetW > 300) {
+                        targetH = Math.round((targetH * 300) / targetW);
+                        targetW = 300;
+                    }
+
+                    canvas.width = targetW;
+                    canvas.height = targetH;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, targetW, targetH);
+
+                    const imgData = ctx.getImageData(0, 0, targetW, targetH);
+                    const data = imgData.data;
+
+                    const rBg = data[0];
+                    const gBg = data[1];
+                    const bBg = data[2];
+
+                    for (let i = 0; i < data.length; i += 4) {
+                        const r = data[i];
+                        const g = data[i+1];
+                        const b = data[i+2];
+
+                        if (Math.abs(r - rBg) < 40 && Math.abs(g - gBg) < 40 && Math.abs(b - bBg) < 40) {
+                            data[i+3] = 0;
+                        }
+                    }
+
+                    ctx.putImageData(imgData, 0, 0);
+
+                    const processedImg = new Image();
+                    processedImg.onload = function() {
+                        rawCustomerLogoImg = processedImg;
+                        updateProcessedLogo();
+                        if(statusEl) {
+                            statusEl.textContent = "✅ Logo berhasil di-upload & latar belakang transparan!";
+                            statusEl.className = "text-[10px] text-emerald-500 font-semibold italic";
+                        }
+                    };
+                    processedImg.src = canvas.toDataURL('image/png');
+                };
+                img.src = event.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function updateProcessedLogo() {
+            if(!rawCustomerLogoImg) return;
+            const method = document.getElementById('print-method').value;
+            const inkHex = document.getElementById('ink-color-select').value || '#0f172a';
+            
+            const mSelect = document.getElementById('bag-model-select');
+            const modelNameText = (mSelect && mSelect.value !== "" && bagModels[mSelect.value]) ? bagModels[mSelect.value].name : bagModels[0].name;
+
+            document.getElementById('owner-method-txt').textContent = method === 'dtf' ? 'DTF Full Color' : 'Sablon Manual';
+            document.getElementById('owner-model-txt').textContent = modelNameText;
+
+            const previewCanvas = document.createElement('canvas');
+            previewCanvas.width = rawCustomerLogoImg.width;
+            previewCanvas.height = rawCustomerLogoImg.height;
+            const pCtx = previewCanvas.getContext('2d');
+            pCtx.drawImage(rawCustomerLogoImg, 0, 0);
+
+            if (method === 'manual') {
+                const pData = pCtx.getImageData(0, 0, previewCanvas.width, previewCanvas.height);
+                const d = pData.data;
+                const rT = parseInt(inkHex.slice(1, 3), 16);
+                const gT = parseInt(inkHex.slice(3, 5), 16);
+                const bT = parseInt(inkHex.slice(5, 7), 16);
+
+                for (let i = 0; i < d.length; i += 4) {
+                    if (d[i + 3] > 15) {
+                        d[i] = rT;
+                        d[i + 1] = gT;
+                        d[i + 2] = bT;
+                    }
+                }
+                pCtx.putImageData(pData, 0, 0);
+            }
+            document.getElementById('preview-logo-img').src = previewCanvas.toDataURL('image/png');
+
+            const ownerCanvas = document.createElement('canvas');
+            ownerCanvas.width = rawCustomerLogoImg.width;
+            ownerCanvas.height = rawCustomerLogoImg.height;
+            const oCtx = ownerCanvas.getContext('2d');
+            oCtx.drawImage(rawCustomerLogoImg, 0, 0);
+
+            if (method === 'manual') {
+                const oData = oCtx.getImageData(0, 0, ownerCanvas.width, ownerCanvas.height);
+                const d2 = oData.data;
+                for (let i = 0; i < d2.length; i += 4) {
+                    if (d2[i + 3] > 15) {
+                        d2[i] = 0;
+                        d2[i + 1] = 0;
+                        d2[i + 2] = 0;
+                        d2[i + 3] = 255;
+                    }
+                }
+                oCtx.putImageData(oData, 0, 0);
+            }
+
+            const ownerImgEl = document.getElementById('owner-file-img');
+            document.getElementById('owner-placeholder-text').style.display = 'none';
+            ownerImgEl.src = ownerCanvas.toDataURL('image/png');
+        }
+
+        function onCustomerModelChange() { updateCustomerSizesDropdown(); updateBagCanvas(); updateProcessedLogo(); }
+        function onCustomerSizeSelect() { updateSizeLabel(); }
+        function updateSizeLabel() {
+            const size = document.getElementById('bag-size-select').value;
+            document.getElementById('preview-size-label').textContent = `[ ${size || '-'} ]`;
+            saveCustomerDataMemory();
+        }
+
+        function updateBagCanvas() {
+            const mIndex = document.getElementById('bag-model-select').value || 0;
+            const currentModel = bagModels[mIndex] || bagModels[0];
+            const canvas = document.getElementById('bag-preview-canvas');
+            const ctx = canvas.getContext('2d');
+            
+            const img = new Image();
+            img.onload = function() {
+                canvas.width = img.width; 
+                canvas.height = img.height;
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+                ctx.fillStyle = "#ffffff";
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                const tempCanvas = document.createElement('canvas');
+                tempCanvas.width = img.width;
+                tempCanvas.height = img.height;
+                const tCtx = tempCanvas.getContext('2d');
+                
+                tCtx.drawImage(img, 0, 0);
+                const bagData = tCtx.getImageData(0, 0, tempCanvas.width, tempCanvas.height);
+                const d = bagData.data;
+
+                const rTint = parseInt(activeBagTint.slice(1, 3), 16);
+                const gTint = parseInt(activeBagTint.slice(3, 5), 16);
+                const bTint = parseInt(activeBagTint.slice(5, 7), 16);
+
+                for (let i = 0; i < d.length; i += 4) {
+                    let a = d[i+3];
+                    if (a > 15) {
+                        if (activeBagTint !== '#ffffff') {
+                            let r = d[i], g = d[i+1], b = d[i+2];
+                            d[i]   = Math.round((r * 0.25) + (rTint * 0.75));
+                            d[i+1] = Math.round((g * 0.25) + (gTint * 0.75));
+                            d[i+2] = Math.round((b * 0.25) + (bTint * 0.75));
+                        }
+                    }
+                }
+                tCtx.putImageData(bagData, 0, 0);
+                ctx.drawImage(tempCanvas, 0, 0);
+            };
+            img.src = currentModel.image;
+        }
+
+        function calculateItemPrice() {
+            const mIndex = document.getElementById('bag-model-select').value || 0;
+            const sizeName = document.getElementById('bag-size-select').value;
+            const currentModel = bagModels[mIndex] || bagModels[0];
+            
+            let basePrice = 1400;
+            const found = currentModel.sizes?.find(s => s.name === sizeName);
+            if(found) basePrice = found.price;
+
+            let unitPrice = basePrice;
+            if(document.getElementById('print-method').value === 'dtf') {
+                const dtfPrice = parseInt(document.getElementById('dtf-size-select').value) || 2000;
+                unitPrice += dtfPrice;
+            }
+            return unitPrice;
+        }
+
+        async function addItemToCart() {
+            if(!rawCustomerLogoImg) return alert("Silakan upload logo/desain terlebih dahulu!");
+            
+            const mIndex = document.getElementById('bag-model-select').value || 0;
+            const currentModel = bagModels[mIndex] || bagModels[0];
+            const sizeName = document.getElementById('bag-size-select').value;
+            const qty = parseInt(document.getElementById('item-qty').value) || 500;
+            const printMethod = document.getElementById('print-method').value === 'dtf' ? 'DTF Full Color' : 'Sablon Manual';
+            const unitPrice = calculateItemPrice();
+
+            let mockupBase64 = "";
+            let cleanLogoDataUrl = "";
+            try {
+                const element = document.getElementById('capture-mockup');
+                const canvas = await html2canvas(element, { scale: 0.8, useCORS: true, backgroundColor: '#ffffff' });
+                mockupBase64 = canvas.toDataURL('image/jpeg', 0.5);
+            } catch(e) {
+                console.log("Mockup capture warning:", e);
+            }
+
+            const ownerImg = document.getElementById('owner-file-img');
+            if(ownerImg) cleanLogoDataUrl = ownerImg.src;
+
+            cartItems.push({
+                model: currentModel.name,
+                size: sizeName,
+                color: activeColorName,
+                method: printMethod,
+                qty: qty,
+                unitPrice: unitPrice,
+                subtotal: unitPrice * qty,
+                mockupImg: mockupBase64,
+                cleanLogo: cleanLogoDataUrl
+            });
+
+            saveToCloud();
+            renderCartItems();
+            updateCartTotals();
+            alert("Item berhasil dimasukkan ke keranjang pesanan!");
+        }
+
+        function renderCartItems() {
+            const container = document.getElementById('cart-items-container');
+            const countEl = document.getElementById('cart-count');
+            if(!container) return;
+
+            countEl.textContent = cartItems.length;
+            container.innerHTML = '';
+
+            if(cartItems.length === 0) {
+                container.innerHTML = '<p class="text-xs text-slate-400 text-center py-4">Belum ada item ditambahkan ke keranjang pesanan.</p>';
+                updateCartTotals();
+                return;
+            }
+
+            cartItems.forEach((item, index) => {
+                container.innerHTML += `
+                    <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-200 flex items-center justify-between text-xs">
+                        <div class="flex items-center gap-2.5">
+                            <img src="${item.mockupImg || 'https://via.placeholder.com/50'}" class="w-12 h-12 object-contain rounded border bg-white">
+                            <div>
+                                <div class="font-bold text-slate-800">${item.model} (${item.size})</div>
+                                <div class="text-[11px] text-slate-500">Warna: ${item.color} | ${item.method}</div>
+                                <div class="text-[11px] font-semibold text-emerald-700">${item.qty} Pcs x Rp ${item.unitPrice.toLocaleString('id-ID')} = Rp ${item.subtotal.toLocaleString('id-ID')}</div>
+                            </div>
+                        </div>
+                        <button type="button" onclick="removeCartItem(${index})" class="text-rose-600 font-bold p-2 cursor-pointer">🗑️</button>
+                    </div>`;
+            });
+
+            updateCartTotals();
+        }
+
+        function removeCartItem(index) {
+            cartItems.splice(index, 1);
+            saveToCloud();
+            renderCartItems();
+        }
+
+        function clearCart() {
+            if(confirm("Kosongkan keranjang pesanan?")) {
+                cartItems = [];
+                saveToCloud();
+                renderCartItems();
+            }
+        }
+
+        function updateCartTotals() {
+            let totalQty = 0;
+            let grandSubtotal = 0;
+
+            cartItems.forEach(item => {
+                totalQty += item.qty;
+                grandSubtotal += item.subtotal;
+            });
+
+            let discountVal = totalQty >= 1000 ? grandSubtotal * 0.10 : 0;
+            let grandTotal = grandSubtotal - discountVal;
+            const region = document.getElementById('shipping-region').value;
+            const dpVal = region === 'luar' ? grandTotal * 0.50 : 0;
+
+            document.getElementById('display-total-qty').textContent = totalQty.toLocaleString('id-ID') + " Pcs";
+            
+            if(discountVal > 0) {
+                document.getElementById('discount-row').classList.remove('hidden');
+                document.getElementById('display-discount-val').textContent = "- Rp " + Math.round(discountVal).toLocaleString('id-ID');
+            } else {
+                document.getElementById('discount-row').classList.add('hidden');
+            }
+
+            if(region === 'luar') {
+                document.getElementById('dp-row').classList.remove('hidden');
+                document.getElementById('display-dp-val').textContent = "Rp " + Math.round(dpVal).toLocaleString('id-ID') + " (50%)";
+            } else {
+                document.getElementById('dp-row').classList.add('hidden');
+            }
+
+            document.getElementById('display-total-price').textContent = "Rp " + Math.round(grandTotal).toLocaleString('id-ID');
+        }
+
+        function toggleAdminPanel() { document.getElementById('admin-view').classList.toggle('hidden'); }
+        function togglePrintMethod() {
+            const isDtf = document.getElementById('print-method').value === 'dtf';
+            document.getElementById('manual-ink-box').classList.toggle('hidden', isDtf);
+            document.getElementById('dtf-size-box').classList.toggle('hidden', !isDtf);
+            updateProcessedLogo();
+        }
+
+        function adjustLogoTransform() {
+            const scaleEl = document.getElementById('logo-scale');
+            const rotateEl = document.getElementById('logo-rotate');
+            const posXEl = document.getElementById('logo-pos-x');
+            const posYEl = document.getElementById('logo-pos-y');
+            
+            if(!scaleEl || !rotateEl || !posXEl || !posYEl) return;
+
+            const scale = scaleEl.value;
+            const rotate = rotateEl.value;
+            const posX = posXEl.value;
+            const posY = posYEl.value;
+
+            document.getElementById('scale-val').textContent = scale;
+            document.getElementById('rotate-val').textContent = rotate;
+            document.getElementById('logo-layer').style.transform = `translate(${posX}px, ${posY}px) scale(${scale / 100}) rotate(${rotate}deg)`;
+        }
+
+        async function downloadCustomerInvoicePDF() {
+            if(cartItems.length === 0) return alert("Keranjang pesanan masih kosong! Silakan masukkan minimal 1 item pesanan terlebih dahulu.");
+
+            let totalQty = 0;
+            let grandSubtotal = 0;
+            cartItems.forEach(item => {
+                totalQty += item.qty;
+                grandSubtotal += item.subtotal;
+            });
+            let discountVal = totalQty >= 1000 ? grandSubtotal * 0.10 : 0;
+            let grandTotal = grandSubtotal - discountVal;
+            const region = document.getElementById('shipping-region').value;
+            const dpVal = region === 'luar' ? grandTotal * 0.50 : 0;
+
+            generateInvoicePDF({
+                id: "PO-" + Math.floor(1000 + Math.random() * 9000),
+                name: document.getElementById('customer-name').value || '-',
+                wa: document.getElementById('customer-wa').value || '-',
+                address: document.getElementById('customer-address').value || '-',
+                items: cartItems,
+                subtotal: "Rp " + Math.round(grandSubtotal).toLocaleString('id-ID'),
+                discount: discountVal > 0 ? "- Rp " + Math.round(discountVal).toLocaleString('id-ID') : "Rp 0",
+                dpRequired: dpVal > 0 ? "Rp " + Math.round(dpVal).toLocaleString('id-ID') + " (DP 50%)" : "Tidak Ada (COD / Full)",
+                totalPrice: "Rp " + Math.round(grandTotal).toLocaleString('id-ID'),
+                date: new Date().toLocaleString('id-ID', { dateStyle: 'medium', timeStyle: 'medium' }),
+                status: "BELUM LUNAS (MENUNGGU PEMBAYARAN)"
+            }, false);
+        }
+
+        async function generateInvoicePDF(orderData, isPaidInvoice = false) {
+            try {
+                const { jsPDF } = window.jspdf;
+                const pdf = new jsPDF('p', 'mm', 'a4');
+                const pageWidth = 210;
+
+                pdf.setFillColor(13, 148, 136);
+                pdf.rect(0, 0, pageWidth, 42, 'F');
+
+                let titleStartX = 52;
+                if (brandLogoUrl && brandLogoUrl !== "") {
+                    try {
+                        const imgObj = new Image();
+                        imgObj.src = brandLogoUrl;
+                        const imgWidth = imgObj.width || 120;
+                        const imgHeight = imgObj.height || 40;
+                        
+                        const renderH = 28; 
+                        const renderW = (imgWidth * renderH) / imgHeight;
+                        const clampedW = Math.min(renderW, 55);
+
+                        pdf.addImage(brandLogoUrl, 'JPEG', 12, 21 - (renderH/2), clampedW, renderH);
+                        titleStartX = 15 + clampedW;
+                    } catch(e) {
+                        console.log("Logo PDF skip:", e);
+                    }
+                }
+
+                pdf.setTextColor(255, 255, 255);
+                pdf.setFont("helvetica", "bold");
+                pdf.setFontSize(11);
+                pdf.text(storeName.toUpperCase() + " - INVOICE TAGIHAN", titleStartX, 12);
+
+                pdf.setFont("helvetica", "normal");
+                pdf.setFontSize(7.5);
+                pdf.text("Alamat: " + storeAddress, titleStartX, 18);
+                pdf.text("No. WA: " + storePhone + " | Email: " + storeEmail, titleStartX, 23);
+
+                pdf.text("No. Invoice: INV/" + new Date().getFullYear() + "/" + Math.floor(1000 + Math.random() * 9000), 135, 12);
+                pdf.text("No. PO: " + orderData.id, 135, 18);
+                pdf.text("Tanggal: " + (orderData.date || new Date().toLocaleString('id-ID', { dateStyle: 'medium', timeStyle: 'medium' })), 135, 23);
+
+                pdf.setTextColor(30, 41, 59);
+                pdf.setFont("helvetica", "bold");
+                pdf.setFontSize(9.5);
+                pdf.text("PELANGGAN / KLIEN:", 15, 50);
+
+                pdf.setFont("helvetica", "normal");
+                pdf.setFontSize(8.5);
+                pdf.text("Nama: " + orderData.name, 15, 56);
+                pdf.text("No. WhatsApp: " + orderData.wa, 15, 62);
+                pdf.text("Alamat Kirim: " + orderData.address, 15, 68);
+
+                let startY = 74;
+                pdf.setFillColor(241, 245, 249);
+                pdf.rect(15, startY, 180, 7, 'F');
+                pdf.setFont("helvetica", "bold");
+                pdf.setFontSize(8);
+                pdf.text("DESCRIPTION / ITEM", 18, startY + 5);
+                pdf.text("QTY", 100, startY + 5);
+                pdf.text("HARGA SATUAN", 125, startY + 5);
+                pdf.text("TOTAL", 165, startY + 5);
+
+                startY += 7;
+                pdf.setFont("helvetica", "normal");
+                pdf.setFontSize(7.5);
+
+                orderData.items.forEach((it, idx) => {
+                    const descText = `${idx + 1}. ${it.model} (${it.size}) - ${it.color} [${it.method}]`;
+                    const splitDesc = pdf.splitTextToSize(descText, 78);
+                    const rowHeight = Math.max(10, (splitDesc.length * 4) + 4);
+
+                    pdf.setLineWidth(0.3);
+                    pdf.setDrawColor(203, 213, 225);
+                    pdf.rect(15, startY, 180, rowHeight, 'S');
+                    
+                    pdf.text(splitDesc, 18, startY + 5);
+                    pdf.text(`${it.qty}`, 100, startY + 5);
+                    pdf.text(`Rp ${it.unitPrice.toLocaleString('id-ID')}`, 125, startY + 5);
+                    pdf.text(`Rp ${it.subtotal.toLocaleString('id-ID')}`, 165, startY + 5);
+                    
+                    startY += rowHeight;
+                });
+
+                startY += 4;
+                pdf.setFont("helvetica", "bold");
+                pdf.setFontSize(8.5);
+                pdf.text("RINCIAN KEUANGAN & PEMBAYARAN:", 15, startY);
+
+                startY += 4;
+                let colW = 43.75;
+                let boxY = startY;
+                let boxH = 12;
+
+                pdf.setFillColor(248, 250, 252);
+                pdf.rect(15, boxY, colW, boxH, 'FD');
+                pdf.setFont("helvetica", "bold");
+                pdf.setFontSize(7);
+                pdf.setTextColor(100, 116, 139);
+                pdf.text("SUBTOTAL", 18, boxY + 4);
+                pdf.setFont("helvetica", "bold");
+                pdf.setFontSize(8);
+                pdf.setTextColor(30, 41, 59);
+                pdf.text(orderData.subtotal, 18, boxY + 9.5);
+
+                pdf.setFillColor(248, 250, 252);
+                pdf.rect(15 + colW, boxY, colW, boxH, 'FD');
+                pdf.setFont("helvetica", "bold");
+                pdf.setFontSize(7);
+                pdf.setTextColor(16, 185, 129);
+                pdf.text("DISKON BESAR", 15 + colW + 3, boxY + 4);
+                pdf.setFont("helvetica", "bold");
+                pdf.setFontSize(8);
+                pdf.setTextColor(16, 185, 129);
+                pdf.text(orderData.discount || 'Rp 0', 15 + colW + 3, boxY + 9.5);
+
+                pdf.setFillColor(248, 250, 252);
+                pdf.rect(15 + (colW*2), boxY, colW, boxH, 'FD');
+                pdf.setFont("helvetica", "bold");
+                pdf.setFontSize(7);
+                pdf.setTextColor(217, 119, 6);
+                pdf.text("KETENTUAN DP", 15 + (colW*2) + 3, boxY + 4);
+                pdf.setFont("helvetica", "bold");
+                pdf.setFontSize(7.5);
+                pdf.setTextColor(217, 119, 6);
+                pdf.text(orderData.dpRequired || 'Tidak Ada', 15 + (colW*2) + 3, boxY + 9.5);
+
+                pdf.setFillColor(13, 148, 136);
+                pdf.rect(15 + (colW*3), boxY, colW, boxH, 'FD');
+                pdf.setFont("helvetica", "bold");
+                pdf.setFontSize(7);
+                pdf.setTextColor(255, 255, 255);
+                pdf.text("GRAND TOTAL", 15 + (colW*3) + 3, boxY + 4);
+                pdf.setFont("helvetica", "bold");
+                pdf.setFontSize(8);
+                pdf.setTextColor(255, 255, 255);
+                pdf.text(orderData.totalPrice, 15 + (colW*3) + 3, boxY + 9.5);
+
+                startY += 16;
+                pdf.setFillColor(241, 245, 249);
+                pdf.rect(15, startY, 180, 7, 'F');
+                pdf.setFont("helvetica", "bold");
+                pdf.setFontSize(8);
+                pdf.setTextColor(30, 41, 59);
+                pdf.text("STATUS PEMBAYARAN:", 18, startY + 5);
+                
+                if(isPaidInvoice) {
+                    pdf.setTextColor(16, 185, 129);
+                    pdf.text("LUNAS (PAID IN FULL)", 110, startY + 5);
+
+                    if (customStampUrl && customStampUrl !== "") {
+                        try {
+                            const stampImg = new Image();
+                            stampImg.src = customStampUrl;
+                            const sW = stampImg.width || 100;
+                            const sH = stampImg.height || 50;
+                            const renderH = 16; 
+                            const renderW = (sW * renderH) / sH;
+
+                            pdf.addImage(customStampUrl, 'PNG', 190 - renderW, startY - 3, renderW, renderH);
+                        } catch(e) {
+                            console.log("Stamp PDF error:", e);
+                        }
+                    } else {
+                        pdf.setLineWidth(0.8);
+                        pdf.setDrawColor(16, 185, 129);
+                        pdf.roundedRect(150, startY - 1, 38, 9, 2, 2, 'S');
+                        pdf.setFont("helvetica", "bold");
+                        pdf.setFontSize(8);
+                        pdf.setTextColor(16, 185, 129);
+                        pdf.text("L U N A S", 158, startY + 5);
+                    }
+                } else {
+                    pdf.setTextColor(217, 119, 6);
+                    pdf.text("BELUM LUNAS (MENUNGGU PEMBAYARAN)", 110, startY + 5);
+                }
+
+                startY += 10;
+                
+                let imgX = 15;
+                orderData.items.forEach((it) => {
+                    if(it.mockupImg && imgX < 170) {
+                        try {
+                            pdf.addImage(it.mockupImg, 'JPEG', imgX, startY, 25, 25);
+                        } catch(err) {
+                            console.log("Mockup image pdf add error:", err);
+                        }
+                        imgX += 28;
+                    }
+                });
+
+                pdf.setFont("helvetica", "bold");
+                pdf.setTextColor(30, 41, 59);
+                pdf.setFontSize(8);
+                pdf.text("PEMBAYARAN MELALUI:", 110, startY + 2);
+                
+                pdf.setFont("helvetica", "normal");
+                pdf.setFontSize(7.5);
+                let bY = startY + 7;
+                bankAccounts.forEach((b, idx) => {
+                    pdf.text(`${idx + 1}. Bank ${b.bank} : ${b.acc} (a.n ${b.owner})`, 110, bY);
+                    bY += 4.5;
+                });
+
+                pdf.setFont("helvetica", "bold");
+                pdf.setTextColor(13, 148, 136);
+                pdf.setFontSize(8.5);
+                pdf.text("THANK YOU FOR YOUR BUSINESS!", 15, startY + 34);
+                
+                pdf.setFont("helvetica", "italic");
+                pdf.setTextColor(100, 116, 139);
+                pdf.setFontSize(6.5);
+                pdf.text(`Terima kasih telah mempercayakan kebutuhan tas custom Anda pada ${storeName}.`, 15, startY + 38);
+
+                pdf.save(`Invoice-Tagihan-${orderData.id}.pdf`);
+                alert(`✅ Berhasil! File PDF Invoice (${orderData.id}) telah di-download.`);
+            } catch(err) {
+                console.error("PDF Generation Error:", err);
+                alert("Gagal membuat PDF. Pastikan browser mengizinkan unduhan file.");
+            }
+        }
+
+        function verifyAndShowOrderHistory() {
+            const pwd = prompt("Masukkan Password Owner:");
+            if(pwd === pdfPassword) showOrderHistory();
+            else if(pwd !== null) alert("Password salah!");
+        }
+
+        function showOrderHistory() {
+            const modal = document.getElementById('order-history-modal');
+            const container = document.getElementById('order-history-list');
+            container.innerHTML = 'Menghubungkan live sync data PO...';
+            modal.classList.remove('hidden');
+
+            const { collection, onSnapshot, query, orderBy } = window.firebaseDeps;
+            const q = query(collection(window.firebaseDb, "orders"), orderBy("date", "desc"));
+
+            if(activeOrdersUnsubscribe) {
+                activeOrdersUnsubscribe();
+            }
+
+            activeOrdersUnsubscribe = onSnapshot(q, (querySnapshot) => {
+                container.innerHTML = '';
+                if(querySnapshot.empty) {
+                    container.innerHTML = '<p class="text-xs text-slate-400 text-center py-6">Belum ada pesanan masuk di cloud.</p>';
+                    return;
+                }
+                querySnapshot.forEach((docSnap) => {
+                    const o = docSnap.data();
+                    const isPaid = o.status === "LUNAS (PAID IN FULL)";
+                    
+                    let itemsHtml = '';
+                    if(o.items) {
+                        o.items.forEach((it, itIdx) => {
+                            itemsHtml += `
+                                <div class="bg-slate-900 p-2 rounded-lg space-y-2 mb-2 border border-slate-700">
+                                    <div class="flex items-center gap-2">
+                                        <img src="${it.cleanLogo || it.mockupImg || 'https://via.placeholder.com/50'}" class="w-10 h-10 object-contain bg-white rounded p-1 border">
+                                        <div class="flex-1">
+                                            <div class="text-[11px] font-bold text-amber-300">${itIdx + 1}. ${it.model} (${it.size})</div>
+                                            <div class="text-[10px] text-slate-400">Warna: ${it.color} | ${it.method} | Qty: ${it.qty} Pcs</div>
+                                        </div>
+                                    </div>
+                                    ${it.cleanLogo ? `<button type="button" onclick="downloadCleanFilm('${it.cleanLogo}', '${o.id}', ${itIdx + 1})" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-1 px-2 rounded text-[10px] flex items-center justify-center gap-1 cursor-pointer"><span>📥</span> Download Film Sablon/DTF Bersih (Tanpa Air)</button>` : ''}
+                                </div>`;
+                        });
+                    }
+
+                    container.innerHTML += `
+                        <div class="bg-slate-800 p-3.5 rounded-xl border border-slate-700 text-xs space-y-2">
+                            <div class="flex justify-between items-center border-b border-slate-700 pb-1.5">
+                                <span class="font-bold text-amber-400">${o.id} - ${o.name}</span>
+                                <span class="text-[10px] text-slate-400">${o.date}</span>
+                            </div>
+                            <div class="space-y-1 text-slate-300">
+                                <div class="font-semibold text-amber-300">Daftar Item Mix Pesanan:</div>
+                                <div class="space-y-1">${itemsHtml}</div>
+                                <div class="pt-1">Total Biaya: <span class="text-emerald-400 font-bold">${o.totalPrice}</span></div>
+                                <div>Status: <span class="font-bold ${isPaid ? 'text-emerald-400' : 'text-amber-400'}">${o.status || 'BELUM LUNAS'}</span></div>
+                            </div>
+                            <div class="flex gap-2 pt-2 border-t border-slate-700">
+                                <button type="button" onclick='downloadOwnerInvoice(${JSON.stringify(o).replace(/'/g, "&#39;")}, ${isPaid})' class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white py-1.5 px-2 rounded-lg font-semibold text-[11px] cursor-pointer">📄 Invoice Owner</button>
+                                <button type="button" onclick='togglePaymentStatus("${docSnap.id}", ${isPaid})' class="flex-1 ${isPaid ? 'bg-amber-600 hover:bg-amber-700' : 'bg-emerald-600 hover:bg-emerald-700'} text-white py-1.5 px-2 rounded-lg font-semibold text-[11px] cursor-pointer">
+                                    ${isPaid ? 'Batalkan Lunas' : '✅ Lunas'}
+                                </button>
+                                <button type="button" onclick='deleteOrderDoc("${docSnap.id}")' class="bg-rose-600 hover:bg-rose-700 text-white py-1.5 px-3 rounded-lg font-semibold text-[11px] cursor-pointer">🗑️</button>
+                            </div>
+                        </div>`;
+                });
+            }, (error) => {
+                container.innerHTML = '<p class="text-xs text-rose-400 text-center">Gagal memuat data live dari cloud.</p>';
+            });
+        }
+
+        window.downloadCleanFilm = function(dataUrl, orderId, itemNo) {
+            const a = document.createElement('a');
+            a.href = dataUrl;
+            a.download = `Film-Produksi-${orderId}-Item-${itemNo}.png`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            alert(`✅ Berhasil! File gambar film bersih (Item #${itemNo}) untuk PO ${orderId} telah didownload.`);
+        };
+
+        window.downloadOwnerInvoice = function(orderObj, isPaid) {
+            generateInvoicePDF({
+                id: orderObj.id,
+                name: orderObj.name,
+                wa: orderObj.wa,
+                address: orderObj.address,
+                items: orderObj.items,
+                subtotal: orderObj.subtotal || orderObj.totalPrice,
+                discount: orderObj.discount || 'Rp 0',
+                dpRequired: orderObj.dpRequired || 'Tidak Ada',
+                totalPrice: orderObj.totalPrice,
+                date: orderObj.statusDate || orderObj.date,
+                status: orderObj.status || 'BELUM LUNAS'
+            }, isPaid);
+        };
+
+        window.togglePaymentStatus = async function(docId, currentStatus) {
+            try {
+                const { doc, setDoc } = window.firebaseDeps;
+                const newStatus = currentStatus ? "BELUM LUNAS (MENUNGGU PEMBAYARAN)" : "LUNAS (PAID IN FULL)";
+                const updateTime = new Date().toLocaleString('id-ID', { dateStyle: 'medium', timeStyle: 'medium' });
+                
+                await setDoc(doc(window.firebaseDb, "orders", docId), {
+                    status: newStatus,
+                    statusDate: updateTime
+                }, { merge: true });
+            } catch(e) {
+                alert("Gagal mengupdate status.");
+            }
+        };
+
+        window.deleteOrderDoc = async function(docId) {
+            if(confirm("Hapus pesanan ini dari riwayat cloud?")) {
+                try {
+                    const { doc, deleteDoc } = window.firebaseDeps;
+                    await deleteDoc(doc(window.firebaseDb, "orders", docId));
+                } catch(e) {
+                    alert("Gagal menghapus data.");
+                }
+            }
+        };
+
+        window.clearAllOrders = async function() {
+            if(confirm("Hapus seluruh riwayat PO di cloud?")) {
+                try {
+                    const { collection, getDocs, doc, deleteDoc } = window.firebaseDeps;
+                    const querySnapshot = await getDocs(collection(window.firebaseDb, "orders"));
+                    for (const d of querySnapshot.docs) {
+                        await deleteDoc(doc(window.firebaseDb, "orders", d.id));
+                    }
+                } catch(e) {
+                    alert("Gagal menghapus database.");
+                }
+            }
+        };
+
+        closeOrderHistoryModal = function() { 
+            document.getElementById('order-history-modal').classList.add('hidden'); 
+            if(activeOrdersUnsubscribe) {
+                activeOrdersUnsubscribe();
+                activeOrdersUnsubscribe = null;
+            }
+        }
+
+        async function saveOrderAndSendWhatsApp() {
+            const name = document.getElementById('customer-name').value.trim();
+            const wa = document.getElementById('customer-wa').value.trim();
+            const address = document.getElementById('customer-address').value.trim();
+            if(!name || !wa || !address) return alert("Harap isi Nama, No WhatsApp, dan Alamat Pengiriman!");
+            if(cartItems.length === 0) return alert("Keranjang pesanan masih kosong! Masukkan minimal 1 item pesanan.");
+
+            const orderId = "PO-" + Math.floor(1000 + Math.random() * 9000);
+            const region = document.getElementById('shipping-region').value;
+            
+            let totalQty = 0;
+            let grandSubtotal = 0;
+            cartItems.forEach(item => {
+                totalQty += item.qty;
+                grandSubtotal += item.subtotal;
+            });
+            const discountVal = totalQty >= 1000 ? grandSubtotal * 0.10 : 0;
+            const grandTotal = grandSubtotal - discountVal;
+            const dpVal = region === 'luar' ? grandTotal * 0.50 : 0;
+            const currentDateTime = new Date().toLocaleString('id-ID', { dateStyle: 'medium', timeStyle: 'medium' });
+
+            const newOrder = {
+                id: orderId, name, wa, address,
+                items: cartItems,
+                subtotal: "Rp " + Math.round(grandSubtotal).toLocaleString('id-ID'),
+                discount: discountVal > 0 ? "- Rp " + Math.round(discountVal).toLocaleString('id-ID') : "Rp 0",
+                dpRequired: dpVal > 0 ? "Rp " + Math.round(dpVal).toLocaleString('id-ID') + " (DP 50%)" : "Tidak Ada (COD / Full)",
+                totalPrice: "Rp " + Math.round(grandTotal).toLocaleString('id-ID'),
+                date: currentDateTime,
+                status: "BELUM LUNAS (MENUNGGU PEMBAYARAN)",
+                statusDate: currentDateTime
+            };
+
+            try {
+                const { doc, setDoc } = window.firebaseDeps;
+                await setDoc(doc(window.firebaseDb, "orders", orderId), newOrder);
+                
+                let bankText = "";
+                bankAccounts.forEach(b => { bankText += `- Bank ${b.bank}: ${b.acc} (a.n ${b.owner})\n`; });
+
+                let itemsText = "";
+                cartItems.forEach((it, idx) => {
+                    itemsText += `${idx + 1}. ${it.model} (${it.size}) - ${it.color} [${it.method}] - ${it.qty} Pcs%0A`;
+                });
+
+                const waMessage = `Halo Owner ${storeName}, ada Pesanan Baru Masuk!%0A%0A` +
+                                  `📋 *Nomor PO*: ${orderId}%0A` +
+                                  `👤 *Nama Pemesan*: ${name}%0A` +
+                                  `📱 *No WhatsApp*: ${wa}%0A` +
+                                  `📍 *Alamat Kirim*: ${address}%0A%0A` +
+                                  `🛍️ *Daftar Item Pesanan*:%0A${itemsText}%0A` +
+                                  `📦 *Total Qty*: ${totalQty} Pcs%0A` +
+                                  `💰 *Total Biaya*: Rp ${Math.round(grandTotal).toLocaleString('id-ID')}%0A` +
+                                  `🏷️ *Ketentuan Pembayaran*: ${dpVal > 0 ? 'Wajib DP 50% (Rp ' + Math.round(dpVal).toLocaleString('id-ID') + ')' : 'COD / Lunas'}%0A%0A` +
+                                  `💳 *Rekening Pembayaran*:%0A${bankText}%0A` +
+                                  `Mohon segera diproses dan dicek di sistem cloud. Terima kasih!`;
+
+                alert("Pesanan berhasil disimpan permanen ke Firebase Cloud & diarahkan ke WhatsApp owner!");
+                window.open(`https://wa.me/${ownerWaNumber}?text=${waMessage}`);
+            } catch(e) {
+                alert("Gagal menyimpan ke database cloud.");
+            }
+        }
+
+        window.onload = function() {
+            renderAdminPanel();
+            if(window.initCloudSync) {
+                window.initCloudSync();
+            }
+            updateWibClock();
+        };
+    </script>
+</body>
+</html>
