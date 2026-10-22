@@ -1,11 +1,11 @@
-   <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ILHAM SPUNBOND - Master Admin & Multi-Item Order Pro</title>
+    <title>ILHAM SPUNBOND - Pusat Pemesanan Custom Tas Spunbond & Sablon</title>
     
-    <!-- 🖼️ Favicon Dinamis & Branding Logo ILHAM SPUNBOND untuk Tab Browser -->
+    <!-- Favicon Dinamis -->
     <link id="dynamic-favicon" rel="icon" type="image/png" href="https://via.placeholder.com/64x64/065f46/ffffff?text=IS">
     <link id="dynamic-apple-touch-icon" rel="apple-touch-icon" href="https://via.placeholder.com/180x180/065f46/ffffff?text=IS">
 
@@ -15,7 +15,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     
-    <!-- ☁️ Firebase SDK (Modular v10) -->
+    <!-- Firebase SDK (Modular v10) -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getFirestore, doc, setDoc, getDoc, onSnapshot, collection, getDocs, deleteDoc, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
@@ -42,6 +42,31 @@
     </script>
 
     <style>
+        .gold-card-bg {
+            background: linear-gradient(135deg, #064e3b 0%, #022c22 100%);
+            position: relative;
+            overflow: hidden;
+        }
+        .gold-card-bg::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background-image: radial-gradient(#d4af37 1px, transparent 1px), radial-gradient(#d4af37 1px, #064e3b 1px);
+            background-size: 40px 40px;
+            background-position: 0 0, 20px 20px;
+            opacity: 0.15;
+            pointer-events: none;
+        }
+        .gold-btn {
+            background: linear-gradient(135deg, #fef08a 0%, #eab308 50%, #ca8a04 100%);
+            color: #1a2e05;
+            box-shadow: 0 4px 15px rgba(234, 179, 8, 0.4);
+            transition: all 0.3s ease;
+        }
+        .gold-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(234, 179, 8, 0.6);
+        }
         .web-watermark {
             position: absolute;
             inset: 0;
@@ -63,15 +88,13 @@
         }
     </style>
 </head>
-<body class="bg-slate-100 text-slate-800 font-sans antialiased pb-12">
+<body class="bg-slate-100 text-slate-800 font-sans antialiased pb-16">
 
-    <!-- SPLASH SCREEN VIDEO / LOGO INTRO -->
+    <!-- SPLASH SCREEN INTRO -->
     <div id="splash-screen" class="fixed inset-0 bg-slate-950 z-50 flex flex-col items-center justify-center p-6 text-center space-y-6 transition-opacity duration-700">
         <div class="relative w-full max-w-sm h-64 rounded-2xl overflow-hidden shadow-2xl border border-emerald-500/40 bg-slate-900 flex items-center justify-center">
-            <!-- Tempat Video Logo / Animasi Pembukaan -->
-            <video id="intro-video-el" autoplay muted playsinline class="w-full h-full object-cover">
+            <video id="intro-video-display" autoplay muted playsinline class="w-full h-full object-cover">
                 <source src="https://assets.mixkit.co/videos/preview/mixkit-digital-animation-of-screens-and-lights-31955-large.mp4" type="video/mp4">
-                Your browser does not support the video tag.
             </video>
             <div class="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-transparent to-transparent flex items-end justify-center pb-4">
                 <span class="text-xs text-amber-300 font-bold tracking-widest uppercase">ILHAM SPUNBOND OFFICIAL</span>
@@ -81,28 +104,63 @@
             <h2 class="text-xl font-extrabold text-white">Selamat Datang di ILHAM SPUNBOND</h2>
             <p class="text-xs text-slate-400 max-w-xs mx-auto">Pusat Custom Tas Spunbond & Sablon Profesional Terbaik & Terpercaya.</p>
         </div>
-        <button type="button" onclick="dismissSplashScreen()" class="w-full max-w-xs bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3.5 px-6 rounded-xl shadow-lg transition text-sm cursor-pointer flex items-center justify-center gap-2">
+        <button type="button" onclick="dismissSplashScreen()" class="w-full max-w-xs gold-btn font-extrabold py-3.5 px-6 rounded-xl shadow-lg transition text-xs cursor-pointer flex items-center justify-center gap-2">
             <span>✨</span> Mulai Desain & Pesan Sekarang
         </button>
     </div>
 
-    <div class="max-w-md mx-auto p-4 sm:p-6 space-y-4">
-        <!-- Header Brand & Real-Time WIB Clock -->
-        <div class="bg-emerald-800 text-white p-5 rounded-2xl shadow-lg text-center flex flex-col items-center justify-center relative">
-            <div id="wib-clock-badge" class="absolute top-3 right-3 bg-emerald-900/80 border border-emerald-600/60 text-emerald-200 text-[10px] font-mono px-2 py-1 rounded-lg shadow-sm">
+    <div class="max-w-md mx-auto p-4 sm:p-6 space-y-5">
+        
+        <!-- HEADER KARTU MEWAH (GAYA REFERENSI) -->
+        <div class="gold-card-bg text-white p-6 rounded-3xl shadow-2xl border border-amber-500/30 text-center flex flex-col items-center justify-center relative pt-12 pb-8">
+            
+            <!-- Badge Logo Lingkar 3D di Atas Kartu -->
+            <div class="absolute -top-7 w-20 h-20 bg-white rounded-full p-1.5 shadow-2xl border-4 border-emerald-900 flex items-center justify-center">
+                <div class="w-full h-full bg-slate-50 rounded-full flex items-center justify-center overflow-hidden border border-slate-200">
+                    <img id="header-brand-logo" src="https://via.placeholder.com/80?text=IS" alt="Logo" class="w-full h-full object-contain p-1">
+                </div>
+            </div>
+
+            <!-- Jam Real-Time WIB di Kanan Atas -->
+            <div class="absolute top-3 right-4 bg-emerald-950/80 border border-amber-500/40 text-amber-300 text-[10px] font-mono px-2.5 py-1 rounded-full shadow">
                 🕒 <span id="live-wib-time">--:--:--</span> WIB
             </div>
-            
-            <div id="brand-logo-container" class="mb-2 bg-white/10 p-2.5 rounded-xl border border-emerald-600/50 flex items-center justify-center min-h-[60px] min-w-[140px]">
-                <img id="header-brand-logo" src="https://via.placeholder.com/160x55?text=ILHAM+SPUNBOND" alt="Logo Brand" class="max-h-16 w-auto object-contain filter drop-shadow">
-            </div>
-            <h1 id="brand-title-text" class="text-xl font-bold tracking-wide">ILHAM SPUNBOND</h1>
-            <p class="text-xs text-emerald-200 mt-1">Sistem Pemesanan Custom Tas Spunbond & Sablon</p>
 
-            <!-- Tombol Audio Selamat Datang -->
-            <button type="button" onclick="playWelcomeSpeech()" class="mt-3 bg-emerald-700 hover:bg-emerald-600 text-emerald-100 text-[11px] font-semibold py-1.5 px-3 rounded-full border border-emerald-500/50 shadow flex items-center gap-1.5 cursor-pointer transition">
-                <span>🔊</span> Putar Suara Sambutan
-            </button>
+            <!-- Judul & Deskripsi Brand -->
+            <h1 id="brand-title-text" class="text-xl font-black tracking-wider text-amber-200 mt-3 drop-shadow">ILHAM SPUNBOND</h1>
+            <p class="text-[11px] text-emerald-100 mt-1 max-w-xs leading-relaxed opacity-90">
+                Pusat Pemesanan Custom Tas Spunbond & Sablon Profesional Berkualitas Tinggi
+            </p>
+
+            <!-- Tombol Emas Utama & Tombol Suara -->
+            <div class="w-full space-y-2.5 mt-5">
+                <button type="button" onclick="scrollToEditor()" class="w-full gold-btn font-black text-xs py-3 px-4 rounded-xl shadow-lg flex items-center justify-center gap-2 cursor-pointer">
+                    <span>🛒</span> MULAI PESAN CUSTOM SEKARANG <span>🛒</span>
+                </button>
+
+                <button type="button" onclick="playWelcomeSpeech()" class="w-full bg-emerald-900/80 hover:bg-emerald-900 text-amber-200 text-[11px] font-bold py-2 px-4 rounded-xl border border-amber-500/40 shadow flex items-center justify-center gap-2 cursor-pointer transition">
+                    <span>🔊</span> Putar Suara Sambutan
+                </button>
+            </div>
+        </div>
+
+        <!-- KATALOG MODEL TAS BERJAJAR KE SAMPING (INTERAKTIF) -->
+        <div class="space-y-2.5">
+            <div class="flex items-center justify-between px-1">
+                <h3 class="text-xs font-bold text-slate-700 uppercase tracking-wide flex items-center gap-1.5">
+                    <span>🌟</span> Katalog Model Tas (<span id="catalog-count">0</span> Model)
+                </h3>
+                <span class="text-[10px] text-emerald-700 font-semibold italic">Klik untuk langsung desain</span>
+            </div>
+            
+            <!-- Grid Katalog Tas Berjajar Ke Samping -->
+            <div id="frontend-catalog-grid" class="flex overflow-x-auto gap-3 pb-2 pt-1 no-scrollbar">
+                <!-- Data dimuat dinamis -->
+            </div>
+            
+            <p class="text-center text-[10px] text-slate-500 italic pt-1">
+                Kualitas Terbaik, Bahan Ramah Lingkungan
+            </p>
         </div>
 
         <!-- INFO ANTREAN & ESTIMASI PRODUKSI LIVE -->
@@ -116,8 +174,8 @@
             </p>
         </div>
 
-        <!-- AREA CUSTOMER -->
-        <div id="customer-view" class="space-y-4">
+        <!-- AREA CUSTOMER / EDITOR -->
+        <div id="customer-view" class="space-y-4 pt-2">
             <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200">
                 <label class="block text-xs font-semibold text-slate-600 mb-1">1. Pilih Model Tas Spunbond</label>
                 <select id="bag-model-select" onchange="onCustomerModelChange()" class="w-full bg-slate-50 border border-slate-300 rounded-xl p-2.5 text-sm font-medium focus:ring-2 focus:ring-emerald-500 outline-none">
@@ -208,7 +266,6 @@
                     </div>
                 </div>
 
-                <!-- Input Quantity Full Lebar (Aman Partai Besar) -->
                 <div class="space-y-2 pt-1">
                     <label class="block text-xs font-bold text-slate-700">Quantity / Jumlah Pesanan Item Ini (Pcs)</label>
                     <input type="number" id="item-qty" value="500" min="1" oninput="updateCartTotals()" class="w-full bg-slate-50 border-2 border-emerald-500 rounded-xl p-3 text-lg font-extrabold text-emerald-800 text-center focus:ring-2 focus:ring-emerald-500 outline-none shadow-inner">
@@ -310,7 +367,6 @@
                     </div>
                 </div>
 
-                <!-- Info Nomor Rekening Bank -->
                 <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200 space-y-2">
                     <h4 class="text-xs font-bold text-slate-700 flex items-center gap-1.5">
                         <span>💳</span> Informasi Rekening Pembayaran Resmi
@@ -319,7 +375,7 @@
                 </div>
             </div>
 
-            <!-- TOMBOL KIRIM KE WHATSAPP OWNER -->
+            <!-- TOMBOL KIRIM KE WHATSAPP -->
             <button type="button" onclick="saveOrderAndSendWhatsApp()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-3.5 px-4 rounded-xl shadow-lg flex items-center justify-center gap-2.5 transition text-sm cursor-pointer">
                 <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/></svg>
                 <span>Simpan PO & Kirim Pesan ke WhatsApp Owner</span>
@@ -366,6 +422,12 @@
             </div>
 
             <div class="bg-slate-800 p-3 rounded-xl border border-amber-500/30 space-y-2">
+                <label class="block text-xs font-semibold text-amber-300">🎥 Upload Video Intro / Pembukaan (MP4)</label>
+                <input type="file" id="admin-intro-video-upload" accept="video/mp4" onchange="uploadIntroVideo(event)" class="w-full text-xs text-slate-400 file:mr-2 file:py-1 file:px-2 file:rounded-lg file:border-0 file:text-[10px] file:font-semibold file:bg-amber-500 file:text-slate-950 cursor-pointer">
+                <div id="video-upload-status" class="text-[10px] text-slate-400 italic"></div>
+            </div>
+
+            <div class="bg-slate-800 p-3 rounded-xl border border-amber-500/30 space-y-2">
                 <label class="block text-xs font-semibold text-amber-300">🏅 Upload Gambar Cap / Stempel Lunas (PNG)</label>
                 <input type="file" id="admin-stamp-upload" accept="image/*" onchange="uploadStampImage(event)" class="w-full text-xs text-slate-400 file:mr-2 file:py-1 file:px-2 file:rounded-lg file:border-0 file:text-[10px] file:font-semibold file:bg-emerald-500 file:text-slate-950 cursor-pointer">
                 <div id="stamp-preview-container" class="mt-2 text-center"></div>
@@ -398,7 +460,11 @@
 
             <!-- Kelola Model Tas & Ukuran -->
             <div class="bg-slate-800 p-3 rounded-xl border border-amber-500/30 space-y-3">
-                <label class="block text-xs font-semibold text-amber-300">📦 Kelola Model Tas & Ukuran</label>
+                <label class="block text-xs font-semibold text-amber-300">📦 Kelola Model Tas (OVAL, HLS, HLB BOX, HLB KOTAK)</label>
+                <div class="flex gap-1.5 mb-2">
+                    <input type="text" id="new-model-name" placeholder="Nama Model Baru" class="flex-1 bg-slate-900 rounded-lg px-3 py-2 text-xs text-white outline-none border border-slate-700">
+                    <button type="button" onclick="addNewBagModel()" class="bg-amber-500 text-slate-950 px-3 py-2 rounded-lg text-xs font-semibold cursor-pointer">Tambah Model</button>
+                </div>
                 <div id="model-admin-container" class="space-y-3 max-h-64 overflow-y-auto pr-1"></div>
             </div>
 
@@ -453,13 +519,13 @@
         </div>
     </div>
 
-    <!-- Script Utama (100% Complete, Tested & Verified) -->
+    <!-- Script Utama -->
     <script>
         const cleanDefaultBagSvg = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 500'><path d='M100 150 L100 100 C100 70 120 50 200 50 C280 50 300 70 300 100 L300 150 Z' fill='none' stroke='%23334155' stroke-width='16'/><path d='M60 150 L340 150 C360 150 370 160 370 180 L340 450 C340 470 330 480 310 480 L90 480 C70 480 60 470 60 450 L30 180 C30 160 40 150 60 150 Z' fill='%23ffffff' stroke='%23334155' stroke-width='6'/></svg>";
 
         const defaultBagModels = [
             { 
-                name: "Tas Spunbond Oval", 
+                name: "Tas Spunbond OVAL", 
                 image: cleanDefaultBagSvg, 
                 sizes: [
                     { name: "20 x 30 cm", price: 1400 }, 
@@ -477,7 +543,7 @@
                 ] 
             },
             { 
-                name: "Tas HLB Box (Handle Kotak)", 
+                name: "Tas HLB BOX (Handle Kotak)", 
                 image: cleanDefaultBagSvg, 
                 sizes: [
                     { name: "25 x 25 x 10 cm", price: 2800 }, 
@@ -485,7 +551,7 @@
                 ] 
             },
             { 
-                name: "Tas HLB Kotak", 
+                name: "Tas HLB KOTAK", 
                 image: cleanDefaultBagSvg, 
                 sizes: [
                     { name: "20 x 20 x 15 cm", price: 2500 }, 
@@ -524,7 +590,7 @@
         let ownerWaNumber = "6289630539563";
         let brandLogoUrl = "";
         let customStampUrl = "";
-        let persistentCustomerLogo = "";
+        let introVideoUrl = "";
 
         let activeBagTint = "#ffffff";
         let activeColorName = "Putih Bersih";
@@ -547,14 +613,12 @@
             if(localStorage.getItem('ilham_ownerWaNumber')) ownerWaNumber = localStorage.getItem('ilham_ownerWaNumber');
             if(localStorage.getItem('ilham_brandLogoUrl')) brandLogoUrl = localStorage.getItem('ilham_brandLogoUrl');
             if(localStorage.getItem('ilham_customStampUrl')) customStampUrl = localStorage.getItem('ilham_customStampUrl');
-            
-            localStorage.removeItem('ilham_customerLogo');
+            if(localStorage.getItem('ilham_introVideoUrl')) introVideoUrl = localStorage.getItem('ilham_introVideoUrl');
             if(localStorage.getItem('ilham_cartItems')) cartItems = JSON.parse(localStorage.getItem('ilham_cartItems'));
         } catch(e) {
             console.error("Local storage error:", e);
         }
 
-        // --- UPDATE FAVICON TAB BROWSER SECARA OTOMATIS ---
         function updateTabFavicon(url) {
             if(!url) return;
             const faviconEl = document.getElementById('dynamic-favicon');
@@ -563,7 +627,6 @@
             if(appleIconEl) appleIconEl.href = url;
         }
 
-        // --- SPLASH SCREEN & SPEECH ---
         function dismissSplashScreen() {
             const splash = document.getElementById('splash-screen');
             if(splash) {
@@ -572,6 +635,22 @@
                     splash.style.display = 'none';
                     playWelcomeSpeech();
                 }, 700);
+            }
+        }
+
+        function scrollToEditor() {
+            const editorEl = document.getElementById('customer-view');
+            if(editorEl) {
+                editorEl.scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+
+        function selectCatalogModel(index) {
+            const modelSelect = document.getElementById('bag-model-select');
+            if(modelSelect) {
+                modelSelect.value = index;
+                onCustomerModelChange();
+                scrollToEditor();
             }
         }
 
@@ -769,11 +848,18 @@
                 if(brandLogoUrl) updateTabFavicon(brandLogoUrl);
             }
             if(data.customStampUrl !== undefined) { customStampUrl = data.customStampUrl; safeLocalStorageSet('ilham_customStampUrl', customStampUrl); }
+            if(data.introVideoUrl !== undefined) { 
+                introVideoUrl = data.introVideoUrl; 
+                safeLocalStorageSet('ilham_introVideoUrl', introVideoUrl);
+                const vidEl = document.getElementById('intro-video-display');
+                if(vidEl && introVideoUrl) vidEl.src = introVideoUrl;
+            }
             if(data.storeAddress) { storeAddress = data.storeAddress; safeLocalStorageSet('ilham_storeAddress', storeAddress); }
             if(data.storePhone) { storePhone = data.storePhone; safeLocalStorageSet('ilham_storePhone', storePhone); }
             if(data.storeEmail) { storeEmail = data.storeEmail; safeLocalStorageSet('ilham_storeEmail', storeEmail); }
 
             renderAdminPanel();
+            updateFrontendCatalog();
             updateBagCanvas();
             setTimeout(() => { isSyncingFromCloud = false; }, 500);
         }
@@ -837,6 +923,7 @@
             safeLocalStorageSet('ilham_ownerWaNumber', ownerWaNumber);
             safeLocalStorageSet('ilham_brandLogoUrl', brandLogoUrl);
             safeLocalStorageSet('ilham_customStampUrl', customStampUrl);
+            safeLocalStorageSet('ilham_introVideoUrl', introVideoUrl);
             
             try {
                 const lightCart = cartItems.map(i => ({ model: i.model, size: i.size, color: i.color, method: i.method, qty: i.qty, unitPrice: i.unitPrice, subtotal: i.subtotal }));
@@ -867,10 +954,10 @@
                     ownerWaNumber,
                     brandLogoUrl: (brandLogoUrl && brandLogoUrl.length > 80000) ? "" : brandLogoUrl,
                     customStampUrl: (customStampUrl && customStampUrl.length > 80000) ? "" : customStampUrl,
+                    introVideoUrl: (introVideoUrl && introVideoUrl.length > 150000) ? "" : introVideoUrl,
                     storeAddress,
                     storePhone,
                     storeEmail,
-                    lastCustomerLogo: "",
                     ...customPayload
                 };
 
@@ -886,6 +973,28 @@
             else if(pwd !== null) alert("Password salah!");
         }
 
+        function updateFrontendCatalog() {
+            const grid = document.getElementById('frontend-catalog-grid');
+            const countEl = document.getElementById('catalog-count');
+            if(!grid) return;
+
+            grid.innerHTML = '';
+            countEl.textContent = bagModels.length;
+
+            bagModels.forEach((item, idx) => {
+                grid.innerHTML += `
+                    <div onclick="selectCatalogModel(${idx})" class="min-w-[130px] w-[130px] bg-white p-2.5 rounded-2xl shadow-sm border border-slate-200 flex flex-col items-center text-center cursor-pointer hover:border-emerald-500 hover:shadow-md transition relative group shrink-0">
+                        <span class="absolute top-1.5 left-1.5 bg-emerald-800 text-amber-300 font-bold text-[9px] w-5 h-5 rounded-full flex items-center justify-center shadow">${idx + 1}</span>
+                        <div class="w-full h-24 bg-slate-50 rounded-xl flex items-center justify-center overflow-hidden p-1 mb-1.5">
+                            <img src="${item.image || cleanDefaultBagSvg}" alt="${item.name}" class="w-full h-full object-contain group-hover:scale-105 transition">
+                        </div>
+                        <span class="text-[11px] font-bold text-slate-800 line-clamp-1">${item.name}</span>
+                        <span class="text-[9px] text-emerald-700 font-semibold mt-0.5">Pilih & Desain ➔</span>
+                    </div>
+                `;
+            });
+        }
+
         function renderAdminPanel() {
             const modelAdminContainer = document.getElementById('model-admin-container');
             const bankAdminContainer = document.getElementById('bank-admin-container');
@@ -895,6 +1004,7 @@
             const bankDisplay = document.getElementById('bank-accounts-display');
             const stampPreview = document.getElementById('stamp-preview-container');
             const brandStatus = document.getElementById('brand-upload-status');
+            const videoStatus = document.getElementById('video-upload-status');
             
             if(!modelSelect) return;
 
@@ -922,9 +1032,9 @@
                     const isCustomImg = item.image && item.image !== cleanDefaultBagSvg;
 
                     card.innerHTML = `
-                        <div class="flex items-center justify-between border-b border-slate-800 pb-1.5"><span class="font-bold text-amber-300 text-sm">${item.name}</span></div>
-                        <div><label class="block text-[10px] text-slate-400 mb-1">Upload Foto Tas:</label><input type="file" accept="image/*" onchange="uploadModelSample(event, ${mIndex})" class="w-full text-[10px] text-slate-400 file:mr-2 file:py-1 file:px-2 file:rounded-lg file:border-0 file:bg-amber-500 file:text-slate-950 cursor-pointer"></div>
-                        <div id="model-status-${mIndex}" class="text-[10px] ${isCustomImg ? 'text-emerald-400 font-semibold' : 'text-slate-400'} italic">
+                        <div class="flex items-center justify-between border-b border-slate-800 pb-1.5"><span class="font-bold text-amber-300 text-sm">${item.name}</span> <button type="button" onclick="deleteBagModel(${mIndex})" class="text-rose-400 font-bold text-[10px] cursor-pointer">Hapus Model</button></div>
+                        <div><label class="block text-[10px] text-slate-400 mb-1">Upload Foto Katalog & Mockup:</label><input type="file" accept="image/*" onchange="uploadModelSample(event, ${mIndex})" class="w-full text-[10px] text-slate-400 file:mr-2 file:py-1 file:px-2 file:rounded-lg file:border-0 file:bg-amber-500 file:text-slate-950 cursor-pointer"></div>
+                        <div class="text-[10px] ${isCustomImg ? 'text-emerald-400 font-semibold' : 'text-slate-400'} italic">
                             ${isCustomImg ? '✅ Berhasil Di-upload & Terkunci di Sistem' : 'ℹ️ Menggunakan foto default'}
                         </div>
                         <div class="space-y-1 mt-1">${sizeRows}
@@ -938,11 +1048,21 @@
 
             if(brandStatus) {
                 if(brandLogoUrl) {
-                    brandStatus.textContent = "✅ Berhasil Di-upload & Terkunci di Sistem";
+                    brandStatus.textContent = "✅ Logo Brand Berhasil Di-upload";
                     brandStatus.className = "text-[10px] text-emerald-400 font-semibold italic";
                 } else {
-                    brandStatus.textContent = "ℹ️ Belum ada logo brand di-upload (menggunakan teks)";
+                    brandStatus.textContent = "ℹ️ Belum ada logo brand di-upload";
                     brandStatus.className = "text-[10px] text-slate-400 italic";
+                }
+            }
+
+            if(videoStatus) {
+                if(introVideoUrl) {
+                    videoStatus.textContent = "✅ Video Pembukaan Berhasil Di-upload";
+                    videoStatus.className = "text-[10px] text-emerald-400 font-semibold italic";
+                } else {
+                    videoStatus.textContent = "ℹ️ Menggunakan video default bawaan sistem";
+                    videoStatus.className = "text-[10px] text-slate-400 italic";
                 }
             }
 
@@ -966,7 +1086,7 @@
 
             if(stampPreview) {
                 if(customStampUrl) {
-                    stampPreview.innerHTML = `<div class="flex items-center justify-center gap-2 bg-slate-900 p-2 rounded-xl border border-slate-700"><img src="${customStampUrl}" class="h-10 object-contain"><span class="text-[10px] text-emerald-400 font-semibold">✅ Berhasil Di-upload & Terkunci di Sistem</span><button type="button" onclick="removeStampImage()" class="text-xs text-rose-400 font-semibold underline cursor-pointer">Hapus</button></div>`;
+                    stampPreview.innerHTML = `<div class="flex items-center justify-center gap-2 bg-slate-900 p-2 rounded-xl border border-slate-700"><img src="${customStampUrl}" class="h-10 object-contain"><span class="text-[10px] text-emerald-400 font-semibold">✅ Stempel Aktif</span><button type="button" onclick="removeStampImage()" class="text-xs text-rose-400 font-semibold underline cursor-pointer">Hapus</button></div>`;
                 } else {
                     stampPreview.innerHTML = `<span class="text-[10px] text-slate-400 italic">Belum ada stempel/cap diupload.</span>`;
                 }
@@ -1025,15 +1145,20 @@
             if(headerLogoEl) {
                 if(brandLogoUrl) {
                     headerLogoEl.src = brandLogoUrl;
-                    headerLogoEl.className = "max-h-16 w-auto object-contain filter drop-shadow";
                     updateTabFavicon(brandLogoUrl);
                 } else {
-                    headerLogoEl.src = "https://via.placeholder.com/160x55?text=ILHAM+SPUNBOND";
+                    headerLogoEl.src = "https://via.placeholder.com/80?text=IS";
                 }
+            }
+
+            const introVidEl = document.getElementById('intro-video-display');
+            if(introVidEl && introVideoUrl) {
+                introVidEl.src = introVideoUrl;
             }
 
             loadCustomerDataMemory();
             updateCustomerSizesDropdown();
+            updateFrontendCatalog();
             updateBagCanvas();
             renderCartItems();
         }
@@ -1061,6 +1186,32 @@
             ownerWaNumber = document.getElementById('admin-wa-number').value;
             pdfPassword = document.getElementById('admin-pdf-password').value;
             saveToCloud();
+        }
+
+        function addNewBagModel() {
+            const nameInput = document.getElementById('new-model-name');
+            const name = nameInput.value.trim();
+            if(!name) return alert("Masukkan nama model tas!");
+            bagModels.push({
+                name: name,
+                image: cleanDefaultBagSvg,
+                sizes: [
+                    { name: "20 x 30 cm", price: 1500 },
+                    { name: "30 x 40 cm", price: 2500 }
+                ]
+            });
+            nameInput.value = '';
+            saveToCloud();
+            renderAdminPanel();
+        }
+
+        function deleteBagModel(index) {
+            if(bagModels.length <= 1) return alert("Minimal harus ada 1 model tas!");
+            if(confirm(`Hapus model ${bagModels[index].name}?`)) {
+                bagModels.splice(index, 1);
+                saveToCloud();
+                renderAdminPanel();
+            }
         }
 
         function addBank() {
@@ -1145,6 +1296,20 @@
             }
         }
 
+        async function uploadIntroVideo(e) {
+            const file = e.target.files[0];
+            if(file) {
+                const reader = new FileReader();
+                reader.onload = async function(event) {
+                    introVideoUrl = event.target.result;
+                    await saveToCloud();
+                    renderAdminPanel();
+                    alert("Video intro berhasil di-upload!");
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
         async function uploadStampImage(e) {
             const file = e.target.files[0];
             if(file) {
@@ -1168,11 +1333,11 @@
                 bagModels[mIndex].image = cleaned;
                 await saveToCloud();
                 renderAdminPanel();
+                updateFrontendCatalog();
                 updateBagCanvas();
             }
         }
 
-        // --- FAST LIGHTWEIGHT TRANSPARENCY ENGINE ---
         function loadCustomerLogo(e) {
             const file = e.target.files[0];
             if(!file) return;
@@ -1982,4 +2147,4 @@
         };
     </script>
 </body>
-</html>          
+</html>
