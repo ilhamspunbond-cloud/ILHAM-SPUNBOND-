@@ -151,7 +151,7 @@
                 "Kesuksesan bisnis berawal dari langkah kecil yang konsisten. Bersama ILHAM SPUNBOND, tingkatkan prestise brand toko dan acara spesial Anda hari ini!"
             </p>
             <div class="flex items-center justify-between pt-1 border-t border-amber-500/20 text-[10px]">
-                <span id="voice-status-label" class="text-amber-800 font-medium italic">🔊 ILHAM SPUNBOND menyambut Anda</span>
+                <span id="voice-status-label" class="text-amber-800 font-medium italic">🔊 Suara motivasi aktif</span>
                 <button type="button" onclick="toggleSpeechVoice()" id="voice-toggle-btn" class="bg-amber-600 hover:bg-amber-700 text-white px-3 py-1 rounded-lg font-bold shadow-sm transition cursor-pointer flex items-center gap-1">
                     <span>🔇</span> Putar Ulang Suara
                 </button>
@@ -621,7 +621,8 @@
                 triggerGiftRain(window.activeThemeGifts);
             }
 
-            setTimeout(() => { playDailyQuoteSpeech("ILHAM SPUNBOND menyambut Anda"); }, 400);
+            // Membacakan teks Smart Moment Motivation Quote yang aktif
+            setTimeout(() => { playDailyQuoteSpeech(currentQuoteText); }, 400);
         }
 
         function openWelcomeVideo() {
@@ -641,6 +642,11 @@
             updateJakartaClock();
             setInterval(updateJakartaClock, 1000);
             currentQuoteText = "Kesuksesan bisnis berawal dari langkah kecil yang konsisten. Bersama ILHAM SPUNBOND, tingkatkan prestise brand toko dan acara spesial Anda hari ini!";
+            
+            const quoteEl = document.getElementById('smart-quote-text');
+            if(quoteEl) {
+                quoteEl.textContent = `"${currentQuoteText}"`;
+            }
         }
 
         function triggerGiftRain(giftArray) {
@@ -685,7 +691,7 @@
             const toggleBtn = document.getElementById('voice-toggle-btn');
 
             utterance.onstart = function() {
-                if(statusLabel) statusLabel.textContent = "🔊 ILHAM SPUNBOND menyambut Anda";
+                if(statusLabel) statusLabel.textContent = "🔊 Membacakan motivasi...";
                 if(toggleBtn) toggleBtn.innerHTML = "<span>🔊</span> Berhenti Suara";
             };
 
@@ -704,7 +710,7 @@
                     document.getElementById('voice-status-label').textContent = "🔇 Suara dijeda";
                     document.getElementById('voice-toggle-btn').innerHTML = "<span>🔊</span> Putar Ulang Suara";
                 } else {
-                    playDailyQuoteSpeech("ILHAM SPUNBOND menyambut Anda");
+                    playDailyQuoteSpeech(currentQuoteText);
                 }
             }
         }
