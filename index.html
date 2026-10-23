@@ -107,7 +107,7 @@
                 Lewati [X]
             </button>
 
-            <!-- Video / Animasi Pendek Player (Muted agar aman dari blokir browser) -->
+            <!-- Video / Animasi Pendek Player -->
             <div class="relative w-full aspect-[9/16] max-h-[60vh] bg-black flex items-center justify-center">
                 <video id="splash-video" autoplay muted playsinline loop class="w-full h-full object-cover">
                     <source id="splash-video-source" src="https://assets.mixkit.co/videos/preview/mixkit-hands-holding-a-smartphone-with-a-green-screen-41584-large.mp4" type="video/mp4">
@@ -404,9 +404,10 @@
             </div>
 
             <div class="bg-slate-800 p-3 rounded-xl border border-amber-500/30 space-y-2">
-                <label class="block text-xs font-semibold text-amber-300">🎬 Upload Video/GIF Animasi Pendek (Splash Screen)</label>
-                <input type="file" id="admin-video-upload" accept="video/mp4,image/gif" onchange="uploadSplashVideo(event)" class="w-full text-xs text-slate-400 file:mr-2 file:py-1 file:px-2 file:rounded-lg file:border-0 file:text-[10px] file:font-semibold file:bg-amber-500 file:text-slate-950 cursor-pointer">
-                <div id="video-upload-status" class="text-[10px] text-slate-400 italic">ℹ️ Format MP4 atau GIF Pendek</div>
+                <label class="block text-xs font-semibold text-amber-300">🎬 Upload / Tempel Link Video Pendek (MP4)</label>
+                <input type="file" id="admin-video-upload" accept="video/mp4" onchange="uploadSplashVideo(event)" class="w-full text-xs text-slate-400 file:mr-2 file:py-1 file:px-2 file:rounded-lg file:border-0 file:text-[10px] file:font-semibold file:bg-amber-500 file:text-slate-950 cursor-pointer mb-2">
+                <input type="text" id="admin-video-url-input" placeholder="Atau paste link video MP4 di sini..." oninput="saveVideoUrlFromInput(this.value)" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white outline-none">
+                <div id="video-upload-status" class="text-[10px] text-slate-400 italic">ℹ️ Disarankan pakai link video MP4 online agar cepat & tidak error</div>
             </div>
 
             <div class="bg-slate-800 p-3 rounded-xl border border-amber-500/30 space-y-2">
@@ -621,7 +622,6 @@
                 triggerGiftRain(window.activeThemeGifts);
             }
 
-            // Membacakan teks Smart Moment Motivation Quote yang aktif
             setTimeout(() => { playDailyQuoteSpeech(currentQuoteText); }, 400);
         }
 
@@ -764,7 +764,7 @@
             });
         }
 
-        // 🔧 PENYEMPURNAAN MUTLAK: Hapus Background Putih/Warna Dasar Gambar Jadi Transparan Total
+        // 🔧 ALGORITMA SUPER BERSIH: Hapus Background Putih/Terang/Kotak jadi Transparan Sempurna
         function removeBackgroundToTransparent(file, maxWidth = 400, quality = 0.8) {
             return new Promise((resolve) => {
                 const reader = new FileReader();
@@ -782,15 +782,12 @@
                         const imgData = ctx.getImageData(0, 0, w, h);
                         const data = imgData.data;
 
-                        // Ambil warna referensi background dari pojok kiri-atas
-                        const rBg = data[0], gBg = data[1], bBg = data[2];
-                        const tolerance = 60; // Toleransi lebih tinggi agar warna putih/abu tipis hilang bersih
-
+                        // Deteksi background putih bersih, abu-abu muda, atau warna terang di pojok
                         for (let i = 0; i < data.length; i += 4) {
-                            let r = data[i], g = data[i+1], b = data[i+2];
-                            // Deteksi kemiripan warna dengan background pojok
-                            if (Math.abs(r - rBg) <= tolerance && Math.abs(g - gBg) <= tolerance && Math.abs(b - bBg) <= tolerance) {
-                                data[i+3] = 0; // Buat transparan total
+                            let r = data[i], g = data[i+1], b = data[i+2], a = data[i+3];
+                            // Jika warnanya mendekati putih/terang (> 210), buat jadi transparan total
+                            if (r > 210 && g > 210 && b > 210) {
+                                data[i+3] = 0;
                             }
                         }
                         ctx.putImageData(imgData, 0, 0);
@@ -863,12 +860,22 @@
         function updateSplashVideoElement() {
             const videoSrcEl = document.getElementById('splash-video-source');
             const videoEl = document.getElementById('splash-video');
-            if(videoSrcEl && welcomeVideoUrl && welcomeVideoUrl !== "") {
-                videoSrcEl.src = welcomeVideoUrl;
-                if(videoEl) {
-                    videoEl.load();
-                    videoEl.play().catch(e => console.log("Video play handled:", e));
-                }
+            const inputUrlEl = document.getElementById('admin-video-url-input');
+            const targetUrl = (welcomeVideoUrl && welcomeVideoUrl !== "") ? welcomeVideoUrl : "https://assets.mixkit.co/videos/preview/mixkit-hands-holding-a-smartphone-with-a-green-screen-41584-large.mp4";
+            
+            if(videoSrcEl) videoSrcEl.src = targetUrl;
+            if(inputUrlEl && welcomeVideoUrl) inputUrlEl.value = welcomeVideoUrl;
+            if(videoEl) {
+                videoEl.load();
+                videoEl.play().catch(e => console.log("Video play handled:", e));
+            }
+        }
+
+        function saveVideoUrlFromInput(url) {
+            if(url && url.trim() !== "") {
+                welcomeVideoUrl = url.trim();
+                updateSplashVideoElement();
+                saveToCloud();
             }
         }
 
@@ -1010,7 +1017,7 @@
                 brandStatus.className = brandLogoUrl ? "text-[10px] text-emerald-400 font-semibold italic" : "text-[10px] text-slate-400 italic";
             }
             if(videoStatus) {
-                videoStatus.textContent = welcomeVideoUrl ? "✅ Video/GIF Aktif" : "ℹ️ Default Video Aktif";
+                videoStatus.textContent = welcomeVideoUrl ? "✅ Video Link/File Aktif" : "ℹ️ Default Video Aktif";
                 videoStatus.className = welcomeVideoUrl ? "text-[10px] text-emerald-400 font-semibold italic" : "text-[10px] text-slate-400 italic";
             }
 
@@ -1094,7 +1101,7 @@
                     updateSplashVideoElement();
                     await saveToCloud();
                     renderAdminPanel();
-                    alert("✅ Video/GIF sambutan berhasil disimpan!");
+                    alert("✅ Video sambutan berhasil disimpan!");
                 };
                 reader.readAsDataURL(file);
             }
@@ -1216,14 +1223,14 @@
             const file = e.target.files[0];
             if(!file) return;
             const statusEl = document.getElementById('logo-upload-status');
-            if(statusEl) { statusEl.textContent = "⏳ Memproses transparan sempurna..."; statusEl.className = "text-[10px] text-amber-500 font-semibold italic"; }
+            if(statusEl) { statusEl.textContent = "⏳ Membersihkan background logo..."; statusEl.className = "text-[10px] text-amber-500 font-semibold italic"; }
 
             const transparentDataUrl = await removeBackgroundToTransparent(file, 400, 0.8);
             const img = new Image();
             img.onload = function() {
                 rawCustomerLogoImg = img;
                 updateProcessedLogo();
-                if(statusEl) { statusEl.textContent = "✅ Background logo sukses hilang (transparan)!"; statusEl.className = "text-[10px] text-emerald-600 font-semibold italic"; }
+                if(statusEl) { statusEl.textContent = "✅ Background logo berhasil dibersihkan (transparan)!"; statusEl.className = "text-[10px] text-emerald-600 font-semibold italic"; }
             };
             img.src = transparentDataUrl;
         }
@@ -1541,7 +1548,7 @@
             const orderId = "PO-" + Math.floor(1000 + Math.random() * 9000);
             let totalQty = 0, grandSubtotal = 0;
             cartItems.forEach(item => { totalQty += item.qty; grandSubtotal += item.subtotal; });
-            const discountVal = totalQty >= 1000 ? grandSubtotal * 0.10 : 0;
+            const discountVal = totalTag >= 1000 ? grandSubtotal * 0.10 : 0;
             const grandTotal = grandSubtotal - discountVal;
 
             const newOrder = {
