@@ -76,7 +76,6 @@
             background: #cbd5e1;
             border-radius: 4px;
         }
-        /* Glassmorphism & Elegant Styling */
         .glass-card {
             background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(10px);
@@ -86,7 +85,37 @@
 </head>
 <body class="bg-slate-50 text-slate-800 font-sans antialiased pb-24">
 
-    <!-- 🧭 TOP FLOATING NAVIGATION BAR (Navigasi Cepat Ala Situs Besar) -->
+    <!-- 🎬 MODAL VIDEO SAMBUTAN (SPLASH SCREEN 10 DETIK) -->
+    <div id="welcome-video-modal" class="fixed inset-0 bg-slate-950 z-50 flex flex-col items-center justify-center p-4 transition-opacity duration-500">
+        <div class="w-full max-w-sm bg-slate-900 rounded-3xl overflow-hidden shadow-2xl border border-emerald-500/30 flex flex-col items-center relative">
+            
+            <!-- Tombol Skip / Lewati di Pojok Kanan Atas -->
+            <button type="button" onclick="closeWelcomeVideo()" class="absolute top-3 right-3 z-20 bg-slate-800/80 hover:bg-slate-700 text-slate-300 hover:text-white px-3 py-1.5 rounded-full text-xs font-semibold backdrop-blur-md transition cursor-pointer">
+                Lewati [X]
+            </button>
+
+            <!-- Video Player -->
+            <div class="relative w-full aspect-[9/16] max-h-[60vh] bg-black flex items-center justify-center">
+                <video id="splash-video" autoplay muted playsinline class="w-full h-full object-cover">
+                    <!-- Default video sambutan (bisa diganti link video MP4 lo atau di-upload via admin) -->
+                    <source src="https://assets.mixkit.co/videos/preview/mixkit-hands-holding-a-smartphone-with-a-green-screen-41584-large.mp4" type="video/mp4">
+                    Browser Anda tidak mendukung pemutaran video.
+                </video>
+                <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-transparent pointer-events-none"></div>
+            </div>
+
+            <!-- Footer Sambutan di Dalam Modal -->
+            <div class="p-5 text-center space-y-3 w-full bg-slate-900">
+                <h3 class="text-sm font-extrabold text-white">Selamat Datang di ILHAM SPUNBOND</h3>
+                <p class="text-[11px] text-slate-400 italic">Pusat Custom Tas Spunbond & Sablon Profesional Terbaik</p>
+                <button type="button" onclick="closeWelcomeVideo()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-2xl text-xs shadow-lg transition cursor-pointer">
+                    Mulai Masuk Aplikasi 🚀
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 🧭 TOP FLOATING NAVIGATION BAR -->
     <div class="sticky top-0 z-40 bg-slate-900/90 backdrop-blur-md border-b border-slate-800 px-3 py-2.5 shadow-md">
         <div class="max-w-md mx-auto flex items-center justify-between text-[11px] font-semibold text-slate-300 overflow-x-auto no-scrollbar gap-2">
             <a href="#section-custom" class="bg-slate-800 hover:bg-emerald-700 hover:text-white px-3 py-1.5 rounded-lg transition whitespace-nowrap flex items-center gap-1 shadow-sm"><span>🛍️</span> Buat Tas</a>
@@ -97,9 +126,12 @@
     </div>
 
     <div class="max-w-md mx-auto p-4 sm:p-6 space-y-5">
-        <!-- Header Brand Eksklusif -->
-        <div class="bg-gradient-to-br from-emerald-900 via-emerald-800 to-slate-900 text-white p-6 rounded-3xl shadow-xl text-center flex flex-col items-center justify-center relative overflow-hidden border border-emerald-700/40">
+        <!-- Header Brand Eksklusif (Bisa diklik untuk memunculkan ulang video sambutan) -->
+        <div onclick="openWelcomeVideo()" class="bg-gradient-to-br from-emerald-900 via-emerald-800 to-slate-900 text-white p-6 rounded-3xl shadow-xl text-center flex flex-col items-center justify-center relative overflow-hidden border border-emerald-700/40 cursor-pointer group hover:scale-[1.01] transition">
             <div class="absolute -right-10 -top-10 w-32 h-32 bg-emerald-500/10 rounded-full blur-2xl"></div>
+            <div class="absolute top-2 right-3 text-[10px] bg-emerald-700/60 text-emerald-200 px-2.5 py-1 rounded-full font-bold shadow-sm flex items-center gap-1">
+                <span>▶️</span> Klik untuk Video
+            </div>
             <div id="brand-logo-container" class="mb-3 bg-white/10 p-3 rounded-2xl border border-emerald-500/30 flex items-center justify-center min-h-[60px] min-w-[150px] shadow-inner">
                 <img id="header-brand-logo" src="https://via.placeholder.com/160x55?text=ILHAM+SPUNBOND" alt="Logo Brand" class="max-h-16 w-auto object-contain filter drop-shadow">
             </div>
@@ -107,7 +139,7 @@
             <p class="text-xs text-emerald-200/90 mt-1 font-medium tracking-wide">Pusat Custom Tas Spunbond & Sablon Profesional</p>
         </div>
 
-        <!-- 🧠 SMART QUOTE / PESAN PINTAR OTOMATIS HARIAN (Selling & Motivasi) -->
+        <!-- 🧠 SMART QUOTE / PESAN PINTAR OTOMATIS HARIAN -->
         <div class="bg-gradient-to-r from-amber-500/10 via-amber-400/5 to-amber-500/10 border border-amber-500/30 p-4 rounded-2xl shadow-sm relative overflow-hidden space-y-1.5">
             <div class="absolute top-0 right-0 transform translate-x-4 -translate-y-4 w-16 h-16 bg-amber-500/10 rounded-full blur-lg"></div>
             <div class="flex items-center justify-between text-[10px] font-bold text-amber-700 uppercase tracking-widest">
@@ -140,7 +172,7 @@
                 </div>
 
                 <div class="space-y-1.5 pt-1">
-                    <label class="block text-xs font-bold text-slate-700">4. Upload Logo / Desain Anda (Background Transparan Cepat)</label>
+                    <label class="block text-xs font-bold text-slate-700">4. Upload Logo / Desain Anda (Background Transparan Otomatis)</label>
                     <input type="file" id="customer-logo-upload" accept="image/*" onchange="loadCustomerLogo(event)" class="w-full text-xs text-slate-500 file:mr-3 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100 cursor-pointer border border-slate-200 rounded-xl p-1 bg-slate-50">
                     <div id="logo-upload-status" class="text-[10px] text-slate-400 italic"></div>
                 </div>
@@ -148,7 +180,7 @@
                 <div>
                     <label class="block text-xs font-bold text-slate-700 mb-1">5. Pilih Metode Cetak</label>
                     <select id="print-method" onchange="togglePrintMethod()" class="w-full bg-slate-50 border border-slate-300 rounded-xl p-3 text-sm font-semibold text-slate-800 focus:ring-2 focus:ring-emerald-500 outline-none shadow-sm">
-                        <option value="manual">Sablon Manual (Warna Tinta Pilihan)</option>
+                        <option value="manual">Sablon Manual / Pasta (Warna Tinta Pilihan)</option>
                         <option value="dtf">DTF Full Color (Warna Asli Desain)</option>
                     </select>
                 </div>
@@ -224,7 +256,7 @@
                 </div>
             </div>
 
-            <!-- Keranjang Mix Item Pesanan (Horizontal Scroll Elegan) -->
+            <!-- Keranjang Mix Item Pesanan -->
             <div id="section-cart" class="glass-card p-4 rounded-2xl shadow-md space-y-3">
                 <h3 class="text-xs font-extrabold text-slate-800 border-b border-slate-100 pb-2.5 flex items-center justify-between">
                     <span>🛒 Daftar Mix Item Pesanan (<span id="cart-count">0</span> Item)</span>
@@ -254,7 +286,7 @@
                         <span class="watermark-text-display watermark-single">ILHAM SPUNBOND</span>
                     </div>
                 </div>
-                <p class="text-[11px] text-slate-400 text-center italic">🔒 Area Box 2 dikunci khusus untuk pratinjau produksi. Download file bersih hanya tersedia di Galeri Owner.</p>
+                <p class="text-[11px] text-slate-400 text-center italic">🔒 Area Box 2 dikunci khusus pratinjau produksi (Sablon Manual otomatis jadi Hitam Solid / DTF Full Color dengan background transparan).</p>
             </div>
 
             <!-- FORMULIR PEMESANAN & REKENING BANK -->
@@ -537,7 +569,30 @@
         let activeOrdersUnsubscribe = null;
         let cartItems = [];
 
-        // --- SMART DAILY MOTIVATIONAL QUOTES (Otomatis Berubah Harian & Selling Focus) ---
+        // --- KONTROL VIDEO SAMBUTAN (SPLASH SCREEN) ---
+        function closeWelcomeVideo() {
+            const modal = document.getElementById('welcome-video-modal');
+            const video = document.getElementById('splash-video');
+            if(video) video.pause();
+            if(modal) {
+                modal.classList.add('opacity-0');
+                setTimeout(() => { modal.style.display = 'none'; }, 400);
+            }
+        }
+
+        function openWelcomeVideo() {
+            const modal = document.getElementById('welcome-video-modal');
+            const video = document.getElementById('splash-video');
+            if(modal) {
+                modal.style.display = 'flex';
+                setTimeout(() => modal.classList.remove('opacity-0'), 10);
+                if(video) {
+                    video.currentTime = 0;
+                    video.play().catch(e => console.log("Auto-play prevented:", e));
+                }
+            }
+        }
+
         const dailyQuotes = [
             "\"Brand berkelas butuh identitas yang kuat. Sempurnakan souvenir & promosi acaramu bersama kualitas premium ILHAM SPUNBOND hari ini!\"",
             "\"Setiap tas custom di ILHAM SPUNBOND dirancang presisi untuk mengangkat prestise toko dan kantormu di mata pelanggan.\"",
@@ -554,7 +609,6 @@
             const dateBadge = document.getElementById('daily-date-badge');
             if(dateBadge) dateBadge.textContent = dateStr;
 
-            // Tentukan quote berdasarkan hari dalam seminggu (0 - 6) agar otomatis berganti setiap hari
             const dayIndex = today.getDay();
             const quoteEl = document.getElementById('smart-quote-text');
             if(quoteEl) {
@@ -631,7 +685,7 @@
             });
         }
 
-        function cleanOuterBackground(file, maxWidth = 350, quality = 0.6) {
+        function removeBackgroundToTransparent(file, maxWidth = 400, quality = 0.8) {
             return new Promise((resolve) => {
                 const reader = new FileReader();
                 reader.onload = function(e) {
@@ -648,7 +702,26 @@
                         const ctx = canvas.getContext('2d');
                         ctx.clearRect(0, 0, w, h);
                         ctx.drawImage(img, 0, 0, w, h);
-                        resolve(canvas.toDataURL('image/jpeg', quality));
+
+                        const imgData = ctx.getImageData(0, 0, w, h);
+                        const data = imgData.data;
+
+                        const rBg = data[0];
+                        const gBg = data[1];
+                        const bBg = data[2];
+
+                        for (let i = 0; i < data.length; i += 4) {
+                            const r = data[i];
+                            const g = data[i+1];
+                            const b = data[i+2];
+
+                            if (Math.abs(r - rBg) < 45 && Math.abs(g - gBg) < 45 && Math.abs(b - bBg) < 45) {
+                                data[i+3] = 0;
+                            }
+                        }
+
+                        ctx.putImageData(imgData, 0, 0);
+                        resolve(canvas.toDataURL('image/png', quality));
                     };
                     img.src = e.target.result;
                 };
@@ -867,9 +940,9 @@
 
                     card.innerHTML = `
                         <div class="flex items-center justify-between border-b border-slate-800 pb-1.5"><span class="font-bold text-amber-300 text-sm">${item.name}</span></div>
-                        <div><label class="block text-[10px] text-slate-400 mb-1">Upload Foto Tas:</label><input type="file" accept="image/*" onchange="uploadModelSample(event, ${mIndex})" class="w-full text-[10px] text-slate-400 file:mr-2 file:py-1 file:px-2 file:rounded-lg file:border-0 file:bg-amber-500 file:text-slate-950 cursor-pointer"></div>
+                        <div><label class="block text-[10px] text-slate-400 mb-1">Upload Foto Tas (Background hijau otomatis transparan):</label><input type="file" accept="image/*" onchange="uploadModelSample(event, ${mIndex})" class="w-full text-[10px] text-slate-400 file:mr-2 file:py-1 file:px-2 file:rounded-lg file:border-0 file:bg-amber-500 file:text-slate-950 cursor-pointer"></div>
                         <div id="model-status-${mIndex}" class="text-[10px] ${isCustomImg ? 'text-emerald-400 font-semibold' : 'text-slate-400'} italic">
-                            ${isCustomImg ? '✅ Berhasil Di-upload & Terkunci di Sistem' : 'ℹ️ Menggunakan foto default'}
+                            ${isCustomImg ? '✅ Berhasil Di-upload & Background Dihapus Transparan' : 'ℹ️ Menggunakan foto default'}
                         </div>
                         <div class="space-y-1 mt-1">${sizeRows}
                             <div class="flex gap-1.5 mt-2"><input type="text" id="new-s-name-${mIndex}" placeholder="Ukuran" class="flex-1 bg-slate-800 rounded-lg px-2 py-1 text-[11px] text-white outline-none"><input type="number" id="new-s-price-${mIndex}" placeholder="Harga" class="w-20 bg-slate-800 rounded-lg px-2 py-1 text-[11px] text-white outline-none"><button type="button" onclick="addSizeToModel(${mIndex})" class="bg-amber-500 text-slate-950 px-2.5 py-1 rounded-lg text-[11px] font-semibold cursor-pointer">Tambah Size</button></div>
@@ -1108,76 +1181,36 @@
         async function uploadModelSample(e, mIndex) {
             const file = e.target.files[0];
             if(file) {
-                const cleaned = await cleanOuterBackground(file, 350, 0.6);
-                bagModels[mIndex].image = cleaned;
+                const transparentImg = await removeBackgroundToTransparent(file, 400, 0.8);
+                bagModels[mIndex].image = transparentImg;
                 await saveToCloud();
                 renderAdminPanel();
                 updateBagCanvas();
             }
         }
 
-        // --- FAST LIGHTWEIGHT TRANSPARENCY ENGINE ---
-        function loadCustomerLogo(e) {
+        async function loadCustomerLogo(e) {
             const file = e.target.files[0];
             if(!file) return;
 
             const statusEl = document.getElementById('logo-upload-status');
             if(statusEl) {
-                statusEl.textContent = "⏳ Memproses latar belakang transparan...";
+                statusEl.textContent = "⏳ Memproses background transparan otomatis...";
                 statusEl.className = "text-[10px] text-amber-500 font-semibold italic";
             }
 
-            const reader = new FileReader();
-            reader.onload = function(event) {
-                const img = new Image();
-                img.onload = function() {
-                    const canvas = document.createElement('canvas');
-                    let targetW = img.width;
-                    let targetH = img.height;
-                    
-                    if(targetW > 300) {
-                        targetH = Math.round((targetH * 300) / targetW);
-                        targetW = 300;
-                    }
-
-                    canvas.width = targetW;
-                    canvas.height = targetH;
-                    const ctx = canvas.getContext('2d');
-                    ctx.drawImage(img, 0, 0, targetW, targetH);
-
-                    const imgData = ctx.getImageData(0, 0, targetW, targetH);
-                    const data = imgData.data;
-
-                    const rBg = data[0];
-                    const gBg = data[1];
-                    const bBg = data[2];
-
-                    for (let i = 0; i < data.length; i += 4) {
-                        const r = data[i];
-                        const g = data[i+1];
-                        const b = data[i+2];
-
-                        if (Math.abs(r - rBg) < 40 && Math.abs(g - gBg) < 40 && Math.abs(b - bBg) < 40) {
-                            data[i+3] = 0;
-                        }
-                    }
-
-                    ctx.putImageData(imgData, 0, 0);
-
-                    const processedImg = new Image();
-                    processedImg.onload = function() {
-                        rawCustomerLogoImg = processedImg;
-                        updateProcessedLogo();
-                        if(statusEl) {
-                            statusEl.textContent = "✅ Logo berhasil di-upload & latar belakang transparan!";
-                            statusEl.className = "text-[10px] text-emerald-600 font-semibold italic";
-                        }
-                    };
-                    processedImg.src = canvas.toDataURL('image/png');
-                };
-                img.src = event.target.result;
+            const transparentDataUrl = await removeBackgroundToTransparent(file, 400, 0.8);
+            
+            const img = new Image();
+            img.onload = function() {
+                rawCustomerLogoImg = img;
+                updateProcessedLogo();
+                if(statusEl) {
+                    statusEl.textContent = "✅ Logo berhasil di-upload & background transparan!";
+                    statusEl.className = "text-[10px] text-emerald-600 font-semibold italic";
+                }
             };
-            reader.readAsDataURL(file);
+            img.src = transparentDataUrl;
         }
 
         function updateProcessedLogo() {
@@ -1188,7 +1221,7 @@
             const mSelect = document.getElementById('bag-model-select');
             const modelNameText = (mSelect && mSelect.value !== "" && bagModels[mSelect.value]) ? bagModels[mSelect.value].name : bagModels[0].name;
 
-            document.getElementById('owner-method-txt').textContent = method === 'dtf' ? 'DTF Full Color' : 'Sablon Manual';
+            document.getElementById('owner-method-txt').textContent = method === 'dtf' ? 'DTF Full Color' : 'Sablon Manual (Pasta)';
             document.getElementById('owner-model-txt').textContent = modelNameText;
 
             const previewCanvas = document.createElement('canvas');
@@ -1221,9 +1254,10 @@
             const oCtx = ownerCanvas.getContext('2d');
             oCtx.drawImage(rawCustomerLogoImg, 0, 0);
 
+            const oData = oCtx.getImageData(0, 0, ownerCanvas.width, ownerCanvas.height);
+            const d2 = oData.data;
+
             if (method === 'manual') {
-                const oData = oCtx.getImageData(0, 0, ownerCanvas.width, ownerCanvas.height);
-                const d2 = oData.data;
                 for (let i = 0; i < d2.length; i += 4) {
                     if (d2[i + 3] > 15) {
                         d2[i] = 0;
@@ -1232,8 +1266,14 @@
                         d2[i + 3] = 255;
                     }
                 }
-                oCtx.putImageData(oData, 0, 0);
+            } else {
+                for (let i = 0; i < d2.length; i += 4) {
+                    if (d2[i + 3] < 20) {
+                        d2[i + 3] = 0;
+                    }
+                }
             }
+            oCtx.putImageData(oData, 0, 0);
 
             const ownerImgEl = document.getElementById('owner-file-img');
             document.getElementById('owner-placeholder-text').style.display = 'none';
@@ -1317,7 +1357,7 @@
             const currentModel = bagModels[mIndex] || bagModels[0];
             const sizeName = document.getElementById('bag-size-select').value;
             const qty = parseInt(document.getElementById('item-qty').value) || 500;
-            const printMethod = document.getElementById('print-method').value === 'dtf' ? 'DTF Full Color' : 'Sablon Manual';
+            const printMethod = document.getElementById('print-method').value === 'dtf' ? 'DTF Full Color' : 'Sablon Manual (Pasta)';
             const unitPrice = calculateItemPrice();
 
             let mockupBase64 = "";
@@ -1459,7 +1499,7 @@
         }
 
         async function downloadCustomerInvoicePDF() {
-            if(cartItems.length === 0) return alert("Keranjang pesanan masih kosong! Silakan masukkan minimal 1 item pesanan terlebih dahulu.");
+            if(cartItems.length === 0) return alert("Keranjang pesanan masih kosong! Silakan masukkan kelengkapan pesanan terlebih dahulu.");
 
             let totalQty = 0;
             let grandSubtotal = 0;
@@ -1750,7 +1790,7 @@
                                             <div class="text-[10px] text-slate-400 truncate">${it.size} (${it.qty} Pcs)</div>
                                         </div>
                                     </div>
-                                    ${it.cleanLogo ? `<button type="button" onclick="downloadCleanFilm('${it.cleanLogo}', '${o.id}', ${itIdx + 1})" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-1.5 px-2 rounded-lg text-[9px] flex items-center justify-center gap-1 cursor-pointer truncate shadow-sm"><span>📥</span> Film Bersih</button>` : ''}
+                                    ${it.cleanLogo ? `<button type="button" onclick="downloadCleanFilm('${it.cleanLogo}', '${o.id}', ${itIdx + 1})" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-1.5 px-2 rounded-lg text-[9px] flex items-center justify-center gap-1 cursor-pointer truncate shadow-sm"><span>📥</span> Film Siap Cetak</button>` : ''}
                                 </div>`;
                         });
                     }
@@ -1786,11 +1826,11 @@
         window.downloadCleanFilm = function(dataUrl, orderId, itemNo) {
             const a = document.createElement('a');
             a.href = dataUrl;
-            a.download = `Film-Produksi-${orderId}-Item-${itemNo}.png`;
+            a.download = `Film-Siap-Cetak-${orderId}-Item-${itemNo}.png`;
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
-            alert(`✅ Berhasil! File gambar film bersih (Item #${itemNo}) untuk PO ${orderId} telah didownload.`);
+            alert(`✅ Berhasil! File gambar film siap cetak (Item #${itemNo}) untuk PO ${orderId} telah didownload.`);
         };
 
         window.downloadOwnerInvoice = function(orderObj, isPaid) {
