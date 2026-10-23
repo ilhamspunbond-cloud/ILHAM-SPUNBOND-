@@ -83,7 +83,7 @@
         }
     </style>
 </head>
-<body class="bg-slate-50 text-slate-800 font-sans antialiased pb-24">
+<body class="bg-slate-50 text-slate-800 font-sans antialiased pb-28">
 
     <!-- 🎬 MODAL VIDEO SAMBUTAN (SPLASH SCREEN ADMIN UPLOAD) -->
     <div id="welcome-video-modal" class="fixed inset-0 bg-slate-950 z-50 flex flex-col items-center justify-center p-4 transition-opacity duration-500">
@@ -109,16 +109,6 @@
                     Mulai Masuk Aplikasi 🚀
                 </button>
             </div>
-        </div>
-    </div>
-
-    <!-- 🧭 TOP FLOATING NAVIGATION BAR -->
-    <div class="sticky top-0 z-40 bg-slate-900/90 backdrop-blur-md border-b border-slate-800 px-3 py-2.5 shadow-md">
-        <div class="max-w-md mx-auto flex items-center justify-between text-[11px] font-semibold text-slate-300 overflow-x-auto no-scrollbar gap-2">
-            <a href="#section-custom" class="bg-slate-800 hover:bg-emerald-700 hover:text-white px-3 py-1.5 rounded-lg transition whitespace-nowrap flex items-center gap-1 shadow-sm"><span>🛍️</span> Buat Tas</a>
-            <a href="#section-preview" class="bg-slate-800 hover:bg-emerald-700 hover:text-white px-3 py-1.5 rounded-lg transition whitespace-nowrap flex items-center gap-1 shadow-sm"><span>📐</span> Preview</a>
-            <a href="#section-cart" class="bg-slate-800 hover:bg-emerald-700 hover:text-white px-3 py-1.5 rounded-lg transition whitespace-nowrap flex items-center gap-1 shadow-sm"><span>🛒</span> Keranjang</a>
-            <a href="#section-form" class="bg-slate-800 hover:bg-emerald-700 hover:text-white px-3 py-1.5 rounded-lg transition whitespace-nowrap flex items-center gap-1 shadow-sm"><span>📋</span> Checkout</a>
         </div>
     </div>
 
@@ -195,7 +185,7 @@
                 </div>
             </div>
 
-            <!-- BOX 1: Preview Mockup Tas -->
+            <!-- BOX 1: Preview Mockup Tas & Slider Posisi Logo di Bawahnya -->
             <div id="section-preview" class="glass-card p-4 rounded-2xl shadow-md relative space-y-3">
                 <h2 class="text-sm font-extrabold text-slate-800 flex items-center gap-2">
                     <span>🛍️</span> Box 1: Preview Mockup Tas (Customer View)
@@ -219,7 +209,7 @@
                     </div>
                 </div>
 
-                <!-- 🎛️ Pengaturan Posisi & Ukuran Logo (Dipindah tepat ke bawah Box 1) -->
+                <!-- 🎛️ PENGATURAN POSISI & UKURAN LOGO (DI BAWAH KOTAK GAMBAR TAS / BOX 1) -->
                 <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200 space-y-3">
                     <h3 class="text-xs font-extrabold text-slate-700">🎛️ Pengaturan Posisi & Ukuran Logo</h3>
                     <div class="grid grid-cols-2 gap-3 text-xs">
@@ -490,6 +480,28 @@
 
         <div class="text-center pt-2 pb-4">
             <span id="sync-status" class="text-[11px] bg-slate-200 text-slate-700 px-3 py-1.5 rounded-full font-medium inline-block shadow-sm">☁️ Connecting Firebase Cloud...</span>
+        </div>
+    </div>
+
+    <!-- 🧭 BOTTOM FLOATING NAVIGATION BAR (NAVIGASI BAWAH PROFESIONAL) -->
+    <div class="fixed bottom-0 left-0 right-0 z-40 bg-slate-900/95 backdrop-blur-md border-t border-slate-800 px-4 py-2 shadow-2xl">
+        <div class="max-w-md mx-auto grid grid-cols-4 gap-1 text-[10px] font-bold text-slate-300 text-center">
+            <a href="#section-custom" class="flex flex-col items-center justify-center py-1.5 rounded-xl hover:bg-slate-800 text-slate-300 hover:text-emerald-400 transition">
+                <span class="text-base">🛍️</span>
+                <span>Buat Tas</span>
+            </a>
+            <a href="#section-preview" class="flex flex-col items-center justify-center py-1.5 rounded-xl hover:bg-slate-800 text-slate-300 hover:text-emerald-400 transition">
+                <span class="text-base">📐</span>
+                <span>Preview</span>
+            </a>
+            <a href="#section-cart" class="flex flex-col items-center justify-center py-1.5 rounded-xl hover:bg-slate-800 text-slate-300 hover:text-emerald-400 transition relative">
+                <span class="text-base">🛒</span>
+                <span>Keranjang</span>
+            </a>
+            <a href="#section-form" class="flex flex-col items-center justify-center py-1.5 rounded-xl hover:bg-slate-800 text-slate-300 hover:text-emerald-400 transition">
+                <span class="text-base">📋</span>
+                <span>Checkout</span>
+            </a>
         </div>
     </div>
 
@@ -1983,7 +1995,7 @@
                 await setDoc(doc(window.firebaseDb, "orders", orderId), newOrder);
                 
                 let bankText = "";
-                    bankAccounts.forEach(b => { bankText += `- Bank ${b.bank}: ${b.acc} (a.n ${b.owner})\n`; });
+                bankAccounts.forEach(b => { bankText += `- Bank ${b.bank}: ${b.acc} (a.n ${b.owner})\n`; });
 
                 let itemsText = "";
                 cartItems.forEach((it, idx) => {
