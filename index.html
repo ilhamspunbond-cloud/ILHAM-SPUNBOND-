@@ -81,9 +81,25 @@
             backdrop-filter: blur(10px);
             border: 1px solid rgba(226, 232, 240, 0.8);
         }
+        /* Animasi Hujan Gift Turun Kebawah */
+        @keyframes fall {
+            0% { transform: translateY(-30px) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(100vh) rotate(360deg); opacity: 0; }
+        }
+        .gift-drop {
+            position: fixed;
+            top: -40px;
+            z-index: 99;
+            user-select: none;
+            pointer-events: none;
+            animation: fall linear forwards;
+        }
     </style>
 </head>
-<body class="bg-slate-50 text-slate-800 font-sans antialiased pb-28">
+<body class="bg-slate-50 text-slate-800 font-sans antialiased pb-28 relative">
+
+    <!-- CONTAINER HUJAN GIFT SESUAI MOMEN -->
+    <div id="gift-rain-container" class="absolute inset-0 pointer-events-none overflow-hidden z-30"></div>
 
     <!-- 🎬 MODAL VIDEO SAMBUTAN (SPLASH SCREEN ADMIN UPLOAD) -->
     <div id="welcome-video-modal" class="fixed inset-0 bg-slate-950 z-50 flex flex-col items-center justify-center p-4 transition-opacity duration-500">
@@ -126,19 +142,19 @@
             <p class="text-xs text-emerald-200/90 mt-1 font-medium tracking-wide">Pusat Custom Tas Spunbond & Sablon Profesional</p>
         </div>
 
-        <!-- 🧠 SMART QUOTE & MALE VOICE ASSISTANT -->
+        <!-- 🧠 SMART MOMENT QUOTE, EMOJI LOGO, HUJAN GIFT & JAM JAKARTA (WIB) -->
         <div class="bg-gradient-to-r from-amber-500/10 via-amber-400/5 to-amber-500/10 border border-amber-500/30 p-4 rounded-2xl shadow-sm relative overflow-hidden space-y-2">
             <div class="absolute top-0 right-0 transform translate-x-4 -translate-y-4 w-16 h-16 bg-amber-500/10 rounded-full blur-lg"></div>
             <div class="flex items-center justify-between text-[10px] font-bold text-amber-700 uppercase tracking-widest">
-                <span class="flex items-center gap-1"><span>✨</span> Smart Daily Motivation & Male Voice</span>
-                <span id="daily-date-badge" class="bg-amber-100 px-2 py-0.5 rounded-full"></span>
+                <span id="moment-badge-title" class="flex items-center gap-1"><span>✨</span> Smart Moment Motivation</span>
+                <span id="jakarta-time-badge" class="bg-amber-100 text-amber-900 px-2.5 py-0.5 rounded-full font-black shadow-inner">⏰ 00:00 WIB</span>
             </div>
             <p id="smart-quote-text" class="text-xs font-semibold text-slate-800 leading-relaxed italic pt-0.5">
                 "Kesuksesan bisnis berawal dari langkah kecil yang konsisten. Bersama ILHAM SPUNBOND, tingkatkan prestise brand toko dan acara spesial Anda hari ini!"
             </p>
-            <div class="flex items-center justify-between pt-1 border-t border-amber-500/20">
-                <span id="voice-status-label" class="text-[10px] text-amber-800 font-medium italic">🔊 Suara sambutan cowok aktif</span>
-                <button type="button" onclick="toggleSpeechVoice()" id="voice-toggle-btn" class="bg-amber-600 hover:bg-amber-700 text-white px-3 py-1 rounded-lg text-[10px] font-bold shadow-sm transition cursor-pointer flex items-center gap-1">
+            <div class="flex items-center justify-between pt-1 border-t border-amber-500/20 text-[10px]">
+                <span id="voice-status-label" class="text-amber-800 font-medium italic">🔊 Suara sambutan cowok aktif</span>
+                <button type="button" onclick="toggleSpeechVoice()" id="voice-toggle-btn" class="bg-amber-600 hover:bg-amber-700 text-white px-3 py-1 rounded-lg font-bold shadow-sm transition cursor-pointer flex items-center gap-1">
                     <span>🔇</span> Putar Ulang Suara
                 </button>
             </div>
@@ -215,7 +231,7 @@
                     </div>
                 </div>
 
-                <!-- 🎛️ PENGATURAN POSISI & UKURAN LOGO (DI BAWAH KOTAK GAMBAR TAS / BOX 1) -->
+                <!-- 🎛️ PENGATURAN POSISI & UKURAN LOGO -->
                 <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200 space-y-3">
                     <h3 class="text-xs font-extrabold text-slate-700">🎛️ Pengaturan Posisi & Ukuran Logo</h3>
                     <div class="grid grid-cols-2 gap-3 text-xs">
@@ -434,7 +450,7 @@
 
             <!-- Kelola Model Tas & Ukuran -->
             <div class="bg-slate-800 p-3 rounded-xl border border-amber-500/30 space-y-3">
-                <label class="block text-xs font-semibold text-amber-300">📦 Kelola Model Tas & Ukuran</label>
+                <label class="block text-xs font-semibold text-amber-300">📦 Kelola Model Tas & Ukuran (Bisa Diedit Langsung)</label>
                 <div id="model-admin-container" class="space-y-3 max-h-64 overflow-y-auto pr-1"></div>
             </div>
 
@@ -489,7 +505,7 @@
         </div>
     </div>
 
-    <!-- 🧭 BOTTOM FLOATING NAVIGATION BAR (NAVIGASI BAWAH PROFESIONAL) -->
+    <!-- 🧭 BOTTOM FLOATING NAVIGATION BAR -->
     <div class="fixed bottom-0 left-0 right-0 z-40 bg-slate-900/95 backdrop-blur-md border-t border-slate-800 px-4 py-2 shadow-2xl">
         <div class="max-w-md mx-auto grid grid-cols-4 gap-1 text-[10px] font-bold text-slate-300 text-center">
             <a href="#section-custom" class="flex flex-col items-center justify-center py-1.5 rounded-xl hover:bg-slate-800 text-slate-300 hover:text-emerald-400 transition">
@@ -601,7 +617,6 @@
                 modal.classList.add('opacity-0');
                 setTimeout(() => { modal.style.display = 'none'; }, 400);
             }
-            // Trigger suara cowok otomatis setelah video ditutup
             setTimeout(() => { playDailyQuoteSpeech(currentQuoteText); }, 500);
         }
 
@@ -618,28 +633,119 @@
             }
         }
 
-        const dailyQuotes = [
-            "Selamat datang di ILHAM SPUNBOND. Brand berkelas butuh identitas yang kuat. Sempurnakan souvenir dan promosi acaramu bersama kualitas premium kami hari ini!",
-            "Selamat datang di ILHAM SPUNBOND. Setiap tas custom dirancang presisi untuk mengangkat prestise toko dan kantormu di mata pelanggan.",
-            "Selamat datang di ILHAM SPUNBOND. Peluang emas ada pada detail terkecil. Jadikan setiap event dan toko Anda pusat perhatian dengan tas spunbond kustom eksklusif.",
-            "Selamat datang di ILHAM SPUNBOND. Kualitas sablon tajam, bahan kuat, harga bersahabat. Kami siap jadi partner terpercaya kesuksesan bisnismu!",
-            "Selamat datang di ILHAM SPUNBOND. Langkah awal memenangkan hati konsumen adalah tampilan produk yang berkesan. Yuk, wujudkan desain tas impianmu bersama kami!",
-            "Selamat datang di ILHAM SPUNBOND. Kesuksesan bisnis dimulai dari komitmen memberikan yang terbaik. Pesan tas spunbond grosir berkualitas tinggi hanya di sini.",
-            "Selamat datang di ILHAM SPUNBOND. Tingkatkan omset dan citra profesional tokomu hari ini dengan tas spunbond custom berdesain elegan!"
-        ];
+        // 🗓️ DAFTAR KATA MOTIVASI & ITEM HUJAN GIFT BERDASARKAN MOMEN
+        const contextualQuotes = {
+            independence: {
+                label: "🇮🇩 Spesial Kemerdekaan RI",
+                quotes: [
+                    "🇮🇩 Merdeka! Semangat juang 45 adalah semangat mandiri. Tingkatkan prestise bisnismu hari ini dengan tas spunbond eksklusif dari ILHAM SPUNBOND! 🛍️🔥",
+                    "🇮🇩 Kobarkan semangat kemerdekaan! Jadikan kantormu pusat perhatian lewat produk tas custom berkualitas tinggi karya ILHAM SPUNBOND. 🚀✨"
+                ],
+                gifts: ["🇮🇩", "⭐", "🔥", "🏆", "🚀"]
+            },
+            ramadan: {
+                label: "🌙 Spesial Bulan Ramadhan",
+                quotes: [
+                    "🌙 Marhaban ya Ramadhan! Sucikan hati, tebarkan berkah. Sempurnakan bingkisan dan parsel lebaranmu dengan tas spunbond ramah lingkungan dari ILHAM SPUNBOND! 🎁🤲",
+                    "🌙 Bulan suci penuh berkah! Saatnya berbagi kebahagiaan lewat tas kustom keren pesanan khusus di ILHAM SPUNBOND. Berkah bisnisnya, mantap hasilnya! ✨📿"
+                ],
+                gifts: ["🌙", "⭐", "🎁", "🤲", "✨"]
+            },
+            christmas: {
+                label: "🎄 Spesial Hari Natal",
+                quotes: [
+                    "🎄 Selamat Hari Natal! Hangatkan suasana berbagi kado dan kasih sayang dengan tas kado spunbond premium dari ILHAM SPUNBOND. 🎁⭐",
+                    "🎄 Damai Natal menyertai langkah bisnismu! Jadikan kado akhir tahun lebih berkesan bersama tas custom elegan dari ILHAM SPUNBOND. 🎅✨"
+                ],
+                gifts: ["🎄", "🎁", "⭐", "🎅", "❄️"]
+            },
+            saturdayNight: {
+                label: "🔥 Spesial Malam Minggu Produktif",
+                quotes: [
+                    "🔥 Malam minggu asyik nongkrong, tapi order tas custom toko buat persiapan senin tetap nomor satu! Yuk, selesaikan PO-mu malam ini di ILHAM SPUNBOND! 🛒😎",
+                    "🌙 Malam minggu tetap produktif! Pejuang cuan sejati tahu kapan harus santai dan kapan harus atur strategi bisnis bersama ILHAM SPUNBOND. Tetap semangat! 🚀💼"
+                ],
+                gifts: ["🔥", "⭐", "🛒", "😎", "🚀"]
+            },
+            general: {
+                label: "✨ Smart Moment Motivation",
+                quotes: [
+                    "✨ Kesuksesan bisnis berawal dari langkah kecil yang konsisten. Bersama ILHAM SPUNBOND, tingkatkan prestise brand toko dan acara spesialmu hari ini! 🛍️🔥",
+                    "🎯 Setiap tas custom dirancang presisi untuk mengangkat citra tokomu di mata pelanggan. Kepercayaan dan kualitas adalah prioritas utama ILHAM SPUNBOND! 💎🚀",
+                    "🎨 Sablon tajam, bahan kuat, harga bersahabat! ILHAM SPUNBOND selalu siap jadi partner terpercaya untuk melompatkan omset bisnismu ke level berikutnya! 🔥📈",
+                    "🌟 Tampil beda, unik, dan berkarakter dengan tas spunbond kustom berkualitas tinggi. Siap melayani pesanan grosir kilat seluruh Indonesia bersama ILHAM SPUNBOND! 📦✨"
+                ],
+                gifts: ["🛍️", "💎", "⭐", "🎁", "🚀", "🔥"]
+            }
+        };
 
         function initSmartDailyQuote() {
-            const today = new Date();
-            const dateStr = today.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'short', year: 'numeric' });
-            const dateBadge = document.getElementById('daily-date-badge');
-            if(dateBadge) dateBadge.textContent = dateStr;
+            updateJakartaClock();
+            setInterval(updateJakartaClock, 1000);
 
-            const dayIndex = today.getDay();
-            currentQuoteText = dailyQuotes[dayIndex] || dailyQuotes[0];
+            const today = new Date();
+            const month = today.getMonth() + 1; 
+            const day = today.getDate();
+            const dayOfWeek = today.getDay(); 
+            const hours = today.getHours();
+
+            let activeTheme = contextualQuotes.general;
+
+            if (month === 8 && day === 17) {
+                activeTheme = contextualQuotes.independence;
+            } else if (month === 12 && day === 25) {
+                activeTheme = contextualQuotes.christmas;
+            } else if (dayOfWeek === 6 && hours >= 15) {
+                activeTheme = contextualQuotes.saturdayNight;
+            }
+
+            const randomIndex = Math.floor(Math.random() * activeTheme.quotes.length);
+            currentQuoteText = activeTheme.quotes[randomIndex];
+            
             const quoteEl = document.getElementById('smart-quote-text');
             if(quoteEl) {
                 quoteEl.textContent = `"${currentQuoteText}"`;
             }
+
+            const momentTitleEl = document.getElementById('moment-badge-title');
+            if(momentTitleEl) {
+                momentTitleEl.innerHTML = `<span>✨</span> ${activeTheme.label}`;
+            }
+
+            // JALANKAN EFEK HUJAN GIFT SESUAI MOMEN
+            triggerGiftRain(activeTheme.gifts);
+        }
+
+        // FUNGSI ANIMASI HUJAN GIFT JATUH KE BAWAH
+        function triggerGiftRain(giftArray) {
+            const container = document.getElementById('gift-rain-container');
+            if(!container) return;
+            container.innerHTML = ''; // Reset hujan sebelumnya
+
+            // Munculkan 25 item gift berjatuhan
+            for (let i = 0; i < 25; i++) {
+                const drop = document.createElement('div');
+                drop.className = 'gift-drop';
+                drop.textContent = giftArray[Math.floor(Math.random() * giftArray.length)];
+                
+                // Posisi X acak, ukuran acak, durasi jatuh & delay acak
+                drop.style.left = Math.random() * 100 + 'vw';
+                drop.style.fontSize = (Math.random() * 16 + 18) + 'px';
+                drop.style.animationDuration = (Math.random() * 3 + 2.5) + 's';
+                drop.style.animationDelay = (Math.random() * 2) + 's';
+                
+                container.appendChild(drop);
+            }
+        }
+
+        // Fungsi Jam Waktu Indonesia Barat (WIB / Jakarta)
+        function updateJakartaClock() {
+            const timeEl = document.getElementById('jakarta-time-badge');
+            if(!timeEl) return;
+            
+            const options = { timeZone: 'Asia/Jakarta', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false };
+            const timeString = new Intl.DateTimeFormat('id-ID', options).format(new Date());
+            timeEl.textContent = `⏰ ${timeString} WIB`;
         }
 
         // --- FITUR SUARA COWOK OTOMATIS (MALE VOICE TTS) ---
@@ -648,18 +754,17 @@
             
             window.speechSynthesis.cancel();
 
-            const utterance = new SpeechSynthesisUtterance(text);
+            const cleanSpeechText = text.replace(/[\u{1F300}-\u{1F5FF}\u{1F900}-\u{1F9FF}\u{1F600}-\u{1F64F}\u{1F680}-\u{1F6FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}\u{1F1E0}-\u{1F1FF}]/gu, '');
+            const utterance = new SpeechSynthesisUtterance(cleanSpeechText);
             utterance.lang = 'id-ID';
-            utterance.rate = 0.90; // Kecepatan sedikit lebih santai & tegas ala suara cowok
-            utterance.pitch = 0.7; // Pitch diturunkan agar nada suara lebih nge-bass / maskulin (suara cowok)
+            utterance.rate = 0.90;
+            utterance.pitch = 0.7; // Nada maskulin / cowok (nge-bass)
 
-            // Pilih suara pria jika tersedia di perangkat
             const voices = window.speechSynthesis.getVoices();
             const maleVoice = voices.find(v => v.lang.includes('id') && (v.name.toLowerCase().includes('male') || v.name.toLowerCase().includes('damayanti') === false && v.name.toLowerCase().includes('google') === false));
             if (maleVoice) {
                 utterance.voice = maleVoice;
             } else {
-                // Cari suara bahasa Indonesia apa saja jika suara spesifik pria tidak ketemu
                 const idVoice = voices.find(v => v.lang.includes('id') || v.lang.includes('in-ID'));
                 if (idVoice) utterance.voice = idVoice;
             }
@@ -699,7 +804,6 @@
             }
         }
 
-        // Panggil preload suara browser
         if ('speechSynthesis' in window) {
             window.speechSynthesis.onvoiceschanged = () => { window.speechSynthesis.getVoices(); };
         }
@@ -1038,7 +1142,17 @@
                     let sizeRows = '';
                     if(item.sizes) {
                         item.sizes.forEach((s, sIndex) => {
-                            sizeRows += `<div class="flex items-center justify-between bg-slate-800 p-1.5 rounded-lg text-[11px]"><span><b>${s.name}</b> (Rp ${s.price.toLocaleString('id-ID')})</span><button type="button" onclick="deleteSizeFromModel(${mIndex}, ${sIndex})" class="text-rose-400 font-bold px-2 py-0.5 cursor-pointer hover:bg-rose-900/40 rounded">Hapus</button></div>`;
+                            sizeRows += `
+                                <div class="flex items-center justify-between bg-slate-800 p-2 rounded-lg text-[11px] gap-2">
+                                    <div class="flex-1 flex gap-1 items-center">
+                                        <input type="text" id="edit-s-name-${mIndex}-${sIndex}" value="${s.name}" class="w-28 bg-slate-900 border border-slate-700 rounded px-1.5 py-1 text-white text-[11px] outline-none">
+                                        <input type="number" id="edit-s-price-${mIndex}-${sIndex}" value="${s.price}" class="w-20 bg-slate-900 border border-slate-700 rounded px-1.5 py-1 text-white text-[11px] outline-none">
+                                    </div>
+                                    <div class="flex gap-1">
+                                        <button type="button" onclick="updateSizeInModel(${mIndex}, ${sIndex})" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-2 py-1 rounded cursor-pointer text-[10px]">Edit</button>
+                                        <button type="button" onclick="deleteSizeFromModel(${mIndex}, ${sIndex})" class="bg-rose-600/80 hover:bg-rose-700 text-white font-bold px-2 py-1 rounded cursor-pointer text-[10px]">Hapus</button>
+                                    </div>
+                                </div>`;
                         });
                     }
 
@@ -1050,8 +1164,10 @@
                         <div id="model-status-${mIndex}" class="text-[10px] ${isCustomImg ? 'text-emerald-400 font-semibold' : 'text-slate-400'} italic">
                             ${isCustomImg ? '✅ Berhasil Di-upload & Background Dihapus Transparan' : 'ℹ️ Menggunakan foto default'}
                         </div>
-                        <div class="space-y-1 mt-1">${sizeRows}
-                            <div class="flex gap-1.5 mt-2"><input type="text" id="new-s-name-${mIndex}" placeholder="Ukuran" class="flex-1 bg-slate-800 rounded-lg px-2 py-1 text-[11px] text-white outline-none"><input type="number" id="new-s-price-${mIndex}" placeholder="Harga" class="w-20 bg-slate-800 rounded-lg px-2 py-1 text-[11px] text-white outline-none"><button type="button" onclick="addSizeToModel(${mIndex})" class="bg-amber-500 text-slate-950 px-2.5 py-1 rounded-lg text-[11px] font-semibold cursor-pointer">Tambah Size</button></div>
+                        <div class="space-y-1.5 mt-1">
+                            <div class="text-[10px] text-amber-300 font-semibold">Daftar Ukuran & Harga:</div>
+                            ${sizeRows}
+                            <div class="flex gap-1.5 mt-2 pt-1 border-t border-slate-800"><input type="text" id="new-s-name-${mIndex}" placeholder="Ukuran Baru" class="flex-1 bg-slate-800 rounded-lg px-2 py-1 text-[11px] text-white outline-none border border-slate-700"><input type="number" id="new-s-price-${mIndex}" placeholder="Harga" class="w-20 bg-slate-800 rounded-lg px-2 py-1 text-[11px] text-white outline-none border border-slate-700"><button type="button" onclick="addSizeToModel(${mIndex})" class="bg-amber-500 text-slate-950 px-2.5 py-1 rounded-lg text-[11px] font-semibold cursor-pointer">Tambah</button></div>
                         </div>`;
                     modelAdminContainer.appendChild(card);
                 }
@@ -1195,7 +1311,7 @@
             sizeSelect.innerHTML = '';
             if(currentModel && currentModel.sizes) {
                 currentModel.sizes.forEach(s => {
-                    sizeSelect.innerHTML += `<option value="${s.name}">${s.name}</option>`;
+                    sizeSelect.innerHTML += `<option value="${s.name}">${s.name} (Rp ${s.price.toLocaleString('id-ID')})</option>`;
                 });
             }
             updateSizeLabel();
@@ -1261,6 +1377,25 @@
                 renderAdminPanel();
             } else {
                 alert("Harap isi nama ukuran dan harga dengan benar!");
+            }
+        }
+
+        function updateSizeInModel(mIndex, sIndex) {
+            const nameInput = document.getElementById(`edit-s-name-${mIndex}-${sIndex}`);
+            const priceInput = document.getElementById(`edit-s-price-${mIndex}-${sIndex}`);
+            if(!nameInput || !priceInput) return;
+
+            const newName = nameInput.value.trim();
+            const newPrice = parseInt(priceInput.value);
+
+            if(newName && !isNaN(newPrice)) {
+                bagModels[mIndex].sizes[sIndex].name = newName;
+                bagModels[mIndex].sizes[sIndex].price = newPrice;
+                saveToCloud();
+                renderAdminPanel();
+                alert("✅ Ukuran & harga berhasil diperbarui!");
+            } else {
+                alert("Harap masukkan nama ukuran dan angka harga yang valid!");
             }
         }
 
@@ -1644,9 +1779,13 @@
             const region = document.getElementById('shipping-region').value;
             const dpVal = region === 'luar' ? grandTotal * 0.50 : 0;
 
-            generateInvoicePDF({
+            const customerNameInput = document.getElementById('customer-name').value.trim();
+            const displayName = customerNameInput !== "" ? customerNameInput : "Kak";
+
+            // Panggil fungsi pembuat PDF
+            await generateInvoicePDF({
                 id: "PO-" + Math.floor(1000 + Math.random() * 9000),
-                name: document.getElementById('customer-name').value || '-',
+                name: customerNameInput || '-',
                 wa: document.getElementById('customer-wa').value || '-',
                 address: document.getElementById('customer-address').value || '-',
                 items: cartItems,
@@ -1657,6 +1796,34 @@
                 date: new Date().toLocaleString('id-ID', { dateStyle: 'medium', timeStyle: 'medium' }),
                 status: "BELUM LUNAS (MENUNGGU PEMBAYARAN)"
             }, false);
+
+            // 🔊 UCAPAN TERIMA KASIH DENGAN SUARA COWOK OTOMATIS SETELAH DOWNLOAD INVOICE
+            setTimeout(() => {
+                const speechText = `Terima kasih banyak, ${displayName}. Invoice tagihan berhasil diunduh. Semoga sehat selalu, dilancarkan rezekinya, dan usahanya semakin sukses bersama ILHAM SPUNBOND.`;
+                playThankYouSpeech(speechText);
+            }, 800);
+        }
+
+        // FUNGSI KHUSUS SUARA COWOK UCAPAN TERIMA KASIH
+        function playThankYouSpeech(text) {
+            if (!('speechSynthesis' in window)) return;
+            window.speechSynthesis.cancel();
+
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'id-ID';
+            utterance.rate = 0.90;
+            utterance.pitch = 0.7; // Nada maskulin / cowok (nge-bass)
+
+            const voices = window.speechSynthesis.getVoices();
+            const maleVoice = voices.find(v => v.lang.includes('id') && v.name.toLowerCase().includes('male'));
+            if (maleVoice) {
+                utterance.voice = maleVoice;
+            } else {
+                const idVoice = voices.find(v => v.lang.includes('id') || v.lang.includes('in-ID'));
+                if (idVoice) utterance.voice = idVoice;
+            }
+
+            window.speechSynthesis.speak(utterance);
         }
 
         async function generateInvoicePDF(orderData, isPaidInvoice = false) {
@@ -2034,7 +2201,7 @@
             const wa = document.getElementById('customer-wa').value.trim();
             const address = document.getElementById('customer-address').value.trim();
             if(!name || !wa || !address) return alert("Harap isi Nama, No WhatsApp, dan Alamat Pengiriman!");
-            if(cartItems.length === 0) return alert("Keranjang pesanan masih kosong! Masukkan minimal 1 item pesanan.");
+            if(cartItems.length === 0) return alert("Keranjang pesanan masih kosong! Masukkan kelengkapan pesanan terlebih dahulu.");
 
             const orderId = "PO-" + Math.floor(1000 + Math.random() * 9000);
             const region = document.getElementById('shipping-region').value;
