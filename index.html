@@ -81,7 +81,6 @@
             backdrop-filter: blur(10px);
             border: 1px solid rgba(226, 232, 240, 0.8);
         }
-        /* Animasi Hujan Gift Turun Kebawah */
         @keyframes fall {
             0% { transform: translateY(-30px) rotate(0deg); opacity: 1; }
             100% { transform: translateY(100vh) rotate(360deg); opacity: 0; }
@@ -98,7 +97,6 @@
 </head>
 <body class="bg-slate-50 text-slate-800 font-sans antialiased pb-28 relative">
 
-    <!-- CONTAINER HUJAN GIFT SESUAI MOMEN -->
     <div id="gift-rain-container" class="absolute inset-0 pointer-events-none overflow-hidden z-30"></div>
 
     <!-- 🎬 MODAL VIDEO SAMBUTAN (SPLASH SCREEN ADMIN UPLOAD) -->
@@ -109,9 +107,9 @@
                 Lewati [X]
             </button>
 
-            <!-- Video Player -->
+            <!-- Video Player dengan Tombol Play Cadangan jika diblokir -->
             <div class="relative w-full aspect-[9/16] max-h-[60vh] bg-black flex items-center justify-center">
-                <video id="splash-video" autoplay muted playsinline class="w-full h-full object-cover">
+                <video id="splash-video" autoplay muted playsinline loop class="w-full h-full object-cover">
                     <source id="splash-video-source" src="https://assets.mixkit.co/videos/preview/mixkit-hands-holding-a-smartphone-with-a-green-screen-41584-large.mp4" type="video/mp4">
                     Browser Anda tidak mendukung pemutaran video.
                 </video>
@@ -619,7 +617,6 @@
                 setTimeout(() => { modal.style.display = 'none'; }, 400);
             }
 
-            // 🌟 HUJAN GIFT LANGSUNG JATUH SEBAGAI KEJUTAN PAS MASUK APLIKASI!
             if(window.activeThemeGifts) {
                 triggerGiftRain(window.activeThemeGifts);
             }
@@ -635,7 +632,9 @@
                 setTimeout(() => modal.classList.remove('opacity-0'), 10);
                 if(video) {
                     video.currentTime = 0;
-                    video.play().catch(e => console.log("Auto-play prevented:", e));
+                    video.play().catch(e => {
+                        console.log("Auto-play diblokir browser, pengguna perlu klik tombol play manual.");
+                    });
                 }
             }
         }
@@ -866,6 +865,7 @@
             });
         }
 
+        // 🔧 PERBAIKAN UTAMA: Algoritma Hapus Background Putih/Warna Dasar Lebih Presisi & Sensitif
         function removeBackgroundToTransparent(file, maxWidth = 400, quality = 0.8) {
             return new Promise((resolve) => {
                 const reader = new FileReader();
@@ -882,10 +882,31 @@
 
                         const imgData = ctx.getImageData(0, 0, w, h);
                         const data = imgData.data;
-                        const rBg = data[0], gBg = data[1], bBg = data[2];
+
+                        // Ambil sampel warna dari sudut kiri-atas, kanan-atas, dan tengah-bawah untuk deteksi background
+                        const corners = [
+                            0, // Kiri atas
+                            (w - 1) * 4, // Kanan atas
+                            ((h - 1) * w) * 4 // Kiri bawah
+                        ];
+                        
+                        let rBg = 255, gBg = 255, bBg = 255;
+                        // Cek apakah background putih atau terang
+                        let totalR = 0, totalG = 0, totalB = 0;
+                        for(let c of corners) {
+                            totalR += data[c]; totalG += data[c+1]; totalB += data[c+2];
+                        }
+                        rBg = Math.round(totalR / corners.length);
+                        gBg = Math.round(totalG / corners.length);
+                        bBg = Math.round(totalB / corners.length);
+
+                        // Toleransi warna (Threshold) ditingkatkan agar background putih krem / abu tipis bersih total
+                        const threshold = rBg > 200 && gBg > 200 && bBg > 200 ? 55 : 40;
 
                         for (let i = 0; i < data.length; i += 4) {
-                            if (Math.abs(data[i] - rBg) < 45 && Math.abs(data[i+1] - gBg) < 45 && Math.abs(data[i+2] - bBg) < 45) {
+                            let r = data[i], g = data[i+1], b = data[i+2];
+                            // Jika warna piksel mirip dengan background, buat transparan (Alpha = 0)
+                            if (Math.abs(r - rBg) < threshold && Math.abs(g - gBg) < threshold && Math.abs(b - bBg) < threshold) {
                                 data[i+3] = 0;
                             }
                         }
@@ -970,7 +991,10 @@
             const videoEl = document.getElementById('splash-video');
             if(videoSrcEl && welcomeVideoUrl && welcomeVideoUrl !== "") {
                 videoSrcEl.src = welcomeVideoUrl;
-                if(videoEl) videoEl.load();
+                if(videoEl) {
+                    videoEl.load();
+                    videoEl.play().catch(e => console.log("Video autoplay prevented:", e));
+                }
             }
         }
 
@@ -1325,14 +1349,14 @@
             const file = e.target.files[0];
             if(!file) return;
             const statusEl = document.getElementById('logo-upload-status');
-            if(statusEl) { statusEl.textContent = "⏳ Memproses background transparan..."; statusEl.className = "text-[10px] text-amber-500 font-semibold italic"; }
+            if(statusEl) { statusEl.textContent = "⏳ Memproses background transparan otomatis..."; statusEl.className = "text-[10px] text-amber-500 font-semibold italic"; }
 
             const transparentDataUrl = await removeBackgroundToTransparent(file, 400, 0.8);
             const img = new Image();
             img.onload = function() {
                 rawCustomerLogoImg = img;
                 updateProcessedLogo();
-                if(statusEl) { statusEl.textContent = "✅ Logo berhasil transparan!"; statusEl.className = "text-[10px] text-emerald-600 font-semibold italic"; }
+                if(statusEl) { statusEl.textContent = "✅ Logo bersih & transparan sempurna!"; statusEl.className = "text-[10px] text-emerald-600 font-semibold italic"; }
             };
             img.src = transparentDataUrl;
         }
@@ -1635,7 +1659,7 @@
             });
         }
 
-        closeOrderHistoryModal = function() { 
+        function closeOrderHistoryModal() { 
             document.getElementById('order-history-modal').classList.add('hidden'); 
             if(activeOrdersUnsubscribe) { activeOrdersUnsubscribe(); activeOrdersUnsubscribe = null; }
         }
