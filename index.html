@@ -126,16 +126,22 @@
             <p class="text-xs text-emerald-200/90 mt-1 font-medium tracking-wide">Pusat Custom Tas Spunbond & Sablon Profesional</p>
         </div>
 
-        <!-- 🧠 SMART QUOTE / PESAN PINTAR OTOMATIS HARIAN -->
-        <div class="bg-gradient-to-r from-amber-500/10 via-amber-400/5 to-amber-500/10 border border-amber-500/30 p-4 rounded-2xl shadow-sm relative overflow-hidden space-y-1.5">
+        <!-- 🧠 SMART QUOTE & MALE VOICE ASSISTANT -->
+        <div class="bg-gradient-to-r from-amber-500/10 via-amber-400/5 to-amber-500/10 border border-amber-500/30 p-4 rounded-2xl shadow-sm relative overflow-hidden space-y-2">
             <div class="absolute top-0 right-0 transform translate-x-4 -translate-y-4 w-16 h-16 bg-amber-500/10 rounded-full blur-lg"></div>
             <div class="flex items-center justify-between text-[10px] font-bold text-amber-700 uppercase tracking-widest">
-                <span class="flex items-center gap-1"><span>✨</span> Smart Daily Motivation & Selling Tips</span>
+                <span class="flex items-center gap-1"><span>✨</span> Smart Daily Motivation & Male Voice</span>
                 <span id="daily-date-badge" class="bg-amber-100 px-2 py-0.5 rounded-full"></span>
             </div>
             <p id="smart-quote-text" class="text-xs font-semibold text-slate-800 leading-relaxed italic pt-0.5">
                 "Kesuksesan bisnis berawal dari langkah kecil yang konsisten. Bersama ILHAM SPUNBOND, tingkatkan prestise brand toko dan acara spesial Anda hari ini!"
             </p>
+            <div class="flex items-center justify-between pt-1 border-t border-amber-500/20">
+                <span id="voice-status-label" class="text-[10px] text-amber-800 font-medium italic">🔊 Suara sambutan cowok aktif</span>
+                <button type="button" onclick="toggleSpeechVoice()" id="voice-toggle-btn" class="bg-amber-600 hover:bg-amber-700 text-white px-3 py-1 rounded-lg text-[10px] font-bold shadow-sm transition cursor-pointer flex items-center gap-1">
+                    <span>🔇</span> Putar Ulang Suara
+                </button>
+            </div>
         </div>
 
         <!-- AREA CUSTOMER -->
@@ -584,6 +590,7 @@
         let isSyncingFromCloud = false;
         let activeOrdersUnsubscribe = null;
         let cartItems = [];
+        let currentQuoteText = "";
 
         // --- KONTROL VIDEO SAMBUTAN (SPLASH SCREEN) ---
         function closeWelcomeVideo() {
@@ -594,6 +601,8 @@
                 modal.classList.add('opacity-0');
                 setTimeout(() => { modal.style.display = 'none'; }, 400);
             }
+            // Trigger suara cowok otomatis setelah video ditutup
+            setTimeout(() => { playDailyQuoteSpeech(currentQuoteText); }, 500);
         }
 
         function openWelcomeVideo() {
@@ -610,13 +619,13 @@
         }
 
         const dailyQuotes = [
-            "\"Brand berkelas butuh identitas yang kuat. Sempurnakan souvenir & promosi acaramu bersama kualitas premium ILHAM SPUNBOND hari ini!\"",
-            "\"Setiap tas custom di ILHAM SPUNBOND dirancang presisi untuk mengangkat prestise toko dan kantormu di mata pelanggan.\"",
-            "\"Peluang emas ada pada detail terkecil. Jadikan setiap event dan toko Anda pusat perhatian dengan tas spunbond kustom eksklusif.\"",
-            "\"Kualitas sablon tajam, bahan kuat, harga bersahabat. ILHAM SPUNBOND siap jadi partner terpercaya kesuksesan bisnismu!\"",
-            "\"Langkah awal memenangkan hati konsumen adalah tampilan produk yang berkesan. Yuk, wujudkan desain tas impianmu bersama ILHAM SPUNBOND!\"",
-            "\"Kesuksesan bisnis dimulai dari komitmen memberikan yang terbaik. Pesan tas spunbond grosir berkualitas tinggi hanya di ILHAM SPUNBOND.\"",
-            "\"Tingkatkan omset dan citra profesional tokomu hari ini dengan tas spunbond custom berdesain elegan dari ILHAM SPUNBOND!\""
+            "Selamat datang di ILHAM SPUNBOND. Brand berkelas butuh identitas yang kuat. Sempurnakan souvenir dan promosi acaramu bersama kualitas premium kami hari ini!",
+            "Selamat datang di ILHAM SPUNBOND. Setiap tas custom dirancang presisi untuk mengangkat prestise toko dan kantormu di mata pelanggan.",
+            "Selamat datang di ILHAM SPUNBOND. Peluang emas ada pada detail terkecil. Jadikan setiap event dan toko Anda pusat perhatian dengan tas spunbond kustom eksklusif.",
+            "Selamat datang di ILHAM SPUNBOND. Kualitas sablon tajam, bahan kuat, harga bersahabat. Kami siap jadi partner terpercaya kesuksesan bisnismu!",
+            "Selamat datang di ILHAM SPUNBOND. Langkah awal memenangkan hati konsumen adalah tampilan produk yang berkesan. Yuk, wujudkan desain tas impianmu bersama kami!",
+            "Selamat datang di ILHAM SPUNBOND. Kesuksesan bisnis dimulai dari komitmen memberikan yang terbaik. Pesan tas spunbond grosir berkualitas tinggi hanya di sini.",
+            "Selamat datang di ILHAM SPUNBOND. Tingkatkan omset dan citra profesional tokomu hari ini dengan tas spunbond custom berdesain elegan!"
         ];
 
         function initSmartDailyQuote() {
@@ -626,10 +635,73 @@
             if(dateBadge) dateBadge.textContent = dateStr;
 
             const dayIndex = today.getDay();
+            currentQuoteText = dailyQuotes[dayIndex] || dailyQuotes[0];
             const quoteEl = document.getElementById('smart-quote-text');
             if(quoteEl) {
-                quoteEl.textContent = dailyQuotes[dayIndex] || dailyQuotes[0];
+                quoteEl.textContent = `"${currentQuoteText}"`;
             }
+        }
+
+        // --- FITUR SUARA COWOK OTOMATIS (MALE VOICE TTS) ---
+        function playDailyQuoteSpeech(text) {
+            if (!('speechSynthesis' in window)) return;
+            
+            window.speechSynthesis.cancel();
+
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'id-ID';
+            utterance.rate = 0.90; // Kecepatan sedikit lebih santai & tegas ala suara cowok
+            utterance.pitch = 0.7; // Pitch diturunkan agar nada suara lebih nge-bass / maskulin (suara cowok)
+
+            // Pilih suara pria jika tersedia di perangkat
+            const voices = window.speechSynthesis.getVoices();
+            const maleVoice = voices.find(v => v.lang.includes('id') && (v.name.toLowerCase().includes('male') || v.name.toLowerCase().includes('damayanti') === false && v.name.toLowerCase().includes('google') === false));
+            if (maleVoice) {
+                utterance.voice = maleVoice;
+            } else {
+                // Cari suara bahasa Indonesia apa saja jika suara spesifik pria tidak ketemu
+                const idVoice = voices.find(v => v.lang.includes('id') || v.lang.includes('in-ID'));
+                if (idVoice) utterance.voice = idVoice;
+            }
+
+            const statusLabel = document.getElementById('voice-status-label');
+            const toggleBtn = document.getElementById('voice-toggle-btn');
+
+            utterance.onstart = function() {
+                if(statusLabel) statusLabel.textContent = "🔊 Suara cowok menyambut...";
+                if(toggleBtn) toggleBtn.innerHTML = "<span>🔊</span> Berhenti Suara";
+            };
+
+            utterance.onend = function() {
+                if(statusLabel) statusLabel.textContent = "🔇 Suara selesai diputar";
+                if(toggleBtn) toggleBtn.innerHTML = "<span>🔇</span> Putar Ulang Suara";
+            };
+
+            utterance.onerror = function() {
+                if(statusLabel) statusLabel.textContent = "⚠️ Audio diblokir browser, klik tombol putar.";
+                if(toggleBtn) toggleBtn.innerHTML = "<span>🔊</span> Putar Ulang Suara";
+            };
+
+            window.speechSynthesis.speak(utterance);
+        }
+
+        function toggleSpeechVoice() {
+            if ('speechSynthesis' in window) {
+                if (window.speechSynthesis.speaking) {
+                    window.speechSynthesis.cancel();
+                    const statusLabel = document.getElementById('voice-status-label');
+                    const toggleBtn = document.getElementById('voice-toggle-btn');
+                    if(statusLabel) statusLabel.textContent = "🔇 Suara dijeda";
+                    if(toggleBtn) toggleBtn.innerHTML = "<span>🔊</span> Putar Ulang Suara";
+                } else {
+                    playDailyQuoteSpeech(currentQuoteText);
+                }
+            }
+        }
+
+        // Panggil preload suara browser
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.onvoiceschanged = () => { window.speechSynthesis.getVoices(); };
         }
 
         try {
