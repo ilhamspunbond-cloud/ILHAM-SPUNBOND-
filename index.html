@@ -99,7 +99,7 @@
 
     <div id="gift-rain-container" class="absolute inset-0 pointer-events-none overflow-hidden z-30"></div>
 
-    <!-- 🎬 MODAL VIDEO SAMBUTAN (SPLASH SCREEN ADMIN UPLOAD) -->
+    <!-- 🎬 MODAL VIDEO / ANIMASI GIF PENDEK (SPLASH SCREEN) -->
     <div id="welcome-video-modal" class="fixed inset-0 bg-slate-950 z-50 flex flex-col items-center justify-center p-4 transition-opacity duration-500">
         <div class="w-full max-w-sm bg-slate-900 rounded-3xl overflow-hidden shadow-2xl border border-emerald-500/30 flex flex-col items-center relative">
             
@@ -107,7 +107,7 @@
                 Lewati [X]
             </button>
 
-            <!-- Video Player dengan Tombol Play Cadangan jika diblokir -->
+            <!-- Video / Animasi Pendek Player (Muted agar aman dari blokir browser) -->
             <div class="relative w-full aspect-[9/16] max-h-[60vh] bg-black flex items-center justify-center">
                 <video id="splash-video" autoplay muted playsinline loop class="w-full h-full object-cover">
                     <source id="splash-video-source" src="https://assets.mixkit.co/videos/preview/mixkit-hands-holding-a-smartphone-with-a-green-screen-41584-large.mp4" type="video/mp4">
@@ -117,7 +117,7 @@
             </div>
 
             <div class="p-5 text-center space-y-3 w-full bg-slate-900">
-                <h3 class="text-sm font-extrabold text-white">Selamat Datang di ILHAM SPUNBOND</h3>
+                <h3 class="text-sm font-extrabold text-white">ILHAM SPUNBOND MENYAMBUT ANDA</h3>
                 <p class="text-[11px] text-slate-400 italic">Pusat Custom Tas Spunbond & Sablon Profesional Terbaik</p>
                 <button type="button" onclick="closeWelcomeVideo()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-2xl text-xs shadow-lg transition cursor-pointer">
                     Mulai Masuk Aplikasi 🚀
@@ -151,7 +151,7 @@
                 "Kesuksesan bisnis berawal dari langkah kecil yang konsisten. Bersama ILHAM SPUNBOND, tingkatkan prestise brand toko dan acara spesial Anda hari ini!"
             </p>
             <div class="flex items-center justify-between pt-1 border-t border-amber-500/20 text-[10px]">
-                <span id="voice-status-label" class="text-amber-800 font-medium italic">🔊 Suara sambutan cowok aktif</span>
+                <span id="voice-status-label" class="text-amber-800 font-medium italic">🔊 ILHAM SPUNBOND menyambut Anda</span>
                 <button type="button" onclick="toggleSpeechVoice()" id="voice-toggle-btn" class="bg-amber-600 hover:bg-amber-700 text-white px-3 py-1 rounded-lg font-bold shadow-sm transition cursor-pointer flex items-center gap-1">
                     <span>🔇</span> Putar Ulang Suara
                 </button>
@@ -404,9 +404,9 @@
             </div>
 
             <div class="bg-slate-800 p-3 rounded-xl border border-amber-500/30 space-y-2">
-                <label class="block text-xs font-semibold text-amber-300">🎬 Upload Video Sambutan (Splash Screen)</label>
-                <input type="file" id="admin-video-upload" accept="video/mp4" onchange="uploadSplashVideo(event)" class="w-full text-xs text-slate-400 file:mr-2 file:py-1 file:px-2 file:rounded-lg file:border-0 file:text-[10px] file:font-semibold file:bg-amber-500 file:text-slate-950 cursor-pointer">
-                <div id="video-upload-status" class="text-[10px] text-slate-400 italic">ℹ️ Format MP4</div>
+                <label class="block text-xs font-semibold text-amber-300">🎬 Upload Video/GIF Animasi Pendek (Splash Screen)</label>
+                <input type="file" id="admin-video-upload" accept="video/mp4,image/gif" onchange="uploadSplashVideo(event)" class="w-full text-xs text-slate-400 file:mr-2 file:py-1 file:px-2 file:rounded-lg file:border-0 file:text-[10px] file:font-semibold file:bg-amber-500 file:text-slate-950 cursor-pointer">
+                <div id="video-upload-status" class="text-[10px] text-slate-400 italic">ℹ️ Format MP4 atau GIF Pendek</div>
             </div>
 
             <div class="bg-slate-800 p-3 rounded-xl border border-amber-500/30 space-y-2">
@@ -621,7 +621,7 @@
                 triggerGiftRain(window.activeThemeGifts);
             }
 
-            setTimeout(() => { playDailyQuoteSpeech(currentQuoteText); }, 500);
+            setTimeout(() => { playDailyQuoteSpeech("ILHAM SPUNBOND menyambut Anda"); }, 400);
         }
 
         function openWelcomeVideo() {
@@ -632,92 +632,15 @@
                 setTimeout(() => modal.classList.remove('opacity-0'), 10);
                 if(video) {
                     video.currentTime = 0;
-                    video.play().catch(e => {
-                        console.log("Auto-play diblokir browser, pengguna perlu klik tombol play manual.");
-                    });
+                    video.play().catch(e => console.log("Video play handled:", e));
                 }
             }
         }
 
-        const contextualQuotes = {
-            independence: {
-                label: "🇮🇩 Spesial Kemerdekaan RI",
-                quotes: [
-                    "🇮🇩 Merdeka! Semangat juang 45 adalah semangat mandiri. Tingkatkan prestise bisnismu hari ini dengan tas spunbond eksklusif dari ILHAM SPUNBOND! 🛍️🔥",
-                    "🇮🇩 Kobarkan semangat kemerdekaan! Jadikan kantormu pusat perhatian lewat produk tas custom berkualitas tinggi karya ILHAM SPUNBOND. 🚀✨"
-                ],
-                gifts: ["🇮🇩", "⭐", "🔥", "🏆", "🚀"]
-            },
-            ramadan: {
-                label: "🌙 Spesial Bulan Ramadhan",
-                quotes: [
-                    "🌙 Marhaban ya Ramadhan! Sucikan hati, tebarkan berkah. Sempurnakan bingkisan dan parsel lebaranmu dengan tas spunbond ramah lingkungan dari ILHAM SPUNBOND! 🎁🤲",
-                    "🌙 Bulan suci penuh berkah! Saatnya berbagi kebahagiaan lewat tas kustom keren pesanan khusus di ILHAM SPUNBOND. Berkah bisnisnya, mantap hasilnya! ✨📿"
-                ],
-                gifts: ["🌙", "⭐", "🎁", "🤲", "✨"]
-            },
-            christmas: {
-                label: "🎄 Spesial Hari Natal",
-                quotes: [
-                    "🎄 Selamat Hari Natal! Hangatkan suasana berbagi kado dan kasih sayang dengan tas kado spunbond premium dari ILHAM SPUNBOND. 🎁⭐",
-                    "🎄 Damai Natal menyertai langkah bisnismu! Jadikan kado akhir tahun lebih berkesan bersama tas custom elegan dari ILHAM SPUNBOND. 🎅✨"
-                ],
-                gifts: ["🎄", "🎁", "⭐", "🎅", "❄️"]
-            },
-            saturdayNight: {
-                label: "🔥 Spesial Malam Minggu Produktif",
-                quotes: [
-                    "🔥 Malam minggu asyik nongkrong, tapi order tas custom buat persiapan senin tetap nomor satu! Yuk, selesaikan PO-mu malam ini di ILHAM SPUNBOND! 🛒😎",
-                    "🌙 Malam minggu tetap produktif! Pejuang cuan sejati tahu kapan harus santai dan kapan harus atur strategi bisnis bersama ILHAM SPUNBOND. Tetap semangat! 🚀💼"
-                ],
-                gifts: ["🔥", "⭐", "🛒", "😎", "🚀"]
-            },
-            general: {
-                label: "✨ Smart Moment Motivation",
-                quotes: [
-                    "✨ Kesuksesan bisnis berawal dari langkah kecil yang konsisten. Bersama ILHAM SPUNBOND, tingkatkan prestise brand toko dan acara spesialmu hari ini! 🛍️🔥",
-                    "🎯 Setiap tas custom dirancang presisi untuk mengangkat citra tokomu di mata pelanggan. Kepercayaan dan kualitas adalah prioritas utama ILHAM SPUNBOND! 💎🚀",
-                    "🎨 Sablon tajam, bahan kuat, harga bersahabat! ILHAM SPUNBOND selalu siap jadi partner terpercaya untuk melompatkan omset bisnismu ke level berikutnya! 🔥📈",
-                    "🌟 Tampil beda, unik, dan berkarakter dengan tas spunbond kustom berkualitas tinggi. Siap melayani pesanan grosir kilat seluruh Indonesia bersama ILHAM SPUNBOND! 📦✨"
-                ],
-                gifts: ["🛍️", "💎", "⭐", "🎁", "🚀", "🔥"]
-            }
-        };
-
         function initSmartDailyQuote() {
             updateJakartaClock();
             setInterval(updateJakartaClock, 1000);
-
-            const today = new Date();
-            const month = today.getMonth() + 1; 
-            const day = today.getDate();
-            const dayOfWeek = today.getDay(); 
-            const hours = today.getHours();
-
-            let activeTheme = contextualQuotes.general;
-
-            if (month === 8 && day === 17) {
-                activeTheme = contextualQuotes.independence;
-            } else if (month === 12 && day === 25) {
-                activeTheme = contextualQuotes.christmas;
-            } else if (dayOfWeek === 6 && hours >= 15) {
-                activeTheme = contextualQuotes.saturdayNight;
-            }
-
-            const randomIndex = Math.floor(Math.random() * activeTheme.quotes.length);
-            currentQuoteText = activeTheme.quotes[randomIndex];
-            
-            const quoteEl = document.getElementById('smart-quote-text');
-            if(quoteEl) {
-                quoteEl.textContent = `"${currentQuoteText}"`;
-            }
-
-            const momentTitleEl = document.getElementById('moment-badge-title');
-            if(momentTitleEl) {
-                momentTitleEl.innerHTML = `<span>✨</span> ${activeTheme.label}`;
-            }
-
-            window.activeThemeGifts = activeTheme.gifts;
+            currentQuoteText = "Kesuksesan bisnis berawal dari langkah kecil yang konsisten. Bersama ILHAM SPUNBOND, tingkatkan prestise brand toko dan acara spesial Anda hari ini!";
         }
 
         function triggerGiftRain(giftArray) {
@@ -742,47 +665,33 @@
         function updateJakartaClock() {
             const timeEl = document.getElementById('jakarta-time-badge');
             if(!timeEl) return;
-            
             const options = { timeZone: 'Asia/Jakarta', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false };
-            const timeString = new Intl.DateTimeFormat('id-ID', options).format(new Date());
-            timeEl.textContent = `⏰ ${timeString} WIB`;
+            timeEl.textContent = `⏰ ${new Intl.DateTimeFormat('id-ID', options).format(new Date())} WIB`;
         }
 
         function playDailyQuoteSpeech(text) {
             if (!('speechSynthesis' in window)) return;
             window.speechSynthesis.cancel();
-
-            const cleanSpeechText = text.replace(/[\u{1F300}-\u{1F5FF}\u{1F900}-\u{1F9FF}\u{1F600}-\u{1F64F}\u{1F680}-\u{1F6FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}\u{1F1E0}-\u{1F1FF}]/gu, '');
-            const utterance = new SpeechSynthesisUtterance(cleanSpeechText);
+            const utterance = new SpeechSynthesisUtterance(text);
             utterance.lang = 'id-ID';
             utterance.rate = 0.90;
             utterance.pitch = 0.7;
 
             const voices = window.speechSynthesis.getVoices();
-            const maleVoice = voices.find(v => v.lang.includes('id') && (v.name.toLowerCase().includes('male') || v.name.toLowerCase().includes('damayanti') === false && v.name.toLowerCase().includes('google') === false));
-            if (maleVoice) {
-                utterance.voice = maleVoice;
-            } else {
-                const idVoice = voices.find(v => v.lang.includes('id') || v.lang.includes('in-ID'));
-                if (idVoice) utterance.voice = idVoice;
-            }
+            const maleVoice = voices.find(v => v.lang.includes('id') && v.name.toLowerCase().includes('male'));
+            if (maleVoice) utterance.voice = maleVoice;
 
             const statusLabel = document.getElementById('voice-status-label');
             const toggleBtn = document.getElementById('voice-toggle-btn');
 
             utterance.onstart = function() {
-                if(statusLabel) statusLabel.textContent = "🔊 Suara cowok menyambut...";
+                if(statusLabel) statusLabel.textContent = "🔊 ILHAM SPUNBOND menyambut Anda";
                 if(toggleBtn) toggleBtn.innerHTML = "<span>🔊</span> Berhenti Suara";
             };
 
             utterance.onend = function() {
                 if(statusLabel) statusLabel.textContent = "🔇 Suara selesai diputar";
                 if(toggleBtn) toggleBtn.innerHTML = "<span>🔇</span> Putar Ulang Suara";
-            };
-
-            utterance.onerror = function() {
-                if(statusLabel) statusLabel.textContent = "⚠️ Audio diblokir browser, klik tombol putar.";
-                if(toggleBtn) toggleBtn.innerHTML = "<span>🔊</span> Putar Ulang Suara";
             };
 
             window.speechSynthesis.speak(utterance);
@@ -792,18 +701,12 @@
             if ('speechSynthesis' in window) {
                 if (window.speechSynthesis.speaking) {
                     window.speechSynthesis.cancel();
-                    const statusLabel = document.getElementById('voice-status-label');
-                    const toggleBtn = document.getElementById('voice-toggle-btn');
-                    if(statusLabel) statusLabel.textContent = "🔇 Suara dijeda";
-                    if(toggleBtn) toggleBtn.innerHTML = "<span>🔊</span> Putar Ulang Suara";
+                    document.getElementById('voice-status-label').textContent = "🔇 Suara dijeda";
+                    document.getElementById('voice-toggle-btn').innerHTML = "<span>🔊</span> Putar Ulang Suara";
                 } else {
-                    playDailyQuoteSpeech(currentQuoteText);
+                    playDailyQuoteSpeech("ILHAM SPUNBOND menyambut Anda");
                 }
             }
-        }
-
-        if ('speechSynthesis' in window) {
-            window.speechSynthesis.onvoiceschanged = () => { window.speechSynthesis.getVoices(); };
         }
 
         try {
@@ -821,26 +724,16 @@
             if(localStorage.getItem('ilham_brandLogoUrl')) brandLogoUrl = localStorage.getItem('ilham_brandLogoUrl');
             if(localStorage.getItem('ilham_customStampUrl')) customStampUrl = localStorage.getItem('ilham_customStampUrl');
             if(localStorage.getItem('ilham_welcomeVideoUrl')) welcomeVideoUrl = localStorage.getItem('ilham_welcomeVideoUrl');
-            
-            localStorage.removeItem('ilham_customerLogo');
             if(localStorage.getItem('ilham_cartItems')) cartItems = JSON.parse(localStorage.getItem('ilham_cartItems'));
-        } catch(e) {
-            console.error("Local storage error:", e);
-        }
+        } catch(e) { console.error(e); }
 
         function updateAppManifest() {
             const manifestTag = document.getElementById('dynamic-manifest');
             if (!manifestTag) return;
-
             const iconData = brandLogoUrl && brandLogoUrl !== "" ? brandLogoUrl : "https://via.placeholder.com/192x192/065f46/ffffff?text=ILHAM";
             const manifestObj = {
-                name: "ILHAM SPUNBOND",
-                short_name: "IlhamSpunbond",
-                start_url: ".",
-                display: "standalone",
-                background_color: "#f8fafc",
-                theme_color: "#065f46",
-                icons: [{ src: iconData, sizes: "192x192 512x512", type: "image/png" }]
+                name: "ILHAM SPUNBOND", short_name: "IlhamSpunbond", start_url: ".", display: "standalone",
+                background_color: "#f8fafc", theme_color: "#065f46", icons: [{ src: iconData, sizes: "192x192 512x512", type: "image/png" }]
             };
             manifestTag.setAttribute('href', 'data:application/manifest+json;charset=utf-8,' + encodeURIComponent(JSON.stringify(manifestObj)));
         }
@@ -865,7 +758,7 @@
             });
         }
 
-        // 🔧 PERBAIKAN UTAMA: Algoritma Hapus Background Putih/Warna Dasar Lebih Presisi & Sensitif
+        // 🔧 PENYEMPURNAAN MUTLAK: Hapus Background Putih/Warna Dasar Gambar Jadi Transparan Total
         function removeBackgroundToTransparent(file, maxWidth = 400, quality = 0.8) {
             return new Promise((resolve) => {
                 const reader = new FileReader();
@@ -883,31 +776,15 @@
                         const imgData = ctx.getImageData(0, 0, w, h);
                         const data = imgData.data;
 
-                        // Ambil sampel warna dari sudut kiri-atas, kanan-atas, dan tengah-bawah untuk deteksi background
-                        const corners = [
-                            0, // Kiri atas
-                            (w - 1) * 4, // Kanan atas
-                            ((h - 1) * w) * 4 // Kiri bawah
-                        ];
-                        
-                        let rBg = 255, gBg = 255, bBg = 255;
-                        // Cek apakah background putih atau terang
-                        let totalR = 0, totalG = 0, totalB = 0;
-                        for(let c of corners) {
-                            totalR += data[c]; totalG += data[c+1]; totalB += data[c+2];
-                        }
-                        rBg = Math.round(totalR / corners.length);
-                        gBg = Math.round(totalG / corners.length);
-                        bBg = Math.round(totalB / corners.length);
-
-                        // Toleransi warna (Threshold) ditingkatkan agar background putih krem / abu tipis bersih total
-                        const threshold = rBg > 200 && gBg > 200 && bBg > 200 ? 55 : 40;
+                        // Ambil warna referensi background dari pojok kiri-atas
+                        const rBg = data[0], gBg = data[1], bBg = data[2];
+                        const tolerance = 60; // Toleransi lebih tinggi agar warna putih/abu tipis hilang bersih
 
                         for (let i = 0; i < data.length; i += 4) {
                             let r = data[i], g = data[i+1], b = data[i+2];
-                            // Jika warna piksel mirip dengan background, buat transparan (Alpha = 0)
-                            if (Math.abs(r - rBg) < threshold && Math.abs(g - gBg) < threshold && Math.abs(b - bBg) < threshold) {
-                                data[i+3] = 0;
+                            // Deteksi kemiripan warna dengan background pojok
+                            if (Math.abs(r - rBg) <= tolerance && Math.abs(g - gBg) <= tolerance && Math.abs(b - bBg) <= tolerance) {
+                                data[i+3] = 0; // Buat transparan total
                             }
                         }
                         ctx.putImageData(imgData, 0, 0);
@@ -938,12 +815,6 @@
                         statusEl.textContent = "☁️ Cloud Sync Active";
                         statusEl.className = "text-[11px] bg-emerald-100 text-emerald-800 px-3 py-1.5 rounded-full font-medium inline-block shadow-sm border border-emerald-300";
                     }
-                }
-            }, (error) => {
-                const statusEl = document.getElementById('sync-status');
-                if(statusEl) {
-                    statusEl.textContent = "⚠️ Cloud Offline (Local Mode)";
-                    statusEl.className = "text-[11px] bg-amber-100 text-amber-800 px-3 py-1.5 rounded-full font-medium inline-block shadow-sm border border-amber-300";
                 }
             });
         };
@@ -976,9 +847,6 @@
                 safeLocalStorageSet('ilham_welcomeVideoUrl', welcomeVideoUrl); 
                 updateSplashVideoElement();
             }
-            if(data.storeAddress) { storeAddress = data.storeAddress; safeLocalStorageSet('ilham_storeAddress', storeAddress); }
-            if(data.storePhone) { storePhone = data.storePhone; safeLocalStorageSet('ilham_storePhone', storePhone); }
-            if(data.storeEmail) { storeEmail = data.storeEmail; safeLocalStorageSet('ilham_storeEmail', storeEmail); }
 
             updateAppManifest();
             renderAdminPanel();
@@ -993,13 +861,13 @@
                 videoSrcEl.src = welcomeVideoUrl;
                 if(videoEl) {
                     videoEl.load();
-                    videoEl.play().catch(e => console.log("Video autoplay prevented:", e));
+                    videoEl.play().catch(e => console.log("Video play handled:", e));
                 }
             }
         }
 
         function safeLocalStorageSet(key, val) {
-            try { localStorage.setItem(key, val); } catch (e) { console.warn("Storage warning:", e); }
+            try { localStorage.setItem(key, val); } catch (e) { console.warn(e); }
         }
 
         function saveCustomerDataMemory() {
@@ -1043,9 +911,6 @@
             safeLocalStorageSet('ilham_inkColors', JSON.stringify(inkColors));
             safeLocalStorageSet('ilham_dtfOptions', JSON.stringify(dtfOptions));
             safeLocalStorageSet('ilham_storeName', storeName);
-            safeLocalStorageSet('ilham_storeAddress', storeAddress);
-            safeLocalStorageSet('ilham_storePhone', storePhone);
-            safeLocalStorageSet('ilham_storeEmail', storeEmail);
             safeLocalStorageSet('ilham_pdfPassword', pdfPassword);
             safeLocalStorageSet('ilham_ownerWaNumber', ownerWaNumber);
             safeLocalStorageSet('ilham_brandLogoUrl', brandLogoUrl);
@@ -1068,8 +933,7 @@
                     storeName, pdfPassword, ownerWaNumber,
                     brandLogoUrl: (brandLogoUrl && brandLogoUrl.length > 80000) ? "" : brandLogoUrl,
                     customStampUrl: (customStampUrl && customStampUrl.length > 80000) ? "" : customStampUrl,
-                    welcomeVideoUrl: (welcomeVideoUrl && welcomeVideoUrl.length > 150000) ? "" : welcomeVideoUrl,
-                    storeAddress, storePhone, storeEmail, lastCustomerLogo: ""
+                    welcomeVideoUrl: (welcomeVideoUrl && welcomeVideoUrl.length > 250000) ? "" : welcomeVideoUrl
                 }, { merge: true });
             } catch(e) { console.error("Cloud save error:", e); }
         }
@@ -1115,18 +979,15 @@
                                         <input type="number" id="edit-s-price-${mIndex}-${sIndex}" value="${s.price}" class="w-20 bg-slate-900 border border-slate-700 rounded px-1.5 py-1 text-white text-[11px] outline-none">
                                     </div>
                                     <div class="flex gap-1">
-                                        <button type="button" onclick="updateSizeInModel(${mIndex}, ${sIndex})" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-2 py-1 rounded cursor-pointer text-[10px]">Edit</button>
-                                        <button type="button" onclick="deleteSizeFromModel(${mIndex}, ${sIndex})" class="bg-rose-600 hover:bg-rose-700 text-white font-bold px-2 py-1 rounded cursor-pointer text-[10px]">Hapus</button>
+                                        <button type="button" onclick="updateSizeInModel(${mIndex}, ${sIndex})" class="bg-indigo-600 text-white font-bold px-2 py-1 rounded cursor-pointer text-[10px]">Edit</button>
+                                        <button type="button" onclick="deleteSizeFromModel(${mIndex}, ${sIndex})" class="bg-rose-600 text-white font-bold px-2 py-1 rounded cursor-pointer text-[10px]">Hapus</button>
                                     </div>
                                 </div>`;
                         });
                     }
-
-                    const isCustomImg = item.image && item.image !== cleanDefaultBagSvg;
                     card.innerHTML = `
                         <div class="flex items-center justify-between border-b border-slate-800 pb-1.5"><span class="font-bold text-amber-300 text-sm">${item.name}</span></div>
                         <div><label class="block text-[10px] text-slate-400 mb-1">Upload Foto Tas:</label><input type="file" accept="image/*" onchange="uploadModelSample(event, ${mIndex})" class="w-full text-[10px] text-slate-400 file:mr-2 file:py-1 file:px-2 file:rounded-lg file:border-0 file:bg-amber-500 file:text-slate-950 cursor-pointer"></div>
-                        <div class="text-[10px] ${isCustomImg ? 'text-emerald-400 font-semibold' : 'text-slate-400'} italic">${isCustomImg ? '✅ Custom Image Active' : 'ℹ️ Default Image'}</div>
                         <div class="space-y-1.5 mt-1">
                             <div class="text-[10px] text-amber-300 font-semibold">Ukuran & Harga:</div>
                             ${sizeRows}
@@ -1143,7 +1004,7 @@
                 brandStatus.className = brandLogoUrl ? "text-[10px] text-emerald-400 font-semibold italic" : "text-[10px] text-slate-400 italic";
             }
             if(videoStatus) {
-                videoStatus.textContent = welcomeVideoUrl ? "✅ Video Sambutan Aktif" : "ℹ️ Video Default Aktif";
+                videoStatus.textContent = welcomeVideoUrl ? "✅ Video/GIF Aktif" : "ℹ️ Default Video Aktif";
                 videoStatus.className = welcomeVideoUrl ? "text-[10px] text-emerald-400 font-semibold italic" : "text-[10px] text-slate-400 italic";
             }
 
@@ -1227,7 +1088,7 @@
                     updateSplashVideoElement();
                     await saveToCloud();
                     renderAdminPanel();
-                    alert("✅ Video sambutan berhasil disimpan!");
+                    alert("✅ Video/GIF sambutan berhasil disimpan!");
                 };
                 reader.readAsDataURL(file);
             }
@@ -1349,14 +1210,14 @@
             const file = e.target.files[0];
             if(!file) return;
             const statusEl = document.getElementById('logo-upload-status');
-            if(statusEl) { statusEl.textContent = "⏳ Memproses background transparan otomatis..."; statusEl.className = "text-[10px] text-amber-500 font-semibold italic"; }
+            if(statusEl) { statusEl.textContent = "⏳ Memproses transparan sempurna..."; statusEl.className = "text-[10px] text-amber-500 font-semibold italic"; }
 
             const transparentDataUrl = await removeBackgroundToTransparent(file, 400, 0.8);
             const img = new Image();
             img.onload = function() {
                 rawCustomerLogoImg = img;
                 updateProcessedLogo();
-                if(statusEl) { statusEl.textContent = "✅ Logo bersih & transparan sempurna!"; statusEl.className = "text-[10px] text-emerald-600 font-semibold italic"; }
+                if(statusEl) { statusEl.textContent = "✅ Background logo sukses hilang (transparan)!"; statusEl.className = "text-[10px] text-emerald-600 font-semibold italic"; }
             };
             img.src = transparentDataUrl;
         }
