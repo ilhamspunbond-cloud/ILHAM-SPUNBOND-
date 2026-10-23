@@ -17,17 +17,17 @@
         }
     </style>
 </head>
-<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col">
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col font-sans">
 
     <!-- NAVBAR -->
     <header class="bg-slate-900 text-white shadow-md sticky top-0 z-50">
         <div class="max-w-6xl mx-auto px-4 py-4 flex justify-between items-center">
             <div class="flex items-center space-x-3">
-                <span class="font-bold text-lg tracking-wide">ILHAM SPUNBOND — Sablon Tinta Pasta</span>
+                <span class="font-bold text-lg tracking-wide">ILHAM SPUNBOND — Studio Sablon Tinta Pasta</span>
             </div>
             <div class="flex space-x-2">
-                <a href="index.html" class="bg-slate-800 hover:bg-slate-700 text-white text-xs font-semibold px-3 py-2 rounded-lg transition">&larr; Kembali ke Etalase</a>
-                <button onclick="bukaModalAdmin()" class="bg-amber-500 hover:bg-amber-600 text-slate-900 font-semibold px-3 py-2 rounded-lg text-xs transition">🔐 Admin Panel</button>
+                <a href="index.html" class="bg-slate-800 hover:bg-slate-700 text-white text-xs font-semibold px-3 py-2 rounded-xl transition">&larr; Kembali ke Etalase</a>
+                <button onclick="bukaModalAdmin()" class="bg-amber-500 hover:bg-amber-600 text-slate-900 font-bold px-3 py-2 rounded-xl text-xs transition">🔐 Admin Panel</button>
             </div>
         </div>
     </header>
@@ -36,25 +36,25 @@
     <main class="flex-grow max-w-6xl mx-auto px-4 py-8 w-full space-y-8">
 
         <!-- KOTAK PANDUAN LANGKAH CERDAS -->
-        <div class="bg-blue-50 border border-blue-200 rounded-2xl p-6 shadow-sm">
-            <h2 class="font-bold text-blue-900 text-lg mb-3 flex items-center space-x-2">
+        <div class="bg-blue-50 border border-blue-200 rounded-3xl p-6 shadow-sm">
+            <h2 class="font-bold text-blue-900 text-base mb-3 flex items-center space-x-2">
                 <span>💡 Panduan Langkah Cerdas Pemesanan Tas Spunbond (Sablon Tinta Pasta)</span>
             </h2>
             <div class="grid grid-cols-1 md:grid-cols-4 gap-4 text-xs text-blue-800">
-                <div class="bg-white p-3 rounded-xl border border-blue-100 shadow-sm">
-                    <span class="font-bold text-blue-600 block mb-1">Langkah 1</span>
-                    Pilih ukuran tas & warna kain spunbond (Bisa mix warna, minimal total order 500 pcs).
+                <div class="bg-white p-3.5 rounded-2xl border border-blue-100 shadow-sm">
+                    <span class="font-extrabold text-blue-600 block mb-1">Langkah 1</span>
+                    Pilih ukuran tas & warna kain spunbond (Minimal total order 500 pcs, boleh mix warna).
                 </div>
-                <div class="bg-white p-3 rounded-xl border border-blue-100 shadow-sm">
-                    <span class="font-bold text-blue-600 block mb-1">Langkah 2</span>
+                <div class="bg-white p-3.5 rounded-2xl border border-blue-100 shadow-sm">
+                    <span class="font-extrabold text-blue-600 block mb-1">Langkah 2</span>
                     Upload logo, sesuaikan warna tinta pasta, atur posisi, ukuran, & rotasi logo di tas.
                 </div>
-                <div class="bg-white p-3 rounded-xl border border-blue-100 shadow-sm">
-                    <span class="font-bold text-blue-600 block mb-1">Langkah 3</span>
-                    Isi data diri, klik <strong>Kirim ke WhatsApp Admin</strong> untuk dapat Nomor PO otomatis.
+                <div class="bg-white p-3.5 rounded-2xl border border-blue-100 shadow-sm">
+                    <span class="font-extrabold text-blue-600 block mb-1">Langkah 3</span>
+                    Isi data pemesan, lalu klik <strong>Kirim Pesanan ke WhatsApp Admin</strong> untuk dapat Nomor PO.
                 </div>
-                <div class="bg-white p-3 rounded-xl border border-blue-100 shadow-sm">
-                    <span class="font-bold text-blue-600 block mb-1">Langkah 4</span>
+                <div class="bg-white p-3.5 rounded-2xl border border-blue-100 shadow-sm">
+                    <span class="font-extrabold text-blue-600 block mb-1">Langkah 4</span>
                     Download Invoice resmi & tunggu konfirmasi pelunasan/DP dari admin.
                 </div>
             </div>
@@ -65,37 +65,36 @@
             
             <!-- KOLOM KIRI: STUDIO VISUAL / CANVAS MOCKUP -->
             <div class="lg:col-span-6 space-y-6">
-                <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
-                    <h3 class="font-bold text-slate-900 text-base mb-4">🎨 Studio Desain Interaktif</h3>
+                <div class="bg-white border border-slate-200 rounded-3xl p-6 shadow-sm">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="font-bold text-slate-900 text-base">🎨 Studio Desain Interaktif</h3>
+                        <span id="label-model-aktif" class="bg-slate-100 text-slate-700 text-xs font-bold px-3 py-1 rounded-full">Model: Memuat...</span>
+                    </div>
                     
                     <!-- Area Mockup Visual -->
-                    <div id="mockup-container" class="relative w-full h-80 rounded-xl overflow-hidden checkerboard flex items-center justify-center border border-slate-300">
-                        <!-- Layer Background Tas Polosan (Warna Putih/Transparan yang bisa di-tint) -->
+                    <div id="mockup-container" class="relative w-full h-80 rounded-2xl overflow-hidden checkerboard flex items-center justify-center border border-slate-300">
                         <div id="tas-layer" class="absolute inset-0 bg-contain bg-center bg-no-repeat transition-all duration-300" style="background-image: url('https://images.unsplash.com/photo-1597484661642-2b5d435f3d27?auto=format&fit=crop&w=500&q=80'); filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));"></div>
                         
-                        <!-- Layer Tinta/Warna Kain Multi-Blend -->
                         <div id="color-tint-layer" class="absolute inset-0 mix-blend-multiply opacity-50 pointer-events-none" style="background-color: transparent;"></div>
 
-                        <!-- Layer Logo Interaktif Customer -->
                         <div id="logo-wrapper" class="absolute cursor-move flex items-center justify-center p-2" style="left: 50%; top: 50%; transform: translate(-50%, -50%) scale(1) rotate(0deg); width: 120px; height: 120px;">
                             <canvas id="logo-canvas" class="max-w-full max-h-full object-contain filter drop-shadow"></canvas>
                         </div>
 
-                        <!-- Watermark Ilham Spunbond -->
-                        <div class="absolute bottom-2 right-2 bg-black/40 text-white text-[10px] px-2 py-0.5 rounded font-mono pointer-events-none">
+                        <div class="absolute bottom-3 right-3 bg-black/50 backdrop-blur-sm text-white text-[10px] px-2.5 py-1 rounded-lg font-mono pointer-events-none">
                             © ILHAM SPUNBOND
                         </div>
                     </div>
 
-                    <p class="text-xs text-slate-500 mt-2 text-center">💡 Logo otomatis diubah jadi satu warna tinta pasta padat dengan latar belakang transparan.</p>
+                    <p class="text-xs text-slate-500 mt-3 text-center">💡 Logo otomatis dikonversi jadi satu warna tinta pasta solid dengan latar belakang transparan.</p>
                 </div>
 
                 <!-- PENGATURAN POSISI & UKURAN LOGO -->
-                <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm space-y-4">
+                <div class="bg-white border border-slate-200 rounded-3xl p-6 shadow-sm space-y-4">
                     <h4 class="font-bold text-slate-800 text-sm">Pengaturan Posisi & Tinta Logo</h4>
                     <div class="grid grid-cols-2 gap-4">
                         <div>
-                            <label class="block text-xs font-semibold text-slate-600 mb-1">Ukuran Logo (<span id="val-scale">100</span>%)</label>
+                            <label class="block text-xs font-semibold text-slate-600 mb-1">Ukuran (<span id="val-scale">100</span>%)</label>
                             <input type="range" id="range-scale" min="50" max="200" value="100" class="w-full accent-amber-500" oninput="updateLogoTransform()">
                         </div>
                         <div>
@@ -105,11 +104,11 @@
                     </div>
                     <div class="grid grid-cols-2 gap-4">
                         <div>
-                            <label class="block text-xs font-semibold text-slate-600 mb-1">Geser Kiri / Kanan (<span id="val-posx">0</span>px)</label>
+                            <label class="block text-xs font-semibold text-slate-600 mb-1">Geser Kiri/Kanan (<span id="val-posx">0</span>px)</label>
                             <input type="range" id="range-posx" min="-120" max="120" value="0" class="w-full accent-amber-500" oninput="updateLogoTransform()">
                         </div>
                         <div>
-                            <label class="block text-xs font-semibold text-slate-600 mb-1">Geser Atas / Bawah (<span id="val-posy">0</span>px)</label>
+                            <label class="block text-xs font-semibold text-slate-600 mb-1">Geser Atas/Bawah (<span id="val-posy">0</span>px)</label>
                             <input type="range" id="range-posy" min="-100" max="100" value="0" class="w-full accent-amber-500" oninput="updateLogoTransform()">
                         </div>
                     </div>
@@ -118,50 +117,42 @@
 
             <!-- KOLOM KANAN: SPESIFIKASI, HARGA & FORMULIR PESANAN -->
             <div class="lg:col-span-6 space-y-6">
-                <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm space-y-5">
-                    <h3 class="font-bold text-slate-900 text-base border-b pb-3">📦 Pilih Spesifikasi & Warna Tas</h3>
+                <div class="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-sm space-y-5">
+                    <h3 class="font-bold text-slate-900 text-base border-b pb-3">📦 Spesifikasi & Pilihan Pesanan</h3>
 
-                    <!-- Pilihan Ukuran Tas -->
                     <div>
                         <label class="block text-xs font-semibold text-slate-700 mb-1.5">Pilih Ukuran Tas</label>
-                        <select id="select-ukuran" class="w-full border border-slate-300 rounded-xl px-3 py-2.5 text-sm bg-slate-50 focus:ring-2 focus:ring-amber-500 focus:outline-none" onchange="hitungTotalHarga()">
-                            <!-- Diisi dinamis oleh JS/Admin -->
+                        <select id="select-ukuran" class="w-full border border-slate-300 rounded-2xl px-4 py-3 text-xs bg-slate-50 focus:ring-2 focus:ring-amber-500 focus:outline-none" onchange="hitungTotalHarga()">
                         </select>
                     </div>
 
-                    <!-- Pilihan Warna Kain Spunbond -->
                     <div>
-                        <label class="block text-xs font-semibold text-slate-700 mb-1.5">Pilih Warna Kain Spunbond (Bisa Mix/Campur)</label>
-                        <select id="select-warnakain" class="w-full border border-slate-300 rounded-xl px-3 py-2.5 text-sm bg-slate-50 focus:ring-2 focus:ring-amber-500 focus:outline-none">
-                            <!-- Diisi dinamis oleh JS/Admin -->
+                        <label class="block text-xs font-semibold text-slate-700 mb-1.5">Warna Kain Spunbond (Bisa Mix/Campur)</label>
+                        <select id="select-warnakain" class="w-full border border-slate-300 rounded-2xl px-4 py-3 text-xs bg-slate-50 focus:ring-2 focus:ring-amber-500 focus:outline-none">
                         </select>
                     </div>
 
-                    <!-- Pilihan Warna Tinta Pasta -->
                     <div>
-                        <label class="block text-xs font-semibold text-slate-700 mb-1.5">Pilih Warna Tinta Pasta Sablon</label>
-                        <select id="select-tintapasta" class="w-full border border-slate-300 rounded-xl px-3 py-2.5 text-sm bg-slate-50 focus:ring-2 focus:ring-amber-500 focus:outline-none">
-                            <!-- Diisi dinamis oleh JS/Admin -->
+                        <label class="block text-xs font-semibold text-slate-700 mb-1.5">Warna Tinta Pasta Sablon</label>
+                        <select id="select-tintapasta" class="w-full border border-slate-300 rounded-2xl px-4 py-3 text-xs bg-slate-50 focus:ring-2 focus:ring-amber-500 focus:outline-none">
                         </select>
                     </div>
 
-                    <!-- Input Jumlah (Quantity) -->
                     <div>
                         <div class="flex justify-between items-center mb-1.5">
                             <label class="text-xs font-semibold text-slate-700">Jumlah Pesanan (Pcs)</label>
-                            <span class="text-[11px] text-amber-700 font-medium">Minimal Order: 500 Pcs (Bisa Mix Warna)</span>
+                            <span class="text-[11px] text-amber-700 font-bold">Minimal Order: 500 Pcs</span>
                         </div>
-                        <input type="number" id="input-qty" value="500" min="500" step="50" class="w-full border border-slate-300 rounded-xl px-3 py-2.5 text-sm bg-slate-50 focus:ring-2 focus:ring-amber-500 focus:outline-none font-bold" oninput="hitungTotalHarga()">
+                        <input type="number" id="input-qty" value="500" min="500" step="50" class="w-full border border-slate-300 rounded-2xl px-4 py-3 text-xs bg-slate-50 focus:ring-2 focus:ring-amber-500 focus:outline-none font-bold" oninput="hitungTotalHarga()">
                     </div>
 
-                    <!-- Upload Logo -->
                     <div>
                         <label class="block text-xs font-semibold text-slate-700 mb-1.5">Upload File Logo Anda (JPG/PNG)</label>
-                        <input type="file" id="input-logo-file" accept="image/*" class="w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-amber-50 file:text-amber-700 hover:file:bg-amber-100" onchange="prosesUploadLogo(event)">
+                        <input type="file" id="input-logo-file" accept="image/*" class="w-full text-xs text-slate-500 file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-amber-50 file:text-amber-700 hover:file:bg-amber-100 cursor-pointer" onchange="prosesUploadLogo(event)">
                     </div>
 
-                    <!-- PANEL INFO HARGA & DISKON (TRANSPARAN) -->
-                    <div class="bg-amber-50/70 border border-amber-200 rounded-xl p-4 space-y-2">
+                    <!-- PANEL INFO HARGA & DISKON -->
+                    <div class="bg-amber-50/70 border border-amber-200 rounded-2xl p-4 space-y-2">
                         <div class="flex justify-between text-xs text-slate-600">
                             <span>Harga Satuan:</span>
                             <span id="info-harga-satuan" class="font-semibold text-slate-900">Rp 0</span>
@@ -170,7 +161,7 @@
                             <span>Status Diskon (Min. 1.000 Pcs - Potongan 10%):</span>
                             <span id="info-diskon" class="font-bold text-emerald-600">Rp 0 (0%)</span>
                         </div>
-                        <div class="border-t border-amber-200 pt-2 flex justify-between text-sm font-extrabold text-slate-900">
+                        <div class="border-t border-amber-200 pt-2 flex justify-between text-sm font-black text-slate-900">
                             <span>Total Estimasi Biaya:</span>
                             <span id="info-total-harga" class="text-amber-700">Rp 0</span>
                         </div>
@@ -181,22 +172,22 @@
                     <div class="border-t pt-4 space-y-3">
                         <h4 class="font-bold text-slate-800 text-sm">Data Pemesan (Tersimpan Otomatis)</h4>
                         <div>
-                            <input type="text" id="cust-nama" placeholder="Nama Lengkap / Toko" class="w-full border border-slate-300 rounded-xl px-3 py-2 text-sm bg-slate-50">
+                            <input type="text" id="cust-nama" placeholder="Nama Lengkap / Nama Toko" class="w-full border border-slate-300 rounded-2xl px-4 py-3 text-xs bg-slate-50">
                         </div>
                         <div>
-                            <input type="tel" id="cust-wa" placeholder="Nomor WhatsApp (Contoh: 08123456789)" class="w-full border border-slate-300 rounded-xl px-3 py-2 text-sm bg-slate-50">
+                            <input type="tel" id="cust-wa" placeholder="Nomor WhatsApp (Contoh: 08123456789)" class="w-full border border-slate-300 rounded-2xl px-4 py-3 text-xs bg-slate-50">
                         </div>
                         <div>
-                            <textarea id="cust-alamat" placeholder="Alamat Lengkap Pengiriman (Kota/Kabupaten untuk cek wilayah Jabodetabek)" class="w-full border border-slate-300 rounded-xl px-3 py-2 text-sm bg-slate-50" rows="2"></textarea>
+                            <textarea id="cust-alamat" placeholder="Alamat Lengkap Pengiriman (Kota/Kabupaten)" class="w-full border border-slate-300 rounded-2xl px-4 py-3 text-xs bg-slate-50" rows="2"></textarea>
                         </div>
                     </div>
 
                     <!-- TOMBOL AKSI UTAMA -->
                     <div class="pt-2 flex flex-col sm:flex-row gap-3">
-                        <button onclick="kirimPesananWA()" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 px-4 rounded-xl shadow-md transition text-xs flex items-center justify-center space-x-2">
-                            <span>📲 Kirim Pesanan ke WhatsApp Admin</span>
+                        <button onclick="kirimPesananWA()" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3.5 px-4 rounded-2xl shadow-md transition text-xs flex items-center justify-center space-x-2">
+                            <span>📲</span><span>Kirim Pesanan ke WhatsApp Admin</span>
                         </button>
-                        <button onclick="downloadInvoiceCustomer()" id="btn-download-inv" disabled class="bg-slate-200 text-slate-400 font-bold py-3 px-4 rounded-xl transition text-xs cursor-not-allowed">
+                        <button onclick="downloadInvoiceCustomer()" id="btn-download-inv" disabled class="bg-slate-200 text-slate-400 font-bold py-3.5 px-4 rounded-2xl transition text-xs cursor-not-allowed">
                             📥 Download Invoice
                         </button>
                     </div>
@@ -208,108 +199,100 @@
     </main>
 
     <!-- FOOTER -->
-    <footer class="bg-slate-900 text-slate-400 py-6 mt-12 text-center text-sm">
+    <footer class="bg-slate-900 text-slate-400 py-8 mt-16 text-center text-xs border-t border-slate-800">
         <p>&copy; 2026 ILHAM SPUNBOND. All Rights Reserved.</p>
     </footer>
 
-    <!-- MODAL ADMIN PANEL -->
-    <div id="admin-modal" class="fixed inset-0 bg-black/60 hidden justify-center items-center z-50 p-4">
-        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl relative">
-            <h3 class="text-xl font-bold text-slate-900 mb-4">Login Panel Admin</h3>
-            <p class="text-sm text-slate-500 mb-4">Masukkan kata sandi untuk mengelola data harga, ukuran, warna, & PO masuk.</p>
-            <input type="password" id="admin-password" placeholder="Kata sandi..." class="w-full border border-slate-300 rounded-lg px-4 py-2 mb-4 focus:ring-2 focus:ring-amber-500 focus:outline-none">
-            <div class="flex justify-end space-x-3">
-                <button onclick="tutupModalAdmin()" class="px-4 py-2 rounded-lg text-slate-600 hover:bg-slate-100 font-medium text-sm">Batal</button>
-                <button onclick="prosesLoginAdmin()" class="bg-slate-900 text-white px-5 py-2 rounded-lg font-semibold hover:bg-slate-800 text-sm">Masuk</button>
+    <!-- MODAL ADMIN -->
+    <div id="admin-modal" class="fixed inset-0 bg-black/70 backdrop-blur-sm hidden justify-center items-center z-50 p-4">
+        <div class="bg-white rounded-3xl max-w-md w-full p-6 sm:p-8 shadow-2xl relative space-y-4">
+            <h3 class="text-xl font-black text-slate-900">Login Panel Admin</h3>
+            <p class="text-xs text-slate-500">Masukkan kata sandi untuk mengelola data PO & harga.</p>
+            <input type="password" id="admin-password" placeholder="Kata sandi..." class="w-full border border-slate-300 rounded-xl px-4 py-3 text-xs focus:ring-2 focus:ring-amber-500 focus:outline-none">
+            <div class="flex justify-end space-x-3 pt-2">
+                <button onclick="tutupModalAdmin()" class="px-5 py-2.5 rounded-xl text-slate-600 hover:bg-slate-100 font-semibold text-xs">Batal</button>
+                <button onclick="prosesLoginAdmin()" class="bg-slate-900 text-white px-6 py-2.5 rounded-xl font-bold hover:bg-slate-800 text-xs shadow">Masuk</button>
             </div>
         </div>
     </div>
 
     <!-- DASHBOARD ADMIN PENUH -->
-    <div id="dashboard-modal" class="fixed inset-0 bg-black/70 hidden justify-center items-center z-50 p-4 overflow-y-auto">
-        <div class="bg-white rounded-2xl max-w-4xl w-full p-6 shadow-2xl max-h-[90vh] overflow-y-auto space-y-6">
-            <div class="flex justify-between items-center border-b pb-3">
-                <h3 class="text-xl font-bold text-slate-900">🛠️ Panel Kontrol Admin - Sablon Pasta</h3>
-                <button onclick="tutupDashboard()" class="text-slate-400 hover:text-slate-700 font-bold text-xl">&times;</button>
+    <div id="dashboard-modal" class="fixed inset-0 bg-black/70 backdrop-blur-sm hidden justify-center items-center z-50 p-4 overflow-y-auto">
+        <div class="bg-white rounded-3xl max-w-4xl w-full p-6 sm:p-8 shadow-2xl max-h-[90vh] overflow-y-auto space-y-6">
+            <div class="flex justify-between items-center border-b pb-4">
+                <h3 class="text-xl font-black text-slate-900">🛠️ Panel Kontrol Admin - Sablon Pasta</h3>
+                <button onclick="tutupDashboard()" class="text-slate-400 hover:text-slate-700 font-bold text-2xl">&times;</button>
             </div>
 
-            <!-- TAB NAVIGASI ADMIN -->
-            <div class="flex space-x-2 border-b pb-3">
-                <button onclick="gantiTabAdmin('po')" id="tab-btn-po" class="bg-slate-900 text-white px-4 py-2 rounded-lg text-xs font-bold">Daftar PO Masuk (<span id="count-po">0</span>)</button>
-                <button onclick="gantiTabAdmin('master')" id="tab-btn-master" class="bg-slate-200 text-slate-700 px-4 py-2 rounded-lg text-xs font-bold">Kelola Ukuran & Harga</button>
-                <button onclick="gantiTabAdmin('warna')" id="tab-btn-warna" class="bg-slate-200 text-slate-700 px-4 py-2 rounded-lg text-xs font-bold">Warna Kain & Tinta</button>
-                <button onclick="gantiTabAdmin('pengaturan')" id="tab-btn-pengaturan" class="bg-slate-200 text-slate-700 px-4 py-2 rounded-lg text-xs font-bold">Pengaturan Nota / Cap</button>
+            <div class="flex space-x-2 border-b pb-3 overflow-x-auto">
+                <button onclick="gantiTabAdmin('po')" id="tab-btn-po" class="bg-slate-900 text-white px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap">Daftar PO Masuk (<span id="count-po">0</span>)</button>
+                <button onclick="gantiTabAdmin('master')" id="tab-btn-master" class="bg-slate-200 text-slate-700 px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap">Kelola Ukuran & Harga</button>
+                <button onclick="gantiTabAdmin('warna')" id="tab-btn-warna" class="bg-slate-200 text-slate-700 px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap">Warna Kain & Tinta</button>
+                <button onclick="gantiTabAdmin('pengaturan')" id="tab-btn-pengaturan" class="bg-slate-200 text-slate-700 px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap">Pengaturan Nota / Cap</button>
             </div>
 
-            <!-- KONTEN TAB 1: DAFTAR PO MASUK -->
+            <!-- TAB 1: PO MASUK -->
             <div id="tab-content-po" class="space-y-4">
-                <h4 class="font-bold text-slate-800 text-sm">Daftar Purchase Order (PO) Masuk dari Customer</h4>
-                <div id="admin-po-list" class="space-y-3 max-h-96 overflow-y-auto pr-2">
-                    <!-- List PO diisi JS -->
-                </div>
+                <h4 class="font-bold text-slate-800 text-sm">Daftar Purchase Order (PO) Masuk</h4>
+                <div id="admin-po-list" class="space-y-3 max-h-96 overflow-y-auto pr-2"></div>
             </div>
 
-            <!-- KONTEN TAB 2: KELOLA UKURAN & HARGA -->
+            <!-- TAB 2: UKURAN -->
             <div id="tab-content-master" class="space-y-4 hidden">
                 <h4 class="font-bold text-slate-800 text-sm">Tambah / Edit Ukuran Tas & Harga Dasar</h4>
-                <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 grid grid-cols-1 sm:grid-cols-3 gap-3">
-                    <input type="text" id="admin-size-name" placeholder="Nama Ukuran (Misal: 25x35 cm)" class="border rounded-lg px-3 py-2 text-xs bg-white">
-                    <input type="number" id="admin-size-price" placeholder="Harga Dasar per Pcs (Rp)" class="border rounded-lg px-3 py-2 text-xs bg-white">
-                    <button onclick="tambahUkuranAdmin()" class="bg-amber-500 hover:bg-amber-600 text-slate-900 text-xs font-bold px-4 py-2 rounded-lg">Simpan Ukuran</button>
+                <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200 grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <input type="text" id="admin-size-name" placeholder="Nama Ukuran (Misal: 25x35 cm)" class="border rounded-xl px-3 py-2.5 text-xs bg-white">
+                    <input type="number" id="admin-size-price" placeholder="Harga Dasar (Rp)" class="border rounded-xl px-3 py-2.5 text-xs bg-white">
+                    <button onclick="tambahUkuranAdmin()" class="bg-amber-500 hover:bg-amber-600 text-slate-900 text-xs font-bold px-4 py-2.5 rounded-xl">Simpan Ukuran</button>
                 </div>
                 <div id="admin-size-list" class="space-y-2"></div>
             </div>
 
-            <!-- KONTEN TAB 3: WARNA KAIN & TINTA -->
+            <!-- TAB 3: WARNA -->
             <div id="tab-content-warna" class="space-y-4 hidden">
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
                     <div>
                         <h4 class="font-bold text-slate-800 text-sm mb-2">Master Warna Kain Spunbond</h4>
                         <div class="flex space-x-2 mb-3">
-                            <input type="text" id="admin-in-warna" placeholder="Nama Warna (Biru BCA)" class="border rounded-lg px-3 py-2 text-xs flex-grow bg-white">
-                            <input type="color" id="admin-in-hex" value="#1d4ed8" class="h-9 w-12 rounded cursor-pointer border">
-                            <button onclick="tambahWarnaKain()" class="bg-slate-900 text-white text-xs font-semibold px-3 py-2 rounded-lg">Tambah</button>
+                            <input type="text" id="admin-in-warna" placeholder="Nama Warna" class="border rounded-xl px-3 py-2.5 text-xs flex-grow bg-white">
+                            <input type="color" id="admin-in-hex" value="#1d4ed8" class="h-10 w-12 rounded-xl cursor-pointer border p-0.5">
+                            <button onclick="tambahWarnaKain()" class="bg-slate-900 text-white text-xs font-bold px-4 py-2.5 rounded-xl">Tambah</button>
                         </div>
                         <div id="admin-warna-list" class="space-y-2 max-h-40 overflow-y-auto"></div>
                     </div>
                     <div>
                         <h4 class="font-bold text-slate-800 text-sm mb-2">Master Warna Tinta Pasta</h4>
                         <div class="flex space-x-2 mb-3">
-                            <input type="text" id="admin-in-tinta" placeholder="Nama Tinta (Hitam Pekat)" class="border rounded-lg px-3 py-2 text-xs flex-grow bg-white">
-                            <input type="color" id="admin-in-tintahex" value="#000000" class="h-9 w-12 rounded cursor-pointer border">
-                            <button onclick="tambahWarnaTinta()" class="bg-slate-900 text-white text-xs font-semibold px-3 py-2 rounded-lg">Tambah</button>
+                            <input type="text" id="admin-in-tinta" placeholder="Nama Tinta" class="border rounded-xl px-3 py-2.5 text-xs flex-grow bg-white">
+                            <input type="color" id="admin-in-tintahex" value="#000000" class="h-10 w-12 rounded-xl cursor-pointer border p-0.5">
+                            <button onclick="tambahWarnaTinta()" class="bg-slate-900 text-white text-xs font-bold px-4 py-2.5 rounded-xl">Tambah</button>
                         </div>
                         <div id="admin-tinta-list" class="space-y-2 max-h-40 overflow-y-auto"></div>
                     </div>
                 </div>
             </div>
 
-            <!-- KONTEN TAB 4: PENGATURAN NOTA / CAP -->
+            <!-- TAB 4: PENGATURAN -->
             <div id="tab-content-pengaturan" class="space-y-4 hidden">
-                <h4 class="font-bold text-slate-800 text-sm">Pengaturan Identitas Toko & Cap Lunas</h4>
+                <h4 class="font-bold text-slate-800 text-sm">Pengaturan Identitas Nota</h4>
                 <div class="space-y-3 max-w-xl">
                     <div>
-                        <label class="block text-xs font-medium text-slate-700 mb-1">Nama Usaha / Header Invoice</label>
-                        <input type="text" id="cfg-nama-usaha" value="ILHAM SPUNBOND" class="w-full border rounded-lg px-3 py-2 text-xs">
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Nama Usaha</label>
+                        <input type="text" id="cfg-nama-usaha" value="ILHAM SPUNBOND" class="w-full border rounded-xl px-3 py-2.5 text-xs">
                     </div>
                     <div>
-                        <label class="block text-xs font-medium text-slate-700 mb-1">Alamat Lengkap Usaha</label>
-                        <textarea id="cfg-alamat-usaha" class="w-full border rounded-lg px-3 py-2 text-xs" rows="2">Perumahan Taman Raya, Mekarsari, Rajeg, Tangerang, Banten</textarea>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Alamat Usaha</label>
+                        <textarea id="cfg-alamat-usaha" class="w-full border rounded-xl px-3 py-2.5 text-xs" rows="2">Perumahan Taman Raya, Mekarsari, Rajeg, Tangerang, Banten</textarea>
                     </div>
-                    <div>
-                        <label class="block text-xs font-medium text-slate-700 mb-1">URL Gambar Cap Pelunasan (Opsional)</label>
-                        <input type="text" id="cfg-url-cap" placeholder="https://link-gambar-cap.png" class="w-full border rounded-lg px-3 py-2 text-xs">
-                    </div>
-                    <button onclick="simpanConfigToko()" class="bg-slate-900 text-white text-xs font-semibold px-4 py-2 rounded-lg">Simpan Pengaturan Nota</button>
+                    <button onclick="simpanConfigToko()" class="bg-slate-900 text-white text-xs font-bold px-4 py-2.5 rounded-xl">Simpan Pengaturan</button>
                 </div>
             </div>
 
         </div>
     </main>
 
-    <!-- JAVASCRIPT LOGIKA UTAMA -->
+    <!-- JAVASCRIPT UTAMA -->
     <script>
-        // --- DATA DEFAULT MASTER & STATE ---
         const defaultSizes = [
             { name: "Model Oval (20x30 cm)", price: 2500 },
             { name: "Model HLS / Handle Lipat Samping (25x35 cm)", price: 3500 },
@@ -334,37 +317,39 @@
             { name: "Kuning Solid", hex: "#ca8a04" }
         ];
 
-        // Load LocalStorage atau Default
         let dbSizes = JSON.parse(localStorage.getItem('ilham_sizes')) || defaultSizes;
         let dbWarnaKain = JSON.parse(localStorage.getItem('ilham_kain')) || defaultWarnaKain;
         let dbWarnaTinta = JSON.parse(localStorage.getItem('ilham_tinta')) || defaultWarnaTinta;
         let dbPO = JSON.parse(localStorage.getItem('ilham_po_list')) || [];
         let configToko = JSON.parse(localStorage.getItem('ilham_cfg_toko')) || {
             nama: "ILHAM SPUNBOND",
-            alamat: "Perumahan Taman Raya, Mekarsari, Rajeg, Tangerang, Banten",
-            cap: ""
+            alamat: "Perumahan Taman Raya, Mekarsari, Rajeg, Tangerang, Banten"
         };
 
         let currentPOId = null;
-        let uploadedLogoImage = null;
 
         window.onload = function() {
             muatDropdowns();
             muatDataCustomerTerakhir();
+            
+            // Tangkap nama model tas dari URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const modelDipilih = urlParams.get('model');
+            if (modelDipilih) {
+                document.getElementById('label-model-aktif').innerText = `Model: ${decodeURIComponent(modelDipilih)}`;
+            }
+
             hitungTotalHarga();
-            // Load dummy logo default ke canvas
             buatLogoDefaultSolid();
         };
 
         function muatDropdowns() {
-            // Dropdown Ukuran
             const selSize = document.getElementById('select-ukuran');
             selSize.innerHTML = '';
             dbSizes.forEach((s, idx) => {
                 selSize.innerHTML += `<option value="${idx}">${s.name} (Rp ${s.price.toLocaleString()}/pcs)</option>`;
             });
 
-            // Dropdown Warna Kain
             const selKain = document.getElementById('select-warnakain');
             selKain.innerHTML = '';
             dbWarnaKain.forEach(k => {
@@ -380,7 +365,6 @@
                 document.getElementById('color-tint-layer').style.backgroundColor = dbWarnaKain[0].hex;
             }
 
-            // Dropdown Warna Tinta
             const selTinta = document.getElementById('select-tintapasta');
             selTinta.innerHTML = '';
             dbWarnaTinta.forEach(t => {
@@ -388,16 +372,13 @@
             });
         }
 
-        // --- MANIPULASI LOGO JADI 1 WARNA (SOLID) ---
         function buatLogoDefaultSolid() {
             const canvas = document.getElementById('logo-canvas');
             const ctx = canvas.getContext('2d');
             canvas.width = 200;
             canvas.height = 200;
-            
-            // Gambar teks contoh logo di canvas jika belum upload
             ctx.fillStyle = '#000000';
-            ctx.font = 'bold 24px sans-serif';
+            ctx.font = 'bold 22px sans-serif';
             ctx.textAlign = 'center';
             ctx.fillText("LOGO ANDA", 100, 100);
         }
@@ -414,35 +395,29 @@
                     const ctx = canvas.getContext('2d');
                     canvas.width = img.width;
                     canvas.height = img.height;
-
-                    // Gambar asli
                     ctx.drawImage(img, 0, 0);
 
-                    // Konversi jadi 1 warna solid hitam (thresholding grayscale)
                     const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
                     const data = imgData.data;
                     for (let i = 0; i < data.length; i += 4) {
                         const avg = (data[i] + data[i + 1] + data[i + 2]) / 3;
-                        // Kalau transparan, biarkan transparan; kalau ada warna, jadikan hitam solid
                         if (data[i + 3] < 50) {
                             data[i + 3] = 0;
                         } else {
-                            const val = avg < 180 ? 0 : 255; // Hitam atau putih
-                            data[i] = 0;     // R
-                            data[i + 1] = 0; // G
-                            data[i + 2] = 0; // B
-                            data[i + 3] = val === 0 ? 255 : 0; // Background jadi transparan
+                            const val = avg < 180 ? 0 : 255;
+                            data[i] = 0;     
+                            data[i + 1] = 0; 
+                            data[i + 2] = 0; 
+                            data[i + 3] = val === 0 ? 255 : 0; 
                         }
                     }
                     ctx.putImageData(imgData, 0, 0);
-                    uploadedLogoImage = canvas.toDataURL();
                 }
                 img.src = e.target.result;
             }
             reader.readAsDataURL(file);
         }
 
-        // --- KONTROL POSISI & TRANSFORMASI LOGO ---
         function updateLogoTransform() {
             const scale = document.getElementById('range-scale').value;
             const rotate = document.getElementById('range-rotate').value;
@@ -458,7 +433,6 @@
             wrapper.style.transform = `translate(calc(-50% + ${posx}px), calc(-50% + ${posy}px)) scale(${scale / 100}) rotate(${rotate}deg)`;
         }
 
-        // --- KALKULATOR HARGA & DISKON ---
         function hitungTotalHarga() {
             const sizeIdx = document.getElementById('select-ukuran').value;
             const qty = parseInt(document.getElementById('input-qty').value) || 500;
@@ -468,7 +442,6 @@
             let diskonNominal = 0;
             let diskonPersen = 0;
 
-            // Syarat Diskon: >= 1000 pcs dapat diskon 10%
             if (qty >= 1000) {
                 diskonPersen = 10;
                 diskonNominal = subtotal * 0.10;
@@ -483,7 +456,6 @@
             return { basePrice, qty, subtotal, diskonNominal, totalAkhir };
         }
 
-        // --- AUTO-SAVE DATA CUSTOMER KE BROWSER ---
         function muatDataCustomerTerakhir() {
             document.getElementById('cust-nama').value = localStorage.getItem('ilham_c_nama') || '';
             document.getElementById('cust-wa').value = localStorage.getItem('ilham_c_wa') || '';
@@ -491,16 +463,11 @@
         }
 
         function simpanDataCustomerLokal() {
-            const nama = document.getElementById('cust-nama').value;
-            const wa = document.getElementById('cust-wa').value;
-            const alamat = document.getElementById('cust-alamat').value;
-
-            localStorage.setItem('ilham_c_nama', nama);
-            localStorage.setItem('ilham_c_wa', wa);
-            localStorage.setItem('ilham_c_alamat', alamat);
+            localStorage.setItem('ilham_c_nama', document.getElementById('cust-nama').value);
+            localStorage.setItem('ilham_c_wa', document.getElementById('cust-wa').value);
+            localStorage.setItem('ilham_c_alamat', document.getElementById('cust-alamat').value);
         }
 
-        // --- KIRIM PO KE WHATSAPP & GENERATE NOMOR PO ---
         function kirimPesananWA() {
             simpanDataCustomerLokal();
             const nama = document.getElementById('cust-nama').value;
@@ -509,15 +476,14 @@
             const qty = parseInt(document.getElementById('input-qty').value);
 
             if (!nama || !wa || !alamat) {
-                alert("Mohon lengkapi Data Pemesan (Nama, No WhatsApp, & Alamat), Bro!");
+                alert("Mohon lengkapi Data Pemesan (Nama, No WhatsApp, & Alamat)!");
                 return;
             }
             if (qty < 500) {
-                alert("Minimal order adalah 500 Pcs, Bro!");
+                alert("Minimal order adalah 500 Pcs!");
                 return;
             }
 
-            // Generate Nomor PO Unik Berjalan
             const poNum = "PO-IS-" + Date.now().toString().slice(-6);
             currentPOId = poNum;
 
@@ -527,11 +493,9 @@
             const warnaTinta = document.getElementById('select-tintapasta').value;
             const rincianHarga = hitungTotalHarga();
 
-            // Cek Wilayah Jabodetabek untuk syarat COD / DP
             const isJabodetabek = alamat.toLowerCase().includes('jakarta') || alamat.toLowerCase().includes('tangerang') || alamat.toLowerCase().includes('bekasi') || alamat.toLowerCase().includes('depok') || alamat.toLowerCase().includes('bogor');
             const syaratBayar = isJabodetabek ? "Boleh COD (Bayar di Tempat)" : "Wajib DP 50%";
 
-            // Simpan ke Database PO Admin
             const newPO = {
                 id: poNum,
                 tanggal: new Date().toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' }),
@@ -546,38 +510,35 @@
                 syaratBayar
             };
 
-            dbPO.unshift(newPO); // Masukkan ke urutan paling atas
+            dbPO.unshift(newPO);
             localStorage.setItem('ilham_po_list', JSON.stringify(dbPO));
 
-            // Format Pesan WhatsApp Admin
             const pesanWA = `Halo Admin *ILHAM SPUNBOND*, Saya mau mengajukan Pesanan / PO Baru:\n\n` +
                             `📌 *No. PO:* ${poNum}\n` +
                             `👤 *Nama:* ${nama}\n` +
                             `📞 *No WA:* ${wa}\n` +
                             `📍 *Alamat:* ${alamat} (${syaratBayar})\n\n` +
                             `🛍️ *Spesifikasi Produk:*\n` +
-                            `- Model/Ukuran: ${ukuranName}\n` +
+                            `- Model: ${ukuranName}\n` +
                             `- Warna Kain: ${warnaKain}\n` +
                             `- Tinta Pasta: ${warnaTinta}\n` +
                             `- Jumlah: ${qty} Pcs\n` +
-                            `- Estimasi Total: Rp ${rincianHarga.totalAkhir.toLocaleString()}\n\n` +
-                            `Mohon diproses untuk cetak film sablonnya. Terima kasih!`;
+                            `- Total: Rp ${rincianHarga.totalAkhir.toLocaleString()}\n\n` +
+                            `Mohon diproses. Terima kasih!`;
 
             const urlWA = `https://wa.me/6281234567890?text=${encodeURIComponent(pesanWA)}`;
             
-            // Aktifkan Tombol Download Invoice
             const btnInv = document.getElementById('btn-download-inv');
             btnInv.disabled = false;
-            btnInv.className = "bg-amber-500 hover:bg-amber-600 text-slate-900 font-bold py-3 px-4 rounded-xl shadow-md transition text-xs flex items-center justify-center space-x-2 cursor-pointer";
+            btnInv.className = "bg-amber-500 hover:bg-amber-600 text-slate-900 font-bold py-3.5 px-4 rounded-2xl shadow-md transition text-xs flex items-center justify-center space-x-2 cursor-pointer";
 
             alert(`PO Berhasil Dibuat!\nNomor PO: ${poNum}\n\nSilakan lanjutkan pengiriman pesan ke WhatsApp Admin.`);
             window.open(urlWA, '_blank');
         }
 
-        // --- DOWNLOAD INVOICE RESMI ---
         function downloadInvoiceCustomer() {
             if (!currentPOId) {
-                alert("Silakan kirim pesanan ke WhatsApp terlebih dahulu untuk mendapatkan Invoice resmi!");
+                alert("Silakan kirim pesanan ke WhatsApp terlebih dahulu!");
                 return;
             }
             const poData = dbPO.find(x => x.id === currentPOId);
@@ -593,7 +554,7 @@
                 <body class="bg-white p-8 text-slate-800 max-w-2xl mx-auto font-sans">
                     <div class="flex justify-between items-start border-b pb-6 mb-6">
                         <div>
-                            <h1 class="text-2xl font-extrabold text-slate-900">${configToko.nama}</h1>
+                            <h1 class="text-2xl font-black text-slate-900">${configToko.nama}</h1>
                             <p class="text-xs text-slate-500 mt-1">${configToko.alamat}</p>
                         </div>
                         <div class="text-right">
@@ -603,59 +564,56 @@
                         </div>
                     </div>
 
-                    <div class="mb-6 grid grid-cols-2 gap-4 text-xs bg-slate-50 p-4 rounded-xl border">
+                    <div class="mb-6 grid grid-cols-2 gap-4 text-xs bg-slate-50 p-4 rounded-2xl border">
                         <div>
-                            <span class="font-bold text-slate-600 block mb-1">Kepada Pemesan:</span>
-                            <p class="font-semibold text-slate-900">${poData.nama}</p>
+                            <span class="font-bold text-slate-600 block mb-1">Pemesan:</span>
+                            <p class="font-bold text-slate-900">${poData.nama}</p>
                             <p class="text-slate-600">No WA: ${poData.wa}</p>
                             <p class="text-slate-600">Alamat: ${poData.alamat}</p>
                         </div>
                         <div>
                             <span class="font-bold text-slate-600 block mb-1">Ketentuan Pembayaran:</span>
-                            <p class="font-semibold text-slate-900">${poData.syaratBayar}</p>
-                            <p class="text-slate-600">Status Invoice: <strong class="${poData.statusBayar === 'Lunas' ? 'text-emerald-600' : 'text-amber-600'}">${poData.statusBayar}</strong></p>
-                            <p class="text-slate-500 text-[10px] mt-1">Tanggal Pelunasan: ${poData.tanggalLunas}</p>
+                            <p class="font-bold text-slate-900">${poData.syaratBayar}</p>
+                            <p class="text-slate-600">Status: <strong class="${poData.statusBayar === 'Lunas' ? 'text-emerald-600' : 'text-amber-600'}">${poData.statusBayar}</strong></p>
+                            <p class="text-slate-500 text-[10px] mt-1">Pelunasan: ${poData.tanggalLunas}</p>
                         </div>
                     </div>
 
                     <table class="w-full text-left border-collapse text-xs mb-6">
                         <thead>
                             <tr class="bg-slate-900 text-white">
-                                <th class="p-3">Deskripsi Produk</th>
+                                <th class="p-3 rounded-l-xl">Deskripsi Produk</th>
                                 <th class="p-3 text-center">Jumlah</th>
-                                <th class="p-3 text-right">Subtotal</th>
+                                <th class="p-3 text-right rounded-r-xl">Subtotal</th>
                             </tr>
                         </thead>
-                        <tbody class="divide-y border-b">
+                        <tbody class="divide-y">
                             <tr>
                                 <td class="p-3">
                                     <strong class="block text-slate-900">${poData.ukuran}</strong>
-                                    <span class="text-slate-500 text-[11px]">Warna Kain: ${poData.kain} | Tinta: ${poData.tinta}</span>
+                                    <span class="text-slate-500 text-[11px]">Kain: ${poData.kain} | Tinta: ${poData.tinta}</span>
                                 </td>
-                                <td class="p-3 text-center">${poData.qty} Pcs</td>
-                                <td class="p-3 text-right font-bold">Rp ${poData.total.toLocaleString()}</td>
+                                <td class="p-3 text-center font-bold">${poData.qty} Pcs</td>
+                                <td class="p-3 text-right font-black">Rp ${poData.total.toLocaleString()}</td>
                             </tr>
                         </tbody>
                     </table>
 
-                    <div class="flex justify-between items-center pt-2">
-                        <div>
-                            <p class="text-[10px] text-slate-400">Terima kasih telah memesan di ILHAM SPUNBOND.</p>
-                        </div>
+                    <div class="flex justify-between items-center pt-4 border-t">
+                        <p class="text-[10px] text-slate-400">Terima kasih telah memesan di ILHAM SPUNBOND.</p>
                         <div class="text-right">
-                            <span class="text-xs font-bold text-slate-600 block mb-1">Total Tagihan:</span>
-                            <span class="text-xl font-extrabold text-amber-700">Rp ${poData.total.toLocaleString()}</span>
+                            <span class="text-xs font-bold text-slate-600 block">Total Tagihan:</span>
+                            <span class="text-xl font-black text-amber-700">Rp ${poData.total.toLocaleString()}</span>
                         </div>
                     </div>
 
-                    ${poData.statusBayar === 'Lunas' ? `<div class="mt-8 text-center border-2 border-emerald-600 text-emerald-600 font-bold p-3 rounded-xl inline-block uppercase tracking-widest text-sm rotate-[-3deg]">✔ LUNAS / SELESAI (${poData.tanggalLunas})</div>` : ''}
+                    ${poData.statusBayar === 'Lunas' ? `<div class="mt-8 text-center border-2 border-emerald-600 text-emerald-600 font-extrabold p-3 rounded-2xl inline-block uppercase tracking-widest text-sm rotate-[-2deg]">✔ LUNAS / SELESAI (${poData.tanggalLunas})</div>` : ''}
                 </body>
                 </html>
             `);
             invoiceWindow.document.close();
         }
 
-        // --- PANEL ADMIN & KEAMANAN SANDI ---
         const SANDI_ADMIN = "ilham123";
 
         function bukaModalAdmin() {
@@ -667,12 +625,11 @@
             document.getElementById('admin-modal').classList.remove('flex');
         }
         function prosesLoginAdmin() {
-            const pass = document.getElementById('admin-password').value;
-            if (pass === SANDI_ADMIN) {
+            if (document.getElementById('admin-password').value === SANDI_ADMIN) {
                 tutupModalAdmin();
                 bukaDashboardAdmin();
             } else {
-                alert("Kata sandi salah, Bro!");
+                alert("Kata sandi salah!");
             }
         }
         function bukaDashboardAdmin() {
@@ -688,17 +645,15 @@
             muatDropdowns();
         }
 
-        // Tab Admin Switcher
         function gantiTabAdmin(tab) {
             ['po', 'master', 'warna', 'pengaturan'].forEach(t => {
                 document.getElementById(`tab-content-${t}`).classList.add('hidden');
-                document.getElementById(`tab-btn-${t}`).className = "bg-slate-200 text-slate-700 px-4 py-2 rounded-lg text-xs font-bold";
+                document.getElementById(`tab-btn-${t}`).className = "bg-slate-200 text-slate-700 px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap";
             });
             document.getElementById(`tab-content-${tab}`).classList.remove('hidden');
-            document.getElementById(`tab-btn-${tab}`).className = "bg-slate-900 text-white px-4 py-2 rounded-lg text-xs font-bold";
+            document.getElementById(`tab-btn-${tab}`).className = "bg-slate-900 text-white px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap";
         }
 
-        // Render Daftar PO di Admin
         function renderAdminPOList() {
             const container = document.getElementById('admin-po-list');
             container.innerHTML = '';
@@ -710,24 +665,23 @@
             }
 
             dbPO.forEach((po, index) => {
-                const item = document.createElement('div');
-                item.className = "bg-slate-50 p-4 rounded-xl border border-slate-200 text-xs space-y-2";
-                item.innerHTML = `
-                    <div class="flex justify-between items-center font-bold border-b pb-2">
-                        <span class="text-amber-700">${po.id} — ${po.nama} (${po.wa})</span>
-                        <span class="${po.statusBayar === 'Lunas' ? 'text-emerald-600' : 'text-amber-600'}">${po.statusBayar}</span>
-                    </div>
-                    <div>
-                        <p><strong>Alamat:</strong> ${po.alamat} (${po.syaratBayar})</p>
-                        <p><strong>Pesanan:</strong> ${po.ukuran}, Kain: ${po.kain}, Tinta: ${po.tinta}, Qty: ${po.qty} Pcs</p>
-                        <p><strong>Total:</strong> Rp ${po.total.toLocaleString()} | Tanggal: ${po.tanggal}</p>
-                    </div>
-                    <div class="flex space-x-2 pt-2">
-                        <button onclick="ubahStatusLunas(${index})" class="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded font-bold">Ubah Jadi LUNAS (Real-Time)</button>
-                        <button onclick="hapusPO(${index})" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1.5 rounded font-bold">Hapus PO</button>
+                container.innerHTML += `
+                    <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200 text-xs space-y-2">
+                        <div class="flex justify-between items-center font-bold border-b pb-2">
+                            <span class="text-amber-700">${po.id} — ${po.nama} (${po.wa})</span>
+                            <span class="${po.statusBayar === 'Lunas' ? 'text-emerald-600' : 'text-amber-600'}">${po.statusBayar}</span>
+                        </div>
+                        <div>
+                            <p><strong>Alamat:</strong> ${po.alamat} (${po.syaratBayar})</p>
+                            <p><strong>Pesanan:</strong> ${po.ukuran}, Kain: ${po.kain}, Tinta: ${po.tinta}, Qty: ${po.qty} Pcs</p>
+                            <p><strong>Total:</strong> Rp ${po.total.toLocaleString()} | Tanggal: ${po.tanggal}</p>
+                        </div>
+                        <div class="flex space-x-2 pt-1">
+                            <button onclick="ubahStatusLunas(${index})" class="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded-xl font-bold">Ubah Jadi LUNAS</button>
+                            <button onclick="hapusPO(${index})" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1.5 rounded-xl font-bold">Hapus PO</button>
+                        </div>
                     </div>
                 `;
-                container.appendChild(item);
             });
         }
 
@@ -747,7 +701,6 @@
             }
         }
 
-        // Kelola Master Ukuran & Harga Admin
         function tambahUkuranAdmin() {
             const name = document.getElementById('admin-size-name').value;
             const price = parseInt(document.getElementById('admin-size-price').value);
@@ -764,20 +717,13 @@
             const list = document.getElementById('admin-size-list');
             list.innerHTML = '';
             dbSizes.forEach((s, i) => {
-                list.innerHTML += `<div class="flex justify-between items-center bg-slate-50 p-2 rounded border text-xs">
+                list.innerHTML += `<div class="flex justify-between items-center bg-slate-50 p-3 rounded-2xl border text-xs">
                     <span>${s.name} — Rp ${s.price.toLocaleString()}</span>
-                    <button onclick="hapusUkuran(${i})" class="text-red-500 font-bold">Hapus</button>
+                    <button onclick="dbSizes.splice(${i},1);localStorage.setItem('ilham_sizes',JSON.stringify(dbSizes));renderAdminSizes();" class="text-red-500 font-bold">Hapus</button>
                 </div>`;
             });
         }
 
-        function hapusUkuran(i) {
-            dbSizes.splice(i, 1);
-            localStorage.setItem('ilham_sizes', JSON.stringify(dbSizes));
-            renderAdminSizes();
-        }
-
-        // Kelola Warna Kain & Tinta
         function tambahWarnaKain() {
             const name = document.getElementById('admin-in-warna').value;
             const hex = document.getElementById('admin-in-hex').value;
@@ -799,17 +745,13 @@
         }
 
         function renderAdminWarnaTinta() {
-            const listKain = document.getElementById('admin-warna-list');
-            listKain.innerHTML = dbWarnaKain.map((k, i) => `<div class="flex justify-between items-center text-xs bg-slate-50 p-1.5 rounded border"><span>${k.name}</span><button onclick="dbWarnaKain.splice(${i},1);localStorage.setItem('ilham_kain',JSON.stringify(dbWarnaKain));renderAdminWarnaTinta();" class="text-red-500 font-bold">x</button></div>`).join('');
-
-            const listTinta = document.getElementById('admin-tinta-list');
-            listTinta.innerHTML = dbWarnaTinta.map((t, i) => `<div class="flex justify-between items-center text-xs bg-slate-50 p-1.5 rounded border"><span>${t.name}</span><button onclick="dbWarnaTinta.splice(${i},1);localStorage.setItem('ilham_tinta',JSON.stringify(dbWarnaTinta));renderAdminWarnaTinta();" class="text-red-500 font-bold">x</button></div>`).join('');
+            document.getElementById('admin-warna-list').innerHTML = dbWarnaKain.map((k, i) => `<div class="flex justify-between items-center text-xs bg-slate-50 p-2 rounded-xl border"><span>${k.name}</span><button onclick="dbWarnaKain.splice(${i},1);localStorage.setItem('ilham_kain',JSON.stringify(dbWarnaKain));renderAdminWarnaTinta();" class="text-red-500 font-bold">x</button></div>`).join('');
+            document.getElementById('admin-tinta-list').innerHTML = dbWarnaTinta.map((t, i) => `<div class="flex justify-between items-center text-xs bg-slate-50 p-2 rounded-xl border"><span>${t.name}</span><button onclick="dbWarnaTinta.splice(${i},1);localStorage.setItem('ilham_tinta',JSON.stringify(dbWarnaTinta));renderAdminWarnaTinta();" class="text-red-500 font-bold">x</button></div>`).join('');
         }
 
         function simpanConfigToko() {
             configToko.nama = document.getElementById('cfg-nama-usaha').value;
             configToko.alamat = document.getElementById('cfg-alamat-usaha').value;
-            configToko.cap = document.getElementById('cfg-url-cap').value;
             localStorage.setItem('ilham_cfg_toko', JSON.stringify(configToko));
             alert("Pengaturan nota berhasil disimpan!");
         }
