@@ -608,7 +608,7 @@
         let cartItems = [];
         let currentQuoteText = "";
 
-        // --- KONTROL VIDEO SAMBUTAN (SPLASH SCREEN) ---
+                // --- KONTROL VIDEO SAMBUTAN (SPLASH SCREEN) & KEJUTAN HUJAN GIFT ---
         function closeWelcomeVideo() {
             const modal = document.getElementById('welcome-video-modal');
             const video = document.getElementById('splash-video');
@@ -617,6 +617,15 @@
                 modal.classList.add('opacity-0');
                 setTimeout(() => { modal.style.display = 'none'; }, 400);
             }
+
+            // 🌟 HUJAN GIFT LANGSUNG JATUH SEBAGAI KEJUTAN PAS MASUK APLIKASI!
+            if(window.activeThemeGifts) {
+                triggerGiftRain(window.activeThemeGifts);
+            }
+
+            setTimeout(() => { playDailyQuoteSpeech(currentQuoteText); }, 500);
+        }
+
             setTimeout(() => { playDailyQuoteSpeech(currentQuoteText); }, 500);
         }
 
