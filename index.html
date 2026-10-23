@@ -99,40 +99,10 @@
 
     <div id="gift-rain-container" class="absolute inset-0 pointer-events-none overflow-hidden z-30"></div>
 
-    <!-- 🎬 MODAL VIDEO / ANIMASI GIF PENDEK (SPLASH SCREEN) -->
-    <div id="welcome-video-modal" class="fixed inset-0 bg-slate-950 z-50 flex flex-col items-center justify-center p-4 transition-opacity duration-500">
-        <div class="w-full max-w-sm bg-slate-900 rounded-3xl overflow-hidden shadow-2xl border border-emerald-500/30 flex flex-col items-center relative">
-            
-            <button type="button" onclick="closeWelcomeVideo()" class="absolute top-3 right-3 z-20 bg-slate-800/80 hover:bg-slate-700 text-slate-300 hover:text-white px-3 py-1.5 rounded-full text-xs font-semibold backdrop-blur-md transition cursor-pointer">
-                Lewati [X]
-            </button>
-
-            <!-- Video / Animasi Pendek Player -->
-            <div class="relative w-full aspect-[9/16] max-h-[60vh] bg-black flex items-center justify-center">
-                <video id="splash-video" autoplay muted playsinline loop class="w-full h-full object-cover">
-                    <source id="splash-video-source" src="https://assets.mixkit.co/videos/preview/mixkit-hands-holding-a-smartphone-with-a-green-screen-41584-large.mp4" type="video/mp4">
-                    Browser Anda tidak mendukung pemutaran video.
-                </video>
-                <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-transparent pointer-events-none"></div>
-            </div>
-
-            <div class="p-5 text-center space-y-3 w-full bg-slate-900">
-                <h3 class="text-sm font-extrabold text-white">ILHAM SPUNBOND MENYAMBUT ANDA</h3>
-                <p class="text-[11px] text-slate-400 italic">Pusat Custom Tas Spunbond & Sablon Profesional Terbaik</p>
-                <button type="button" onclick="closeWelcomeVideo()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-2xl text-xs shadow-lg transition cursor-pointer">
-                    Mulai Masuk Aplikasi 🚀
-                </button>
-            </div>
-        </div>
-    </div>
-
     <div class="max-w-md mx-auto p-4 sm:p-6 space-y-5">
         <!-- Header Brand Eksklusif -->
-        <div onclick="openWelcomeVideo()" class="bg-gradient-to-br from-emerald-900 via-emerald-800 to-slate-900 text-white p-6 rounded-3xl shadow-xl text-center flex flex-col items-center justify-center relative overflow-hidden border border-emerald-700/40 cursor-pointer group hover:scale-[1.01] transition">
+        <div class="bg-gradient-to-br from-emerald-900 via-emerald-800 to-slate-900 text-white p-6 rounded-3xl shadow-xl text-center flex flex-col items-center justify-center relative overflow-hidden border border-emerald-700/40">
             <div class="absolute -right-10 -top-10 w-32 h-32 bg-emerald-500/10 rounded-full blur-2xl"></div>
-            <div class="absolute top-2 right-3 text-[10px] bg-emerald-700/60 text-emerald-200 px-2.5 py-1 rounded-full font-bold shadow-sm flex items-center gap-1">
-                <span>▶️</span> Klik untuk Video
-            </div>
             <div id="brand-logo-container" class="mb-3 bg-white/10 p-3 rounded-2xl border border-emerald-500/30 flex items-center justify-center min-h-[60px] min-w-[150px] shadow-inner">
                 <img id="header-brand-logo" src="https://via.placeholder.com/160x55?text=ILHAM+SPUNBOND" alt="Logo Brand" class="max-h-16 w-auto object-contain filter drop-shadow">
             </div>
@@ -151,9 +121,9 @@
                 "Kesuksesan bisnis berawal dari langkah kecil yang konsisten. Bersama ILHAM SPUNBOND, tingkatkan prestise brand toko dan acara spesial Anda hari ini!"
             </p>
             <div class="flex items-center justify-between pt-1 border-t border-amber-500/20 text-[10px]">
-                <span id="voice-status-label" class="text-amber-800 font-medium italic">🔊 Suara motivasi aktif</span>
+                <span id="voice-status-label" class="text-amber-800 font-medium italic">🔊 Suara motivasi siap diputar</span>
                 <button type="button" onclick="toggleSpeechVoice()" id="voice-toggle-btn" class="bg-amber-600 hover:bg-amber-700 text-white px-3 py-1 rounded-lg font-bold shadow-sm transition cursor-pointer flex items-center gap-1">
-                    <span>🔇</span> Putar Ulang Suara
+                    <span>🔊</span> Putar Suara
                 </button>
             </div>
         </div>
@@ -179,7 +149,7 @@
                 </div>
 
                 <div class="space-y-1.5 pt-1">
-                    <label class="block text-xs font-bold text-slate-700">4. Upload Logo / Desain Anda (Background Transparan Otomatis)</label>
+                    <label class="block text-xs font-bold text-slate-700">4. Upload Logo / Desain Anda (Format PNG/JPG - Background Transparan Otomatis)</label>
                     <input type="file" id="customer-logo-upload" accept="image/*" onchange="loadCustomerLogo(event)" class="w-full text-xs text-slate-500 file:mr-3 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100 cursor-pointer border border-slate-200 rounded-xl p-1 bg-slate-50">
                     <div id="logo-upload-status" class="text-[10px] text-slate-400 italic"></div>
                 </div>
@@ -404,13 +374,6 @@
             </div>
 
             <div class="bg-slate-800 p-3 rounded-xl border border-amber-500/30 space-y-2">
-                <label class="block text-xs font-semibold text-amber-300">🎬 Upload / Tempel Link Video Pendek (MP4)</label>
-                <input type="file" id="admin-video-upload" accept="video/mp4" onchange="uploadSplashVideo(event)" class="w-full text-xs text-slate-400 file:mr-2 file:py-1 file:px-2 file:rounded-lg file:border-0 file:text-[10px] file:font-semibold file:bg-amber-500 file:text-slate-950 cursor-pointer mb-2">
-                <input type="text" id="admin-video-url-input" placeholder="Atau paste link video MP4 di sini..." oninput="saveVideoUrlFromInput(this.value)" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white outline-none">
-                <div id="video-upload-status" class="text-[10px] text-slate-400 italic">ℹ️ Disarankan pakai link video MP4 online agar cepat & tidak error</div>
-            </div>
-
-            <div class="bg-slate-800 p-3 rounded-xl border border-amber-500/30 space-y-2">
                 <label class="block text-xs font-semibold text-amber-300">🖼️ Upload Logo Brand Toko</label>
                 <input type="file" id="admin-brand-logo-upload" accept="image/*" onchange="uploadBrandLogo(event)" class="w-full text-xs text-slate-400 file:mr-2 file:py-1 file:px-2 file:rounded-lg file:border-0 file:text-[10px] file:font-semibold file:bg-amber-500 file:text-slate-950 cursor-pointer">
                 <div id="brand-upload-status" class="text-[10px] text-slate-400 italic"></div>
@@ -597,7 +560,6 @@
         let ownerWaNumber = "6289630539563";
         let brandLogoUrl = "";
         let customStampUrl = "";
-        let welcomeVideoUrl = "";
 
         let activeBagTint = "#ffffff";
         let activeColorName = "Putih Bersih";
@@ -608,36 +570,6 @@
         let currentQuoteText = "";
         let activeThemeGifts = ["🛍️", "💎", "⭐", "🎁", "🚀", "🔥"];
 
-        // --- KONTROL VIDEO SAMBUTAN (SPLASH SCREEN) & KEJUTAN HUJAN GIFT ---
-        function closeWelcomeVideo() {
-            const modal = document.getElementById('welcome-video-modal');
-            const video = document.getElementById('splash-video');
-            if(video) video.pause();
-            if(modal) {
-                modal.classList.add('opacity-0');
-                setTimeout(() => { modal.style.display = 'none'; }, 400);
-            }
-
-            if(window.activeThemeGifts) {
-                triggerGiftRain(window.activeThemeGifts);
-            }
-
-            setTimeout(() => { playDailyQuoteSpeech(currentQuoteText); }, 400);
-        }
-
-        function openWelcomeVideo() {
-            const modal = document.getElementById('welcome-video-modal');
-            const video = document.getElementById('splash-video');
-            if(modal) {
-                modal.style.display = 'flex';
-                setTimeout(() => modal.classList.remove('opacity-0'), 10);
-                if(video) {
-                    video.currentTime = 0;
-                    video.play().catch(e => console.log("Video play handled:", e));
-                }
-            }
-        }
-
         function initSmartDailyQuote() {
             updateJakartaClock();
             setInterval(updateJakartaClock, 1000);
@@ -646,25 +578,6 @@
             const quoteEl = document.getElementById('smart-quote-text');
             if(quoteEl) {
                 quoteEl.textContent = `"${currentQuoteText}"`;
-            }
-        }
-
-        function triggerGiftRain(giftArray) {
-            const container = document.getElementById('gift-rain-container');
-            if(!container) return;
-            container.innerHTML = '';
-
-            for (let i = 0; i < 25; i++) {
-                const drop = document.createElement('div');
-                drop.className = 'gift-drop';
-                drop.textContent = giftArray[Math.floor(Math.random() * giftArray.length)];
-                
-                drop.style.left = Math.random() * 100 + 'vw';
-                drop.style.fontSize = (Math.random() * 16 + 18) + 'px';
-                drop.style.animationDuration = (Math.random() * 3 + 2.5) + 's';
-                drop.style.animationDelay = (Math.random() * 2) + 's';
-                
-                container.appendChild(drop);
             }
         }
 
@@ -697,7 +610,7 @@
 
             utterance.onend = function() {
                 if(statusLabel) statusLabel.textContent = "🔇 Suara selesai diputar";
-                if(toggleBtn) toggleBtn.innerHTML = "<span>🔇</span> Putar Ulang Suara";
+                if(toggleBtn) toggleBtn.innerHTML = "<span>🔊</span> Putar Suara";
             };
 
             window.speechSynthesis.speak(utterance);
@@ -708,7 +621,7 @@
                 if (window.speechSynthesis.speaking) {
                     window.speechSynthesis.cancel();
                     document.getElementById('voice-status-label').textContent = "🔇 Suara dijeda";
-                    document.getElementById('voice-toggle-btn').innerHTML = "<span>🔊</span> Putar Ulang Suara";
+                    document.getElementById('voice-toggle-btn').innerHTML = "<span>🔊</span> Putar Suara";
                 } else {
                     playDailyQuoteSpeech(currentQuoteText);
                 }
@@ -729,7 +642,6 @@
             if(localStorage.getItem('ilham_ownerWaNumber')) ownerWaNumber = localStorage.getItem('ilham_ownerWaNumber');
             if(localStorage.getItem('ilham_brandLogoUrl')) brandLogoUrl = localStorage.getItem('ilham_brandLogoUrl');
             if(localStorage.getItem('ilham_customStampUrl')) customStampUrl = localStorage.getItem('ilham_customStampUrl');
-            if(localStorage.getItem('ilham_welcomeVideoUrl')) welcomeVideoUrl = localStorage.getItem('ilham_welcomeVideoUrl');
             if(localStorage.getItem('ilham_cartItems')) cartItems = JSON.parse(localStorage.getItem('ilham_cartItems'));
         } catch(e) { console.error(e); }
 
@@ -764,7 +676,7 @@
             });
         }
 
-        // 🔧 ALGORITMA SUPER BERSIH: Hapus Background Putih/Terang/Kotak jadi Transparan Sempurna
+        // 🔧 ALGORITMA SUPER BERSIH: Hapus Background Putih/Terang jadi Transparan Sempurna
         function removeBackgroundToTransparent(file, maxWidth = 400, quality = 0.8) {
             return new Promise((resolve) => {
                 const reader = new FileReader();
@@ -782,11 +694,10 @@
                         const imgData = ctx.getImageData(0, 0, w, h);
                         const data = imgData.data;
 
-                        // Deteksi background putih bersih, abu-abu muda, atau warna terang di pojok
                         for (let i = 0; i < data.length; i += 4) {
-                            let r = data[i], g = data[i+1], b = data[i+2], a = data[i+3];
-                            // Jika warnanya mendekati putih/terang (> 210), buat jadi transparan total
-                            if (r > 210 && g > 210 && b > 210) {
+                            let r = data[i], g = data[i+1], b = data[i+2];
+                            // Deteksi background warna putih atau terang (> 205) dan buat transparan total
+                            if (r > 205 && g > 205 && b > 205) {
                                 data[i+3] = 0;
                             }
                         }
@@ -845,38 +756,11 @@
             if(data.ownerWaNumber) { ownerWaNumber = data.ownerWaNumber; safeLocalStorageSet('ilham_ownerWaNumber', ownerWaNumber); }
             if(data.brandLogoUrl !== undefined) { brandLogoUrl = data.brandLogoUrl; safeLocalStorageSet('ilham_brandLogoUrl', brandLogoUrl); }
             if(data.customStampUrl !== undefined) { customStampUrl = data.customStampUrl; safeLocalStorageSet('ilham_customStampUrl', customStampUrl); }
-            if(data.welcomeVideoUrl !== undefined) { 
-                welcomeVideoUrl = data.welcomeVideoUrl; 
-                safeLocalStorageSet('ilham_welcomeVideoUrl', welcomeVideoUrl); 
-                updateSplashVideoElement();
-            }
 
             updateAppManifest();
             renderAdminPanel();
             updateBagCanvas();
             setTimeout(() => { isSyncingFromCloud = false; }, 500);
-        }
-
-        function updateSplashVideoElement() {
-            const videoSrcEl = document.getElementById('splash-video-source');
-            const videoEl = document.getElementById('splash-video');
-            const inputUrlEl = document.getElementById('admin-video-url-input');
-            const targetUrl = (welcomeVideoUrl && welcomeVideoUrl !== "") ? welcomeVideoUrl : "https://assets.mixkit.co/videos/preview/mixkit-hands-holding-a-smartphone-with-a-green-screen-41584-large.mp4";
-            
-            if(videoSrcEl) videoSrcEl.src = targetUrl;
-            if(inputUrlEl && welcomeVideoUrl) inputUrlEl.value = welcomeVideoUrl;
-            if(videoEl) {
-                videoEl.load();
-                videoEl.play().catch(e => console.log("Video play handled:", e));
-            }
-        }
-
-        function saveVideoUrlFromInput(url) {
-            if(url && url.trim() !== "") {
-                welcomeVideoUrl = url.trim();
-                updateSplashVideoElement();
-                saveToCloud();
-            }
         }
 
         function safeLocalStorageSet(key, val) {
@@ -928,7 +812,6 @@
             safeLocalStorageSet('ilham_ownerWaNumber', ownerWaNumber);
             safeLocalStorageSet('ilham_brandLogoUrl', brandLogoUrl);
             safeLocalStorageSet('ilham_customStampUrl', customStampUrl);
-            safeLocalStorageSet('ilham_welcomeVideoUrl', welcomeVideoUrl);
             
             if(!window.firebaseDb) return;
             try {
@@ -945,8 +828,7 @@
                     bankAccounts, bagColors, inkColors, dtfOptions,
                     storeName, pdfPassword, ownerWaNumber,
                     brandLogoUrl: (brandLogoUrl && brandLogoUrl.length > 80000) ? "" : brandLogoUrl,
-                    customStampUrl: (customStampUrl && customStampUrl.length > 80000) ? "" : customStampUrl,
-                    welcomeVideoUrl: (welcomeVideoUrl && welcomeVideoUrl.length > 250000) ? "" : welcomeVideoUrl
+                    customStampUrl: (customStampUrl && customStampUrl.length > 80000) ? "" : customStampUrl
                 }, { merge: true });
             } catch(e) { console.error("Cloud save error:", e); }
         }
@@ -966,7 +848,6 @@
             const bankDisplay = document.getElementById('bank-accounts-display');
             const stampPreview = document.getElementById('stamp-preview-container');
             const brandStatus = document.getElementById('brand-upload-status');
-            const videoStatus = document.getElementById('video-upload-status');
             
             if(!modelSelect) return;
             const prevVal = modelSelect.value || 0;
@@ -1015,10 +896,6 @@
             if(brandStatus) {
                 brandStatus.textContent = brandLogoUrl ? "✅ Logo Brand Aktif" : "ℹ️ Belum ada logo brand";
                 brandStatus.className = brandLogoUrl ? "text-[10px] text-emerald-400 font-semibold italic" : "text-[10px] text-slate-400 italic";
-            }
-            if(videoStatus) {
-                videoStatus.textContent = welcomeVideoUrl ? "✅ Video Link/File Aktif" : "ℹ️ Default Video Aktif";
-                videoStatus.className = welcomeVideoUrl ? "text-[10px] text-emerald-400 font-semibold italic" : "text-[10px] text-slate-400 italic";
             }
 
             if(bankAdminContainer && bankDisplay) {
@@ -1084,27 +961,11 @@
             const headerLogoEl = document.getElementById('header-brand-logo');
             if(headerLogoEl && brandLogoUrl) headerLogoEl.src = brandLogoUrl;
 
-            updateSplashVideoElement();
             updateAppManifest();
             loadCustomerDataMemory();
             updateCustomerSizesDropdown();
             updateBagCanvas();
             renderCartItems();
-        }
-
-        async function uploadSplashVideo(e) {
-            const file = e.target.files[0];
-            if(file) {
-                const reader = new FileReader();
-                reader.onload = async function(event) {
-                    welcomeVideoUrl = event.target.result;
-                    updateSplashVideoElement();
-                    await saveToCloud();
-                    renderAdminPanel();
-                    alert("✅ Video sambutan berhasil disimpan!");
-                };
-                reader.readAsDataURL(file);
-            }
         }
 
         function updateCustomerSizesDropdown() {
@@ -1548,7 +1409,7 @@
             const orderId = "PO-" + Math.floor(1000 + Math.random() * 9000);
             let totalQty = 0, grandSubtotal = 0;
             cartItems.forEach(item => { totalQty += item.qty; grandSubtotal += item.subtotal; });
-            const discountVal = totalTag >= 1000 ? grandSubtotal * 0.10 : 0;
+            const discountVal = totalQty >= 1000 ? grandSubtotal * 0.10 : 0;
             const grandTotal = grandSubtotal - discountVal;
 
             const newOrder = {
@@ -1575,3 +1436,4 @@
     </script>
 </body>
 </html>
+ 
