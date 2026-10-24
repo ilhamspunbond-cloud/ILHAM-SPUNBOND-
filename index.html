@@ -11,7 +11,9 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="ILHAM SPUNBOND">
     <meta name="theme-color" content="#065f46">
-    <link rel="manifest" href="manifest.json">
+    
+    <!-- Inline Manifest Pangkas Error PWABuilder -->
+    <link rel="manifest" href="data:application/manifest+json;charset=utf-8,%7B%22name%22%3A%22ILHAM%20SPUNBOND%22%2C%22short_name%22%3A%22IlhamSpunbond%22%2C%22start_url%22%3A%22.%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%23f8fafc%22%2C%22theme_color%22%3A%22%23065f46%22%2C%22description%22%3A%22Pusat%20Custom%20Merchandise%20%26%20Sablon%20Profesional%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22https%3A%2F%2Fvia.placeholder.com%2F192x192%2F065f46%2Fffffff%3Ftext%3DILHAM%22%2C%22sizes%22%3A%22192x192%22%2C%22type%22%3A%22image%2Fpng%22%7D%2C%7B%22src%22%3A%22https%3A%2F%2Fvia.placeholder.com%2F512x512%2F065f46%2Fffffff%3Ftext%3DILHAM%22%2C%22sizes%22%3A%22512x512%22%2C%22type%22%3A%22image%2Fpng%22%7D%5D%7D">
 
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -260,26 +262,8 @@
         </div>
     </div>
 
-    <!-- Script Utama & Pembuatan Manifest Otomatis -->
+    <!-- Script Utama -->
     <script>
-        // Auto Generate manifest.json blob URL secara otomatis agar PWABuilder langsung hijau
-        const manifestData = {
-            "name": "ILHAM SPUNBOND",
-            "short_name": "IlhamSpunbond",
-            "start_url": ".",
-            "display": "standalone",
-            "background_color": "#f8fafc",
-            "theme_color": "#065f46",
-            "description": "Pusat Custom Merchandise & Sablon Profesional",
-            "icons": [
-                { "src": "https://via.placeholder.com/192x192/065f46/ffffff?text=ILHAM", "sizes": "192x192", "type": "image/png" },
-                { "src": "https://via.placeholder.com/512x512/065f46/ffffff?text=ILHAM", "sizes": "512x512", "type": "image/png" }
-            ]
-        };
-        const manifestBlob = new Blob([JSON.stringify(manifestData, null, 2)], {type: 'application/json'});
-        const manifestURL = URL.createObjectURL(manifestBlob);
-        document.querySelector('link[rel="manifest"]').setAttribute('href', manifestURL);
-
         const cleanDefaultBagSvg = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 500'><path d='M100 150 L100 100 C100 70 120 50 200 50 C280 50 300 70 300 100 L300 150 Z' fill='none' stroke='%23334155' stroke-width='16'/><path d='M60 150 L340 150 C360 150 370 160 370 180 L340 450 C340 470 330 480 310 480 L90 480 C70 480 60 470 60 450 L30 180 C30 160 40 150 60 150 Z' fill='%23ffffff' stroke='%23334155' stroke-width='6'/></svg>";
         const cleanDefaultShirtSvg = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 500'><path d='M120 80 L200 120 L280 80 L320 150 L260 190 L260 420 L140 420 L140 190 L80 150 Z' fill='%23ffffff' stroke='%23334155' stroke-width='8'/></svg>";
         const cleanDefaultMugSvg = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 500'><path d='M120 140 L280 140 L260 400 L140 400 Z' fill='%23ffffff' stroke='%23334155' stroke-width='8'/><path d='M280 170 C330 170 330 330 280 330' fill='none' stroke='%23334155' stroke-width='12'/></svg>";
@@ -688,8 +672,7 @@
         }
 
         function closeOrderHistoryModal() { document.getElementById('order-history-modal').classList.add('hidden'); }
-        case 'orders': break;
-        function openCustomerOrderHistory() { document.getElementById('customer-order-history-modal').classList.remove('hidden'); }
+        function openCustomerOrderHistory() { document.getElementById('customer-order-history-modal').classList.add('hidden'); }
         function closeCustomerOrderHistoryModal() { document.getElementById('customer-order-history-modal').classList.add('hidden'); }
 
         window.onload = function() {
