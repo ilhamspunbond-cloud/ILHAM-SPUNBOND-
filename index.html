@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ILHAM SPUNBOND - Exclusive Custom Bag & Order Pro</title>
+    <title>ILHAM SPUNBOND - Exclusive Custom Merchandise & Order Pro</title>
     
     <!-- 📱 PWA & Standalone Meta Tags -->
     <meta name="mobile-web-app-capable" content="yes">
@@ -34,77 +34,78 @@
             measurementId: "G-48V3KQGPBN"
         };
 
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-
-        window.firebaseDb = db;
-        window.firebaseDeps = { doc, setDoc, getDoc, onSnapshot, collection, getDocs, deleteDoc, query, orderBy };
-        
-        if(window.initCloudSync) {
-            window.initCloudSync();
+        try {
+            const app = initializeApp(firebaseConfig);
+            const db = getFirestore(app);
+            window.firebaseDb = db;
+            window.firebaseDeps = { doc, setDoc, getDoc, onSnapshot, collection, getDocs, deleteDoc, query, orderBy };
+        } catch (e) {
+            console.warn("Firebase Init Notice: Running in Secure Local Hybrid Mode.", e);
         }
+        
+        if(window.initCloudSync) { window.initCloudSync(); }
     </script>
 
     <style>
+        html { scroll-behavior: smooth; }
         .web-watermark {
-            position: absolute;
-            inset: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            pointer-events: none;
-            z-index: 20;
-            opacity: 0.15;
-            overflow: hidden;
+            position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+            pointer-events: none; z-index: 20; opacity: 0.12; overflow: hidden;
         }
-        .watermark-single {
-            font-size: 1.25rem;
-            font-weight: bold;
-            text-transform: uppercase;
-            transform: rotate(-25deg);
-            white-space: nowrap;
-            letter-spacing: 0.15em;
-        }
-        .no-scrollbar::-webkit-scrollbar {
-            height: 4px;
-        }
-        .no-scrollbar::-webkit-scrollbar-track {
-            background: #f1f5f9;
-            border-radius: 4px;
-        }
-        .no-scrollbar::-webkit-scrollbar-thumb {
-            background: #cbd5e1;
-            border-radius: 4px;
-        }
-        .glass-card {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(226, 232, 240, 0.8);
-        }
+        .watermark-single { font-size: 1.25rem; font-weight: bold; text-transform: uppercase; transform: rotate(-25deg); white-space: nowrap; letter-spacing: 0.15em; }
+        .no-scrollbar::-webkit-scrollbar { height: 5px; }
+        .no-scrollbar::-webkit-scrollbar-track { background: #f1f5f9; border-radius: 4px; }
+        .no-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        .glass-card { background: rgba(255, 255, 255, 0.98); backdrop-filter: blur(12px); border: 1px solid rgba(226, 232, 240, 0.9); box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.05); }
     </style>
 </head>
-<body class="bg-slate-50 text-slate-800 font-sans antialiased pb-28">
+<body class="bg-slate-100 text-slate-800 font-sans antialiased pb-32">
 
-    <!-- 🎬 MODAL VIDEO SAMBUTAN (SPLASH SCREEN ADMIN UPLOAD) -->
-    <div id="welcome-video-modal" class="fixed inset-0 bg-slate-950 z-50 flex flex-col items-center justify-center p-4 transition-opacity duration-500">
-        <div class="w-full max-w-sm bg-slate-900 rounded-3xl overflow-hidden shadow-2xl border border-emerald-500/30 flex flex-col items-center relative">
+    <!-- 🔐 MODAL ONBOARDING (PIN + BIODATA) -->
+    <div id="customer-onboarding-modal" class="fixed inset-0 bg-slate-950/95 z-50 flex flex-col items-center justify-center p-4 backdrop-blur-md">
+        <div class="w-full max-w-sm bg-slate-900 rounded-3xl p-6 border border-emerald-500/30 shadow-2xl space-y-4 text-center">
+            <div class="w-12 h-12 bg-emerald-500/20 text-emerald-400 rounded-2xl mx-auto flex items-center justify-center text-xl font-bold">✨</div>
+            <h3 class="text-sm font-extrabold text-white">Selamat Datang di ILHAM SPUNBOND</h3>
+            <p class="text-[11px] text-slate-400">Silakan lengkapi data diri dan PIN Anda agar aplikasi aman dan siap digunakan.</p>
             
-            <button type="button" onclick="closeWelcomeVideo()" class="absolute top-3 right-3 z-20 bg-slate-800/80 hover:bg-slate-700 text-slate-300 hover:text-white px-3 py-1.5 rounded-full text-xs font-semibold backdrop-blur-md transition cursor-pointer">
-                Lewati [X]
-            </button>
-
-            <!-- Video Player -->
-            <div class="relative w-full aspect-[9/16] max-h-[60vh] bg-black flex items-center justify-center">
-                <video id="splash-video" autoplay muted playsinline class="w-full h-full object-cover">
-                    <source id="splash-video-source" src="https://assets.mixkit.co/videos/preview/mixkit-hands-holding-a-smartphone-with-a-green-screen-41584-large.mp4" type="video/mp4">
-                    Browser Anda tidak mendukung pemutaran video.
-                </video>
-                <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-transparent pointer-events-none"></div>
+            <div class="space-y-3 text-left text-xs pt-1">
+                <div>
+                    <label class="block text-slate-400 mb-1 font-semibold">Nama Lengkap / Panggilan</label>
+                    <input type="text" id="onboard-name" placeholder="Cth: Bos Andi" class="w-full bg-slate-800 border border-slate-700 rounded-xl p-3 text-white outline-none focus:ring-2 focus:ring-emerald-500 font-medium">
+                </div>
+                <div>
+                    <label class="block text-slate-400 mb-1 font-semibold">Nomor WhatsApp</label>
+                    <input type="text" id="onboard-wa" placeholder="Cth: 08123456789" class="w-full bg-slate-800 border border-slate-700 rounded-xl p-3 text-white outline-none focus:ring-2 focus:ring-emerald-500 font-medium">
+                </div>
+                <div>
+                    <label class="block text-slate-400 mb-1 font-semibold">Alamat Pengiriman Lengkap</label>
+                    <textarea id="onboard-address" rows="2" placeholder="Cth: Jl. Melati No. 10, Bandung" class="w-full bg-slate-800 border border-slate-700 rounded-xl p-3 text-white outline-none focus:ring-2 focus:ring-emerald-500 font-medium"></textarea>
+                </div>
+                <div>
+                    <label class="block text-slate-400 mb-1 font-semibold">PIN Sandi Pengaman (4-6 Digit)</label>
+                    <input type="password" id="onboard-pin" maxlength="6" placeholder="Cth: 1234" class="w-full bg-slate-800 border border-slate-700 rounded-xl p-3 text-white outline-none focus:ring-2 focus:ring-emerald-500 font-bold tracking-widest text-center">
+                </div>
             </div>
 
+            <button type="button" onclick="submitCustomerOnboarding()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3.5 rounded-2xl text-xs shadow-lg transition cursor-pointer mt-2">
+                Simpan & Masuk ke Aplikasi 🚀
+            </button>
+        </div>
+    </div>
+
+    <!-- 🎬 MODAL VIDEO SAMBUTAN -->
+    <div id="welcome-video-modal" class="fixed inset-0 bg-slate-950/90 z-50 flex flex-col items-center justify-center p-4 backdrop-blur-md" style="display:none;">
+        <div class="w-full max-w-sm bg-slate-900 rounded-3xl overflow-hidden shadow-2xl border border-emerald-500/30 flex flex-col items-center relative">
+            <button type="button" onclick="closeWelcomeVideo()" class="absolute top-3 right-3 z-20 bg-slate-800/80 hover:bg-slate-700 text-slate-300 hover:text-white px-3.5 py-1.5 rounded-xs text-xs font-semibold backdrop-blur-md transition cursor-pointer">
+                Lewati [X]
+            </button>
+            <div class="relative w-full aspect-[9/16] max-h-[55vh] bg-black flex items-center justify-center">
+                <video id="splash-video" autoplay muted playsinline class="w-full h-full object-cover">
+                    <source id="splash-video-source" src="https://assets.mixkit.co/videos/preview/mixkit-hands-holding-a-smartphone-with-a-green-screen-41584-large.mp4" type="video/mp4">
+                </video>
+            </div>
             <div class="p-5 text-center space-y-3 w-full bg-slate-900">
                 <h3 class="text-sm font-extrabold text-white">Selamat Datang di ILHAM SPUNBOND</h3>
-                <p class="text-[11px] text-slate-400 italic">Pusat Custom Tas Spunbond & Sablon Profesional Terbaik</p>
                 <button type="button" onclick="closeWelcomeVideo()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-2xl text-xs shadow-lg transition cursor-pointer">
                     Mulai Masuk Aplikasi 🚀
                 </button>
@@ -112,2025 +113,533 @@
         </div>
     </div>
 
-    <div class="max-w-md mx-auto p-4 sm:p-6 space-y-5">
-        <!-- Header Brand Eksklusif (Klik untuk memunculkan ulang video sambutan) -->
-        <div onclick="openWelcomeVideo()" class="bg-gradient-to-br from-emerald-900 via-emerald-800 to-slate-900 text-white p-6 rounded-3xl shadow-xl text-center flex flex-col items-center justify-center relative overflow-hidden border border-emerald-700/40 cursor-pointer group hover:scale-[1.01] transition">
-            <div class="absolute -right-10 -top-10 w-32 h-32 bg-emerald-500/10 rounded-full blur-2xl"></div>
-            <div class="absolute top-2 right-3 text-[10px] bg-emerald-700/60 text-emerald-200 px-2.5 py-1 rounded-full font-bold shadow-sm flex items-center gap-1">
-                <span>▶️</span> Klik untuk Video
+    <div class="max-w-md mx-auto p-4 sm:p-5 space-y-4">
+        <!-- Header Brand -->
+        <div onclick="openWelcomeVideo()" class="bg-gradient-to-br from-emerald-900 via-emerald-800 to-slate-900 text-white p-5 rounded-3xl shadow-xl text-center flex flex-col items-center justify-center relative overflow-hidden border border-emerald-700/40 cursor-pointer group hover:scale-[1.01] transition">
+            <div id="brand-logo-container" class="mb-2 bg-white/10 p-2.5 rounded-2xl border border-emerald-500/30 flex items-center justify-center min-h-[50px] min-w-[140px]">
+                <img id="header-brand-logo" src="https://via.placeholder.com/160x55?text=ILHAM+SPUNBOND" alt="Logo" class="max-h-14 w-auto object-contain">
             </div>
-            <div id="brand-logo-container" class="mb-3 bg-white/10 p-3 rounded-2xl border border-emerald-500/30 flex items-center justify-center min-h-[60px] min-w-[150px] shadow-inner">
-                <img id="header-brand-logo" src="https://via.placeholder.com/160x55?text=ILHAM+SPUNBOND" alt="Logo Brand" class="max-h-16 w-auto object-contain filter drop-shadow">
-            </div>
-            <h1 id="brand-title-text" class="text-2xl font-extrabold tracking-wider bg-gradient-to-r from-white via-emerald-100 to-emerald-300 bg-clip-text text-transparent">ILHAM SPUNBOND</h1>
-            <p class="text-xs text-emerald-200/90 mt-1 font-medium tracking-wide">Pusat Custom Tas Spunbond & Sablon Profesional</p>
+            <h1 class="text-2xl font-extrabold tracking-wider text-white">ILHAM SPUNBOND</h1>
+            <p class="text-xs text-emerald-200/90 mt-0.5 font-medium">Pusat Custom Merchandise & Sablon Profesional</p>
         </div>
 
-        <!-- 🧠 SMART QUOTE & MALE VOICE ASSISTANT (RANDOM SETIAP REFRESH) -->
-        <div class="bg-gradient-to-r from-amber-500/10 via-amber-400/5 to-amber-500/10 border border-amber-500/30 p-4 rounded-2xl shadow-sm relative overflow-hidden space-y-2">
-            <div class="absolute top-0 right-0 transform translate-x-4 -translate-y-4 w-16 h-16 bg-amber-500/10 rounded-full blur-lg"></div>
-            <div class="flex items-center justify-between text-[10px] font-bold text-amber-700 uppercase tracking-widest">
-                <span class="flex items-center gap-1"><span>✨</span> Smart Daily Motivation & Male Voice</span>
-                <span id="daily-date-badge" class="bg-amber-100 px-2 py-0.5 rounded-full"></span>
+        <!-- 🧠 SMART ASISTEN AI -->
+        <div class="bg-gradient-to-r from-amber-500/10 via-amber-400/5 to-amber-500/10 border border-amber-500/30 p-4 rounded-2xl shadow-sm relative space-y-2">
+            <div class="flex items-center justify-between text-[10px] font-bold text-amber-800 uppercase tracking-widest">
+                <span>✨ Asisten AI Personal ILHAM</span>
+                <span id="daily-date-badge" class="bg-amber-100 px-2 py-0.5 rounded-full font-semibold"></span>
             </div>
-            <p id="smart-quote-text" class="text-xs font-semibold text-slate-800 leading-relaxed italic pt-0.5">
-                "Kesuksesan bisnis berawal dari langkah kecil yang konsisten. Bersama ILHAM SPUNBOND, tingkatkan prestise brand toko dan acara spesial Anda hari ini!"
-            </p>
-            <div class="flex items-center justify-between pt-1 border-t border-amber-500/20">
-                <span id="voice-status-label" class="text-[10px] text-amber-800 font-medium italic">🔊 Suara sambutan cowok aktif</span>
-                <button type="button" onclick="toggleSpeechVoice()" id="voice-toggle-btn" class="bg-amber-600 hover:bg-amber-700 text-white px-3 py-1 rounded-lg text-[10px] font-bold shadow-sm transition cursor-pointer flex items-center gap-1">
-                    <span>🔇</span> Putar Ulang Suara
-                </button>
-            </div>
+            <p id="smart-quote-text" class="text-xs font-semibold text-slate-800 leading-relaxed italic pt-0.5">"Halo! Selamat datang di ILHAM SPUNBOND."</p>
         </div>
 
         <!-- AREA CUSTOMER -->
         <div id="customer-view" class="space-y-4">
-            <div id="section-custom" class="glass-card p-4 rounded-2xl shadow-sm space-y-4">
+            <div id="section-custom" class="glass-card p-4 sm:p-5 rounded-2xl shadow-sm space-y-4">
                 <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-1">1. Pilih Model Tas Spunbond</label>
-                    <select id="bag-model-select" onchange="onCustomerModelChange()" class="w-full bg-slate-50 border border-slate-300 rounded-xl p-3 text-sm font-semibold text-slate-800 focus:ring-2 focus:ring-emerald-500 outline-none shadow-sm">
+                    <label class="block text-xs font-bold text-slate-700 mb-1.5">1. Pilih Kategori Produk</label>
+                    <select id="product-category-select" onchange="onCategoryChange()" class="w-full bg-slate-50 border border-slate-300 rounded-xl p-3 text-sm font-semibold text-slate-800 focus:ring-2 focus:ring-emerald-500 outline-none shadow-sm">
+                        <option value="tas">🛍️ Tas Spunbond Custom</option>
+                        <option value="kaos">👕 Kaos Custom (DTF)</option>
+                        <option value="mug">☕ Mug & Tumbler Custom (UV DTF)</option>
                     </select>
                 </div>
 
                 <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-1">2. Pilih Ukuran Tas (Size)</label>
-                    <select id="bag-size-select" onchange="onCustomerSizeSelect()" class="w-full bg-slate-50 border border-slate-300 rounded-xl p-3 text-sm font-semibold text-slate-800 focus:ring-2 focus:ring-emerald-500 outline-none shadow-sm">
-                    </select>
+                    <label class="block text-xs font-bold text-slate-700 mb-1.5">2. Pilih Model / Tipe Produk</label>
+                    <select id="bag-model-select" onchange="onCustomerModelChange()" class="w-full bg-slate-50 border border-slate-300 rounded-xl p-3 text-sm font-semibold text-slate-800 focus:ring-2 focus:ring-emerald-500 outline-none shadow-sm"></select>
                 </div>
 
                 <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-2">3. Pilih Warna Kain Tas (<span id="active-color-label" class="text-emerald-700 font-extrabold">Putih Bersih</span>)</label>
+                    <label class="block text-xs font-bold text-slate-700 mb-1.5">3. Pilih Ukuran / Varian</label>
+                    <select id="bag-size-select" onchange="onCustomerSizeSelect()" class="w-full bg-slate-50 border border-slate-300 rounded-xl p-3 text-sm font-semibold text-slate-800 focus:ring-2 focus:ring-emerald-500 outline-none shadow-sm"></select>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-2">4. Pilih Warna Dasar Produk (<span id="active-color-label" class="text-emerald-700 font-extrabold">Putih Bersih</span>)</label>
                     <div id="bag-color-buttons" class="flex flex-wrap gap-2"></div>
                 </div>
 
-                <div class="space-y-1.5 pt-1">
-                    <label class="block text-xs font-bold text-slate-700">4. Upload Logo / Desain Anda (Background Transparan Otomatis)</label>
-                    <input type="file" id="customer-logo-upload" accept="image/*" onchange="loadCustomerLogo(event)" class="w-full text-xs text-slate-500 file:mr-3 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100 cursor-pointer border border-slate-200 rounded-xl p-1 bg-slate-50">
-                    <div id="logo-upload-status" class="text-[10px] text-slate-400 italic"></div>
-                </div>
-
                 <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-1">5. Pilih Metode Cetak</label>
-                    <select id="print-method" onchange="togglePrintMethod()" class="w-full bg-slate-50 border border-slate-300 rounded-xl p-3 text-sm font-semibold text-slate-800 focus:ring-2 focus:ring-emerald-500 outline-none shadow-sm">
-                        <option value="manual">Sablon Manual / Pasta (Warna Tinta Pilihan)</option>
-                        <option value="dtf">DTF Full Color (Warna Asli Desain)</option>
-                    </select>
+                    <label class="block text-xs font-bold text-slate-700 mb-1.5">5. Metode Cetak</label>
+                    <input type="text" id="print-method-display" readonly class="w-full bg-emerald-50 border border-emerald-200 rounded-xl p-3 text-sm font-bold text-emerald-800 outline-none">
                 </div>
 
-                <div id="manual-ink-box">
-                    <label class="block text-xs font-bold text-slate-700 mb-1">6. Pilih Warna Tinta Sablon Manual</label>
-                    <select id="ink-color-select" onchange="updateProcessedLogo()" class="w-full bg-slate-50 border border-slate-300 rounded-xl p-3 text-sm font-semibold text-slate-800 focus:ring-2 focus:ring-emerald-500 outline-none shadow-sm">
-                    </select>
-                </div>
-
-                <div id="dtf-size-box" class="hidden bg-emerald-50 p-3.5 rounded-xl border border-emerald-200 space-y-1.5">
-                    <label class="block text-xs font-bold text-emerald-800">6. Pilih Ukuran Stiker DTF</label>
-                    <select id="dtf-size-select" onchange="calculateItemPrice()" class="w-full bg-white border border-emerald-300 rounded-xl p-3 text-sm font-semibold focus:ring-2 focus:ring-emerald-500 outline-none text-emerald-900 shadow-sm">
-                    </select>
+                <div class="space-y-1.5 pt-1">
+                    <label class="block text-xs font-bold text-slate-700">6. Upload Logo / Desain Anda (Background Transparan Otomatis)</label>
+                    <input type="file" id="customer-logo-upload" accept="image/*" onchange="loadCustomerLogo(event)" class="w-full text-xs text-slate-500 file:mr-3 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-emerald-50 file:text-emerald-700 cursor-pointer border border-slate-200 rounded-xl p-1 bg-slate-50">
+                    <div id="logo-upload-status" class="text-[10px] text-slate-400 italic"></div>
                 </div>
             </div>
 
-            <!-- BOX 1: Preview Mockup Tas & Slider Posisi Logo di Bawahnya -->
-            <div id="section-preview" class="glass-card p-4 rounded-2xl shadow-md relative space-y-3">
-                <h2 class="text-sm font-extrabold text-slate-800 flex items-center gap-2">
-                    <span>🛍️</span> Box 1: Preview Mockup Tas (Customer View)
-                </h2>
-                
+            <!-- PREVIEW MOCKUP -->
+            <div id="section-preview" class="glass-card p-4 sm:p-5 rounded-2xl shadow-md relative space-y-3.5">
+                <h2 class="text-xs font-extrabold text-slate-800 flex items-center gap-2 uppercase tracking-wider"><span>🛍️</span> Preview Mockup Produk</h2>
                 <div id="capture-mockup" class="relative w-full h-72 bg-white rounded-2xl flex items-center justify-center overflow-hidden shadow-inner border border-slate-200">
-                    <div class="absolute inset-0 bg-white"></div>
                     <canvas id="bag-preview-canvas" class="absolute inset-0 w-full h-full object-contain p-2 pointer-events-none"></canvas>
-
-                    <div class="absolute bottom-2 left-3 pointer-events-none z-10 flex gap-1.5">
-                        <span id="preview-model-label" class="text-slate-700 text-[11px] font-bold bg-white/95 px-2.5 py-1 rounded-lg shadow-sm border border-slate-200">[ Tas Oval ]</span>
-                        <span id="preview-size-label" class="text-emerald-700 text-[11px] font-bold bg-white/95 px-2.5 py-1 rounded-lg shadow-sm border border-slate-200">[ 20 x 30 cm ]</span>
-                    </div>
-                    
                     <div id="logo-layer" class="absolute cursor-move flex items-center justify-center p-2 z-10" style="transform: translate(0px, 0px) scale(1) rotate(0deg);">
                         <img id="preview-logo-img" src="" alt="Logo" class="max-h-24 object-contain filter drop-shadow-md">
                     </div>
-
-                    <div class="web-watermark">
-                        <span class="watermark-text-display watermark-single">ILHAM SPUNBOND</span>
-                    </div>
+                    <div class="web-watermark"><span class="watermark-single">ILHAM SPUNBOND</span></div>
                 </div>
-
-                <!-- 🎛️ PENGATURAN POSISI & UKURAN LOGO (DI BAWAH KOTAK GAMBAR TAS / BOX 1) -->
-                <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200 space-y-3">
-                    <h3 class="text-xs font-extrabold text-slate-700">🎛️ Pengaturan Posisi & Ukuran Logo</h3>
-                    <div class="grid grid-cols-2 gap-3 text-xs">
-                        <div>
-                            <label class="block text-slate-500 mb-1 font-medium">Ukuran Logo (<span id="scale-val">100</span>%)</label>
-                            <input type="range" id="logo-scale" min="40" max="200" value="100" oninput="adjustLogoTransform()" class="w-full accent-emerald-600">
-                        </div>
-                        <div>
-                            <label class="block text-slate-500 mb-1 font-medium">Rotasi (<span id="rotate-val">0</span>°)</label>
-                            <input type="range" id="logo-rotate" min="-180" max="180" value="0" oninput="adjustLogoTransform()" class="w-full accent-emerald-600">
-                        </div>
-                        <div>
-                            <label class="block text-slate-500 mb-1 font-medium">Geser Kiri/Kanan</label>
-                            <input type="range" id="logo-pos-x" min="-100" max="100" value="0" oninput="adjustLogoTransform()" class="w-full accent-emerald-600">
-                        </div>
-                        <div>
-                            <label class="block text-slate-500 mb-1 font-medium">Geser Atas/Bawah</label>
-                            <input type="range" id="logo-pos-y" min="-80" max="80" value="0" oninput="adjustLogoTransform()" class="w-full accent-emerald-600">
-                        </div>
-                    </div>
-                </div>
-
                 <div class="flex items-center gap-3 pt-1">
                     <div class="flex-1">
-                        <label class="block text-[11px] font-bold text-slate-600 mb-1">Quantity Item Ini (Pcs)</label>
-                        <input type="number" id="item-qty" value="500" min="1" class="w-full bg-slate-50 border border-slate-300 rounded-xl p-3 text-sm font-extrabold text-emerald-700 text-center focus:ring-2 focus:ring-emerald-500 outline-none shadow-sm">
+                        <label class="block text-[11px] font-bold text-slate-600 mb-1">Quantity (Pcs)</label>
+                        <input type="number" id="item-qty" value="100" min="1" class="w-full bg-slate-50 border border-slate-300 rounded-xl p-3 text-sm font-extrabold text-emerald-700 text-center outline-none">
                     </div>
-                    <button type="button" onclick="addItemToCart()" class="mt-5 bg-emerald-700 hover:bg-emerald-800 text-white font-bold py-3 px-4 rounded-xl text-xs shadow-md transition cursor-pointer flex items-center gap-1.5">
-                        <span>➕</span> Masukkan Keranjang
-                    </button>
+                    <button type="button" onclick="addItemToCart()" class="mt-5 bg-emerald-700 hover:bg-emerald-800 text-white font-bold py-3.5 px-4 rounded-xl text-xs shadow-md cursor-pointer"><span>➕</span> Masukkan Keranjang</button>
                 </div>
             </div>
 
-            <!-- Keranjang Mix Item Pesanan -->
-            <div id="section-cart" class="glass-card p-4 rounded-2xl shadow-md space-y-3">
-                <h3 class="text-xs font-extrabold text-slate-800 border-b border-slate-100 pb-2.5 flex items-center justify-between">
-                    <span>🛒 Daftar Mix Item Pesanan (<span id="cart-count">0</span> Item)</span>
+            <!-- KERANJANG -->
+            <div id="section-cart" class="glass-card p-4 sm:p-5 rounded-2xl shadow-md space-y-3">
+                <h3 class="text-xs font-extrabold text-slate-800 border-b border-slate-100 pb-2.5 flex items-center justify-between uppercase">
+                    <span>🛒 Keranjang Mix Item (<span id="cart-count">0</span>)</span>
                     <button type="button" onclick="clearCart()" class="text-rose-600 hover:underline text-[10px] font-bold cursor-pointer">Kosongkan</button>
                 </h3>
                 <div id="cart-items-container" class="flex gap-3 overflow-x-auto pb-2 pt-1 no-scrollbar items-center">
-                    <p class="text-xs text-slate-400 text-center py-4 w-full font-medium">Belum ada item ditambahkan ke keranjang pesanan.</p>
+                    <p class="text-xs text-slate-400 text-center py-4 w-full font-medium">Belum ada item ditambahkan.</p>
                 </div>
             </div>
 
-            <!-- BOX 2: Production View -->
-            <div class="bg-slate-900 text-white p-4 rounded-2xl shadow-xl border border-slate-800 relative space-y-2">
-                <h2 class="text-sm font-bold text-amber-400 flex items-center gap-2">
-                    <span>📐</span> Box 2: Detail Desain & Film Produksi (Preview)
-                </h2>
-                <div id="customer-watermark-box" class="relative bg-white p-4 rounded-xl flex flex-col items-center justify-center min-h-[220px] text-slate-900 space-y-3 overflow-hidden shadow-inner">
-                    <div class="w-full h-56 flex items-center justify-center bg-white rounded-lg border border-slate-200 overflow-hidden p-2">
-                        <img id="owner-file-img" src="" alt="Belum ada desain diupload" class="max-h-full max-w-full object-contain">
-                        <p id="owner-placeholder-text" class="absolute text-xs text-slate-400 font-medium">⬆️ Silakan upload logo/desain di atas terlebih dahulu</p>
-                    </div>
-                    <div class="text-center text-xs font-bold text-slate-800 border-t border-slate-200 pt-2 w-full flex justify-between px-2 z-10">
-                        <span>Model: <b id="owner-model-txt">-</b></span>
-                        <span>Metode: <b id="owner-method-txt">-</b></span>
-                    </div>
-
-                    <div class="web-watermark">
-                        <span class="watermark-text-display watermark-single">ILHAM SPUNBOND</span>
-                    </div>
-                </div>
-                <p class="text-[11px] text-slate-400 text-center italic">🔒 Area Box 2 dikunci khusus pratinjau produksi (Sablon Manual otomatis jadi Hitam Solid / DTF Full Color dengan background transparan).</p>
-            </div>
-
-            <!-- FORMULIR PEMESANAN & REKENING BANK -->
-            <div id="section-form" class="glass-card p-4 sm:p-5 rounded-2xl shadow-md space-y-4">
-                <h3 class="text-sm font-extrabold text-slate-800 border-b border-slate-100 pb-2.5 flex items-center gap-2">
-                    <span>📋</span> Formulir Pesanan & Pembayaran
-                </h3>
+            <!-- CHECKOUT FORM -->
+            <div id="section-form" class="glass-card p-4 sm:p-6 rounded-2xl shadow-md space-y-4">
+                <h3 class="text-xs font-extrabold text-slate-800 border-b border-slate-100 pb-2.5 uppercase"><span>📋</span> Formulir Pesanan</h3>
+                <div><label class="block text-[11px] font-bold text-slate-600 mb-1">Nama Pemesan</label><input type="text" id="customer-name" readonly class="w-full bg-slate-200 border rounded-xl p-3 text-sm font-bold text-slate-700 outline-none"></div>
+                <div><label class="block text-[11px] font-bold text-slate-600 mb-1">Nomor WhatsApp</label><input type="text" id="customer-wa" readonly class="w-full bg-slate-200 border rounded-xl p-3 text-sm font-bold text-slate-700 outline-none"></div>
+                <div><label class="block text-[11px] font-bold text-slate-600 mb-1">Alamat</label><textarea id="customer-address" rows="2" readonly class="w-full bg-slate-200 border rounded-xl p-3 text-sm font-bold text-slate-700 outline-none"></textarea></div>
                 
-                <div>
-                    <label class="block text-[11px] font-bold text-slate-600 mb-1">Nama Pemesan</label>
-                    <input type="text" id="customer-name" placeholder="Cth: Budi Santoso" oninput="saveCustomerDataMemory()" class="w-full bg-slate-50 border border-slate-300 rounded-xl p-3 text-sm font-medium focus:ring-2 focus:ring-emerald-500 outline-none shadow-sm">
+                <div class="bg-gradient-to-br from-emerald-50 to-teal-50 border p-4 rounded-xl space-y-3">
+                    <div class="flex justify-between items-center text-xs"><span>Total Qty:</span><span id="display-total-qty" class="font-extrabold text-sm">0 Pcs</span></div>
+                    <div class="flex justify-between items-center"><span class="text-xs font-extrabold">Total Keseluruhan:</span><span id="display-total-price" class="text-xl font-black text-emerald-950">Rp 0</span></div>
                 </div>
 
-                <div>
-                    <label class="block text-[11px] font-bold text-slate-600 mb-1">Nomor WhatsApp Pemesan</label>
-                    <input type="text" id="customer-wa" placeholder="Cth: 08123456789" oninput="saveCustomerDataMemory()" class="w-full bg-slate-50 border border-slate-300 rounded-xl p-3 text-sm font-medium focus:ring-2 focus:ring-emerald-500 outline-none shadow-sm">
+                <div class="space-y-2.5">
+                    <button type="button" onclick="saveOrderAndSendWhatsApp()" class="w-full bg-gradient-to-r from-emerald-600 to-teal-700 text-white font-bold py-4 rounded-2xl shadow-xl flex items-center justify-center gap-2 text-sm cursor-pointer">Simpan PO & Kirim ke WhatsApp</button>
+                    <button type="button" onclick="openCustomerOrderHistory()" class="w-full bg-emerald-800 text-white font-bold py-3.5 rounded-2xl shadow-lg flex items-center justify-center gap-2 text-sm cursor-pointer">📂 Riwayat PO Saya</button>
+                    <button type="button" onclick="verifyAndShowOrderHistory()" class="w-full bg-gradient-to-r from-amber-500 to-amber-600 text-slate-950 font-extrabold py-3.5 rounded-2xl shadow-lg flex items-center justify-center gap-2 text-sm cursor-pointer">🔐 Panel Admin & Rekap Tahunan</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- MODAL RIWAYAT PO CUSTOMER -->
+        <div id="customer-order-history-modal" class="hidden fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-4">
+            <div class="bg-slate-900 text-white w-full max-w-lg max-h-[90vh] rounded-3xl p-5 border border-emerald-500/40 flex flex-col space-y-4">
+                <div class="flex justify-between items-center border-b border-slate-800 pb-3">
+                    <h3 class="text-sm font-bold text-emerald-400 uppercase">Riwayat Pesanan Saya</h3>
+                    <button type="button" onclick="closeCustomerOrderHistoryModal()" class="text-xs text-slate-400 font-bold bg-slate-800 px-3 py-1.5 rounded-lg">Tutup [X]</button>
+                </div>
+                <div id="customer-order-history-list" class="flex-1 overflow-y-auto space-y-3 pr-1"></div>
+            </div>
+        </div>
+
+        <!-- MODAL PANEL ADMIN & REKAP TAHUNAN -->
+        <div id="order-history-modal" class="hidden fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-4">
+            <div class="bg-slate-900 text-white w-full max-w-xl max-h-[95vh] rounded-3xl p-5 border border-amber-500/40 flex flex-col space-y-4 shadow-2xl">
+                <div class="flex justify-between items-center border-b border-slate-800 pb-3">
+                    <h3 class="text-sm font-bold text-amber-400 uppercase">📊 Panel Admin & Rekap Tahunan</h3>
+                    <button type="button" onclick="closeOrderHistoryModal()" class="text-xs text-slate-400 font-bold bg-slate-800 px-3 py-1.5 rounded-lg">Tutup [X]</button>
                 </div>
 
-                <div>
-                    <label class="block text-[11px] font-bold text-slate-600 mb-1">Alamat Pengiriman Lengkap</label>
-                    <textarea id="customer-address" rows="2" placeholder="Cth: Jl. Melati No. 10, Bandung" oninput="saveCustomerDataMemory()" class="w-full bg-slate-50 border border-slate-300 rounded-xl p-3 text-sm font-medium focus:ring-2 focus:ring-emerald-500 outline-none shadow-sm"></textarea>
+                <!-- TABS -->
+                <div class="flex gap-2 border-b border-slate-800 pb-2">
+                    <button type="button" onclick="switchAdminTab('rekap')" id="tab-btn-rekap" class="flex-1 bg-amber-500 text-slate-950 font-bold py-2 rounded-xl text-xs cursor-pointer">Rekap Laba Tahunan</button>
+                    <button type="button" onclick="switchAdminTab('produk')" id="tab-btn-produk" class="flex-1 bg-slate-800 text-slate-300 font-bold py-2 rounded-xl text-xs cursor-pointer">Kelola Modal & Harga</button>
+                    <button type="button" onclick="switchAdminTab('orders')" id="tab-btn-orders" class="flex-1 bg-slate-800 text-slate-300 font-bold py-2 rounded-xl text-xs cursor-pointer">Daftar PO Masuk</button>
                 </div>
 
-                <div>
-                    <label class="block text-[11px] font-bold text-slate-600 mb-1">Wilayah Tujuan Pengiriman</label>
-                    <select id="shipping-region" onchange="saveCustomerDataMemory(); updateCartTotals();" class="w-full bg-slate-50 border border-slate-300 rounded-xl p-3 text-sm font-medium focus:ring-2 focus:ring-emerald-500 outline-none shadow-sm">
-                        <option value="jabodetabek">Wilayah Jabodetabek (Bisa COD)</option>
-                        <option value="luar">Di Luar Jabodetabek (Wajib DP 50% / Pelunasan)</option>
-                    </select>
-                </div>
-
-                <div class="text-[11px] text-emerald-800 font-semibold bg-emerald-50/90 px-3.5 py-2 rounded-xl border border-emerald-200 flex items-center gap-2 shadow-sm">
-                    <span>🔥</span> <span>Info Diskon: Total pesanan **1.000 pcs ke atas** otomatis mendapatkan **Diskon 10%**!</span>
-                </div>
-
-                <div class="bg-gradient-to-br from-emerald-50 to-teal-50 border border-emerald-200 p-4 rounded-xl space-y-3 shadow-inner">
-                    <div class="flex justify-between items-center text-xs text-slate-700 border-b border-emerald-200/70 pb-2">
-                        <span class="font-medium">Total Quantity Pesanan:</span>
-                        <span id="display-total-qty" class="font-extrabold text-slate-900 text-sm">0 Pcs</span>
+                <!-- TAB 1: REKAP TAHUNAN -->
+                <div id="admin-tab-rekap" class="flex-1 overflow-y-auto space-y-3 pr-1">
+                    <div class="bg-slate-800 p-4 rounded-2xl border border-amber-500/30 space-y-2">
+                        <label class="block text-xs font-bold text-amber-300">Pilih Tahun Rekap Global:</label>
+                        <select id="rekap-year-select" onchange="renderYearlyReport()" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-2.5 text-xs text-white outline-none font-bold">
+                            <option value="2026">Tahun 2026</option>
+                            <option value="2027">Tahun 2027</option>
+                        </select>
                     </div>
-                    <div id="discount-row" class="hidden flex justify-between items-center text-xs text-emerald-700 font-semibold border-b border-emerald-200/70 pb-2">
-                        <span>Diskon Pesanan Besar (10%):</span>
-                        <span id="display-discount-val" class="font-extrabold">- Rp 0</span>
-                    </div>
-                    <div id="dp-row" class="hidden flex justify-between items-center text-xs text-amber-700 font-semibold border-b border-emerald-200/70 pb-2">
-                        <span>Wajib DP 50% (Luar Jabodetabek):</span>
-                        <span id="display-dp-val" class="font-extrabold">Rp 0</span>
-                    </div>
-                    
-                    <div class="pt-1 flex justify-between items-center">
-                        <div>
-                            <span class="text-xs font-extrabold text-emerald-950 block">Total Keseluruhan:</span>
-                            <span class="text-[10px] text-emerald-700 font-medium block italic">✨ Termasuk ongkir Pulau Jawa</span>
-                        </div>
-                        <div class="text-right">
-                            <span id="display-total-price" class="text-xl font-black text-emerald-950 block">Rp 0</span>
-                        </div>
-                    </div>
+                    <div id="yearly-report-card" class="space-y-3"></div>
                 </div>
 
-                <!-- Info Nomor Rekening Bank -->
-                <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-2 shadow-sm">
-                    <h4 class="text-xs font-bold text-slate-700 flex items-center gap-1.5">
-                        <span>💳</span> Informasi Rekening Pembayaran Resmi
-                    </h4>
-                    <div id="bank-accounts-display" class="space-y-1.5 text-xs text-slate-600 font-medium"></div>
+                <!-- TAB 2: KELOLA MODEL, MODAL & HARGA -->
+                <div id="admin-tab-produk" class="hidden flex-1 overflow-y-auto space-y-3 pr-1">
+                    <p class="text-[11px] text-amber-300 italic">ℹ️ Atur Harga Modal & Harga Jual Multi-Produk.</p>
+                    <div id="admin-model-price-container" class="space-y-3"></div>
+                </div>
+
+                <!-- TAB 3: DAFTAR PO -->
+                <div id="admin-tab-orders" class="hidden flex-1 overflow-y-auto space-y-3 pr-1">
+                    <div id="order-history-list" class="space-y-3"></div>
                 </div>
             </div>
-
-            <!-- TOMBOL KIRIM KE WHATSAPP OWNER -->
-            <button type="button" onclick="saveOrderAndSendWhatsApp()" class="w-full bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-700 hover:to-teal-800 text-white font-bold py-4 px-4 rounded-2xl shadow-xl flex items-center justify-center gap-2.5 transition text-sm cursor-pointer border border-emerald-500/30">
-                <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/></svg>
-                <span>Simpan PO & Kirim Pesan ke WhatsApp Owner</span>
-            </button>
-
-            <!-- TOMBOL DOWNLOAD INVOICE PDF -->
-            <button type="button" onclick="downloadCustomerInvoicePDF()" class="w-full bg-slate-800 hover:bg-slate-900 text-white font-bold py-3.5 px-4 rounded-2xl shadow-lg flex items-center justify-center gap-2.5 transition text-sm cursor-pointer border border-slate-700">
-                <span>📄🖨️</span> Download Invoice Tagihan (PDF)
-            </button>
-
-            <!-- TOMBOL BUKA GALERI RIWAYAT PO OWNER -->
-            <button type="button" onclick="verifyAndShowOrderHistory()" class="w-full bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-slate-950 font-extrabold py-3.5 px-4 rounded-2xl shadow-lg flex items-center justify-center gap-2.5 transition text-sm cursor-pointer border border-amber-400">
-                <span>🔐📋</span> Buka Galeri Visual Riwayat PO (Terkunci Password)
-            </button>
-        </div>
-
-        <!-- MODAL RIWAYAT PO -->
-        <div id="order-history-modal" class="hidden fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
-            <div class="bg-slate-900 text-white w-full max-w-lg max-h-[90vh] rounded-3xl p-5 border border-amber-500/40 flex flex-col space-y-4 shadow-2xl">
-                <div class="flex items-center justify-between border-b border-slate-800 pb-3">
-                    <h3 class="text-sm font-bold text-amber-400 flex items-center gap-2">
-                        <span>📋</span> Database Riwayat PO Owner (Cloud Sync Live)
-                    </h3>
-                    <button type="button" onclick="closeOrderHistoryModal()" class="text-xs text-slate-400 hover:text-white font-bold bg-slate-800 px-3 py-1.5 rounded-lg cursor-pointer">Tutup [X]</button>
-                </div>
-                <div id="order-history-list" class="flex-1 overflow-y-auto space-y-3 pr-1"></div>
-                <button type="button" onclick="clearAllOrders()" class="w-full bg-rose-600 hover:bg-rose-700 text-white font-semibold py-2.5 rounded-xl text-xs transition cursor-pointer">Hapus Semua Riwayat PO</button>
-            </div>
-        </div>
-
-        <!-- PANEL ADMIN -->
-        <div id="admin-view" class="hidden bg-slate-900 text-white p-5 rounded-3xl shadow-2xl border border-slate-800 space-y-4">
-            <div class="flex items-center justify-between border-b border-slate-800 pb-3">
-                <h3 class="text-sm font-bold text-amber-400 flex items-center gap-2">
-                    <span>⚙️</span> Panel Kontrol Master Admin
-                </h3>
-                <button type="button" onclick="toggleAdminPanel()" class="text-xs text-slate-400 hover:text-white">Tutup [X]</button>
-            </div>
-
-            <div class="bg-slate-800 p-3 rounded-xl border border-amber-500/30 space-y-2">
-                <label class="block text-xs font-semibold text-amber-300">🎬 Upload Video Sambutan (Splash Screen 10 Detik)</label>
-                <input type="file" id="admin-video-upload" accept="video/mp4" onchange="uploadSplashVideo(event)" class="w-full text-xs text-slate-400 file:mr-2 file:py-1 file:px-2 file:rounded-lg file:border-0 file:text-[10px] file:font-semibold file:bg-amber-500 file:text-slate-950 cursor-pointer">
-                <div id="video-upload-status" class="text-[10px] text-slate-400 italic">ℹ️ Format MP4 (maksimal durasi pendek)</div>
-            </div>
-
-            <div class="bg-slate-800 p-3 rounded-xl border border-amber-500/30 space-y-2">
-                <label class="block text-xs font-semibold text-amber-300">🖼️ Upload Logo Brand Toko</label>
-                <input type="file" id="admin-brand-logo-upload" accept="image/*" onchange="uploadBrandLogo(event)" class="w-full text-xs text-slate-400 file:mr-2 file:py-1 file:px-2 file:rounded-lg file:border-0 file:text-[10px] file:font-semibold file:bg-amber-500 file:text-slate-950 cursor-pointer">
-                <div id="brand-upload-status" class="text-[10px] text-slate-400 italic"></div>
-            </div>
-
-            <div class="bg-slate-800 p-3 rounded-xl border border-amber-500/30 space-y-2">
-                <label class="block text-xs font-semibold text-amber-300">🏅 Upload Gambar Cap / Stempel Lunas (PNG)</label>
-                <input type="file" id="admin-stamp-upload" accept="image/*" onchange="uploadStampImage(event)" class="w-full text-xs text-slate-400 file:mr-2 file:py-1 file:px-2 file:rounded-lg file:border-0 file:text-[10px] file:font-semibold file:bg-emerald-500 file:text-slate-950 cursor-pointer">
-                <div id="stamp-preview-container" class="mt-2 text-center"></div>
-            </div>
-
-            <div class="bg-slate-800 p-3 rounded-xl border border-amber-500/30 space-y-2">
-                <label class="block text-xs font-semibold text-amber-300">🏢 Data Global Toko</label>
-                <input type="text" id="admin-store-name" placeholder="Nama Toko" oninput="saveGlobalConfig()" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white outline-none">
-                <input type="text" id="admin-store-address" placeholder="Alamat Toko" oninput="saveGlobalConfig()" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white outline-none">
-                <input type="text" id="admin-store-phone" placeholder="No Telepon / WhatsApp" oninput="saveGlobalConfig()" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white outline-none">
-                <input type="text" id="admin-store-email" placeholder="Email Toko" oninput="saveGlobalConfig()" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white outline-none">
-            </div>
-
-            <div class="bg-slate-800 p-3 rounded-xl border border-amber-500/30 space-y-1">
-                <label class="block text-xs font-semibold text-amber-300">📱 Nomor WhatsApp Owner</label>
-                <input type="text" id="admin-wa-number" value="6289630539563" oninput="saveGlobalConfig()" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white outline-none">
-            </div>
-
-            <!-- Kelola Rekening Bank -->
-            <div class="bg-slate-800 p-3 rounded-xl border border-amber-500/30 space-y-2">
-                <label class="block text-xs font-semibold text-amber-300">💳 Kelola Rekening Bank</label>
-                <div id="bank-admin-container" class="space-y-1.5 max-h-32 overflow-y-auto pr-1"></div>
-                <div class="flex gap-1.5 mt-2">
-                    <input type="text" id="new-bank-name" placeholder="Bank" class="w-28 bg-slate-900 rounded-lg px-2 py-1.5 text-[11px] text-white outline-none border border-slate-700">
-                    <input type="text" id="new-bank-acc" placeholder="No Rekening" class="flex-1 bg-slate-900 rounded-lg px-2 py-1.5 text-[11px] text-white outline-none border border-slate-700">
-                    <input type="text" id="new-bank-owner" placeholder="Atas Nama" class="w-28 bg-slate-900 rounded-lg px-2 py-1.5 text-[11px] text-white outline-none border border-slate-700">
-                    <button type="button" onclick="addBank()" class="bg-amber-500 text-slate-950 px-3 py-1.5 rounded-lg text-[11px] font-semibold cursor-pointer">Tambah</button>
-                </div>
-            </div>
-
-            <!-- Kelola Model Tas & Ukuran (DENGAN FITUR EDIT) -->
-            <div class="bg-slate-800 p-3 rounded-xl border border-amber-500/30 space-y-3">
-                <label class="block text-xs font-semibold text-amber-300">📦 Kelola Model Tas & Ukuran (Bisa Diedit Langsung)</label>
-                <div id="model-admin-container" class="space-y-3 max-h-64 overflow-y-auto pr-1"></div>
-            </div>
-
-            <!-- Kelola Opsi DTF -->
-            <div class="bg-slate-800 p-3 rounded-xl border border-amber-500/30 space-y-2">
-                <label class="block text-xs font-semibold text-amber-300">🏷️ Kelola Ukuran & Harga Stiker DTF</label>
-                <div id="dtf-admin-container" class="space-y-1.5 max-h-32 overflow-y-auto pr-1"></div>
-                <div class="flex gap-1.5 mt-2">
-                    <input type="text" id="new-dtf-name" placeholder="Ukuran DTF" class="flex-1 bg-slate-900 rounded-lg px-2 py-1.5 text-[11px] text-white outline-none border border-slate-700">
-                    <input type="number" id="new-dtf-price" placeholder="Harga" class="w-24 bg-slate-900 rounded-lg px-2 py-1.5 text-[11px] text-white outline-none border border-slate-700">
-                    <button type="button" onclick="addDtfOption()" class="bg-amber-500 text-slate-950 px-3 py-1.5 rounded-lg text-[11px] font-semibold cursor-pointer">Tambah</button>
-                </div>
-            </div>
-
-            <!-- Kelola Warna Tinta Sablon Manual -->
-            <div class="border-t border-slate-800 pt-3">
-                <label class="block text-xs font-semibold text-amber-300 mb-1">Kelola Warna Tinta Sablon Manual</label>
-                <div class="flex gap-2 mb-2">
-                    <input type="text" id="new-ink-name" placeholder="Nama Warna Tinta" class="flex-1 bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white outline-none">
-                    <input type="color" id="new-ink-hex" value="#000000" class="w-10 h-9 bg-slate-800 border border-slate-700 rounded-xl cursor-pointer p-1">
-                    <button type="button" onclick="addInkColor()" class="bg-amber-500 text-slate-950 font-semibold px-3 py-2 rounded-xl text-xs cursor-pointer">Tambah</button>
-                </div>
-                <div id="ink-list-container" class="space-y-1.5 max-h-28 overflow-y-auto pr-1"></div>
-            </div>
-
-            <div class="border-t border-slate-800 pt-3">
-                <label class="block text-xs font-semibold text-amber-300 mb-1">Warna Kain Tas</label>
-                <div class="flex gap-2 mb-2">
-                    <input type="text" id="new-color-name" placeholder="Nama Warna" class="flex-1 bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white outline-none">
-                    <input type="color" id="new-color-hex" value="#0d9488" class="w-10 h-9 bg-slate-800 border border-slate-700 rounded-xl cursor-pointer p-1">
-                    <button type="button" onclick="addBagColor()" class="bg-amber-500 text-slate-950 font-semibold px-3 py-2 rounded-xl text-xs cursor-pointer">Tambah</button>
-                </div>
-                <div id="color-list-container" class="space-y-1.5 max-h-28 overflow-y-auto pr-1"></div>
-            </div>
-
-            <div class="border-t border-slate-800 pt-3 space-y-3">
-                <div>
-                    <label class="block text-xs font-semibold text-amber-300 mb-1">Password Akses Galeri</label>
-                    <input type="text" id="admin-pdf-password" value="ilham123" oninput="saveGlobalConfig()" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white outline-none">
-                </div>
-            </div>
-        </div>
-
-        <div class="pt-2 text-center">
-            <button type="button" onclick="requestAdminLogin()" class="text-slate-500 hover:text-emerald-700 text-[11px] font-semibold transition py-2 px-4 rounded-xl bg-white border border-slate-200 shadow-sm mx-auto flex items-center gap-1.5 justify-center cursor-pointer">
-                <span>🔐</span> Buka Panel Kontrol Admin
-            </button>
-        </div>
-
-        <div class="text-center pt-2 pb-4">
-            <span id="sync-status" class="text-[11px] bg-slate-200 text-slate-700 px-3 py-1.5 rounded-full font-medium inline-block shadow-sm">☁️ Connecting Firebase Cloud...</span>
-        </div>
-    </div>
-
-    <!-- 🧭 BOTTOM FLOATING NAVIGATION BAR (NAVIGASI BAWAH PROFESIONAL) -->
-    <div class="fixed bottom-0 left-0 right-0 z-40 bg-slate-900/95 backdrop-blur-md border-t border-slate-800 px-4 py-2 shadow-2xl">
-        <div class="max-w-md mx-auto grid grid-cols-4 gap-1 text-[10px] font-bold text-slate-300 text-center">
-            <a href="#section-custom" class="flex flex-col items-center justify-center py-1.5 rounded-xl hover:bg-slate-800 text-slate-300 hover:text-emerald-400 transition">
-                <span class="text-base">🛍️</span>
-                <span>Buat Tas</span>
-            </a>
-            <a href="#section-preview" class="flex flex-col items-center justify-center py-1.5 rounded-xl hover:bg-slate-800 text-slate-300 hover:text-emerald-400 transition">
-                <span class="text-base">📐</span>
-                <span>Preview</span>
-            </a>
-            <a href="#section-cart" class="flex flex-col items-center justify-center py-1.5 rounded-xl hover:bg-slate-800 text-slate-300 hover:text-emerald-400 transition relative">
-                <span class="text-base">🛒</span>
-                <span>Keranjang</span>
-            </a>
-            <a href="#section-form" class="flex flex-col items-center justify-center py-1.5 rounded-xl hover:bg-slate-800 text-slate-300 hover:text-emerald-400 transition">
-                <span class="text-base">📋</span>
-                <span>Checkout</span>
-            </a>
         </div>
     </div>
 
     <!-- Script Utama -->
     <script>
         const cleanDefaultBagSvg = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 500'><path d='M100 150 L100 100 C100 70 120 50 200 50 C280 50 300 70 300 100 L300 150 Z' fill='none' stroke='%23334155' stroke-width='16'/><path d='M60 150 L340 150 C360 150 370 160 370 180 L340 450 C340 470 330 480 310 480 L90 480 C70 480 60 470 60 450 L30 180 C30 160 40 150 60 150 Z' fill='%23ffffff' stroke='%23334155' stroke-width='6'/></svg>";
+        const cleanDefaultShirtSvg = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 500'><path d='M120 80 L200 120 L280 80 L320 150 L260 190 L260 420 L140 420 L140 190 L80 150 Z' fill='%23ffffff' stroke='%23334155' stroke-width='8'/></svg>";
+        const cleanDefaultMugSvg = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 500'><path d='M120 140 L280 140 L260 400 L140 400 Z' fill='%23ffffff' stroke='%23334155' stroke-width='8'/><path d='M280 170 C330 170 330 330 280 330' fill='none' stroke='%23334155' stroke-width='12'/></svg>";
 
-        const defaultBagModels = [
-            { 
-                name: "Tas Spunbond Oval", 
-                image: cleanDefaultBagSvg, 
-                sizes: [
-                    { name: "20 x 30 cm", price: 1400 }, 
-                    { name: "25 x 35 cm", price: 1700 }, 
-                    { name: "30 x 40 cm", price: 2300 }
-                ] 
+        // Database Multi-Produk
+        let catalogData = {
+            tas: {
+                title: "Tas Spunbond",
+                method: "Sablon Manual / DTF",
+                models: [
+                    { name: "Tas Spunbond Oval", image: cleanDefaultBagSvg, sizes: [{ name: "20 x 30 cm", modalBahan: 900, jasaCetak: 300, price: 1400 }, { name: "25 x 35 cm", modalBahan: 1100, jasaCetak: 350, price: 1700 }] },
+                    { name: "Tas HLS Lipat Samping", image: cleanDefaultBagSvg, sizes: [{ name: "20 x 30 x 8 cm", modalBahan: 1300, jasaCetak: 350, price: 2000 }] }
+                ]
             },
-            { 
-                name: "Tas HLS (Handle Lipat Samping)", 
-                image: cleanDefaultBagSvg, 
-                sizes: [
-                    { name: "20 x 30 x 8 cm", price: 2000 }, 
-                    { name: "25 x 35 x 10 cm", price: 2500 },
-                    { name: "30 x 40 x 10 cm", price: 3000 }
-                ] 
+            kaos: {
+                title: "Kaos Custom",
+                method: "Cetak DTF Full Color",
+                models: [
+                    { name: "Kaos Cotton Combed 30s", image: cleanDefaultShirtSvg, sizes: [{ name: "Size M", modalBahan: 35000, jasaCetak: 5000, price: 55000 }, { name: "Size L", modalBahan: 37000, jasaCetak: 5000, price: 60000 }, { name: "Size XL", modalBahan: 40000, jasaCetak: 5000, price: 65000 }] }
+                ]
             },
-            { 
-                name: "Tas HLB Box (Handle Kotak)", 
-                image: cleanDefaultBagSvg, 
-                sizes: [
-                    { name: "25 x 25 x 10 cm", price: 2800 }, 
-                    { name: "30 x 30 x 12 cm", price: 3400 }
-                ] 
-            },
-            { 
-                name: "Tas HLB Kotak", 
-                image: cleanDefaultBagSvg, 
-                sizes: [
-                    { name: "20 x 20 x 15 cm", price: 2500 }, 
-                    { name: "30 x 20 x 20 cm", price: 3200 }
-                ] 
+            mug: {
+                title: "Mug / Tumbler Custom",
+                method: "Cetak UV DTF Anti Air",
+                models: [
+                    { name: "Mug Keramik Standard", image: cleanDefaultMugSvg, sizes: [{ name: "11 oz (Full Print)", modalBahan: 12000, jasaCetak: 4000, price: 25000 }] }
+                ]
             }
-        ];
+        };
 
-        let bagModels = defaultBagModels;
-        let bankAccounts = [
-            { bank: "Mandiri", acc: "1760004889992", owner: "Abdul Rojak" },
-            { bank: "SeaBank", acc: "901048993888", owner: "Abdul Rojak" }
-        ];
-        let bagColors = [
-            { name: "Putih Bersih", hex: "#ffffff" },
-            { name: "Biru BCA", hex: "#1d4ed8" },
-            { name: "Merah", hex: "#dc2626" },
-            { name: "Hitam", hex: "#0f172a" },
-            { name: "Hijau", hex: "#16a34a" },
-            { name: "Toska", hex: "#0d9488" }
-        ];
-        let inkColors = [
-            { name: "Hitam Pekat", hex: "#0f172a" },
-            { name: "Putih Bersih", hex: "#ffffff" },
-            { name: "Merah Menyala", hex: "#dc2626" },
-            { name: "Biru BCA", hex: "#1d4ed8" },
-            { name: "Emas / Gold", hex: "#eab308" }
-        ];
-        let dtfOptions = [{ name: "Sedang (8x8 cm)", price: 2000 }, { name: "Besar (10x10 cm)", price: 3000 }];
+        let bankAccounts = [{ bank: "Mandiri", acc: "1760004889992", owner: "Abdul Rojak" }];
+        let bagColors = [{ name: "Putih Bersih", hex: "#ffffff" }, { name: "Hitam", hex: "#0f172a" }, { name: "Biru", hex: "#1d4ed8" }, { name: "Merah", hex: "#dc2626" }];
         
         let storeName = "ILHAM SPUNBOND";
         let storeAddress = "Taman Raya Rajeg Blok-K10 No.06, Tangerang-Banten";
         let storePhone = "0896 3053 9563";
-        let storeEmail = "ilhamspunbond@gmail.com";
         let pdfPassword = "ilham123";
         let ownerWaNumber = "6289630539563";
-        let brandLogoUrl = "";
-        let customStampUrl = "";
-        let welcomeVideoUrl = "";
 
         let activeBagTint = "#ffffff";
         let activeColorName = "Putih Bersih";
         let rawCustomerLogoImg = null;
-        let isSyncingFromCloud = false;
-        let activeOrdersUnsubscribe = null;
         let cartItems = [];
-        let currentQuoteText = "";
-
-        // --- KONTROL VIDEO SAMBUTAN (SPLASH SCREEN) ---
-        function closeWelcomeVideo() {
-            const modal = document.getElementById('welcome-video-modal');
-            const video = document.getElementById('splash-video');
-            if(video) video.pause();
-            if(modal) {
-                modal.classList.add('opacity-0');
-                setTimeout(() => { modal.style.display = 'none'; }, 400);
-            }
-            setTimeout(() => { playDailyQuoteSpeech(currentQuoteText); }, 500);
-        }
-
-        function openWelcomeVideo() {
-            const modal = document.getElementById('welcome-video-modal');
-            const video = document.getElementById('splash-video');
-            if(modal) {
-                modal.style.display = 'flex';
-                setTimeout(() => modal.classList.remove('opacity-0'), 10);
-                if(video) {
-                    video.currentTime = 0;
-                    video.play().catch(e => console.log("Auto-play prevented:", e));
-                }
-            }
-        }
-
-        // DAFTAR PESAN MOTIVASI ACAK (BERUBAH SETIAP REFRESH)
-        const randomQuotes = [
-            "Selamat datang di ILHAM SPUNBOND. Brand berkelas butuh identitas yang kuat. Sempurnakan souvenir dan promosi acaramu bersama kualitas premium kami hari ini!",
-            "Selamat datang di ILHAM SPUNBOND. Setiap tas custom dirancang presisi untuk mengangkat prestise toko dan kantormu di mata pelanggan.",
-            "Selamat datang di ILHAM SPUNBOND. Peluang emas ada pada detail terkecil. Jadikan setiap event dan toko Anda pusat perhatian dengan tas spunbond kustom eksklusif.",
-            "Selamat datang di ILHAM SPUNBOND. Kualitas sablon tajam, bahan kuat, harga bersahabat. Kami siap jadi partner terpercaya kesuksesan bisnismu!",
-            "Selamat datang di ILHAM SPUNBOND. Langkah awal memenangkan hati konsumen adalah tampilan produk yang berkesan. Yuk, wujudkan desain tas impianmu bersama kami!",
-            "Selamat datang di ILHAM SPUNBOND. Kesuksesan bisnis dimulai dari komitmen memberikan yang terbaik. Pesan tas spunbond grosir berkualitas tinggi hanya di sini.",
-            "Selamat datang di ILHAM SPUNBOND. Tingkatkan omset dan citra profesional tokomu hari ini dengan tas spunbond custom berdesain elegan!",
-            "Selamat datang di ILHAM SPUNBOND. Bisnis hebat dibangun dengan dedikasi tinggi. Mari cetak kesuksesan acaramu bersama produk tas custom terbaik kami!",
-            "Selamat datang di ILHAM SPUNBOND. Tampil beda dan berkarakter dengan tas spunbond kustom berkualitas tinggi. Siap melayani pesanan grosir seluruh Indonesia!"
-        ];
-
-        function initSmartDailyQuote() {
-            const today = new Date();
-            const dateStr = today.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'short', year: 'numeric' });
-            const dateBadge = document.getElementById('daily-date-badge');
-            if(dateBadge) dateBadge.textContent = dateStr;
-
-            // PILIH ACAK (RANDOM) SETIAP HALAMAN DIREFRESH
-            const randomIndex = Math.floor(Math.random() * randomQuotes.length);
-            currentQuoteText = randomQuotes[randomIndex];
-            
-            const quoteEl = document.getElementById('smart-quote-text');
-            if(quoteEl) {
-                quoteEl.textContent = `"${currentQuoteText}"`;
-            }
-        }
-
-        // --- FITUR SUARA COWOK OTOMATIS (MALE VOICE TTS) ---
-        function playDailyQuoteSpeech(text) {
-            if (!('speechSynthesis' in window)) return;
-            
-            window.speechSynthesis.cancel();
-
-            const utterance = new SpeechSynthesisUtterance(text);
-            utterance.lang = 'id-ID';
-            utterance.rate = 0.90;
-            utterance.pitch = 0.7; // Nada maskulin / cowok (nge-bass)
-
-            const voices = window.speechSynthesis.getVoices();
-            const maleVoice = voices.find(v => v.lang.includes('id') && (v.name.toLowerCase().includes('male') || v.name.toLowerCase().includes('damayanti') === false && v.name.toLowerCase().includes('google') === false));
-            if (maleVoice) {
-                utterance.voice = maleVoice;
-            } else {
-                const idVoice = voices.find(v => v.lang.includes('id') || v.lang.includes('in-ID'));
-                if (idVoice) utterance.voice = idVoice;
-            }
-
-            const statusLabel = document.getElementById('voice-status-label');
-            const toggleBtn = document.getElementById('voice-toggle-btn');
-
-            utterance.onstart = function() {
-                if(statusLabel) statusLabel.textContent = "🔊 Suara cowok menyambut...";
-                if(toggleBtn) toggleBtn.innerHTML = "<span>🔊</span> Berhenti Suara";
-            };
-
-            utterance.onend = function() {
-                if(statusLabel) statusLabel.textContent = "🔇 Suara selesai diputar";
-                if(toggleBtn) toggleBtn.innerHTML = "<span>🔇</span> Putar Ulang Suara";
-            };
-
-            utterance.onerror = function() {
-                if(statusLabel) statusLabel.textContent = "⚠️ Audio diblokir browser, klik tombol putar.";
-                if(toggleBtn) toggleBtn.innerHTML = "<span>🔊</span> Putar Ulang Suara";
-            };
-
-            window.speechSynthesis.speak(utterance);
-        }
-
-        function toggleSpeechVoice() {
-            if ('speechSynthesis' in window) {
-                if (window.speechSynthesis.speaking) {
-                    window.speechSynthesis.cancel();
-                    const statusLabel = document.getElementById('voice-status-label');
-                    const toggleBtn = document.getElementById('voice-toggle-btn');
-                    if(statusLabel) statusLabel.textContent = "🔇 Suara dijeda";
-                    if(toggleBtn) toggleBtn.innerHTML = "<span>🔊</span> Putar Ulang Suara";
-                } else {
-                    playDailyQuoteSpeech(currentQuoteText);
-                }
-            }
-        }
-
-        if ('speechSynthesis' in window) {
-            window.speechSynthesis.onvoiceschanged = () => { window.speechSynthesis.getVoices(); };
-        }
+        let customerData = { name: "", wa: "", address: "", pin: "" };
 
         try {
-            if(localStorage.getItem('ilham_bagModels')) bagModels = JSON.parse(localStorage.getItem('ilham_bagModels'));
-            if(localStorage.getItem('ilham_bankAccounts')) bankAccounts = JSON.parse(localStorage.getItem('ilham_bankAccounts'));
-            if(localStorage.getItem('ilham_bagColors')) bagColors = JSON.parse(localStorage.getItem('ilham_bagColors'));
-            if(localStorage.getItem('ilham_inkColors')) inkColors = JSON.parse(localStorage.getItem('ilham_inkColors'));
-            if(localStorage.getItem('ilham_dtfOptions')) dtfOptions = JSON.parse(localStorage.getItem('ilham_dtfOptions'));
-            if(localStorage.getItem('ilham_storeName')) storeName = localStorage.getItem('ilham_storeName');
-            if(localStorage.getItem('ilham_storeAddress')) storeAddress = localStorage.getItem('ilham_storeAddress');
-            if(localStorage.getItem('ilham_storePhone')) storePhone = localStorage.getItem('ilham_storePhone');
-            if(localStorage.getItem('ilham_storeEmail')) storeEmail = localStorage.getItem('ilham_storeEmail');
-            if(localStorage.getItem('ilham_pdfPassword')) pdfPassword = localStorage.getItem('ilham_pdfPassword');
-            if(localStorage.getItem('ilham_ownerWaNumber')) ownerWaNumber = localStorage.getItem('ilham_ownerWaNumber');
-            if(localStorage.getItem('ilham_brandLogoUrl')) brandLogoUrl = localStorage.getItem('ilham_brandLogoUrl');
-            if(localStorage.getItem('ilham_customStampUrl')) customStampUrl = localStorage.getItem('ilham_customStampUrl');
-            if(localStorage.getItem('ilham_welcomeVideoUrl')) welcomeVideoUrl = localStorage.getItem('ilham_welcomeVideoUrl');
-            
-            localStorage.removeItem('ilham_customerLogo');
+            if(localStorage.getItem('ilham_catalogData')) catalogData = JSON.parse(localStorage.getItem('ilham_catalogData'));
             if(localStorage.getItem('ilham_cartItems')) cartItems = JSON.parse(localStorage.getItem('ilham_cartItems'));
-        } catch(e) {
-            console.error("Local storage error:", e);
-        }
+        } catch(e) {}
 
-        function updateAppManifest() {
-            const manifestTag = document.getElementById('dynamic-manifest');
-            if (!manifestTag) return;
-
-            const iconData = brandLogoUrl && brandLogoUrl !== "" ? brandLogoUrl : "https://via.placeholder.com/192x192/065f46/ffffff?text=ILHAM";
-            const manifestObj = {
-                name: "ILHAM SPUNBOND",
-                short_name: "IlhamSpunbond",
-                start_url: ".",
-                display: "standalone",
-                background_color: "#f8fafc",
-                theme_color: "#065f46",
-                icons: [
-                    {
-                        src: iconData,
-                        sizes: "192x192 512x512",
-                        type: "image/png"
-                    }
-                ]
-            };
-
-            manifestTag.setAttribute('href', 'data:application/manifest+json;charset=utf-8,' + encodeURIComponent(JSON.stringify(manifestObj)));
-        }
-
-        function compressImageToDataUrl(file, maxWidth = 250, quality = 0.5) {
-            return new Promise((resolve) => {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    const img = new Image();
-                    img.onload = function() {
-                        const canvas = document.createElement('canvas');
-                        let w = img.width, h = img.height;
-                        if(w > maxWidth) {
-                            h = Math.round((h * maxWidth) / w);
-                            w = maxWidth;
-                        }
-                        canvas.width = w;
-                        canvas.height = h;
-                        const ctx = canvas.getContext('2d');
-                        ctx.drawImage(img, 0, 0, w, h);
-                        resolve(canvas.toDataURL('image/jpeg', quality));
-                    };
-                    img.src = e.target.result;
-                };
-                reader.readAsDataURL(file);
-            });
-        }
-
-        function removeBackgroundToTransparent(file, maxWidth = 400, quality = 0.8) {
-            return new Promise((resolve) => {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    const img = new Image();
-                    img.onload = function() {
-                        const canvas = document.createElement('canvas');
-                        let w = img.width, h = img.height;
-                        if(w > maxWidth) {
-                            h = Math.round((h * maxWidth) / w);
-                            w = maxWidth;
-                        }
-                        canvas.width = w;
-                        canvas.height = h;
-                        const ctx = canvas.getContext('2d');
-                        ctx.clearRect(0, 0, w, h);
-                        ctx.drawImage(img, 0, 0, w, h);
-
-                        const imgData = ctx.getImageData(0, 0, w, h);
-                        const data = imgData.data;
-
-                        const rBg = data[0];
-                        const gBg = data[1];
-                        const bBg = data[2];
-
-                        for (let i = 0; i < data.length; i += 4) {
-                            const r = data[i];
-                            const g = data[i+1];
-                            const b = data[i+2];
-
-                            if (Math.abs(r - rBg) < 45 && Math.abs(g - gBg) < 45 && Math.abs(b - bBg) < 45) {
-                                data[i+3] = 0;
-                            }
-                        }
-
-                        ctx.putImageData(imgData, 0, 0);
-                        resolve(canvas.toDataURL('image/png', quality));
-                    };
-                    img.src = e.target.result;
-                };
-                reader.readAsDataURL(file);
-            });
-        }
-
-        window.initCloudSync = function() {
-            if(!window.firebaseDb) return;
-            const db = window.firebaseDb;
-            const { doc, getDoc, onSnapshot } = window.firebaseDeps;
-
-            const docRef = doc(db, "settings", "master_data");
-            
-            getDoc(docRef).then((docSnap) => {
-                if (docSnap.exists()) {
-                    applyCloudData(docSnap.data());
-                } else {
-                    saveToCloud();
-                }
-            }).catch(err => console.log(err));
-
-            onSnapshot(docRef, (docSnap) => {
-                if (docSnap.exists() && !isSyncingFromCloud) {
-                    applyCloudData(docSnap.data());
-                    const statusEl = document.getElementById('sync-status');
-                    if(statusEl) {
-                        statusEl.textContent = "☁️ Cloud Sync Active";
-                        statusEl.className = "text-[11px] bg-emerald-100 text-emerald-800 px-3 py-1.5 rounded-full font-medium inline-block shadow-sm border border-emerald-300";
-                    }
-                }
-            }, (error) => {
-                const statusEl = document.getElementById('sync-status');
-                if(statusEl) {
-                    statusEl.textContent = "⚠️ Cloud Offline (Local Mode Active)";
-                    statusEl.className = "text-[11px] bg-amber-100 text-amber-800 px-3 py-1.5 rounded-full font-medium inline-block shadow-sm border border-amber-300";
-                }
-            });
-        };
-
-        function applyCloudData(data) {
-            isSyncingFromCloud = true;
-            if(data.bagModels && data.bagModels.length > 0) { 
-                bagModels = data.bagModels.map((m, idx) => {
-                    const localModel = bagModels[idx];
-                    return {
-                        name: m.name,
-                        image: (m.image && m.image !== cleanDefaultBagSvg) ? m.image : (localModel ? localModel.image : cleanDefaultBagSvg),
-                        sizes: m.sizes || (localModel ? localModel.sizes : [])
-                    };
-                });
-                safeLocalStorageSet('ilham_bagModels', JSON.stringify(bagModels)); 
+        function checkCustomerOnboarding() {
+            const savedData = localStorage.getItem('ilham_customer_profile');
+            if(!savedData) {
+                document.getElementById('customer-onboarding-modal').style.display = 'flex';
+            } else {
+                customerData = JSON.parse(savedData);
+                applyCustomerProfileToForm();
+                openWelcomeVideo();
+                initPersonalizedGreeting();
             }
-            if(data.bankAccounts && data.bankAccounts.length > 0) { bankAccounts = data.bankAccounts; safeLocalStorageSet('ilham_bankAccounts', JSON.stringify(bankAccounts)); }
-            if(data.bagColors && data.bagColors.length > 0) { bagColors = data.bagColors; safeLocalStorageSet('ilham_bagColors', JSON.stringify(bagColors)); }
-            if(data.inkColors && data.inkColors.length > 0) { inkColors = data.inkColors; safeLocalStorageSet('ilham_inkColors', JSON.stringify(inkColors)); }
-            if(data.dtfOptions && data.dtfOptions.length > 0) { dtfOptions = data.dtfOptions; safeLocalStorageSet('ilham_dtfOptions', JSON.stringify(dtfOptions)); }
-            
-            if(data.storeName) { storeName = data.storeName; safeLocalStorageSet('ilham_storeName', storeName); }
-            if(data.pdfPassword) { pdfPassword = data.pdfPassword; safeLocalStorageSet('ilham_pdfPassword', pdfPassword); }
-            if(data.ownerWaNumber) { ownerWaNumber = data.ownerWaNumber; safeLocalStorageSet('ilham_ownerWaNumber', ownerWaNumber); }
-            if(data.brandLogoUrl !== undefined) { brandLogoUrl = data.brandLogoUrl; safeLocalStorageSet('ilham_brandLogoUrl', brandLogoUrl); }
-            if(data.customStampUrl !== undefined) { customStampUrl = data.customStampUrl; safeLocalStorageSet('ilham_customStampUrl', customStampUrl); }
-            if(data.welcomeVideoUrl !== undefined) { 
-                welcomeVideoUrl = data.welcomeVideoUrl; 
-                safeLocalStorageSet('ilham_welcomeVideoUrl', welcomeVideoUrl); 
-                updateSplashVideoElement();
-            }
-            if(data.storeAddress) { storeAddress = data.storeAddress; safeLocalStorageSet('ilham_storeAddress', storeAddress); }
-            if(data.storePhone) { storePhone = data.storePhone; safeLocalStorageSet('ilham_storePhone', storePhone); }
-            if(data.storeEmail) { storeEmail = data.storeEmail; safeLocalStorageSet('ilham_storeEmail', storeEmail); }
+        }
 
-            updateAppManifest();
+        function submitCustomerOnboarding() {
+            const name = sanitizeInput(document.getElementById('onboard-name').value.trim());
+            const wa = sanitizeInput(document.getElementById('onboard-wa').value.trim());
+            const address = sanitizeInput(document.getElementById('onboard-address').value.trim());
+            const pin = document.getElementById('onboard-pin').value.trim();
+
+            if(!name || !wa || !address || pin.length < 4) return alert("Harap isi lengkap & PIN min 4 digit!");
+
+            customerData = { name, wa, address, pin };
+            localStorage.setItem('ilham_customer_profile', JSON.stringify(customerData));
+            document.getElementById('customer-onboarding-modal').style.display = 'none';
+            applyCustomerProfileToForm();
+            openWelcomeVideo();
+            initPersonalizedGreeting();
+        }
+
+        function applyCustomerProfileToForm() {
+            document.getElementById('customer-name').value = customerData.name;
+            document.getElementById('customer-wa').value = customerData.wa;
+            document.getElementById('customer-address').value = customerData.address;
+        }
+
+        function sanitizeInput(str) { return !str ? "" : str.replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
+        function closeWelcomeVideo() { document.getElementById('welcome-video-modal').style.display = 'none'; }
+        function openWelcomeVideo() { document.getElementById('welcome-video-modal').style.display = 'flex'; }
+
+        function initPersonalizedGreeting() {
+            const dateStr = new Date().toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'short', year: 'numeric' });
+            document.getElementById('daily-date-badge').textContent = dateStr;
+            const greeting = `Halo, selamat datang ${customerData.name || 'Bos'} dari ${customerData.address || 'Indonesia'}! Silakan pilih produk custom favoritmu.`;
+            document.getElementById('smart-quote-text').textContent = `"${greeting}"`;
+        }
+
+        function onCategoryChange() {
             renderAdminPanel();
-            updateBagCanvas();
-            setTimeout(() => { isSyncingFromCloud = false; }, 500);
-        }
-
-        function updateSplashVideoElement() {
-            const videoSrcEl = document.getElementById('splash-video-source');
-            const videoEl = document.getElementById('splash-video');
-            if(videoSrcEl && welcomeVideoUrl && welcomeVideoUrl !== "") {
-                videoSrcEl.src = welcomeVideoUrl;
-                if(videoEl) videoEl.load();
-            }
-        }
-
-        function safeLocalStorageSet(key, val) {
-            try {
-                localStorage.setItem(key, val);
-            } catch (e) {
-                console.warn("Storage quota warning handled for:", key);
-            }
-        }
-
-        function saveCustomerDataMemory() {
-            const name = document.getElementById('customer-name').value;
-            const wa = document.getElementById('customer-wa').value;
-            const address = document.getElementById('customer-address').value;
-            const region = document.getElementById('shipping-region').value;
-            const model = document.getElementById('bag-model-select').value;
-            const size = document.getElementById('bag-size-select').value;
-            
-            safeLocalStorageSet('ilham_customer_memory', JSON.stringify({ name, wa, address, region, model, size }));
-        }
-
-        function loadCustomerDataMemory() {
-            try {
-                const saved = localStorage.getItem('ilham_customer_memory');
-                if(saved) {
-                    const data = JSON.parse(saved);
-                    if(data.name) document.getElementById('customer-name').value = data.name;
-                    if(data.wa) document.getElementById('customer-wa').value = data.wa;
-                    if(data.address) document.getElementById('customer-address').value = data.address;
-                    if(data.region) document.getElementById('shipping-region').value = data.region;
-                    if(data.model !== undefined) {
-                        const mSelect = document.getElementById('bag-model-select');
-                        if(mSelect && mSelect.options.length > data.model) {
-                            mSelect.value = data.model;
-                            updateCustomerSizesDropdown();
-                        }
-                    }
-                    if(data.size !== undefined) {
-                        const sSelect = document.getElementById('bag-size-select');
-                        if(sSelect) sSelect.value = data.size;
-                    }
-                }
-            } catch(e) {
-                console.error(e);
-            }
-        }
-
-        async function saveToCloud(customPayload = {}) {
-            safeLocalStorageSet('ilham_bagModels', JSON.stringify(bagModels));
-            safeLocalStorageSet('ilham_bankAccounts', JSON.stringify(bankAccounts));
-            safeLocalStorageSet('ilham_bagColors', JSON.stringify(bagColors));
-            safeLocalStorageSet('ilham_inkColors', JSON.stringify(inkColors));
-            safeLocalStorageSet('ilham_dtfOptions', JSON.stringify(dtfOptions));
-            safeLocalStorageSet('ilham_storeName', storeName);
-            safeLocalStorageSet('ilham_storeAddress', storeAddress);
-            safeLocalStorageSet('ilham_storePhone', storePhone);
-            safeLocalStorageSet('ilham_storeEmail', storeEmail);
-            safeLocalStorageSet('ilham_pdfPassword', pdfPassword);
-            safeLocalStorageSet('ilham_ownerWaNumber', ownerWaNumber);
-            safeLocalStorageSet('ilham_brandLogoUrl', brandLogoUrl);
-            safeLocalStorageSet('ilham_customStampUrl', customStampUrl);
-            safeLocalStorageSet('ilham_welcomeVideoUrl', welcomeVideoUrl);
-            
-            try {
-                const lightCart = cartItems.map(i => ({ model: i.model, size: i.size, color: i.color, method: i.method, qty: i.qty, unitPrice: i.unitPrice, subtotal: i.subtotal }));
-                safeLocalStorageSet('ilham_cartItems', JSON.stringify(lightCart));
-            } catch (err) {
-                console.log(err);
-            }
-
-            if(!window.firebaseDb) return;
-            try {
-                const { doc, setDoc } = window.firebaseDeps;
-                const docRef = doc(window.firebaseDb, "settings", "master_data");
-
-                const optimizedBagModels = bagModels.map(m => ({
-                    name: m.name,
-                    image: (m.image && m.image.length > 80000) ? cleanDefaultBagSvg : m.image,
-                    sizes: m.sizes
-                }));
-
-                const payload = {
-                    bagModels: optimizedBagModels,
-                    bankAccounts,
-                    bagColors,
-                    inkColors,
-                    dtfOptions,
-                    storeName,
-                    pdfPassword,
-                    ownerWaNumber,
-                    brandLogoUrl: (brandLogoUrl && brandLogoUrl.length > 80000) ? "" : brandLogoUrl,
-                    customStampUrl: (customStampUrl && customStampUrl.length > 80000) ? "" : customStampUrl,
-                    welcomeVideoUrl: (welcomeVideoUrl && welcomeVideoUrl.length > 150000) ? "" : welcomeVideoUrl,
-                    storeAddress,
-                    storePhone,
-                    storeEmail,
-                    lastCustomerLogo: "",
-                    ...customPayload
-                };
-
-                await setDoc(docRef, payload, { merge: true });
-            } catch(e) {
-                console.error("Gagal menyimpan ke cloud:", e);
-            }
-        }
-
-        function requestAdminLogin() {
-            const pwd = prompt("Masukkan Password Admin:");
-            if(pwd === pdfPassword) toggleAdminPanel();
-            else if(pwd !== null) alert("Password salah!");
         }
 
         function renderAdminPanel() {
-            const modelAdminContainer = document.getElementById('model-admin-container');
-            const bankAdminContainer = document.getElementById('bank-admin-container');
-            const dtfAdminContainer = document.getElementById('dtf-admin-container');
+            const catKey = document.getElementById('product-category-select').value;
+            const currentCat = catalogData[catKey];
             const modelSelect = document.getElementById('bag-model-select');
-            const dtfSelect = document.getElementById('dtf-size-select');
-            const bankDisplay = document.getElementById('bank-accounts-display');
-            const stampPreview = document.getElementById('stamp-preview-container');
-            const brandStatus = document.getElementById('brand-upload-status');
-            const videoStatus = document.getElementById('video-upload-status');
             
             if(!modelSelect) return;
-
-            const prevVal = modelSelect.value || 0;
-            if(modelAdminContainer) modelAdminContainer.innerHTML = '';
             modelSelect.innerHTML = '';
-
-            bagModels.forEach((item, mIndex) => {
-                const opt = document.createElement('option');
-                opt.value = mIndex;
-                opt.textContent = item.name;
-                modelSelect.appendChild(opt);
-
-                if(modelAdminContainer) {
-                    const card = document.createElement('div');
-                    card.className = "bg-slate-900 p-3 rounded-xl border border-slate-700 flex flex-col gap-2 text-xs";
-                    
-                    let sizeRows = '';
-                    if(item.sizes) {
-                        item.sizes.forEach((s, sIndex) => {
-                            sizeRows += `
-                                <div class="flex items-center justify-between bg-slate-800 p-2 rounded-lg text-[11px] gap-2">
-                                    <div class="flex-1 flex gap-1 items-center">
-                                        <input type="text" id="edit-s-name-${mIndex}-${sIndex}" value="${s.name}" class="w-28 bg-slate-900 border border-slate-700 rounded px-1.5 py-1 text-white text-[11px] outline-none">
-                                        <input type="number" id="edit-s-price-${mIndex}-${sIndex}" value="${s.price}" class="w-20 bg-slate-900 border border-slate-700 rounded px-1.5 py-1 text-white text-[11px] outline-none">
-                                    </div>
-                                    <div class="flex gap-1">
-                                        <button type="button" onclick="updateSizeInModel(${mIndex}, ${sIndex})" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-2 py-1 rounded cursor-pointer text-[10px]">Edit</button>
-                                        <button type="button" onclick="deleteSizeFromModel(${mIndex}, ${sIndex})" class="bg-rose-600/80 hover:bg-rose-700 text-white font-bold px-2 py-1 rounded cursor-pointer text-[10px]">Hapus</button>
-                                    </div>
-                                </div>`;
-                        });
-                    }
-
-                    const isCustomImg = item.image && item.image !== cleanDefaultBagSvg;
-
-                    card.innerHTML = `
-                        <div class="flex items-center justify-between border-b border-slate-800 pb-1.5"><span class="font-bold text-amber-300 text-sm">${item.name}</span></div>
-                        <div><label class="block text-[10px] text-slate-400 mb-1">Upload Foto Tas (Background hijau otomatis transparan):</label><input type="file" accept="image/*" onchange="uploadModelSample(event, ${mIndex})" class="w-full text-[10px] text-slate-400 file:mr-2 file:py-1 file:px-2 file:rounded-lg file:border-0 file:bg-amber-500 file:text-slate-950 cursor-pointer"></div>
-                        <div id="model-status-${mIndex}" class="text-[10px] ${isCustomImg ? 'text-emerald-400 font-semibold' : 'text-slate-400'} italic">
-                            ${isCustomImg ? '✅ Berhasil Di-upload & Background Dihapus Transparan' : 'ℹ️ Menggunakan foto default'}
-                        </div>
-                        <div class="space-y-1.5 mt-1">
-                            <div class="text-[10px] text-amber-300 font-semibold">Daftar Ukuran & Harga:</div>
-                            ${sizeRows}
-                            <div class="flex gap-1.5 mt-2 pt-1 border-t border-slate-800"><input type="text" id="new-s-name-${mIndex}" placeholder="Ukuran Baru" class="flex-1 bg-slate-800 rounded-lg px-2 py-1 text-[11px] text-white outline-none border border-slate-700"><input type="number" id="new-s-price-${mIndex}" placeholder="Harga" class="w-20 bg-slate-800 rounded-lg px-2 py-1 text-[11px] text-white outline-none border border-slate-700"><button type="button" onclick="addSizeToModel(${mIndex})" class="bg-amber-500 text-slate-950 px-2.5 py-1 rounded-lg text-[11px] font-semibold cursor-pointer">Tambah</button></div>
-                        </div>`;
-                    modelAdminContainer.appendChild(card);
-                }
+            currentCat.models.forEach((item, mIndex) => {
+                modelSelect.innerHTML += `<option value="${mIndex}">${item.name}</option>`;
             });
 
-            if(modelSelect.options.length > prevVal) modelSelect.value = prevVal;
+            document.getElementById('print-method-display').value = currentCat.method;
 
-            if(brandStatus) {
-                if(brandLogoUrl) {
-                    brandStatus.textContent = "✅ Berhasil Di-upload & Terkunci di Sistem";
-                    brandStatus.className = "text-[10px] text-emerald-400 font-semibold italic";
-                } else {
-                    brandStatus.textContent = "ℹ️ Belum ada logo brand di-upload (menggunakan teks)";
-                    brandStatus.className = "text-[10px] text-slate-400 italic";
-                }
-            }
-
-            if(videoStatus) {
-                if(welcomeVideoUrl) {
-                    videoStatus.textContent = "✅ Video Sambutan Berhasil Di-upload ke Sistem";
-                    videoStatus.className = "text-[10px] text-emerald-400 font-semibold italic";
-                } else {
-                    videoStatus.textContent = "ℹ️ Menggunakan video default (silakan upload MP4 baru)";
-                    videoStatus.className = "text-[10px] text-slate-400 italic";
-                }
-            }
-
-            if(bankAdminContainer && bankDisplay) {
-                bankAdminContainer.innerHTML = '';
-                bankDisplay.innerHTML = '';
-                bankAccounts.forEach((b, bIdx) => {
-                    bankAdminContainer.innerHTML += `<div class="flex items-center justify-between bg-slate-900 p-1.5 rounded-lg text-[11px]"><span><b>${b.bank}</b>: ${b.acc} (${b.owner})</span><button type="button" onclick="deleteBank(${bIdx})" class="text-rose-400 font-bold cursor-pointer">Hapus</button></div>`;
-                    bankDisplay.innerHTML += `<div class="flex justify-between"><span><b>${b.bank}</b>: ${b.acc}</span><span class="text-slate-500">a.n ${b.owner}</span></div>`;
-                });
-            }
-
-            if(dtfAdminContainer && dtfSelect) {
-                dtfAdminContainer.innerHTML = '';
-                dtfSelect.innerHTML = '';
-                dtfOptions.forEach((d, dIdx) => {
-                    dtfAdminContainer.innerHTML += `<div class="flex items-center justify-between bg-slate-900 p-1.5 rounded-lg text-[11px]"><span><b>${d.name}</b> (+Rp ${d.price.toLocaleString('id-ID')})</span><button type="button" onclick="deleteDtfOption(${dIdx})" class="text-rose-400 font-bold cursor-pointer">Hapus</button></div>`;
-                    dtfSelect.innerHTML += `<option value="${d.price}">${d.name} (+Rp ${d.price.toLocaleString('id-ID')})</option>`;
-                });
-            }
-
-            if(stampPreview) {
-                if(customStampUrl) {
-                    stampPreview.innerHTML = `<div class="flex items-center justify-center gap-2 bg-slate-900 p-2 rounded-xl border border-slate-700"><img src="${customStampUrl}" class="h-10 object-contain"><span class="text-[10px] text-emerald-400 font-semibold">✅ Berhasil Di-upload & Terkunci di Sistem</span><button type="button" onclick="removeStampImage()" class="text-xs text-rose-400 font-semibold underline cursor-pointer">Hapus</button></div>`;
-                } else {
-                    stampPreview.innerHTML = `<span class="text-[10px] text-slate-400 italic">Belum ada stempel/cap diupload.</span>`;
-                }
-            }
-
-            const inkContainer = document.getElementById('ink-list-container');
-            const inkSelect = document.getElementById('ink-color-select');
-            if(inkContainer && inkSelect) {
-                inkContainer.innerHTML = '';
-                inkSelect.innerHTML = '';
-                inkColors.forEach((ink, idx) => {
-                    inkContainer.innerHTML += `<div class="flex items-center justify-between bg-slate-800 px-3 py-1.5 rounded-lg text-xs"><div class="flex items-center gap-2"><span class="w-3 h-3 rounded-full inline-block border border-white" style="background:${ink.hex}"></span><span>${ink.name}</span></div><button type="button" onclick="deleteInkColor(${idx})" class="text-rose-400 font-bold cursor-pointer">Hapus</button></div>`;
-                    inkSelect.innerHTML += `<option value="${ink.hex}">${ink.name}</option>`;
-                });
-            }
-
-            const colorContainer = document.getElementById('color-list-container');
             const colorButtons = document.getElementById('bag-color-buttons');
-            if(colorContainer && colorButtons) {
-                colorContainer.innerHTML = '';
+            if(colorButtons) {
                 colorButtons.innerHTML = '';
-
-                bagColors.forEach((item, index) => {
-                    colorContainer.innerHTML += `<div class="flex items-center justify-between bg-slate-800 px-3 py-1.5 rounded-lg text-xs"><div class="flex items-center gap-2"><span class="w-3 h-3 rounded-full inline-block border border-white" style="background:${item.hex}"></span><span>${item.name}</span></div><button type="button" onclick="deleteBagColor(${index})" class="text-rose-400 font-bold cursor-pointer">Hapus</button></div>`;
-                    
-                    const btn = document.createElement('button');
-                    btn.type = "button";
-                    btn.className = "px-3 py-2.5 rounded-xl text-xs font-semibold shadow-sm transition border border-slate-200 flex items-center gap-2 cursor-pointer hover:scale-105";
-                    btn.style.backgroundColor = item.hex;
-                    btn.style.color = (item.hex === '#ffffff' || item.hex === '#eab308') ? '#0f172a' : '#ffffff';
-                    btn.innerHTML = `<span>${item.name}</span>`;
-                    btn.onclick = () => {
-                        activeBagTint = item.hex;
-                        activeColorName = item.name;
-                        document.getElementById('active-color-label').textContent = item.name;
-                        updateBagCanvas();
-                    };
-                    colorButtons.appendChild(btn);
+                bagColors.forEach((item) => {
+                    colorButtons.innerHTML += `<button type="button" onclick="activeBagTint='${item.hex}'; activeColorName='${item.name}'; document.getElementById('active-color-label').textContent='${item.name}'; updateBagCanvas();" class="px-3 py-2 rounded-xl text-xs font-semibold shadow-sm border flex items-center gap-2 cursor-pointer" style="background:${item.hex}; color:${item.hex==='#ffffff'?'#0f172a':'#ffffff'}">${item.name}</button>`;
                 });
             }
-
-            const pwdEl = document.getElementById('admin-pdf-password');
-            if(pwdEl) pwdEl.value = pdfPassword;
-            const waEl = document.getElementById('admin-wa-number');
-            if(waEl) waEl.value = ownerWaNumber;
-            const nameEl = document.getElementById('admin-store-name');
-            if(nameEl) nameEl.value = storeName;
-            const addrEl = document.getElementById('admin-store-address');
-            if(addrEl) addrEl.value = storeAddress;
-            const phoneEl = document.getElementById('admin-store-phone');
-            if(phoneEl) phoneEl.value = storePhone;
-            const emailEl = document.getElementById('admin-store-email');
-            if(emailEl) emailEl.value = storeEmail;
-
-            const headerLogoEl = document.getElementById('header-brand-logo');
-            if(headerLogoEl) {
-                if(brandLogoUrl) {
-                    headerLogoEl.src = brandLogoUrl;
-                    headerLogoEl.className = "max-h-16 w-auto object-contain filter drop-shadow";
-                } else {
-                    headerLogoEl.src = "https://via.placeholder.com/160x55?text=ILHAM+SPUNBOND";
-                }
-            }
-
-            updateSplashVideoElement();
-            updateAppManifest();
-            loadCustomerDataMemory();
             updateCustomerSizesDropdown();
             updateBagCanvas();
             renderCartItems();
+            renderAdminProductPrices();
         }
 
-        async function uploadSplashVideo(e) {
-            const file = e.target.files[0];
-            if(file) {
-                const reader = new FileReader();
-                reader.onload = async function(event) {
-                    welcomeVideoUrl = event.target.result;
-                    updateSplashVideoElement();
-                    await saveToCloud();
-                    renderAdminPanel();
-                    alert("✅ Video sambutan berhasil di-upload dan disimpan ke sistem!");
-                };
-                reader.readAsDataURL(file);
-            }
+        function renderAdminProductPrices() {
+            const container = document.getElementById('admin-model-price-container');
+            if(!container) return;
+            container.innerHTML = '';
+
+            Object.keys(catalogData).forEach(catKey => {
+                const cat = catalogData[catKey];
+                let modelsHtml = '';
+                cat.models.forEach((item, mIndex) => {
+                    let sizeHtml = '';
+                    item.sizes.forEach((s, sIndex) => {
+                        sizeHtml += `
+                            <div class="bg-slate-900 p-2.5 rounded-xl border border-slate-700 space-y-2 text-xs mt-2">
+                                <div class="font-bold text-amber-300">${s.name}</div>
+                                <div class="grid grid-cols-3 gap-2">
+                                    <div><label class="block text-[9px] text-slate-400">Modal Bahan</label><input type="number" id="m-bahan-${catKey}-${mIndex}-${sIndex}" value="${s.modalBahan}" class="w-full bg-slate-800 border rounded p-1 text-white text-xs"></div>
+                                    <div><label class="block text-[9px] text-slate-400">Jasa Cetak</label><input type="number" id="m-cetak-${catKey}-${mIndex}-${sIndex}" value="${s.jasaCetak}" class="w-full bg-slate-800 border rounded p-1 text-white text-xs"></div>
+                                    <div><label class="block text-[9px] text-emerald-400 font-bold">Harga Jual</label><input type="number" id="m-jual-${catKey}-${mIndex}-${sIndex}" value="${s.price}" class="w-full bg-emerald-950 border rounded p-1 text-emerald-200 text-xs font-bold"></div>
+                                </div>
+                            </div>`;
+                    });
+                    modelsHtml += `<div class="bg-slate-900/50 p-2 rounded-xl mt-2"><div class="font-extrabold text-amber-400">${item.name}</div>${sizeHtml}</div>`;
+                });
+
+                container.innerHTML += `
+                    <div class="bg-slate-800 p-3 rounded-2xl border border-slate-700 space-y-2">
+                        <div class="font-extrabold text-sm text-emerald-400 uppercase">Kategori: ${cat.title}</div>
+                        ${modelsHtml}
+                        <button type="button" onclick="saveCategoryPrices('${catKey}')" class="w-full bg-amber-500 text-slate-950 font-bold py-2 rounded-xl text-xs cursor-pointer mt-2">💾 Simpan Perubahan (${cat.title})</button>
+                    </div>`;
+            });
+        }
+
+        function saveCategoryPrices(catKey) {
+            const cat = catalogData[catKey];
+            cat.models.forEach((item, mIndex) => {
+                item.sizes.forEach((s, sIndex) => {
+                    s.modalBahan = parseInt(document.getElementById(`m-bahan-${catKey}-${mIndex}-${sIndex}`).value) || 0;
+                    s.jasaCetak = parseInt(document.getElementById(`m-cetak-${catKey}-${mIndex}-${sIndex}`).value) || 0;
+                    s.price = parseInt(document.getElementById(`m-jual-${catKey}-${mIndex}-${sIndex}`).value) || 0;
+                });
+            });
+            localStorage.setItem('ilham_catalogData', JSON.stringify(catalogData));
+            alert("✅ Harga berhasil disimpan!");
+            renderAdminPanel();
         }
 
         function updateCustomerSizesDropdown() {
+            const catKey = document.getElementById('product-category-select').value;
+            const currentCat = catalogData[catKey];
             const modelSelect = document.getElementById('bag-model-select');
             const sizeSelect = document.getElementById('bag-size-select');
+            
             if(!modelSelect || !sizeSelect) return;
-            const currentModel = bagModels[modelSelect.value] || bagModels[0];
+            const currentModel = currentCat.models[modelSelect.value] || currentCat.models[0];
             sizeSelect.innerHTML = '';
             if(currentModel && currentModel.sizes) {
                 currentModel.sizes.forEach(s => {
-                    sizeSelect.innerHTML += `<option value="${s.name}">${s.name} (Rp ${s.price.toLocaleString('id-ID')})</option>`;
+                    sizeSelect.innerHTML += `<option value="${s.name}" data-price="${s.price}" data-modal="${s.modalBahan}" data-cetak="${s.jasaCetak}">${s.name} (Rp ${s.price.toLocaleString('id-ID')})</option>`;
                 });
             }
-            updateSizeLabel();
-            saveCustomerDataMemory();
-        }
-
-        function saveGlobalConfig() {
-            storeName = document.getElementById('admin-store-name').value;
-            storeAddress = document.getElementById('admin-store-address').value;
-            storePhone = document.getElementById('admin-store-phone').value;
-            storeEmail = document.getElementById('admin-store-email').value;
-            ownerWaNumber = document.getElementById('admin-wa-number').value;
-            pdfPassword = document.getElementById('admin-pdf-password').value;
-            saveToCloud();
-        }
-
-        function addBank() {
-            const bank = document.getElementById('new-bank-name').value.trim();
-            const acc = document.getElementById('new-bank-acc').value.trim();
-            const owner = document.getElementById('new-bank-owner').value.trim();
-            if(bank && acc && owner) {
-                bankAccounts.push({ bank, acc, owner });
-                saveToCloud();
-                renderAdminPanel();
-            }
-        }
-        function deleteBank(index) { bankAccounts.splice(index, 1); saveToCloud(); renderAdminPanel(); }
-
-        function addInkColor() {
-            const name = document.getElementById('new-ink-name').value.trim();
-            const hex = document.getElementById('new-ink-hex').value;
-            if(name) {
-                inkColors.push({ name, hex });
-                saveToCloud();
-                renderAdminPanel();
-            }
-        }
-        function deleteInkColor(index) { inkColors.splice(index, 1); saveToCloud(); renderAdminPanel(); }
-
-        function addDtfOption() {
-            const name = document.getElementById('new-dtf-name').value.trim();
-            const price = parseInt(document.getElementById('new-dtf-price').value);
-            if(name && !isNaN(price)) {
-                dtfOptions.push({ name, price });
-                saveToCloud();
-                renderAdminPanel();
-            }
-        }
-        function deleteDtfOption(index) { dtfOptions.splice(index, 1); saveToCloud(); renderAdminPanel(); }
-
-        function addSizeToModel(mIndex) {
-            const nameInput = document.getElementById(`new-s-name-${mIndex}`);
-            const priceInput = document.getElementById(`new-s-price-${mIndex}`);
-            if(!nameInput || !priceInput) return;
-            
-            const name = nameInput.value.trim();
-            const price = parseInt(priceInput.value);
-            
-            if(name && !isNaN(price)) {
-                if(!bagModels[mIndex].sizes) bagModels[mIndex].sizes = [];
-                bagModels[mIndex].sizes.push({ name, price });
-                saveToCloud();
-                renderAdminPanel();
-            } else {
-                alert("Harap isi nama ukuran dan harga dengan benar!");
-            }
-        }
-
-        function updateSizeInModel(mIndex, sIndex) {
-            const nameInput = document.getElementById(`edit-s-name-${mIndex}-${sIndex}`);
-            const priceInput = document.getElementById(`edit-s-price-${mIndex}-${sIndex}`);
-            if(!nameInput || !priceInput) return;
-
-            const newName = nameInput.value.trim();
-            const newPrice = parseInt(priceInput.value);
-
-            if(newName && !isNaN(newPrice)) {
-                bagModels[mIndex].sizes[sIndex].name = newName;
-                bagModels[mIndex].sizes[sIndex].price = newPrice;
-                saveToCloud();
-                renderAdminPanel();
-                alert("✅ Ukuran & harga berhasil diperbarui!");
-            } else {
-                alert("Harap masukkan nama ukuran dan angka harga yang valid!");
-            }
-        }
-
-        function deleteSizeFromModel(mIndex, sIndex) {
-            if(bagModels[mIndex].sizes.length <= 1) return alert("Minimal harus ada 1 ukuran dalam model ini!");
-            bagModels[mIndex].sizes.splice(sIndex, 1);
-            saveToCloud();
-            renderAdminPanel();
-        }
-
-        function addBagColor() {
-            const name = document.getElementById('new-color-name').value.trim();
-            const hex = document.getElementById('new-color-hex').value;
-            if(name) { bagColors.push({ name, hex }); saveToCloud(); renderAdminPanel(); }
-        }
-
-        function deleteBagColor(index) {
-            bagColors.splice(index, 1);
-            saveToCloud();
-            renderAdminPanel();
-        }
-
-        async function uploadBrandLogo(e) {
-            const file = e.target.files[0];
-            if(file) {
-                const compressed = await compressImageToDataUrl(file, 250, 0.5);
-                brandLogoUrl = compressed;
-                updateAppManifest();
-                await saveToCloud();
-                renderAdminPanel();
-            }
-        }
-
-        async function uploadStampImage(e) {
-            const file = e.target.files[0];
-            if(file) {
-                const compressed = await compressImageToDataUrl(file, 200, 0.5);
-                customStampUrl = compressed;
-                await saveToCloud();
-                renderAdminPanel();
-            }
-        }
-
-        function removeStampImage() {
-            customStampUrl = "";
-            saveToCloud();
-            renderAdminPanel();
-        }
-
-        async function uploadModelSample(e, mIndex) {
-            const file = e.target.files[0];
-            if(file) {
-                const transparentImg = await removeBackgroundToTransparent(file, 400, 0.8);
-                bagModels[mIndex].image = transparentImg;
-                await saveToCloud();
-                renderAdminPanel();
-                updateBagCanvas();
-            }
-        }
-
-        async function loadCustomerLogo(e) {
-            const file = e.target.files[0];
-            if(!file) return;
-
-            const statusEl = document.getElementById('logo-upload-status');
-            if(statusEl) {
-                statusEl.textContent = "⏳ Memproses background transparan otomatis...";
-                statusEl.className = "text-[10px] text-amber-500 font-semibold italic";
-            }
-
-            const transparentDataUrl = await removeBackgroundToTransparent(file, 400, 0.8);
-            
-            const img = new Image();
-            img.onload = function() {
-                rawCustomerLogoImg = img;
-                updateProcessedLogo();
-                if(statusEl) {
-                    statusEl.textContent = "✅ Logo berhasil di-upload & background transparan!";
-                    statusEl.className = "text-[10px] text-emerald-600 font-semibold italic";
-                }
-            };
-            img.src = transparentDataUrl;
-        }
-
-        function updateProcessedLogo() {
-            if(!rawCustomerLogoImg) return;
-            const method = document.getElementById('print-method').value;
-            const inkHex = document.getElementById('ink-color-select').value || '#0f172a';
-            
-            const mSelect = document.getElementById('bag-model-select');
-            const modelNameText = (mSelect && mSelect.value !== "" && bagModels[mSelect.value]) ? bagModels[mSelect.value].name : bagModels[0].name;
-
-            document.getElementById('owner-method-txt').textContent = method === 'dtf' ? 'DTF Full Color' : 'Sablon Manual (Pasta)';
-            document.getElementById('owner-model-txt').textContent = modelNameText;
-
-            const previewCanvas = document.createElement('canvas');
-            previewCanvas.width = rawCustomerLogoImg.width;
-            previewCanvas.height = rawCustomerLogoImg.height;
-            const pCtx = previewCanvas.getContext('2d');
-            pCtx.drawImage(rawCustomerLogoImg, 0, 0);
-
-            if (method === 'manual') {
-                const pData = pCtx.getImageData(0, 0, previewCanvas.width, previewCanvas.height);
-                const d = pData.data;
-                const rT = parseInt(inkHex.slice(1, 3), 16);
-                const gT = parseInt(inkHex.slice(3, 5), 16);
-                const bT = parseInt(inkHex.slice(5, 7), 16);
-
-                for (let i = 0; i < d.length; i += 4) {
-                    if (d[i + 3] > 15) {
-                        d[i] = rT;
-                        d[i + 1] = gT;
-                        d[i + 2] = bT;
-                    }
-                }
-                pCtx.putImageData(pData, 0, 0);
-            }
-            document.getElementById('preview-logo-img').src = previewCanvas.toDataURL('image/png');
-
-            const ownerCanvas = document.createElement('canvas');
-            ownerCanvas.width = rawCustomerLogoImg.width;
-            ownerCanvas.height = rawCustomerLogoImg.height;
-            const oCtx = ownerCanvas.getContext('2d');
-            oCtx.drawImage(rawCustomerLogoImg, 0, 0);
-
-            const oData = oCtx.getImageData(0, 0, ownerCanvas.width, ownerCanvas.height);
-            const d2 = oData.data;
-
-            if (method === 'manual') {
-                for (let i = 0; i < d2.length; i += 4) {
-                    if (d2[i + 3] > 15) {
-                        d2[i] = 0;
-                        d2[i + 1] = 0;
-                        d2[i + 2] = 0;
-                        d2[i + 3] = 255;
-                    }
-                }
-            } else {
-                for (let i = 0; i < d2.length; i += 4) {
-                    if (d2[i + 3] < 20) {
-                        d2[i + 3] = 0;
-                    }
-                }
-            }
-            oCtx.putImageData(oData, 0, 0);
-
-            const ownerImgEl = document.getElementById('owner-file-img');
-            document.getElementById('owner-placeholder-text').style.display = 'none';
-            ownerImgEl.src = ownerCanvas.toDataURL('image/png');
-        }
-
-        function onCustomerModelChange() { updateCustomerSizesDropdown(); updateBagCanvas(); updateProcessedLogo(); }
-        function onCustomerSizeSelect() { updateSizeLabel(); }
-        function updateSizeLabel() {
-            const size = document.getElementById('bag-size-select').value;
-            document.getElementById('preview-size-label').textContent = `[ ${size || '-'} ]`;
-            saveCustomerDataMemory();
         }
 
         function updateBagCanvas() {
+            const catKey = document.getElementById('product-category-select').value;
+            const currentCat = catalogData[catKey];
             const mIndex = document.getElementById('bag-model-select').value || 0;
-            const currentModel = bagModels[mIndex] || bagModels[0];
+            const currentModel = currentCat.models[mIndex] || currentCat.models[0];
             const canvas = document.getElementById('bag-preview-canvas');
             const ctx = canvas.getContext('2d');
             
             const img = new Image();
             img.onload = function() {
-                canvas.width = img.width; 
-                canvas.height = img.height;
+                canvas.width = img.width; canvas.height = img.height;
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-                ctx.fillStyle = "#ffffff";
-                ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-                const tempCanvas = document.createElement('canvas');
-                tempCanvas.width = img.width;
-                tempCanvas.height = img.height;
-                const tCtx = tempCanvas.getContext('2d');
-                
-                tCtx.drawImage(img, 0, 0);
-                const bagData = tCtx.getImageData(0, 0, tempCanvas.width, tempCanvas.height);
-                const d = bagData.data;
-
-                const rTint = parseInt(activeBagTint.slice(1, 3), 16);
-                const gTint = parseInt(activeBagTint.slice(3, 5), 16);
-                const bTint = parseInt(activeBagTint.slice(5, 7), 16);
-
-                for (let i = 0; i < d.length; i += 4) {
-                    let a = d[i+3];
-                    if (a > 15) {
-                        if (activeBagTint !== '#ffffff') {
-                            let r = d[i], g = d[i+1], b = d[i+2];
-                            d[i]   = Math.round((r * 0.25) + (rTint * 0.75));
-                            d[i+1] = Math.round((g * 0.25) + (gTint * 0.75));
-                            d[i+2] = Math.round((b * 0.25) + (bTint * 0.75));
-                        }
-                    }
-                }
-                tCtx.putImageData(bagData, 0, 0);
-                ctx.drawImage(tempCanvas, 0, 0);
+                ctx.fillStyle = activeBagTint; ctx.fillRect(0, 0, canvas.width, canvas.height);
+                ctx.drawImage(img, 0, 0);
             };
             img.src = currentModel.image;
         }
 
-        function calculateItemPrice() {
-            const mIndex = document.getElementById('bag-model-select').value || 0;
-            const sizeName = document.getElementById('bag-size-select').value;
-            const currentModel = bagModels[mIndex] || bagModels[0];
-            
-            let basePrice = 1400;
-            const found = currentModel.sizes?.find(s => s.name === sizeName);
-            if(found) basePrice = found.price;
-
-            let unitPrice = basePrice;
-            if(document.getElementById('print-method').value === 'dtf') {
-                const dtfPrice = parseInt(document.getElementById('dtf-size-select').value) || 2000;
-                unitPrice += dtfPrice;
-            }
-            return unitPrice;
+        async function loadCustomerLogo(e) {
+            const file = e.target.files[0];
+            if(!file) return;
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                const img = new Image();
+                img.onload = function() {
+                    rawCustomerLogoImg = img;
+                    document.getElementById('preview-logo-img').src = event.target.result;
+                    document.getElementById('logo-upload-status').textContent = "✅ Logo siap!";
+                };
+                img.src = event.target.result;
+            };
+            reader.readAsDataURL(file);
         }
 
+        function onCustomerModelChange() { updateCustomerSizesDropdown(); updateBagCanvas(); }
+        function onCustomerSizeSelect() {}
+
         async function addItemToCart() {
-            if(!rawCustomerLogoImg) return alert("Silakan upload logo/desain terlebih dahulu!");
-            
+            if(!rawCustomerLogoImg) return alert("Upload logo terlebih dahulu!");
+            const catKey = document.getElementById('product-category-select').value;
+            const currentCat = catalogData[catKey];
             const mIndex = document.getElementById('bag-model-select').value || 0;
-            const currentModel = bagModels[mIndex] || bagModels[0];
-            const sizeName = document.getElementById('bag-size-select').value;
-            const qty = parseInt(document.getElementById('item-qty').value) || 500;
-            const printMethod = document.getElementById('print-method').value === 'dtf' ? 'DTF Full Color' : 'Sablon Manual (Pasta)';
-            const unitPrice = calculateItemPrice();
-
-            let mockupBase64 = "";
-            let cleanLogoDataUrl = "";
-            try {
-                const element = document.getElementById('capture-mockup');
-                const canvas = await html2canvas(element, { scale: 0.8, useCORS: true, backgroundColor: '#ffffff' });
-                mockupBase64 = canvas.toDataURL('image/jpeg', 0.5);
-            } catch(e) {
-                console.log("Mockup capture warning:", e);
-            }
-
-            const ownerImg = document.getElementById('owner-file-img');
-            if(ownerImg) cleanLogoDataUrl = ownerImg.src;
+            const currentModel = currentCat.models[mIndex] || currentCat.models[0];
+            
+            const sizeSelect = document.getElementById('bag-size-select');
+            const selectedOpt = sizeSelect.options[sizeSelect.selectedIndex];
+            
+            const sizeName = selectedOpt.value;
+            const unitPrice = parseInt(selectedOpt.getAttribute('data-price')) || 1400;
+            const modalBahan = parseInt(selectedOpt.getAttribute('data-modal')) || 1000;
+            const jasaCetak = parseInt(selectedOpt.getAttribute('data-cetak')) || 300;
+            const qty = parseInt(document.getElementById('item-qty').value) || 100;
 
             cartItems.push({
-                model: currentModel.name,
-                size: sizeName,
-                color: activeColorName,
-                method: printMethod,
-                qty: qty,
-                unitPrice: unitPrice,
-                subtotal: unitPrice * qty,
-                mockupImg: mockupBase64,
-                cleanLogo: cleanLogoDataUrl
+                category: currentCat.title, model: currentModel.name, size: sizeName, color: activeColorName,
+                method: currentCat.method, qty, unitPrice, modalTotal: (modalBahan + jasaCetak) * qty, subtotal: unitPrice * qty,
+                mockupImg: document.getElementById('preview-logo-img').src
             });
-
-            saveToCloud();
             renderCartItems();
-            alert("Item berhasil dimasukkan ke keranjang pesanan!");
+            alert("Item ditambahkan ke keranjang!");
         }
 
         function renderCartItems() {
             const container = document.getElementById('cart-items-container');
-            const countEl = document.getElementById('cart-count');
-            if(!container) return;
-
-            countEl.textContent = cartItems.length;
+            document.getElementById('cart-count').textContent = cartItems.length;
             container.innerHTML = '';
-
             if(cartItems.length === 0) {
-                container.innerHTML = '<p class="text-xs text-slate-400 text-center py-4 w-full font-medium">Belum ada item ditambahkan ke keranjang pesanan.</p>';
-                updateCartTotals();
-                return;
+                container.innerHTML = '<p class="text-xs text-slate-400 text-center py-4 w-full">Belum ada item.</p>';
+                updateCartTotals(); return;
             }
-
             cartItems.forEach((item, index) => {
                 container.innerHTML += `
-                    <div class="bg-white p-3 rounded-2xl border border-slate-200 flex-shrink-0 w-64 text-xs relative shadow-sm space-y-2">
-                        <div class="flex items-center gap-2.5">
-                            <img src="${item.mockupImg || 'https://via.placeholder.com/50'}" class="w-12 h-12 object-contain rounded-xl border bg-slate-50 flex-shrink-0 p-1">
-                            <div class="overflow-hidden">
-                                <div class="font-extrabold text-slate-800 truncate">${item.model}</div>
-                                <div class="text-[10px] text-slate-500 font-medium truncate">${item.size} | ${item.color}</div>
-                            </div>
-                        </div>
-                        <div class="text-[10px] text-emerald-800 font-bold bg-emerald-50 px-2.5 py-1.5 rounded-lg border border-emerald-100 flex justify-between items-center">
-                            <span>${item.qty} Pcs</span>
-                            <span class="font-black">Rp ${item.subtotal.toLocaleString('id-ID')}</span>
-                        </div>
-                        <button type="button" onclick="removeCartItem(${index})" class="absolute top-2 right-2 text-rose-500 hover:text-rose-700 font-bold text-xs p-1 cursor-pointer">🗑️</button>
+                    <div class="bg-white p-3 rounded-2xl border flex-shrink-0 w-64 text-xs relative space-y-1">
+                        <div class="font-extrabold text-emerald-800">${item.category}</div>
+                        <div class="font-bold text-slate-800 truncate">${item.model}</div>
+                        <div class="text-[10px] text-slate-500">${item.size} | ${item.qty} Pcs</div>
+                        <div class="font-black text-emerald-900">Rp ${item.subtotal.toLocaleString('id-ID')}</div>
+                        <button type="button" onclick="cartItems.splice(${index},1); renderCartItems();" class="absolute top-2 right-2 text-rose-500 font-bold">🗑️</button>
                     </div>`;
             });
-
             updateCartTotals();
         }
 
-        function removeCartItem(index) {
-            cartItems.splice(index, 1);
-            saveToCloud();
-            renderCartItems();
-        }
-
-        function clearCart() {
-            if(confirm("Kosongkan keranjang pesanan?")) {
-                cartItems = [];
-                saveToCloud();
-                renderCartItems();
-            }
-        }
-
         function updateCartTotals() {
-            let totalQty = 0;
-            let grandSubtotal = 0;
-
-            cartItems.forEach(item => {
-                totalQty += item.qty;
-                grandSubtotal += item.subtotal;
-            });
-
-            let discountVal = totalQty >= 1000 ? grandSubtotal * 0.10 : 0;
-            let grandTotal = grandSubtotal - discountVal;
-            const region = document.getElementById('shipping-region').value;
-            const dpVal = region === 'luar' ? grandTotal * 0.50 : 0;
-
+            let totalQty = 0, grandSubtotal = 0;
+            cartItems.forEach(item => { totalQty += item.qty; grandSubtotal += item.subtotal; });
             document.getElementById('display-total-qty').textContent = totalQty.toLocaleString('id-ID') + " Pcs";
+            document.getElementById('display-total-price').textContent = "Rp " + Math.round(grandSubtotal).toLocaleString('id-ID');
+        }
+
+        async function saveOrderAndSendWhatsApp() {
+            if(cartItems.length === 0) return alert("Keranjang kosong!");
+            const orderId = "PO-" + Math.floor(1000 + Math.random() * 9000);
+            let totalQty = 0, grandSubtotal = 0, totalModalProd = 0;
+            cartItems.forEach(i => { totalQty += i.qty; grandSubtotal += i.subtotal; totalModalProd += i.modalTotal; });
             
-            if(discountVal > 0) {
-                document.getElementById('discount-row').classList.remove('hidden');
-                document.getElementById('display-discount-val').textContent = "- Rp " + Math.round(discountVal).toLocaleString('id-ID');
-            } else {
-                document.getElementById('discount-row').classList.add('hidden');
-            }
+            const now = new Date();
+            const newOrder = {
+                id: orderId, name: customerData.name, wa: customerData.wa, address: customerData.address,
+                items: cartItems, totalPrice: "Rp " + Math.round(grandSubtotal).toLocaleString('id-ID'),
+                grandTotalNum: grandSubtotal, totalModalNum: totalModalProd,
+                date: now.toLocaleString('id-ID', { dateStyle: 'medium', timeStyle: 'medium' }),
+                year: now.getFullYear().toString(), status: "BELUM LUNAS"
+            };
 
-            if(region === 'luar') {
-                document.getElementById('dp-row').classList.remove('hidden');
-                document.getElementById('display-dp-val').textContent = "Rp " + Math.round(dpVal).toLocaleString('id-ID') + " (50%)";
-            } else {
-                document.getElementById('dp-row').classList.add('hidden');
-            }
+            let orders = JSON.parse(localStorage.getItem('ilham_local_orders') || '[]');
+            orders.unshift(newOrder);
+            localStorage.setItem('ilham_local_orders', JSON.stringify(orders));
 
-            document.getElementById('display-total-price').textContent = "Rp " + Math.round(grandTotal).toLocaleString('id-ID');
+            let myOrders = JSON.parse(localStorage.getItem('ilham_my_customer_orders') || '[]');
+            myOrders.unshift(newOrder);
+            localStorage.setItem('ilham_my_customer_orders', JSON.stringify(myOrders));
+
+            window.open(`https://wa.me/${ownerWaNumber}?text=Halo%20Owner%2C%20Order%20Baru%20${orderId}%20atas%20nama%20${customerData.name}.%20Total%3A%20Rp%20${grandSubtotal}`);
         }
 
-        function toggleAdminPanel() { document.getElementById('admin-view').classList.toggle('hidden'); }
-        function togglePrintMethod() {
-            const isDtf = document.getElementById('print-method').value === 'dtf';
-            document.getElementById('manual-ink-box').classList.toggle('hidden', isDtf);
-            document.getElementById('dtf-size-box').classList.toggle('hidden', !isDtf);
-            updateProcessedLogo();
-        }
+        function renderYearlyReport() {
+            const selectedYear = document.getElementById('rekap-year-select').value;
+            const orders = JSON.parse(localStorage.getItem('ilham_local_orders') || '[]');
+            const yearOrders = orders.filter(o => o.year === selectedYear);
 
-        function adjustLogoTransform() {
-            const scaleEl = document.getElementById('logo-scale');
-            const rotateEl = document.getElementById('logo-rotate');
-            const posXEl = document.getElementById('logo-pos-x');
-            const posYEl = document.getElementById('logo-pos-y');
-            
-            if(!scaleEl || !rotateEl || !posXEl || !posYEl) return;
+            let totalPo = yearOrders.length;
+            let totalOmset = 0;
+            let totalModal = 0;
 
-            const scale = scaleEl.value;
-            const rotate = rotateEl.value;
-            const posX = posXEl.value;
-            const posY = posYEl.value;
-
-            document.getElementById('scale-val').textContent = scale;
-            document.getElementById('rotate-val').textContent = rotate;
-            document.getElementById('logo-layer').style.transform = `translate(${posX}px, ${posY}px) scale(${scale / 100}) rotate(${rotate}deg)`;
-        }
-
-        async function downloadCustomerInvoicePDF() {
-            if(cartItems.length === 0) return alert("Keranjang pesanan masih kosong! Silakan masukkan kelengkapan pesanan terlebih dahulu.");
-
-            let totalQty = 0;
-            let grandSubtotal = 0;
-            cartItems.forEach(item => {
-                totalQty += item.qty;
-                grandSubtotal += item.subtotal;
+            yearOrders.forEach(o => {
+                totalOmset += o.grandTotalNum || 0;
+                totalModal += o.totalModalNum || 0;
             });
-            let discountVal = totalQty >= 1000 ? grandSubtotal * 0.10 : 0;
-            let grandTotal = grandSubtotal - discountVal;
-            const region = document.getElementById('shipping-region').value;
-            const dpVal = region === 'luar' ? grandTotal * 0.50 : 0;
 
-            generateInvoicePDF({
-                id: "PO-" + Math.floor(1000 + Math.random() * 9000),
-                name: document.getElementById('customer-name').value || '-',
-                wa: document.getElementById('customer-wa').value || '-',
-                address: document.getElementById('customer-address').value || '-',
-                items: cartItems,
-                subtotal: "Rp " + Math.round(grandSubtotal).toLocaleString('id-ID'),
-                discount: discountVal > 0 ? "- Rp " + Math.round(discountVal).toLocaleString('id-ID') : "Rp 0",
-                dpRequired: dpVal > 0 ? "Rp " + Math.round(dpVal).toLocaleString('id-ID') + " (DP 50%)" : "Tidak Ada (COD / Full)",
-                totalPrice: "Rp " + Math.round(grandTotal).toLocaleString('id-ID'),
-                date: new Date().toLocaleString('id-ID', { dateStyle: 'medium', timeStyle: 'medium' }),
-                status: "BELUM LUNAS (MENUNGGU PEMBAYARAN)"
-            }, false);
+            let labaBersih = totalOmset - totalModal;
+
+            const card = document.getElementById('yearly-report-card');
+            card.innerHTML = `
+                <div class="bg-gradient-to-br from-slate-900 to-emerald-950 p-4 rounded-2xl border border-emerald-500/30 space-y-3 text-xs">
+                    <div class="text-amber-400 font-extrabold text-sm border-b border-slate-700 pb-2">📈 Rekap Global Tahun ${selectedYear}</div>
+                    <div class="flex justify-between"><span>Total PO Masuk:</span><span class="font-bold text-white">${totalPo} PO</span></div>
+                    <div class="flex justify-between"><span>Total Omset (Kotor):</span><span class="font-bold text-emerald-400">Rp ${totalOmset.toLocaleString('id-ID')}</span></div>
+                    <div class="flex justify-between"><span>Total Modal Produksi:</span><span class="font-bold text-rose-400">Rp ${totalModal.toLocaleString('id-ID')}</span></div>
+                    <div class="flex justify-between pt-2 border-t border-slate-700 text-sm font-black">
+                        <span>Laba Bersih (Net Income):</span>
+                        <span class="text-amber-300">Rp ${labaBersih.toLocaleString('id-ID')}</span>
+                    </div>
+                </div>`;
         }
 
-        async function generateInvoicePDF(orderData, isPaidInvoice = false) {
-            try {
-                const { jsPDF } = window.jspdf;
-                const pdf = new jsPDF('p', 'mm', 'a4');
-                const pageWidth = 210;
+        function switchAdminTab(tabName) {
+            document.getElementById('admin-tab-rekap').classList.add('hidden');
+            document.getElementById('admin-tab-produk').classList.add('hidden');
+            document.getElementById('admin-tab-orders').classList.add('hidden');
+            
+            document.getElementById('tab-btn-rekap').className = "flex-1 bg-slate-800 text-slate-300 font-bold py-2 rounded-xl text-xs cursor-pointer";
+            document.getElementById('tab-btn-produk').className = "flex-1 bg-slate-800 text-slate-300 font-bold py-2 rounded-xl text-xs cursor-pointer";
+            document.getElementById('tab-btn-orders').className = "flex-1 bg-slate-800 text-slate-300 font-bold py-2 rounded-xl text-xs cursor-pointer";
 
-                pdf.setFillColor(13, 148, 136);
-                pdf.rect(0, 0, pageWidth, 42, 'F');
+            document.getElementById(`admin-tab-${tabName}`).classList.remove('hidden');
+            document.getElementById(`tab-btn-${tabName}`).className = "flex-1 bg-amber-500 text-slate-950 font-bold py-2 rounded-xl text-xs cursor-pointer";
 
-                let titleStartX = 52;
-                if (brandLogoUrl && brandLogoUrl !== "") {
-                    try {
-                        const imgObj = new Image();
-                        imgObj.src = brandLogoUrl;
-                        const imgWidth = imgObj.width || 120;
-                        const imgHeight = imgObj.height || 40;
-                        
-                        const renderH = 28; 
-                        const renderW = (imgWidth * renderH) / imgHeight;
-                        const clampedW = Math.min(renderW, 55);
-
-                        pdf.addImage(brandLogoUrl, 'JPEG', 12, 21 - (renderH/2), clampedW, renderH);
-                        titleStartX = 15 + clampedW;
-                    } catch(e) {
-                        console.log("Logo PDF skip:", e);
-                    }
-                }
-
-                pdf.setTextColor(255, 255, 255);
-                pdf.setFont("helvetica", "bold");
-                pdf.setFontSize(11);
-                pdf.text(storeName.toUpperCase() + " - INVOICE TAGIHAN", titleStartX, 12);
-
-                pdf.setFont("helvetica", "normal");
-                pdf.setFontSize(7.5);
-                pdf.text("Alamat: " + storeAddress, titleStartX, 18);
-                pdf.text("No. WA: " + storePhone + " | Email: " + storeEmail, titleStartX, 23);
-
-                pdf.text("No. Invoice: INV/" + new Date().getFullYear() + "/" + Math.floor(1000 + Math.random() * 9000), 135, 12);
-                pdf.text("No. PO: " + orderData.id, 135, 18);
-                pdf.text("Tanggal: " + (orderData.date || new Date().toLocaleString('id-ID', { dateStyle: 'medium', timeStyle: 'medium' })), 135, 23);
-
-                pdf.setTextColor(30, 41, 59);
-                pdf.setFont("helvetica", "bold");
-                pdf.setFontSize(9.5);
-                pdf.text("PELANGGAN / KLIEN:", 15, 50);
-
-                pdf.setFont("helvetica", "normal");
-                pdf.setFontSize(8.5);
-                pdf.text("Nama: " + orderData.name, 15, 56);
-                pdf.text("No. WhatsApp: " + orderData.wa, 15, 62);
-                pdf.text("Alamat Kirim: " + orderData.address, 15, 68);
-
-                let startY = 74;
-                pdf.setFillColor(241, 245, 249);
-                pdf.rect(15, startY, 180, 7, 'F');
-                pdf.setFont("helvetica", "bold");
-                pdf.setFontSize(8);
-                pdf.text("DESCRIPTION / ITEM", 18, startY + 5);
-                pdf.text("QTY", 100, startY + 5);
-                pdf.text("HARGA SATUAN", 125, startY + 5);
-                pdf.text("TOTAL", 165, startY + 5);
-
-                startY += 7;
-                pdf.setFont("helvetica", "normal");
-                pdf.setFontSize(7.5);
-
-                orderData.items.forEach((it, idx) => {
-                    const descText = `${idx + 1}. ${it.model} (${it.size}) - ${it.color} [${it.method}]`;
-                    const splitDesc = pdf.splitTextToSize(descText, 78);
-                    const rowHeight = Math.max(10, (splitDesc.length * 4) + 4);
-
-                    pdf.setLineWidth(0.3);
-                    pdf.setDrawColor(203, 213, 225);
-                    pdf.rect(15, startY, 180, rowHeight, 'S');
-                    
-                    pdf.text(splitDesc, 18, startY + 5);
-                    pdf.text(`${it.qty}`, 100, startY + 5);
-                    pdf.text(`Rp ${it.unitPrice.toLocaleString('id-ID')}`, 125, startY + 5);
-                    pdf.text(`Rp ${it.subtotal.toLocaleString('id-ID')}`, 165, startY + 5);
-                    
-                    startY += rowHeight;
-                });
-
-                startY += 4;
-                pdf.setFont("helvetica", "bold");
-                pdf.setFontSize(8.5);
-                pdf.text("RINCIAN KEUANGAN & PEMBAYARAN:", 15, startY);
-
-                startY += 4;
-                let colW = 43.75;
-                let boxY = startY;
-                let boxH = 12;
-
-                pdf.setFillColor(248, 250, 252);
-                pdf.rect(15, boxY, colW, boxH, 'FD');
-                pdf.setFont("helvetica", "bold");
-                pdf.setFontSize(7);
-                pdf.setTextColor(100, 116, 139);
-                pdf.text("SUBTOTAL", 18, boxY + 4);
-                pdf.setFont("helvetica", "bold");
-                pdf.setFontSize(8);
-                pdf.setTextColor(30, 41, 59);
-                pdf.text(orderData.subtotal, 18, boxY + 9.5);
-
-                pdf.setFillColor(248, 250, 252);
-                pdf.rect(15 + colW, boxY, colW, boxH, 'FD');
-                pdf.setFont("helvetica", "bold");
-                pdf.setFontSize(7);
-                pdf.setTextColor(16, 185, 129);
-                pdf.text("DISKON BESAR", 15 + colW + 3, boxY + 4);
-                pdf.setFont("helvetica", "bold");
-                pdf.setFontSize(8);
-                pdf.setTextColor(16, 185, 129);
-                pdf.text(orderData.discount || 'Rp 0', 15 + colW + 3, boxY + 9.5);
-
-                pdf.setFillColor(248, 250, 252);
-                pdf.rect(15 + (colW*2), boxY, colW, boxH, 'FD');
-                pdf.setFont("helvetica", "bold");
-                pdf.setFontSize(7);
-                pdf.setTextColor(217, 119, 6);
-                pdf.text("KETENTUAN DP", 15 + (colW*2) + 3, boxY + 4);
-                pdf.setFont("helvetica", "bold");
-                pdf.setFontSize(7.5);
-                pdf.setTextColor(217, 119, 6);
-                pdf.text(orderData.dpRequired || 'Tidak Ada', 15 + (colW*2) + 3, boxY + 9.5);
-
-                pdf.setFillColor(13, 148, 136);
-                pdf.rect(15 + (colW*3), boxY, colW, boxH, 'FD');
-                pdf.setFont("helvetica", "bold");
-                pdf.setFontSize(7);
-                pdf.setTextColor(255, 255, 255);
-                pdf.text("GRAND TOTAL", 15 + (colW*3) + 3, boxY + 4);
-                pdf.setFont("helvetica", "bold");
-                pdf.setFontSize(8);
-                pdf.setTextColor(255, 255, 255);
-                pdf.text(orderData.totalPrice, 15 + (colW*3) + 3, boxY + 9.5);
-
-                startY += 16;
-                pdf.setFillColor(241, 245, 249);
-                pdf.rect(15, startY, 180, 7, 'F');
-                pdf.setFont("helvetica", "bold");
-                pdf.setFontSize(8);
-                pdf.setTextColor(30, 41, 59);
-                pdf.text("STATUS PEMBAYARAN:", 18, startY + 5);
-                
-                if(isPaidInvoice) {
-                    pdf.setTextColor(16, 185, 129);
-                    pdf.text("LUNAS (PAID IN FULL)", 110, startY + 5);
-
-                    if (customStampUrl && customStampUrl !== "") {
-                        try {
-                            const stampImg = new Image();
-                            stampImg.src = customStampUrl;
-                            const sW = stampImg.width || 100;
-                            const sH = stampImg.height || 50;
-                            const renderH = 16; 
-                            const renderW = (sW * renderH) / sH;
-
-                            pdf.addImage(customStampUrl, 'PNG', 190 - renderW, startY - 3, renderW, renderH);
-                        } catch(e) {
-                            console.log("Stamp PDF error:", e);
-                        }
-                    } else {
-                        pdf.setLineWidth(0.8);
-                        pdf.setDrawColor(16, 185, 129);
-                        pdf.roundedRect(150, startY - 1, 38, 9, 2, 2, 'S');
-                        pdf.setFont("helvetica", "bold");
-                        pdf.setFontSize(8);
-                        pdf.setTextColor(16, 185, 129);
-                        pdf.text("L U N A S", 158, startY + 5);
-                    }
-                } else {
-                    pdf.setTextColor(217, 119, 6);
-                    pdf.text("BELUM LUNAS (MENUNGGU PEMBAYARAN)", 110, startY + 5);
-                }
-
-                startY += 10;
-                
-                let imgX = 15;
-                orderData.items.forEach((it) => {
-                    if(it.mockupImg && imgX < 170) {
-                        try {
-                            pdf.addImage(it.mockupImg, 'JPEG', imgX, startY, 25, 25);
-                        } catch(err) {
-                            console.log("Mockup image pdf add error:", err);
-                        }
-                        imgX += 28;
-                    }
-                });
-
-                pdf.setFont("helvetica", "bold");
-                pdf.setTextColor(30, 41, 59);
-                pdf.setFontSize(8);
-                pdf.text("PEMBAYARAN MELALUI:", 110, startY + 2);
-                
-                pdf.setFont("helvetica", "normal");
-                pdf.setFontSize(7.5);
-                let bY = startY + 7;
-                bankAccounts.forEach((b, idx) => {
-                    pdf.text(`${idx + 1}. Bank ${b.bank} : ${b.acc} (a.n ${b.owner})`, 110, bY);
-                    bY += 4.5;
-                });
-
-                pdf.setFont("helvetica", "bold");
-                pdf.setTextColor(13, 148, 136);
-                pdf.setFontSize(8.5);
-                pdf.text("THANK YOU FOR YOUR BUSINESS!", 15, startY + 34);
-                
-                pdf.setFont("helvetica", "italic");
-                pdf.setTextColor(100, 116, 139);
-                pdf.setFontSize(6.5);
-                pdf.text(`Terima kasih telah mempercayakan kebutuhan tas custom Anda pada ${storeName}.`, 15, startY + 38);
-
-                pdf.save(`Invoice-Tagihan-${orderData.id}.pdf`);
-                alert(`✅ Berhasil! File PDF Invoice (${orderData.id}) telah di-download.`);
-            } catch(err) {
-                console.error("PDF Generation Error:", err);
-                alert("Gagal membuat PDF. Pastikan browser mengizinkan unduhan file.");
-            }
+            if(tabName === 'rekap') renderYearlyReport();
+            if(tabName === 'produk') renderAdminProductPrices();
         }
 
         function verifyAndShowOrderHistory() {
             const pwd = prompt("Masukkan Password Owner:");
-            if(pwd === pdfPassword) showOrderHistory();
-            else if(pwd !== null) alert("Password salah!");
+            if(pwd === pdfPassword) {
+                document.getElementById('order-history-modal').classList.remove('hidden');
+                switchAdminTab('rekap');
+            } else if(pwd !== null) { alert("Password salah!"); }
         }
 
-        function showOrderHistory() {
-            const modal = document.getElementById('order-history-modal');
-            const container = document.getElementById('order-history-list');
-            container.innerHTML = 'Menghubungkan live sync data PO...';
-            modal.classList.remove('hidden');
-
-            const { collection, onSnapshot, query, orderBy } = window.firebaseDeps;
-            const q = query(collection(window.firebaseDb, "orders"), orderBy("date", "desc"));
-
-            if(activeOrdersUnsubscribe) {
-                activeOrdersUnsubscribe();
-            }
-
-            activeOrdersUnsubscribe = onSnapshot(q, (querySnapshot) => {
-                container.innerHTML = '';
-                if(querySnapshot.empty) {
-                    container.innerHTML = '<p class="text-xs text-slate-400 text-center py-6 font-medium">Belum ada pesanan masuk di cloud.</p>';
-                    return;
-                }
-                querySnapshot.forEach((docSnap) => {
-                    const o = docSnap.data();
-                    const isPaid = o.status === "LUNAS (PAID IN FULL)";
-                    
-                    let itemsHtml = '';
-                    if(o.items) {
-                        o.items.forEach((it, itIdx) => {
-                            itemsHtml += `
-                                <div class="bg-slate-900 p-2.5 rounded-xl space-y-2 flex-shrink-0 w-48 border border-slate-700 shadow-sm">
-                                    <div class="flex items-center gap-2">
-                                        <img src="${it.cleanLogo || it.mockupImg || 'https://via.placeholder.com/50'}" class="w-10 h-10 object-contain bg-white rounded-lg p-0.5 border flex-shrink-0">
-                                        <div class="overflow-hidden">
-                                            <div class="text-[11px] font-bold text-amber-300 truncate">${itIdx + 1}. ${it.model}</div>
-                                            <div class="text-[10px] text-slate-400 truncate">${it.size} (${it.qty} Pcs)</div>
-                                        </div>
-                                    </div>
-                                    ${it.cleanLogo ? `<button type="button" onclick="downloadCleanFilm('${it.cleanLogo}', '${o.id}', ${itIdx + 1})" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-1.5 px-2 rounded-lg text-[9px] flex items-center justify-center gap-1 cursor-pointer truncate shadow-sm"><span>📥</span> Film Siap Cetak</button>` : ''}
-                                </div>`;
-                        });
-                    }
-
-                    container.innerHTML += `
-                        <div class="bg-slate-800 p-4 rounded-2xl border border-slate-700 text-xs space-y-2.5 shadow-md">
-                            <div class="flex justify-between items-center border-b border-slate-700 pb-2">
-                                <span class="font-extrabold text-amber-400">${o.id} - ${o.name}</span>
-                                <span class="text-[10px] text-slate-400 font-medium">${o.date}</span>
-                            </div>
-                            <div class="space-y-1 text-slate-300">
-                                <div class="font-bold text-amber-300">Daftar Item Mix Pesanan (Geser Kanan):</div>
-                                <div class="flex gap-2.5 overflow-x-auto pb-2 pt-1 no-scrollbar">${itemsHtml}</div>
-                                <div class="pt-1.5 flex justify-between items-center border-t border-slate-700/80 mt-1">
-                                    <span>Total: <span class="text-emerald-400 font-black">${o.totalPrice}</span></span>
-                                    <span>Status: <span class="font-extrabold ${isPaid ? 'text-emerald-400' : 'text-amber-400'}">${o.status || 'BELUM LUNAS'}</span></span>
-                                </div>
-                            </div>
-                            <div class="flex gap-2 pt-2 border-t border-slate-700">
-                                <button type="button" onclick='downloadOwnerInvoice(${JSON.stringify(o).replace(/'/g, "&#39;")}, ${isPaid})' class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white py-2 px-2.5 rounded-xl font-bold text-[11px] shadow cursor-pointer">📄 Invoice</button>
-                                <button type="button" onclick='togglePaymentStatus("${docSnap.id}", ${isPaid})' class="flex-1 ${isPaid ? 'bg-amber-600 hover:bg-amber-700' : 'bg-emerald-600 hover:bg-emerald-700'} text-white py-2 px-2.5 rounded-xl font-bold text-[11px] shadow cursor-pointer">
-                                    ${isPaid ? 'Batal Lunas' : '✅ Lunas'}
-                                </button>
-                                <button type="button" onclick='deleteOrderDoc("${docSnap.id}")' class="bg-rose-600 hover:bg-rose-700 text-white py-2 px-3 rounded-xl font-bold text-[11px] shadow cursor-pointer">🗑️</button>
-                            </div>
-                        </div>`;
-                });
-            }, (error) => {
-                container.innerHTML = '<p class="text-xs text-rose-400 text-center font-medium">Gagal memuat data live dari cloud.</p>';
-            });
-        }
-
-        window.downloadCleanFilm = function(dataUrl, orderId, itemNo) {
-            const a = document.createElement('a');
-            a.href = dataUrl;
-            a.download = `Film-Siap-Cetak-${orderId}-Item-${itemNo}.png`;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            alert(`✅ Berhasil! File gambar film siap cetak (Item #${itemNo}) untuk PO ${orderId} telah didownload.`);
-        };
-
-        window.downloadOwnerInvoice = function(orderObj, isPaid) {
-            generateInvoicePDF({
-                id: orderObj.id,
-                name: orderObj.name,
-                wa: orderObj.wa,
-                address: orderObj.address,
-                items: orderObj.items,
-                subtotal: orderObj.subtotal || orderObj.totalPrice,
-                discount: orderObj.discount || 'Rp 0',
-                dpRequired: orderObj.dpRequired || 'Tidak Ada',
-                totalPrice: orderObj.totalPrice,
-                date: orderObj.statusDate || orderObj.date,
-                status: orderObj.status || 'BELUM LUNAS'
-            }, isPaid);
-        };
-
-        window.togglePaymentStatus = async function(docId, currentStatus) {
-            try {
-                const { doc, setDoc } = window.firebaseDeps;
-                const newStatus = currentStatus ? "BELUM LUNAS (MENUNGGU PEMBAYARAN)" : "LUNAS (PAID IN FULL)";
-                const updateTime = new Date().toLocaleString('id-ID', { dateStyle: 'medium', timeStyle: 'medium' });
-                
-                await setDoc(doc(window.firebaseDb, "orders", docId), {
-                    status: newStatus,
-                    statusDate: updateTime
-                }, { merge: true });
-            } catch(e) {
-                alert("Gagal mengupdate status.");
-            }
-        };
-
-        window.deleteOrderDoc = async function(docId) {
-            if(confirm("Hapus pesanan ini dari riwayat cloud?")) {
-                try {
-                    const { doc, deleteDoc } = window.firebaseDeps;
-                    await deleteDoc(doc(window.firebaseDb, "orders", docId));
-                } catch(e) {
-                    alert("Gagal menghapus data.");
-                }
-            }
-        };
-
-        window.clearAllOrders = async function() {
-            if(confirm("Hapus seluruh riwayat PO di cloud?")) {
-                try {
-                    const { collection, getDocs, doc, deleteDoc } = window.firebaseDeps;
-                    const querySnapshot = await getDocs(collection(window.firebaseDb, "orders"));
-                    for (const d of querySnapshot.docs) {
-                        await deleteDoc(doc(window.firebaseDb, "orders", d.id));
-                    }
-                } catch(e) {
-                    alert("Gagal menghapus database.");
-                }
-            }
-        };
-
-        closeOrderHistoryModal = function() { 
-            document.getElementById('order-history-modal').classList.add('hidden'); 
-            if(activeOrdersUnsubscribe) {
-                activeOrdersUnsubscribe();
-                activeOrdersUnsubscribe = null;
-            }
-        }
-
-        async function saveOrderAndSendWhatsApp() {
-            const name = document.getElementById('customer-name').value.trim();
-            const wa = document.getElementById('customer-wa').value.trim();
-            const address = document.getElementById('customer-address').value.trim();
-            if(!name || !wa || !address) return alert("Harap isi Nama, No WhatsApp, dan Alamat Pengiriman!");
-            if(cartItems.length === 0) return alert("Keranjang pesanan masih kosong! Masukkan kelengkapan pesanan terlebih dahulu.");
-
-            const orderId = "PO-" + Math.floor(1000 + Math.random() * 9000);
-            const region = document.getElementById('shipping-region').value;
-            
-            let totalQty = 0;
-            let grandSubtotal = 0;
-            cartItems.forEach(item => {
-                totalQty += item.qty;
-                grandSubtotal += item.subtotal;
-            });
-            const discountVal = totalQty >= 1000 ? grandSubtotal * 0.10 : 0;
-            const grandTotal = grandSubtotal - discountVal;
-            const dpVal = region === 'luar' ? grandTotal * 0.50 : 0;
-            const currentDateTime = new Date().toLocaleString('id-ID', { dateStyle: 'medium', timeStyle: 'medium' });
-
-            const newOrder = {
-                id: orderId, name, wa, address,
-                items: cartItems,
-                subtotal: "Rp " + Math.round(grandSubtotal).toLocaleString('id-ID'),
-                discount: discountVal > 0 ? "- Rp " + Math.round(discountVal).toLocaleString('id-ID') : "Rp 0",
-                dpRequired: dpVal > 0 ? "Rp " + Math.round(dpVal).toLocaleString('id-ID') + " (DP 50%)" : "Tidak Ada (COD / Full)",
-                totalPrice: "Rp " + Math.round(grandTotal).toLocaleString('id-ID'),
-                date: currentDateTime,
-                status: "BELUM LUNAS (MENUNGGU PEMBAYARAN)",
-                statusDate: currentDateTime
-            };
-
-            try {
-                const { doc, setDoc } = window.firebaseDeps;
-                await setDoc(doc(window.firebaseDb, "orders", orderId), newOrder);
-                
-                let bankText = "";
-                bankAccounts.forEach(b => { bankText += `- Bank ${b.bank}: ${b.acc} (a.n ${b.owner})\n`; });
-
-                let itemsText = "";
-                cartItems.forEach((it, idx) => {
-                    itemsText += `${idx + 1}. ${it.model} (${it.size}) - ${it.color} [${it.method}] - ${it.qty} Pcs%0A`;
-                });
-
-                const waMessage = `Halo Owner ILHAM SPUNBOND, ada Pesanan Baru Masuk!%0A%0A` +
-                                  `📋 *Nomor PO*: ${orderId}%0A` +
-                                  `👤 *Nama Pemesan*: ${name}%0A` +
-                                  `📱 *No WhatsApp*: ${wa}%0A` +
-                                  `📍 *Alamat Kirim*: ${address}%0A%0A` +
-                                  `🛍️ *Daftar Item Pesanan*:%0A${itemsText}%0A` +
-                                  `📦 *Total Qty*: ${totalQty} Pcs%0A` +
-                                  `💰 *Total Biaya*: Rp ${Math.round(grandTotal).toLocaleString('id-ID')}%0A` +
-                                  `🏷️ *Ketentuan Pembayaran*: ${dpVal > 0 ? 'Wajib DP 50% (Rp ' + Math.round(dpVal).toLocaleString('id-ID') + ')' : 'COD / Lunas'}%0A%0A` +
-                                  `💳 *Rekening Pembayaran*:%0A${bankText}%0A` +
-                                  `Mohon segera diproses dan dicek di sistem cloud. Terima kasih!`;
-
-                alert("Pesanan berhasil disimpan permanen ke Firebase Cloud & diarahkan ke WhatsApp owner!");
-                window.open(`https://wa.me/${ownerWaNumber}?text=${waMessage}`);
-            } catch(e) {
-                alert("Gagal menyimpan ke database cloud.");
-            }
-        }
+        function closeOrderHistoryModal() { document.getElementById('order-history-modal').classList.add('hidden'); }
+        function openCustomerOrderHistory() { document.getElementById('customer-order-history-modal').classList.remove('hidden'); }
+        function closeCustomerOrderHistoryModal() { document.getElementById('customer-order-history-modal').classList.add('hidden'); }
 
         window.onload = function() {
-            initSmartDailyQuote();
+            checkCustomerOnboarding();
             renderAdminPanel();
-            if(window.initCloudSync) {
-                window.initCloudSync();
-            }
         };
     </script>
 </body>
