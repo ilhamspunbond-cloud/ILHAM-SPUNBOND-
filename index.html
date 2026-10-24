@@ -19,33 +19,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     
-    <!-- ☁️ Firebase SDK (Modular v10) -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, doc, setDoc, getDoc, onSnapshot, collection, getDocs, deleteDoc, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-
-        const firebaseConfig = {
-            apiKey: "AIzaSyCb7WE1y5x6mLYYy56L",
-            authDomain: "ilham-spunbond.firebaseapp.com",
-            projectId: "ilham-spunbond",
-            storageBucket: "ilham-spunbond.appspot.com",
-            messagingSenderId: "79652958955",
-            appId: "1:79652958955:web:45c9",
-            measurementId: "G-48V3KQGPBN"
-        };
-
-        try {
-            const app = initializeApp(firebaseConfig);
-            const db = getFirestore(app);
-            window.firebaseDb = db;
-            window.firebaseDeps = { doc, setDoc, getDoc, onSnapshot, collection, getDocs, deleteDoc, query, orderBy };
-        } catch (e) {
-            console.warn("Firebase Init Notice: Running in Secure Local Hybrid Mode.", e);
-        }
-        
-        if(window.initCloudSync) { window.initCloudSync(); }
-    </script>
-
     <style>
         html { scroll-behavior: smooth; }
         .web-watermark {
@@ -61,7 +34,7 @@
 </head>
 <body class="bg-slate-100 text-slate-800 font-sans antialiased pb-32">
 
-    <!-- 🔐 MODAL ONBOARDING (PIN + BIODATA DENGAN LOGO ADMIN) -->
+    <!-- 🔐 MODAL ONBOARDING (PIN + BIODATA) -->
     <div id="customer-onboarding-modal" class="fixed inset-0 bg-slate-950/95 z-50 flex flex-col items-center justify-center p-4 backdrop-blur-md">
         <div class="w-full max-w-sm bg-slate-900 rounded-3xl p-6 border border-emerald-500/30 shadow-2xl space-y-4 text-center">
             <div class="w-16 h-16 bg-white/10 rounded-2xl mx-auto flex items-center justify-center p-2 border border-emerald-500/30">
@@ -95,14 +68,14 @@
         </div>
     </div>
 
-    <!-- 🎬 MODAL VIDEO SAMBUTAN -->
+    <!-- 🎬 MODAL VIDEO SAMBUTAN (DIPERKUAT AGAR TIDAK MACET) -->
     <div id="welcome-video-modal" class="fixed inset-0 bg-slate-950/90 z-50 flex flex-col items-center justify-center p-4 backdrop-blur-md" style="display:none;">
         <div class="w-full max-w-sm bg-slate-900 rounded-3xl overflow-hidden shadow-2xl border border-emerald-500/30 flex flex-col items-center relative">
             <button type="button" onclick="closeWelcomeVideo()" class="absolute top-3 right-3 z-20 bg-slate-800/80 hover:bg-slate-700 text-slate-300 hover:text-white px-3.5 py-1.5 rounded-xs text-xs font-semibold backdrop-blur-md transition cursor-pointer">
                 Lewati [X]
             </button>
             <div class="relative w-full aspect-[9/16] max-h-[55vh] bg-black flex items-center justify-center">
-                <video id="splash-video" autoplay muted playsinline class="w-full h-full object-cover">
+                <video id="splash-video" autoplay muted playsinline controls class="w-full h-full object-cover">
                     <source id="splash-video-source" src="https://assets.mixkit.co/videos/preview/mixkit-hands-holding-a-smartphone-with-a-green-screen-41584-large.mp4" type="video/mp4">
                 </video>
             </div>
@@ -167,7 +140,7 @@
                 </div>
 
                 <div class="space-y-1.5 pt-1">
-                    <label class="block text-xs font-bold text-slate-700">6. Upload Logo / Desain Anda (Background Transparan Otomatis)</label>
+                    <label class="block text-xs font-bold text-slate-700">6. Upload Logo / Desain Anda (Hapus Background Otomatis)</label>
                     <input type="file" id="customer-logo-upload" accept="image/*" onchange="loadCustomerLogo(event)" class="w-full text-xs text-slate-500 file:mr-3 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-emerald-50 file:text-emerald-700 cursor-pointer border border-slate-200 rounded-xl p-1 bg-slate-50">
                     <div id="logo-upload-status" class="text-[10px] text-slate-400 italic"></div>
                 </div>
@@ -233,9 +206,9 @@
 
                 <!-- TABS -->
                 <div class="flex gap-2 border-b border-slate-800 pb-2">
-                    <button type="button" onclick="switchAdminTab('rekap')" id="tab-btn-rekap" class="flex-1 bg-amber-500 text-slate-950 font-bold py-2 rounded-xl text-xs cursor-pointer">Rekap Laba Tahunan</button>
-                    <button type="button" onclick="switchAdminTab('produk')" id="tab-btn-produk" class="flex-1 bg-slate-800 text-slate-300 font-bold py-2 rounded-xl text-xs cursor-pointer">Kelola Modal & Harga</button>
-                    <button type="button" onclick="switchAdminTab('settings')" id="tab-btn-settings" class="flex-1 bg-slate-800 text-slate-300 font-bold py-2 rounded-xl text-xs cursor-pointer">Logo & Toko</button>
+                    <button type="button" onclick="switchAdminTab('rekap')" id="tab-btn-rekap" class="flex-1 bg-amber-500 text-slate-950 font-bold py-2 rounded-xl text-xs cursor-pointer">Rekap Tahunan</button>
+                    <button type="button" onclick="switchAdminTab('produk')" id="tab-btn-produk" class="flex-1 bg-slate-800 text-slate-300 font-bold py-2 rounded-xl text-xs cursor-pointer">Kelola Harga</button>
+                    <button type="button" onclick="switchAdminTab('settings')" id="tab-btn-settings" class="flex-1 bg-slate-800 text-slate-300 font-bold py-2 rounded-xl text-xs cursor-pointer">Logo</button>
                     <button type="button" onclick="switchAdminTab('orders')" id="tab-btn-orders" class="flex-1 bg-slate-800 text-slate-300 font-bold py-2 rounded-xl text-xs cursor-pointer">Daftar PO</button>
                 </div>
 
@@ -257,10 +230,10 @@
                     <div id="admin-model-price-container" class="space-y-3"></div>
                 </div>
 
-                <!-- TAB 3: PENGATURAN LOGO & TOKO -->
+                <!-- TAB 3: PENGATURAN LOGO -->
                 <div id="admin-tab-settings" class="hidden flex-1 overflow-y-auto space-y-3 pr-1">
                     <div class="bg-slate-800 p-4 rounded-2xl border border-slate-700 space-y-3">
-                        <label class="block text-xs font-bold text-amber-300">🖼️ Upload Logo Resmi Toko (Tampil di Onboarding & Header)</label>
+                        <label class="block text-xs font-bold text-amber-300">🖼️ Upload Logo Resmi Toko</label>
                         <input type="file" id="admin-logo-file" accept="image/*" onchange="uploadAdminBrandLogo(event)" class="w-full text-xs text-slate-400 file:mr-2 file:py-1.5 file:px-3 file:rounded-xl file:border-0 file:bg-amber-500 file:text-slate-950 font-bold cursor-pointer">
                         <div class="p-2 bg-slate-900 rounded-xl text-center border border-slate-700">
                             <img id="admin-logo-preview" src="" alt="Belum ada logo" class="max-h-16 mx-auto object-contain">
@@ -287,7 +260,7 @@
         </div>
     </div>
 
-    <!-- Script Utama -->
+    <!-- Script Utama (Diperbaiki & Diselaraskan) -->
     <script>
         const cleanDefaultBagSvg = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 500'><path d='M100 150 L100 100 C100 70 120 50 200 50 C280 50 300 70 300 100 L300 150 Z' fill='none' stroke='%23334155' stroke-width='16'/><path d='M60 150 L340 150 C360 150 370 160 370 180 L340 450 C340 470 330 480 310 480 L90 480 C70 480 60 470 60 450 L30 180 C30 160 40 150 60 150 Z' fill='%23ffffff' stroke='%23334155' stroke-width='6'/></svg>";
         const cleanDefaultShirtSvg = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 500'><path d='M120 80 L200 120 L280 80 L320 150 L260 190 L260 420 L140 420 L140 190 L80 150 Z' fill='%23ffffff' stroke='%23334155' stroke-width='8'/></svg>";
@@ -363,7 +336,7 @@
                 brandLogoUrl = event.target.result;
                 localStorage.setItem('ilham_brandLogoUrl', brandLogoUrl);
                 applyBrandLogoToUI();
-                alert("✅ Logo berhasil di-upload dan diterapkan!");
+                alert("✅ Logo berhasil di-upload!");
             };
             reader.readAsDataURL(file);
         }
@@ -391,8 +364,25 @@
         }
 
         function sanitizeInput(str) { return !str ? "" : str.replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
-        function closeWelcomeVideo() { document.getElementById('welcome-video-modal').style.display = 'none'; }
-        function openWelcomeVideo() { document.getElementById('welcome-video-modal').style.display = 'flex'; }
+        
+        function closeWelcomeVideo() { 
+            const modal = document.getElementById('welcome-video-modal');
+            const video = document.getElementById('splash-video');
+            if(video) video.pause();
+            if(modal) modal.style.display = 'none'; 
+        }
+
+        function openWelcomeVideo() { 
+            const modal = document.getElementById('welcome-video-modal');
+            const video = document.getElementById('splash-video');
+            if(modal) {
+                modal.style.display = 'flex';
+                if(video) {
+                    video.currentTime = 0;
+                    video.play().catch(e => console.log("Autoplay blocked by browser policy, controls enabled:", e));
+                }
+            }
+        }
 
         function initPersonalizedGreeting() {
             const dateStr = new Date().toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'short', year: 'numeric' });
@@ -510,16 +500,49 @@
             img.src = currentModel.image;
         }
 
+        // --- FUNGSI PEMBERSIH BACKGROUND TRANSPARAN YANG DIPERKUAT ---
         async function loadCustomerLogo(e) {
             const file = e.target.files[0];
             if(!file) return;
+            const statusEl = document.getElementById('logo-upload-status');
+            if(statusEl) statusEl.textContent = "⏳ Memproses background transparan otomatis...";
+
             const reader = new FileReader();
             reader.onload = function(event) {
                 const img = new Image();
                 img.onload = function() {
-                    rawCustomerLogoImg = img;
-                    document.getElementById('preview-logo-img').src = event.target.result;
-                    document.getElementById('logo-upload-status').textContent = "✅ Logo siap!";
+                    const canvas = document.createElement('canvas');
+                    let w = img.width, h = img.height;
+                    const maxW = 400;
+                    if(w > maxW) { h = Math.round((h * maxW) / w); w = maxW; }
+                    canvas.width = w; canvas.height = h;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, w, h);
+
+                    try {
+                        const imgData = ctx.getImageData(0, 0, w, h);
+                        const data = imgData.data;
+                        // Ambil warna pojok kiri atas sebagai acuan background
+                        const rBg = data[0], gBg = data[1], bBg = data[2];
+
+                        for (let i = 0; i < data.length; i += 4) {
+                            if (Math.abs(data[i] - rBg) < 50 && Math.abs(data[i+1] - gBg) < 50 && Math.abs(data[i+2] - bBg) < 50) {
+                                data[i+3] = 0; // Buat transparan
+                            }
+                        }
+                        ctx.putImageData(imgData, 0, 0);
+                    } catch(err) {
+                        console.log("CORS notice on image processing, using standard render.");
+                    }
+
+                    const transparentDataUrl = canvas.toDataURL('image/png');
+                    const finalImg = new Image();
+                    finalImg.onload = function() {
+                        rawCustomerLogoImg = finalImg;
+                        document.getElementById('preview-logo-img').src = transparentDataUrl;
+                        if(statusEl) statusEl.textContent = "✅ Background transparan berhasil!";
+                    };
+                    finalImg.src = transparentDataUrl;
                 };
                 img.src = event.target.result;
             };
