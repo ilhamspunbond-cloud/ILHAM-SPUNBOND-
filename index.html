@@ -61,10 +61,12 @@
 </head>
 <body class="bg-slate-100 text-slate-800 font-sans antialiased pb-32">
 
-    <!-- 🔐 MODAL ONBOARDING (PIN + BIODATA) -->
+    <!-- 🔐 MODAL ONBOARDING (PIN + BIODATA DENGAN LOGO ADMIN) -->
     <div id="customer-onboarding-modal" class="fixed inset-0 bg-slate-950/95 z-50 flex flex-col items-center justify-center p-4 backdrop-blur-md">
         <div class="w-full max-w-sm bg-slate-900 rounded-3xl p-6 border border-emerald-500/30 shadow-2xl space-y-4 text-center">
-            <div class="w-12 h-12 bg-emerald-500/20 text-emerald-400 rounded-2xl mx-auto flex items-center justify-center text-xl font-bold">✨</div>
+            <div class="w-16 h-16 bg-white/10 rounded-2xl mx-auto flex items-center justify-center p-2 border border-emerald-500/30">
+                <img id="onboard-brand-logo" src="https://via.placeholder.com/120x45?text=ILHAM" alt="Logo" class="max-h-full max-w-full object-contain">
+            </div>
             <h3 class="text-sm font-extrabold text-white">Selamat Datang di ILHAM SPUNBOND</h3>
             <p class="text-[11px] text-slate-400">Silakan lengkapi data diri dan PIN Anda agar aplikasi aman dan siap digunakan.</p>
             
@@ -221,18 +223,7 @@
             </div>
         </div>
 
-        <!-- MODAL RIWAYAT PO CUSTOMER -->
-        <div id="customer-order-history-modal" class="hidden fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-4">
-            <div class="bg-slate-900 text-white w-full max-w-lg max-h-[90vh] rounded-3xl p-5 border border-emerald-500/40 flex flex-col space-y-4">
-                <div class="flex justify-between items-center border-b border-slate-800 pb-3">
-                    <h3 class="text-sm font-bold text-emerald-400 uppercase">Riwayat Pesanan Saya</h3>
-                    <button type="button" onclick="closeCustomerOrderHistoryModal()" class="text-xs text-slate-400 font-bold bg-slate-800 px-3 py-1.5 rounded-lg">Tutup [X]</button>
-                </div>
-                <div id="customer-order-history-list" class="flex-1 overflow-y-auto space-y-3 pr-1"></div>
-            </div>
-        </div>
-
-        <!-- MODAL PANEL ADMIN & REKAP TAHUNAN -->
+        <!-- PANEL ADMIN DI DALAM MODAL -->
         <div id="order-history-modal" class="hidden fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-4">
             <div class="bg-slate-900 text-white w-full max-w-xl max-h-[95vh] rounded-3xl p-5 border border-amber-500/40 flex flex-col space-y-4 shadow-2xl">
                 <div class="flex justify-between items-center border-b border-slate-800 pb-3">
@@ -244,7 +235,8 @@
                 <div class="flex gap-2 border-b border-slate-800 pb-2">
                     <button type="button" onclick="switchAdminTab('rekap')" id="tab-btn-rekap" class="flex-1 bg-amber-500 text-slate-950 font-bold py-2 rounded-xl text-xs cursor-pointer">Rekap Laba Tahunan</button>
                     <button type="button" onclick="switchAdminTab('produk')" id="tab-btn-produk" class="flex-1 bg-slate-800 text-slate-300 font-bold py-2 rounded-xl text-xs cursor-pointer">Kelola Modal & Harga</button>
-                    <button type="button" onclick="switchAdminTab('orders')" id="tab-btn-orders" class="flex-1 bg-slate-800 text-slate-300 font-bold py-2 rounded-xl text-xs cursor-pointer">Daftar PO Masuk</button>
+                    <button type="button" onclick="switchAdminTab('settings')" id="tab-btn-settings" class="flex-1 bg-slate-800 text-slate-300 font-bold py-2 rounded-xl text-xs cursor-pointer">Logo & Toko</button>
+                    <button type="button" onclick="switchAdminTab('orders')" id="tab-btn-orders" class="flex-1 bg-slate-800 text-slate-300 font-bold py-2 rounded-xl text-xs cursor-pointer">Daftar PO</button>
                 </div>
 
                 <!-- TAB 1: REKAP TAHUNAN -->
@@ -265,10 +257,32 @@
                     <div id="admin-model-price-container" class="space-y-3"></div>
                 </div>
 
-                <!-- TAB 3: DAFTAR PO -->
+                <!-- TAB 3: PENGATURAN LOGO & TOKO -->
+                <div id="admin-tab-settings" class="hidden flex-1 overflow-y-auto space-y-3 pr-1">
+                    <div class="bg-slate-800 p-4 rounded-2xl border border-slate-700 space-y-3">
+                        <label class="block text-xs font-bold text-amber-300">🖼️ Upload Logo Resmi Toko (Tampil di Onboarding & Header)</label>
+                        <input type="file" id="admin-logo-file" accept="image/*" onchange="uploadAdminBrandLogo(event)" class="w-full text-xs text-slate-400 file:mr-2 file:py-1.5 file:px-3 file:rounded-xl file:border-0 file:bg-amber-500 file:text-slate-950 font-bold cursor-pointer">
+                        <div class="p-2 bg-slate-900 rounded-xl text-center border border-slate-700">
+                            <img id="admin-logo-preview" src="" alt="Belum ada logo" class="max-h-16 mx-auto object-contain">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TAB 4: DAFTAR PO -->
                 <div id="admin-tab-orders" class="hidden flex-1 overflow-y-auto space-y-3 pr-1">
                     <div id="order-history-list" class="space-y-3"></div>
                 </div>
+            </div>
+        </div>
+
+        <!-- MODAL RIWAYAT PO CUSTOMER -->
+        <div id="customer-order-history-modal" class="hidden fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-4">
+            <div class="bg-slate-900 text-white w-full max-w-lg max-h-[90vh] rounded-3xl p-5 border border-emerald-500/40 flex flex-col space-y-4">
+                <div class="flex justify-between items-center border-b border-slate-800 pb-3">
+                    <h3 class="text-sm font-bold text-emerald-400 uppercase">Riwayat Pesanan Saya</h3>
+                    <button type="button" onclick="closeCustomerOrderHistoryModal()" class="text-xs text-slate-400 font-bold bg-slate-800 px-3 py-1.5 rounded-lg">Tutup [X]</button>
+                </div>
+                <div id="customer-order-history-list" class="flex-1 overflow-y-auto space-y-3 pr-1"></div>
             </div>
         </div>
     </div>
@@ -279,38 +293,30 @@
         const cleanDefaultShirtSvg = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 500'><path d='M120 80 L200 120 L280 80 L320 150 L260 190 L260 420 L140 420 L140 190 L80 150 Z' fill='%23ffffff' stroke='%23334155' stroke-width='8'/></svg>";
         const cleanDefaultMugSvg = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 500'><path d='M120 140 L280 140 L260 400 L140 400 Z' fill='%23ffffff' stroke='%23334155' stroke-width='8'/><path d='M280 170 C330 170 330 330 280 330' fill='none' stroke='%23334155' stroke-width='12'/></svg>";
 
-        // Database Multi-Produk
         let catalogData = {
             tas: {
-                title: "Tas Spunbond",
-                method: "Sablon Manual / DTF",
+                title: "Tas Spunbond", method: "Sablon Manual / DTF",
                 models: [
                     { name: "Tas Spunbond Oval", image: cleanDefaultBagSvg, sizes: [{ name: "20 x 30 cm", modalBahan: 900, jasaCetak: 300, price: 1400 }, { name: "25 x 35 cm", modalBahan: 1100, jasaCetak: 350, price: 1700 }] },
                     { name: "Tas HLS Lipat Samping", image: cleanDefaultBagSvg, sizes: [{ name: "20 x 30 x 8 cm", modalBahan: 1300, jasaCetak: 350, price: 2000 }] }
                 ]
             },
             kaos: {
-                title: "Kaos Custom",
-                method: "Cetak DTF Full Color",
+                title: "Kaos Custom", method: "Cetak DTF Full Color",
                 models: [
                     { name: "Kaos Cotton Combed 30s", image: cleanDefaultShirtSvg, sizes: [{ name: "Size M", modalBahan: 35000, jasaCetak: 5000, price: 55000 }, { name: "Size L", modalBahan: 37000, jasaCetak: 5000, price: 60000 }, { name: "Size XL", modalBahan: 40000, jasaCetak: 5000, price: 65000 }] }
                 ]
             },
             mug: {
-                title: "Mug / Tumbler Custom",
-                method: "Cetak UV DTF Anti Air",
+                title: "Mug / Tumbler Custom", method: "Cetak UV DTF Anti Air",
                 models: [
                     { name: "Mug Keramik Standard", image: cleanDefaultMugSvg, sizes: [{ name: "11 oz (Full Print)", modalBahan: 12000, jasaCetak: 4000, price: 25000 }] }
                 ]
             }
         };
 
-        let bankAccounts = [{ bank: "Mandiri", acc: "1760004889992", owner: "Abdul Rojak" }];
         let bagColors = [{ name: "Putih Bersih", hex: "#ffffff" }, { name: "Hitam", hex: "#0f172a" }, { name: "Biru", hex: "#1d4ed8" }, { name: "Merah", hex: "#dc2626" }];
-        
-        let storeName = "ILHAM SPUNBOND";
-        let storeAddress = "Taman Raya Rajeg Blok-K10 No.06, Tangerang-Banten";
-        let storePhone = "0896 3053 9563";
+        let brandLogoUrl = "";
         let pdfPassword = "ilham123";
         let ownerWaNumber = "6289630539563";
 
@@ -322,10 +328,12 @@
 
         try {
             if(localStorage.getItem('ilham_catalogData')) catalogData = JSON.parse(localStorage.getItem('ilham_catalogData'));
+            if(localStorage.getItem('ilham_brandLogoUrl')) brandLogoUrl = localStorage.getItem('ilham_brandLogoUrl');
             if(localStorage.getItem('ilham_cartItems')) cartItems = JSON.parse(localStorage.getItem('ilham_cartItems'));
         } catch(e) {}
 
         function checkCustomerOnboarding() {
+            applyBrandLogoToUI();
             const savedData = localStorage.getItem('ilham_customer_profile');
             if(!savedData) {
                 document.getElementById('customer-onboarding-modal').style.display = 'flex';
@@ -335,6 +343,29 @@
                 openWelcomeVideo();
                 initPersonalizedGreeting();
             }
+        }
+
+        function applyBrandLogoToUI() {
+            const logoImgs = [document.getElementById('onboard-brand-logo'), document.getElementById('header-brand-logo'), document.getElementById('admin-logo-preview')];
+            logoImgs.forEach(img => {
+                if(img && brandLogoUrl) {
+                    img.src = brandLogoUrl;
+                    img.style.display = 'block';
+                }
+            });
+        }
+
+        async function uploadAdminBrandLogo(e) {
+            const file = e.target.files[0];
+            if(!file) return;
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                brandLogoUrl = event.target.result;
+                localStorage.setItem('ilham_brandLogoUrl', brandLogoUrl);
+                applyBrandLogoToUI();
+                alert("✅ Logo berhasil di-upload dan diterapkan!");
+            };
+            reader.readAsDataURL(file);
         }
 
         function submitCustomerOnboarding() {
@@ -370,9 +401,7 @@
             document.getElementById('smart-quote-text').textContent = `"${greeting}"`;
         }
 
-        function onCategoryChange() {
-            renderAdminPanel();
-        }
+        function onCategoryChange() { renderAdminPanel(); }
 
         function renderAdminPanel() {
             const catKey = document.getElementById('product-category-select').value;
@@ -584,45 +613,33 @@
             const orders = JSON.parse(localStorage.getItem('ilham_local_orders') || '[]');
             const yearOrders = orders.filter(o => o.year === selectedYear);
 
-            let totalPo = yearOrders.length;
-            let totalOmset = 0;
-            let totalModal = 0;
-
-            yearOrders.forEach(o => {
-                totalOmset += o.grandTotalNum || 0;
-                totalModal += o.totalModalNum || 0;
-            });
-
+            let totalPo = yearOrders.length, totalOmset = 0, totalModal = 0;
+            yearOrders.forEach(o => { totalOmset += o.grandTotalNum || 0; totalModal += o.totalModalNum || 0; });
             let labaBersih = totalOmset - totalModal;
 
-            const card = document.getElementById('yearly-report-card');
-            card.innerHTML = `
+            document.getElementById('yearly-report-card').innerHTML = `
                 <div class="bg-gradient-to-br from-slate-900 to-emerald-950 p-4 rounded-2xl border border-emerald-500/30 space-y-3 text-xs">
                     <div class="text-amber-400 font-extrabold text-sm border-b border-slate-700 pb-2">📈 Rekap Global Tahun ${selectedYear}</div>
                     <div class="flex justify-between"><span>Total PO Masuk:</span><span class="font-bold text-white">${totalPo} PO</span></div>
                     <div class="flex justify-between"><span>Total Omset (Kotor):</span><span class="font-bold text-emerald-400">Rp ${totalOmset.toLocaleString('id-ID')}</span></div>
                     <div class="flex justify-between"><span>Total Modal Produksi:</span><span class="font-bold text-rose-400">Rp ${totalModal.toLocaleString('id-ID')}</span></div>
                     <div class="flex justify-between pt-2 border-t border-slate-700 text-sm font-black">
-                        <span>Laba Bersih (Net Income):</span>
-                        <span class="text-amber-300">Rp ${labaBersih.toLocaleString('id-ID')}</span>
+                        <span>Laba Bersih (Net Income):</span><span class="text-amber-300">Rp ${labaBersih.toLocaleString('id-ID')}</span>
                     </div>
                 </div>`;
         }
 
         function switchAdminTab(tabName) {
-            document.getElementById('admin-tab-rekap').classList.add('hidden');
-            document.getElementById('admin-tab-produk').classList.add('hidden');
-            document.getElementById('admin-tab-orders').classList.add('hidden');
-            
-            document.getElementById('tab-btn-rekap').className = "flex-1 bg-slate-800 text-slate-300 font-bold py-2 rounded-xl text-xs cursor-pointer";
-            document.getElementById('tab-btn-produk').className = "flex-1 bg-slate-800 text-slate-300 font-bold py-2 rounded-xl text-xs cursor-pointer";
-            document.getElementById('tab-btn-orders').className = "flex-1 bg-slate-800 text-slate-300 font-bold py-2 rounded-xl text-xs cursor-pointer";
-
+            ['rekap', 'produk', 'settings', 'orders'].forEach(t => {
+                document.getElementById(`admin-tab-${t}`).classList.add('hidden');
+                document.getElementById(`tab-btn-${t}`).className = "flex-1 bg-slate-800 text-slate-300 font-bold py-2 rounded-xl text-xs cursor-pointer";
+            });
             document.getElementById(`admin-tab-${tabName}`).classList.remove('hidden');
             document.getElementById(`tab-btn-${tabName}`).className = "flex-1 bg-amber-500 text-slate-950 font-bold py-2 rounded-xl text-xs cursor-pointer";
 
             if(tabName === 'rekap') renderYearlyReport();
             if(tabName === 'produk') renderAdminProductPrices();
+            if(tabName === 'settings') applyBrandLogoToUI();
         }
 
         function verifyAndShowOrderHistory() {
