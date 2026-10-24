@@ -68,7 +68,7 @@
         </div>
     </div>
 
-    <!-- 🎬 MODAL VIDEO SAMBUTAN (DIPERKUAT AGAR TIDAK MACET) -->
+    <!-- 🎬 MODAL VIDEO SAMBUTAN -->
     <div id="welcome-video-modal" class="fixed inset-0 bg-slate-950/90 z-50 flex flex-col items-center justify-center p-4 backdrop-blur-md" style="display:none;">
         <div class="w-full max-w-sm bg-slate-900 rounded-3xl overflow-hidden shadow-2xl border border-emerald-500/30 flex flex-col items-center relative">
             <button type="button" onclick="closeWelcomeVideo()" class="absolute top-3 right-3 z-20 bg-slate-800/80 hover:bg-slate-700 text-slate-300 hover:text-white px-3.5 py-1.5 rounded-xs text-xs font-semibold backdrop-blur-md transition cursor-pointer">
@@ -260,8 +260,14 @@
         </div>
     </div>
 
-    <!-- Script Utama (Diperbaiki & Diselaraskan) -->
+    <!-- Script Utama (Fresh Clear Cache) -->
     <script>
+        // Bersihkan cache logo lama secara otomatis saat pertama kali buka versi ini
+        if(localStorage.getItem('ilham_version_clean') !== 'v3') {
+            localStorage.removeItem('ilham_brandLogoUrl');
+            localStorage.setItem('ilham_version_clean', 'v3');
+        }
+
         const cleanDefaultBagSvg = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 500'><path d='M100 150 L100 100 C100 70 120 50 200 50 C280 50 300 70 300 100 L300 150 Z' fill='none' stroke='%23334155' stroke-width='16'/><path d='M60 150 L340 150 C360 150 370 160 370 180 L340 450 C340 470 330 480 310 480 L90 480 C70 480 60 470 60 450 L30 180 C30 160 40 150 60 150 Z' fill='%23ffffff' stroke='%23334155' stroke-width='6'/></svg>";
         const cleanDefaultShirtSvg = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 500'><path d='M120 80 L200 120 L280 80 L320 150 L260 190 L260 420 L140 420 L140 190 L80 150 Z' fill='%23ffffff' stroke='%23334155' stroke-width='8'/></svg>";
         const cleanDefaultMugSvg = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 500'><path d='M120 140 L280 140 L260 400 L140 400 Z' fill='%23ffffff' stroke='%23334155' stroke-width='8'/><path d='M280 170 C330 170 330 330 280 330' fill='none' stroke='%23334155' stroke-width='12'/></svg>";
@@ -336,7 +342,7 @@
                 brandLogoUrl = event.target.result;
                 localStorage.setItem('ilham_brandLogoUrl', brandLogoUrl);
                 applyBrandLogoToUI();
-                alert("✅ Logo berhasil di-upload!");
+                alert("✅ Logo baru berhasil di-upload!");
             };
             reader.readAsDataURL(file);
         }
@@ -379,7 +385,7 @@
                 modal.style.display = 'flex';
                 if(video) {
                     video.currentTime = 0;
-                    video.play().catch(e => console.log("Autoplay blocked by browser policy, controls enabled:", e));
+                    video.play().catch(e => console.log("Autoplay blocked, controls enabled"));
                 }
             }
         }
@@ -500,12 +506,12 @@
             img.src = currentModel.image;
         }
 
-        // --- FUNGSI PEMBERSIH BACKGROUND TRANSPARAN YANG DIPERKUAT ---
+        // --- FUNGSI PEMBERSIH BACKGROUND TRANSPARAN OTOMATIS ---
         async function loadCustomerLogo(e) {
             const file = e.target.files[0];
             if(!file) return;
             const statusEl = document.getElementById('logo-upload-status');
-            if(statusEl) statusEl.textContent = "⏳ Memproses background transparan otomatis...";
+            if(statusEl) statusEl.textContent = "⏳ Membersihkan background logo...";
 
             const reader = new FileReader();
             reader.onload = function(event) {
@@ -522,17 +528,16 @@
                     try {
                         const imgData = ctx.getImageData(0, 0, w, h);
                         const data = imgData.data;
-                        // Ambil warna pojok kiri atas sebagai acuan background
                         const rBg = data[0], gBg = data[1], bBg = data[2];
 
                         for (let i = 0; i < data.length; i += 4) {
                             if (Math.abs(data[i] - rBg) < 50 && Math.abs(data[i+1] - gBg) < 50 && Math.abs(data[i+2] - bBg) < 50) {
-                                data[i+3] = 0; // Buat transparan
+                                data[i+3] = 0;
                             }
                         }
                         ctx.putImageData(imgData, 0, 0);
                     } catch(err) {
-                        console.log("CORS notice on image processing, using standard render.");
+                        console.log("Canvas processing notice");
                     }
 
                     const transparentDataUrl = canvas.toDataURL('image/png');
@@ -540,7 +545,7 @@
                     finalImg.onload = function() {
                         rawCustomerLogoImg = finalImg;
                         document.getElementById('preview-logo-img').src = transparentDataUrl;
-                        if(statusEl) statusEl.textContent = "✅ Background transparan berhasil!";
+                        if(statusEl) statusEl.textContent = "✅ Background logo bersih!";
                     };
                     finalImg.src = transparentDataUrl;
                 };
