@@ -1,0 +1,11 @@
+{
+  "background_color": "#ffffff",
+  "dir": "ltr",
+  "display": "standalone",
+  "name": "ILHAM SPUNBOND",
+  "orientation": "any",
+  "scope": "/",
+  "short_name": "ILHAM SPUNBOND",
+  "start_url": "/",
+  "theme_color": "#065f46"
+}
