@@ -23,8 +23,25 @@
 </head>
 <body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col">
 
+    <!-- MODAL INPUT NAMA AWAL (USER BARU) -->
+    <div id="modal-nama-awal" class="fixed inset-0 bg-black/70 backdrop-blur-xs z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-2xl max-w-sm w-full p-6 space-y-4 shadow-2xl text-center">
+            <div class="w-14 h-14 bg-emerald-100 text-emerald-800 rounded-full flex items-center justify-center mx-auto text-2xl font-bold shadow-inner">
+                IS
+            </div>
+            <div class="space-y-1">
+                <h3 class="font-bold text-lg text-slate-800">Selamat Datang!</h3>
+                <p class="text-xs text-slate-500">Masukkan nama panggilan Anda agar AI Asisten Toko dapat menyambut Anda:</p>
+            </div>
+            <input type="text" id="input-nama-user" placeholder="Nama Panggilan Anda..." class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-center focus:outline-none focus:ring-2 focus:ring-emerald-600">
+            <button onclick="simpanNamaAwal()" class="w-full bg-emerald-700 hover:bg-emerald-800 text-white font-bold py-3 rounded-xl text-xs transition shadow-md">
+                Mulai Masuk Aplikasi 🚀
+            </button>
+        </div>
+    </div>
+
     <!-- HEADER / NAVBAR -->
-    <header class="bg-emerald-800 text-white shadow-lg sticky top-0 z-50">
+    <header class="bg-emerald-800 text-white shadow-lg sticky top-0 z-40">
         <div class="max-w-4xl mx-auto px-4 py-3 flex justify-between items-center">
             <div class="flex items-center space-x-3">
                 <div class="w-10 h-10 bg-white rounded-xl flex items-center justify-center text-emerald-800 font-bold text-xl shadow">
@@ -51,30 +68,33 @@
     <!-- MAIN CONTENT -->
     <main class="flex-grow max-w-4xl w-full mx-auto p-4 space-y-6">
         
-        <!-- BAGIAN 1: SAMBUTAN & KOLOM INTERAKSI AI PINTAR -->
+        <!-- BANNER AI ASISTEN CUSTOMER -->
         <section class="bg-gradient-to-r from-emerald-800 via-teal-800 to-emerald-950 rounded-2xl p-5 text-white shadow-md space-y-4">
             <div class="flex items-center justify-between">
                 <div class="space-y-1 max-w-[75%]">
-                    <span class="bg-emerald-600/80 text-emerald-100 text-[10px] px-2.5 py-0.5 rounded-full font-semibold uppercase tracking-wider border border-emerald-500/30">Asisten AI Toko Aktif</span>
-                    <h2 class="text-lg font-bold leading-snug">Halo, Sobat Spunbond! 👋</h2>
-                    <p class="text-xs text-emerald-100 leading-relaxed">Selamat datang di pusat tas custom & sablon profesional. Mau konsultasi ukuran, bahan, atau desain tas?</p>
+                    <span class="bg-emerald-600/80 text-emerald-100 text-[10px] px-2.5 py-0.5 rounded-full font-semibold uppercase tracking-wider border border-emerald-500/30">AI Customer Asisten Aktif</span>
+                    <h2 id="salam-user" class="text-lg font-bold leading-snug">Halo, Sobat! 👋</h2>
+                    <p class="text-xs text-emerald-100 leading-relaxed">Pusat tas spunbond custom & sablon berkualitas. Silakan pilih model tas atau tanya AI kami.</p>
                 </div>
-                <div class="w-14 h-14 bg-white/10 rounded-2xl flex items-center justify-center border border-white/20 shadow-inner">
+                <div class="w-14 h-14 bg-white/10 rounded-2xl flex items-center justify-center border border-white/20 shadow-inner relative">
                     <i class="fa-solid fa-robot text-2xl text-emerald-300 animate-pulse"></i>
+                    <button onclick="putarSuaraAI()" class="absolute -bottom-2 -right-2 bg-amber-500 text-white w-6 h-6 rounded-full flex items-center justify-center text-[10px] shadow hover:bg-amber-600" title="Putar Suara AI">
+                        <i class="fa-solid fa-volume-high"></i>
+                    </button>
                 </div>
             </div>
 
-            <!-- KOTAK INTERAKSI / CHAT DENGAN AI PINTAR -->
+            <!-- KOTAK INTERAKSI CHAT AI -->
             <div class="bg-white/10 backdrop-blur-xs rounded-xl p-3 border border-white/20 space-y-2.5">
                 <div class="flex items-center space-x-2 text-xs font-semibold text-emerald-200">
                     <i class="fa-solid fa-comments"></i>
                     <span>Tanya AI Asisten ILHAM SPUNBOND:</span>
                 </div>
                 <div id="ai-chat-response" class="bg-emerald-900/50 p-2.5 rounded-lg text-xs text-emerald-50 leading-relaxed italic border border-emerald-700/40">
-                    "Halo Kak! Silakan pilih model tas di bawah atau tanyakan estimasi harga sablon custom ke saya. Ada yang bisa saya bantu?"
+                    "Halo! Silakan pilih model tas di bawah atau tanyakan estimasi harga sablon custom ke saya."
                 </div>
                 <div class="flex items-center space-x-2">
-                    <input type="text" id="ai-input-pesan" placeholder="Contoh: Berapa minimal order sablon tas?" class="flex-grow bg-white text-slate-800 rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-emerald-400">
+                    <input type="text" id="ai-input-pesan" placeholder="Contoh: Berapa minimal order tas sablon?" class="flex-grow bg-white text-slate-800 rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-emerald-400">
                     <button onclick="kirimPesanAI()" class="bg-amber-500 hover:bg-amber-600 text-white font-bold px-4 py-2 rounded-lg text-xs transition shadow">
                         <i class="fa-solid fa-paper-plane"></i>
                     </button>
@@ -82,7 +102,7 @@
             </div>
         </section>
 
-        <!-- BAGIAN 2: KATALOG PEMILIHAN MODEL TAS -->
+        <!-- KATALOG ETALASE TAS CUSTOM -->
         <section class="space-y-3">
             <div class="flex justify-between items-center">
                 <h3 class="font-bold text-sm text-slate-800 flex items-center">
@@ -92,26 +112,26 @@
             </div>
             
             <div id="grid-produk" class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-                <!-- Data produk dimuat dinamis lewat JavaScript -->
+                <!-- Data produk dimuat dinamis -->
             </div>
         </section>
 
-        <!-- BAGIAN 3: RIWAYAT PESANAN TERSIMPAN -->
+        <!-- RIWAYAT PESANAN & INVOICE PO -->
         <section class="space-y-3 bg-white p-4 rounded-2xl shadow-sm border border-slate-100">
             <div class="flex justify-between items-center">
                 <h3 class="font-bold text-sm text-slate-800 flex items-center">
-                    <i class="fa-solid fa-clock-rotate-left text-emerald-700 mr-2"></i>Riwayat Pesanan Tersimpan
+                    <i class="fa-solid fa-clock-rotate-left text-emerald-700 mr-2"></i>Riwayat Pesanan & Invoice PO
                 </h3>
                 <button onclick="bersihkanRiwayat()" class="text-[11px] text-red-500 hover:underline font-medium">Hapus Riwayat</button>
             </div>
             <div id="list-riwayat" class="space-y-2 text-xs text-slate-600">
-                <p class="text-xs text-slate-400 italic">Belum ada riwayat pesanan tersimpan.</p>
+                <p class="text-xs text-slate-400 italic">Belum ada riwayat pesanan.</p>
             </div>
         </section>
 
     </main>
 
-    <!-- MODAL KERANJANG & CHECKOUT WA -->
+    <!-- MODAL KERANJANG & CHECKOUT -->
     <div id="modal-keranjang" class="fixed inset-0 bg-black/60 backdrop-blur-xs z-50 hidden flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl max-w-md w-full p-5 space-y-4 shadow-2xl max-h-[90vh] overflow-y-auto">
             <div class="flex justify-between items-center border-b pb-3">
@@ -134,33 +154,33 @@
         </div>
     </div>
 
-    <!-- MODAL PANEL ADMIN (DENGAN LOCALSTORAGE & SANDI) -->
+    <!-- MODAL PANEL ADMIN (DENGAN SANDI & AI ADMIN) -->
     <div id="modal-admin" class="fixed inset-0 bg-black/60 backdrop-blur-xs z-50 hidden flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl max-w-sm w-full p-5 space-y-4 shadow-2xl">
             <div class="flex justify-between items-center border-b pb-3">
-                <h3 class="font-bold text-sm text-slate-800"><i class="fa-solid fa-shield-halved text-emerald-700 mr-2"></i>Panel Admin ILHAM SPUNBOND</h3>
+                <h3 class="font-bold text-sm text-slate-800"><i class="fa-solid fa-shield-halved text-emerald-700 mr-2"></i>AI Panel Admin ILHAM SPUNBOND</h3>
                 <button onclick="tutupAdmin()" class="text-slate-400 hover:text-slate-600 font-bold text-xl">&times;</button>
             </div>
             
-            <!-- FORM LOGIN ADMIN -->
+            <!-- FORM LOGIN SANDI ADMIN -->
             <div id="form-login-admin" class="space-y-3">
-                <p class="text-xs text-slate-500">Masukkan kata sandi admin untuk mengelola produk toko:</p>
+                <p class="text-xs text-slate-500">Masukkan kata sandi rahasia khusus admin untuk mengelola etalase & produk:</p>
                 <input type="password" id="input-sandi" placeholder="Kata Sandi (default: ilham123)" class="w-full border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-emerald-600">
                 <button onclick="prosesLogin()" class="w-full bg-emerald-800 hover:bg-emerald-900 text-white font-bold py-2.5 rounded-xl text-xs transition shadow-sm">Masuk Panel Admin</button>
             </div>
 
-            <!-- DASHBOARD ADMIN SETELAH BERHASIL LOGIN -->
+            <!-- DASHBOARD ADMIN SETELAH LOGIN BERHASIL -->
             <div id="panel-admin-berhasil" class="space-y-3.5 hidden">
-                <div class="bg-emerald-50 border border-emerald-200 text-emerald-800 p-2.5 rounded-xl text-[11px] font-semibold flex items-center space-x-2">
-                    <i class="fa-solid fa-circle-check text-emerald-600 text-sm"></i>
-                    <span>Admin Aktif! Data tersimpan otomatis di browser HP.</span>
+                <div class="bg-emerald-50 border border-emerald-200 text-emerald-800 p-2.5 rounded-xl text-[11px] font-semibold space-y-1">
+                    <p class="font-bold">🛡️ Admin AI Aktif!</p>
+                    <p class="text-[10px] text-emerald-700">Anda memiliki hak penuh untuk menambah dan memperbarui sampel tas di etalase toko.</p>
                 </div>
                 <div class="space-y-2 border-t pt-2">
-                    <label class="text-xs font-bold text-slate-700">Tambah Model Tas / Produk Baru:</label>
+                    <label class="text-xs font-bold text-slate-700">Tambah Model Tas / Sampel Baru:</label>
                     <input type="text" id="adm-nama" placeholder="Nama Produk (cth: Tas Spunbond Hajatan)" class="w-full border border-slate-200 rounded-xl px-3 py-2 text-xs">
                     <input type="number" id="adm-harga" placeholder="Harga Satuan (Rp)" class="w-full border border-slate-200 rounded-xl px-3 py-2 text-xs">
-                    <input type="text" id="adm-desc" placeholder="Keterangan singkat produk" class="w-full border border-slate-200 rounded-xl px-3 py-2 text-xs">
-                    <button onclick="tambahProdukBaru()" class="w-full bg-teal-700 hover:bg-teal-800 text-white font-bold py-2.5 rounded-xl text-xs transition shadow-sm">Simpan Produk Baru</button>
+                    <input type="text" id="adm-desc" placeholder="Keterangan singkat sampel tas" class="w-full border border-slate-200 rounded-xl px-3 py-2 text-xs">
+                    <button onclick="tambahProdukBaru()" class="w-full bg-teal-700 hover:bg-teal-800 text-white font-bold py-2.5 rounded-xl text-xs transition shadow-sm">Simpan ke Etalase Toko</button>
                 </div>
                 <button onclick="logoutAdmin()" class="w-full bg-red-50 text-red-600 hover:bg-red-100 py-2 rounded-xl text-xs font-bold transition">Keluar / Kunci Panel</button>
             </div>
@@ -173,9 +193,10 @@
         <p class="text-[11px]">&copy; 2026 Rajeg, Tangerang, Banten, Indonesia.</p>
     </footer>
 
-    <!-- JAVASCRIPT LOGIC & STATE MANAGEMENT -->
+    <!-- JAVASCRIPT LOGIC -->
     <script>
-        // Data Produk Default (Tersimpan & Diambil dari LocalStorage)
+        let namaUser = localStorage.getItem('ilham_nama_user') || '';
+
         let produkDefault = [
             { id: 1, nama: "Tas Spunbond Handle Kotak (25x35)", harga: 2500, desc: "Cocok untuk tas belanja, hajatan, & seminar kit." },
             { id: 2, nama: "Tas Spunbond Die Cut / Lipat Samping", harga: 3200, desc: "Kapasitas besar, elegan dan kuat untuk butik." },
@@ -183,13 +204,48 @@
             { id: 4, nama: "Tas Spunbond Kotak Nasi / Hajatan", harga: 2200, desc: "Khusus wadah box nasi acara tasyakuran & hajatan." }
         ];
 
-        // Inisialisasi state dari LocalStorage agar data aman tidak hilang
         let produkList = JSON.parse(localStorage.getItem('ilham_produk')) || produkDefault;
         let keranjang = JSON.parse(localStorage.getItem('ilham_keranjang')) || [];
         let riwayatPesanan = JSON.parse(localStorage.getItem('ilham_riwayat')) || [];
         let isAdminLoggedIn = localStorage.getItem('ilham_is_admin') === 'true';
 
-        // Render Katalog Produk
+        function cekNamaAwal() {
+            if (!namaUser) {
+                document.getElementById('modal-nama-awal').classList.remove('hidden');
+            } else {
+                aturSapaanUser();
+            }
+        }
+
+        function simpanNamaAwal() {
+            const input = document.getElementById('input-nama-user').value.trim();
+            if (!input) {
+                alert('Tolong masukkan nama panggilan Anda terlebih dahulu, Bro!');
+                return;
+            }
+            namaUser = input;
+            localStorage.setItem('ilham_nama_user', namaUser);
+            document.getElementById('modal-nama-awal').classList.add('hidden');
+            aturSapaanUser();
+            putarSuaraAI();
+        }
+
+        function aturSapaanUser() {
+            const salamElem = document.getElementById('salam-user');
+            salamElem.innerText = `Halo, ${namaUser}! 👋`;
+        }
+
+        function putarSuaraAI() {
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+                const teksUcap = `Halo ${namaUser || 'Sobat'}, selamat datang di pusat tas spunbond dan sablon profesional ILHAM SPUNBOND. Silakan pilih model tas atau buat pesanan Anda.`;
+                const utterance = new SpeechSynthesisUtterance(teksUcap);
+                utterance.lang = 'id-ID';
+                utterance.rate = 1.0;
+                window.speechSynthesis.speak(utterance);
+            }
+        }
+
         function renderProduk() {
             const container = document.getElementById('grid-produk');
             container.innerHTML = '';
@@ -216,7 +272,6 @@
             updateBadge();
         }
 
-        // Interaksi AI Asisten Toko
         function kirimPesanAI() {
             const input = document.getElementById('ai-input-pesan');
             const teks = input.value.trim().toLowerCase();
@@ -224,21 +279,27 @@
 
             if (!teks) return;
 
-            let jawaban = "Terima kasih pertanyaannya Kak! Untuk pemesanan custom tas spunbond di ILHAM SPUNBOND, minimal order umumnya 50 pcs sudah termasuk sablon logo. Silakan pilih model tas di bawah ya!";
+            let jawaban = `Baik Kak ${namaUser}, untuk pemesanan custom tas spunbond di ILHAM SPUNBOND minimal order 50 pcs sudah termasuk sablon logo!`;
             
-            if (teks.includes('harga') || teks.includes('murah') || teks.includes('grosir')) {
-                jawaban = "Harga tas spunbond kami bervariasi mulai dari Rp 2.200 hingga Rp 4.000 per pcs tergantung ukuran dan model. Semakin banyak jumlah pesanan, harga makin terjangkau!";
-            } else if (teks.includes('alamat') || teks.includes('lokasi') || teks.includes('toko')) {
-                jawaban = "Workshop utama kami berlokasi di Rajeg, Tangerang, Banten. Melayani pengiriman dan pesanan custom berkualitas!";
+            if (teks.includes('harga') || teks.includes('grosir')) {
+                jawaban = `Harga tas kami mulai dari Rp 2.200 sampai Rp 4.000 per pcs Kak ${namaUser}, makin banyak jumlahnya makin murah!`;
+            } else if (teks.includes('alamat') || teks.includes('lokasi')) {
+                jawaban = `Workshop pusat kami berada di Rajeg, Tangerang, Banten Kak ${namaUser}.`;
             } else if (teks.includes('sablon') || teks.includes('logo')) {
-                jawaban = "Bisa banget sablon custom logo toko, instansi, atau acara hajatan Kak! Silakan pilih model tas dan masukkan jumlahnya ke keranjang untuk order via WhatsApp.";
+                jawaban = `Bisa sablon custom logo sesuai permintaan Kak ${namaUser}! Silakan pilih tas di bawah ini.`;
             }
 
             respBox.innerText = `"${jawaban}"`;
             input.value = '';
+
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+                const utter = new SpeechSynthesisUtterance(jawaban);
+                utter.lang = 'id-ID';
+                window.speechSynthesis.speak(utter);
+            }
         }
 
-        // Tambah ke Keranjang
         function tambahKeKeranjang(id) {
             const qtyInput = document.getElementById(`qty-${id}`);
             const qty = parseInt(qtyInput.value) || 1;
@@ -261,7 +322,6 @@
             document.getElementById('badge-cart').innerText = totalItem;
         }
 
-        // Kelola Keranjang
         function bukaKeranjang() {
             const container = document.getElementById('isi-keranjang');
             container.innerHTML = '';
@@ -303,24 +363,23 @@
             updateBadge();
         }
 
-        // Checkout WhatsApp & Simpan Riwayat
         function checkoutWA() {
             if (keranjang.length === 0) {
                 alert('Keranjang belanja masih kosong, Bro!');
                 return;
             }
 
-            let pesan = "Halo Admin ILHAM SPUNBOND, saya ingin memesan produk custom:\n\n";
+            let nomorPO = 'PO-' + Math.floor(100000 + Math.random() * 900000);
+            let pesan = `Halo Admin ILHAM SPUNBOND, saya ${namaUser} ingin memesan produk custom (Invoice: ${nomorPO}):\n\n`;
             let total = 0;
             keranjang.forEach(item => {
                 let sub = item.harga * item.qty;
                 total += sub;
                 pesan += `- ${item.nama} (${item.qty} pcs) = Rp ${sub.toLocaleString()}\n`;
             });
-            pesan += `\n*Total Estimasi: Rp ${total.toLocaleString()}*\n\nMohon informasi ketersediaan dan detail proses selanjutnya. Terima kasih!`;
+            pesan += `\n*Total Estimasi: Rp ${total.toLocaleString()}*\n\nMohon info proses selanjutnya. Terima kasih!`;
 
-            // Simpan riwayat pesanan (History) otomatis
-            riwayatPesanan.unshift({ tanggal: new Date().toLocaleString(), total, detail: [...keranjang] });
+            riwayatPesanan.unshift({ noPO: nomorPO, tanggal: new Date().toLocaleString(), total, detail: [...keranjang] });
             localStorage.setItem('ilham_riwayat', JSON.stringify(riwayatPesanan));
             
             keranjang = [];
@@ -333,7 +392,6 @@
             window.open(`https://wa.me/${nomorWA}?text=${encodeURIComponent(pesan)}`, '_blank');
         }
 
-        // Render Riwayat Pesanan
         function renderRiwayat() {
             const container = document.getElementById('list-riwayat');
             container.innerHTML = '';
@@ -341,11 +399,11 @@
                 container.innerHTML = `<p class="text-xs text-slate-400 italic">Belum ada riwayat pesanan.</p>`;
                 return;
             }
-            riwayatPesanan.forEach((r, idx) => {
+            riwayatPesanan.forEach((r) => {
                 container.innerHTML += `
                     <div class="bg-slate-50 p-3 rounded-xl border border-slate-100 space-y-1">
                         <div class="flex justify-between font-bold text-slate-700 text-xs">
-                            <span>Pesanan #${riwayatPesanan.length - idx}</span>
+                            <span>Invoice: ${r.noPO}</span>
                             <span class="text-emerald-700">Rp ${r.total.toLocaleString()}</span>
                         </div>
                         <p class="text-[11px] text-slate-400">${r.tanggal}</p>
@@ -362,7 +420,6 @@
             }
         }
 
-        // Sistem Panel Admin & Sandi
         function bukaAdmin() {
             document.getElementById('modal-admin').classList.remove('hidden');
             if (isAdminLoggedIn) {
@@ -380,12 +437,12 @@
 
         function prosesLogin() {
             const sandi = document.getElementById('input-sandi').value;
-            if (sandi === 'ilham123') { // Sandi admin default
+            if (sandi === 'ilham123') {
                 isAdminLoggedIn = true;
                 localStorage.setItem('ilham_is_admin', 'true');
                 bukaAdmin();
             } else {
-                alert('Kata sandi salah, Bro! (Default sandi: ilham123)');
+                alert('Kata sandi salah, Bro! (Default: ilham123)');
             }
         }
 
@@ -402,7 +459,7 @@
             const desc = document.getElementById('adm-desc').value || "Tas spunbond custom berkualitas.";
 
             if (!nama || !harga) {
-                alert('Nama produk dan harga wajib diisi dengan benar!');
+                alert('Nama dan harga produk wajib diisi!');
                 return;
             }
 
@@ -415,11 +472,11 @@
             document.getElementById('adm-desc').value = '';
 
             renderProduk();
-            alert('Produk baru berhasil ditambahkan ke katalog toko!');
+            alert('Produk baru berhasil ditambahkan ke etalase toko!');
         }
 
-        // Jalankan saat aplikasi pertama kali dimuat
         window.onload = function() {
+            cekNamaAwal();
             renderProduk();
             renderRiwayat();
         };
