@@ -3,26 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ILHAM SPUNBOND - Auto Background Remover App</title>
+    <title>ILHAM SPUNBOND - Custom App</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Google Fonts & FontAwesome -->
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Pustaka Otomatis Hapus Background (Imgly) -->
-    <script src="https://cdn.jsdelivr.net/npm/@imgly/background-removal@1.4.5/dist/bundle.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>body { font-family: 'Poppins', sans-serif; }</style>
 </head>
 <body class="bg-slate-100 text-slate-800 antialiased">
 
-    <!-- MAIN APP CONTAINER -->
+    <!-- MAIN CONTAINER -->
     <div id="app" class="max-w-md mx-auto min-h-screen bg-white shadow-2xl relative flex flex-col justify-between">
         
-        <!-- HEADER -->
+        <!-- HEADER DENGAN LOGO KUSTOM ADMIN -->
         <header class="bg-blue-600 text-white p-4 flex justify-between items-center shadow-md sticky top-0 z-50">
             <div class="flex items-center space-x-3">
-                <div class="w-10 h-10 bg-white rounded-full flex items-center justify-center overflow-hidden shadow">
-                    <i class="fa-solid fa-bag-shopping text-blue-600 text-xl"></i>
+                <div class="w-10 h-10 bg-white rounded-full flex items-center justify-center overflow-hidden shadow border border-blue-400">
+                    <img id="header-custom-logo" src="" alt="Logo" class="w-full h-full object-cover hidden">
+                    <i id="header-default-icon" class="fa-solid fa-bag-shopping text-blue-600 text-xl"></i>
                 </div>
                 <div>
                     <h1 id="brand-title" class="font-bold text-lg leading-tight">ILHAM SPUNBOND</h1>
@@ -39,10 +38,10 @@
             </div>
         </header>
 
-        <!-- DYNAMIC CONTENT AREA -->
+        <!-- DYNAMIC CONTENT -->
         <main id="main-content" class="flex-1 p-4 pb-20"></main>
 
-        <!-- AI FLOATING ASSISTANT BAR -->
+        <!-- AI ASSISTANT BAR -->
         <div class="bg-white border-t border-slate-200 p-3 flex items-center space-x-3 sticky bottom-0 z-40 shadow-lg">
             <div class="w-12 h-12 rounded-full bg-blue-100 border-2 border-blue-500 overflow-hidden flex-shrink-0 relative">
                 <img id="ai-avatar-img" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=60" alt="AI" class="w-full h-full object-cover">
@@ -58,12 +57,12 @@
         </div>
     </div>
 
-    <!-- MODAL CUSTOMER DATA INITIAL -->
+    <!-- MODAL CUSTOMER DATA -->
     <div id="modal-customer-data" class="fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-4 hidden">
         <div class="bg-white rounded-2xl w-full max-w-sm p-6 shadow-2xl">
             <div class="text-center mb-4">
-                <div class="w-16 h-16 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-2 text-2xl">
-                    <i class="fa-solid fa-id-card"></i>
+                <div id="modal-logo-container" class="w-16 h-16 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-2 overflow-hidden shadow">
+                    <i class="fa-solid fa-id-card text-2xl"></i>
                 </div>
                 <h3 class="font-bold text-lg text-slate-800">Selamat Datang di ILHAM SPUNBOND!</h3>
                 <p class="text-xs text-slate-500">Silakan isi data diri Anda untuk memulai pesanan.</p>
@@ -88,7 +87,7 @@
         </div>
     </div>
 
-    <!-- MODAL ADMIN LOGIN -->
+    <!-- MODAL ADMIN LOGIN (TANPA HINT) -->
     <div id="modal-admin-login" class="fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-4 hidden">
         <div class="bg-white rounded-2xl w-full max-w-xs p-6 shadow-2xl">
             <div class="flex justify-between items-center mb-4">
@@ -106,33 +105,43 @@
         </div>
     </div>
 
-    <!-- LOADING OVERLAY UNTUK HAPUS BACKGROUND -->
-    <div id="loading-bg-overlay" class="fixed inset-0 bg-black/80 z-50 flex flex-col items-center justify-center p-4 text-white hidden">
-        <div class="animate-spin rounded-full h-12 w-12 border-t-4 border-blue-500 mb-3"></div>
-        <p class="font-bold text-sm">AI sedang menghapus background gambar...</p>
-        <p class="text-xs text-slate-300 mt-1">Harap tunggu sebentar, gambar otomatis jadi transparan.</p>
-    </div>
-
-    <!-- SCRIPT UTAMA -->
+    <!-- SCRIPT APLIKASI UTAMA -->
     <script>
         const DEFAULT_ADMIN_PASS = "ilhamadmin123"; 
         let appState = {
             customer: JSON.parse(localStorage.getItem('ilham_customer')) || null,
             isAdmin: false,
+            settings: JSON.parse(localStorage.getItem('ilham_settings')) || {
+                brandName: "ILHAM SPUNBOND",
+                appLogo: "" // Logo custom yang di-upload admin
+            },
             products: JSON.parse(localStorage.getItem('ilham_products')) || [
                 { id: 1, name: 'Tas Spunbond Handle Kotak', category: 'Spunbond', price: 4500, cost: 3000, minQty: 500, colors: ['#ffffff', '#2563eb', '#dc2626', '#16a34a', '#eab308', '#000000'], img: 'https://images.unsplash.com/photo-1597484661642-2436d40742d4?w=400&auto=format&fit=crop&q=60' }
             ],
-            orders: JSON.parse(localStorage.getItem('ilham_orders')) || [],
-            settings: { brandName: "ILHAM SPUNBOND", aiName: "Siti (AI Assistant)" }
+            orders: JSON.parse(localStorage.getItem('ilham_orders')) || []
         };
 
         window.onload = function() {
+            updateAppLogoUI();
             if (!appState.customer) {
                 document.getElementById('modal-customer-data').classList.remove('hidden');
             } else {
                 loadCatalogView();
             }
         };
+
+        // Fungsi untuk memperbarui tampilan logo custom admin di seluruh halaman
+        function updateAppLogoUI() {
+            if (appState.settings.appLogo) {
+                const headerLogo = document.getElementById('header-custom-logo');
+                const headerIcon = document.getElementById('header-default-icon');
+                if(headerLogo && headerIcon) {
+                    headerLogo.src = appState.settings.appLogo;
+                    headerLogo.classList.remove('hidden');
+                    headerIcon.classList.add('hidden');
+                }
+            }
+        }
 
         function saveCustomerData(e) {
             e.preventDefault();
@@ -153,9 +162,8 @@
                 <div class="mb-4 flex justify-between items-center">
                     <div>
                         <h2 class="font-bold text-slate-800 text-lg">Katalog Produk Kustom</h2>
-                        <p class="text-xs text-slate-500">Pilih produk, hitung otomatis, & desain logo Anda!</p>
+                        <p class="text-xs text-slate-500">Pilih produk, kalkulasi otomatis, & desain logo!</p>
                     </div>
-                    ${appState.isAdmin ? `<button onclick="loadAdminDashboard()" class="bg-slate-800 text-white px-3 py-1 rounded text-xs font-bold">Panel Admin</button>` : ''}
                 </div>
                 <div class="grid grid-cols-2 gap-3">
             `;
@@ -185,11 +193,7 @@
             container.innerHTML = html;
         }
 
-        // --- STUDIO DESAIN DENGAN TRANSPARANSI OTOMATIS ---
-        let currentDesign = { 
-            productId: null, color: '#ffffff', logoUrl: null, 
-            posX: 50, posY: 50, size: 80, rotate: 0 
-        };
+        let currentDesign = { productId: null, color: '#ffffff', logoUrl: null, posX: 50, posY: 50, size: 80, rotate: 0 };
 
         function openDesignStudio(productId) {
             const prod = appState.products.find(p => p.id === productId);
@@ -207,7 +211,7 @@
                 <div class="space-y-4">
                     <div class="flex items-center justify-between">
                         <button onclick="loadCatalogView()" class="text-xs text-blue-600 font-semibold"><i class="fa-solid fa-arrow-left mr-1"></i> Kembali</button>
-                        <h2 class="font-bold text-sm text-slate-800">Studio & Transparansi Otomatis</h2>
+                        <h2 class="font-bold text-sm text-slate-800">Studio & Kalkulator</h2>
                     </div>
 
                     <!-- PREVIEW BOX DENGAN WATERMARK ILHAM SPUNBOND -->
@@ -225,16 +229,15 @@
 
                     <div class="bg-slate-50 p-3 rounded-xl border border-slate-200 space-y-3 text-xs">
                         <div>
-                            <label class="font-semibold text-slate-700 block mb-1">1. Pilih Warna Produk:</label>
+                            <label class="font-semibold text-slate-700 block mb-1">1. Warna Produk:</label>
                             <div class="flex space-x-2">${colorButtons}</div>
                         </div>
 
                         <div>
-                            <label class="font-semibold text-slate-700 block mb-1">2. Upload Logo / Desain (Background Dihapus Otomatis):</label>
+                            <label class="font-semibold text-slate-700 block mb-1">2. Upload Logo Desain:</label>
                             <input type="file" accept="image/*" onchange="handleCustomerLogoUpload(event)" class="w-full text-xs text-slate-500 file:mr-3 file:py-1 file:px-2 file:rounded file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-blue-700">
                         </div>
 
-                        <!-- SLIDER POSISI & ROTASI -->
                         <div id="logo-controls" class="space-y-2 pt-2 border-t hidden">
                             <p class="font-bold text-blue-600">Pengaturan Posisi & Sudut Logo:</p>
                             <div class="grid grid-cols-2 gap-2">
@@ -259,7 +262,6 @@
                             </div>
                         </div>
 
-                        <!-- KALKULATOR KUANTITAS -->
                         <div class="pt-2 border-t space-y-2">
                             <div class="grid grid-cols-2 gap-2">
                                 <div>
@@ -294,25 +296,9 @@
             document.getElementById('design-preview-box').style.backgroundColor = hex;
         }
 
-        // FUNGSI UTAMA: HAPUS BACKGROUND OTOMATIS (CUSTOMER LOGO)
-        async function handleCustomerLogoUpload(event) {
+        function handleCustomerLogoUpload(event) {
             const file = event.target.files[0];
-            if (!file) return;
-
-            document.getElementById('loading-bg-overlay').classList.remove('hidden');
-
-            try {
-                // Proses penghapusan background otomatis menggunakan imgly
-                const transparentBlob = await imglyRemoveBackground(file);
-                const imageUrl = URL.createObjectURL(transparentBlob);
-                
-                currentDesign.logoUrl = imageUrl;
-                document.getElementById('rendered-logo-img').src = imageUrl;
-                document.getElementById('preview-logo-layer').classList.remove('hidden');
-                document.getElementById('logo-controls').classList.remove('hidden');
-            } catch (error) {
-                console.error("Gagal hapus background:", error);
-                // Fallback jika terjadi kendala offline/jaringan
+            if (file) {
                 const reader = new FileReader();
                 reader.onload = function(e) {
                     currentDesign.logoUrl = e.target.result;
@@ -321,8 +307,6 @@
                     document.getElementById('logo-controls').classList.remove('hidden');
                 };
                 reader.readAsDataURL(file);
-            } finally {
-                document.getElementById('loading-bg-overlay').classList.add('hidden');
             }
         }
 
@@ -368,14 +352,14 @@
             waText += `🆔 No. PO: *${newOrder.id}*%0n`;
             waText += `👤 Nama: ${appState.customer.name}%0n`;
             waText += `📦 Produk: ${prod.name} (${qty} pcs)%0n`;
-            waText += `🎨 Metode Cetak: ${printMethod} (Background Transparan)%0n`;
+            waText += `🎨 Metode Cetak: ${printMethod}%0n`;
             waText += `💰 Total Kalkulasi: Rp ${totalPrice.toLocaleString('id-ID')}`;
 
             window.open(`https://wa.me/6281234567890?text=${waText}`, '_blank');
             openMyOrders();
         }
 
-        // --- ADMIN LOGIN & PANEL (DENGAN UPLOAD PRODUK & HAPUS BG OTOMATIS) ---
+        // --- ADMIN LOGIN & PANEL ---
         function openAdminLogin() { document.getElementById('modal-admin-login').classList.remove('hidden'); }
         function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
 
@@ -411,6 +395,9 @@
                             </select>
                             <input type="text" placeholder="No. Resi Pengiriman" value="${o.resi !== '-' ? o.resi : ''}" onchange="updateOrderResi('${o.id}', this.value)" class="p-1.5 border rounded">
                         </div>
+                        <div class="flex justify-end pt-1">
+                            <button onclick="markAsPaid('${o.id}')" class="px-3 py-1 rounded font-semibold ${o.paid ? 'bg-green-100 text-green-700' : 'bg-slate-200 text-slate-700'}">${o.paid ? 'Lunas' : 'Tandai Lunas'}</button>
+                        </div>
                     </div>
                 `;
             });
@@ -420,24 +407,17 @@
                     <div class="flex justify-between items-center bg-slate-800 text-white p-3 rounded-xl">
                         <div>
                             <h2 class="font-bold text-sm">Panel Admin ILHAM SPUNBOND</h2>
-                            <p class="text-[10px] text-slate-300">Kelola Produk & PO Masuk</p>
+                            <p class="text-[10px] text-slate-300">Pengaturan Logo & PO Masuk</p>
                         </div>
-                        <button onclick="loadCatalogView()" class="bg-blue-600 px-3 py-1.5 rounded-lg text-xs font-semibold">Tutup Panel</button>
+                        <button onclick="loadCatalogView()" class="bg-blue-600 px-3 py-1.5 rounded-lg text-xs font-semibold">Tutup</button>
                     </div>
 
-                    <!-- FORM TAMBAH PRODUK BARU OLEH ADMIN -->
-                    <div class="bg-slate-50 p-3 rounded-xl border space-y-2 text-xs">
-                        <h3 class="font-bold text-slate-700">Tambah Produk Baru (Background Otomatis Transparan)</h3>
-                        <input type="text" id="new-prod-name" placeholder="Nama Produk (Contoh: Tas Jinjing Polos)" class="w-full p-2 border rounded bg-white">
-                        <div class="grid grid-cols-2 gap-2">
-                            <input type="number" id="new-prod-price" placeholder="Harga Jual (Rp)" class="p-2 border rounded bg-white">
-                            <input type="number" id="new-prod-min" placeholder="Min Qty (Cth: 500)" class="p-2 border rounded bg-white">
-                        </div>
-                        <div>
-                            <label class="text-[10px] text-slate-500 block mb-1">Upload Foto Produk (Background dihapus otomatis jadi transparan):</label>
-                            <input type="file" id="new-prod-img-file" accept="image/*" class="w-full text-xs">
-                        </div>
-                        <button onclick="addNewProduct(event)" class="w-full bg-blue-600 text-white font-bold py-2 rounded">Simpan Produk Baru</button>
+                    <!-- PENGATURAN UPLOAD LOGO UTAMA APLIKASI OLEH ADMIN -->
+                    <div class="bg-blue-50 p-3 rounded-xl border border-blue-200 space-y-2 text-xs">
+                        <h3 class="font-bold text-blue-800"><i class="fa-solid fa-image mr-1"></i> Upload Logo Utama Aplikasi / Invoice</h3>
+                        <p class="text-[11px] text-slate-600">Logo ini otomatis jadi ikon header utama dan kop invoice.</p>
+                        <input type="file" id="admin-logo-upload" accept="image/*" class="w-full text-xs">
+                        <button onclick="saveAdminLogo(event)" class="w-full bg-blue-600 text-white font-bold py-2 rounded">Simpan & Ubah Logo</button>
                     </div>
 
                     <div>
@@ -448,46 +428,22 @@
             `;
         }
 
-        // FUNGSI ADMIN: UPLOAD PRODUK BARU DENGAN TRANSPARANSI OTOMATIS
-        async function addNewProduct(e) {
-            const name = document.getElementById('new-prod-name').value;
-            const price = parseInt(document.getElementById('new-prod-price').value) || 0;
-            const minQty = parseInt(document.getElementById('new-prod-min').value) || 500;
-            const fileInput = document.getElementById('new-prod-img-file').files[0];
-
-            if (!name || !price || !fileInput) {
-                alert('Mohon isi nama, harga, dan pilih gambar produk!');
+        // Simpan Logo Kustom Admin ke LocalStorage
+        function saveAdminLogo(e) {
+            const fileInput = document.getElementById('admin-logo-upload').files[0];
+            if (!fileInput) {
+                alert('Pilih file gambar logo terlebih dahulu!');
                 return;
             }
-
-            document.getElementById('loading-bg-overlay').classList.remove('hidden');
-
-            try {
-                // Hapus background gambar produk admin secara otomatis
-                const transparentBlob = await imglyRemoveBackground(fileInput);
-                const imageUrl = URL.createObjectURL(transparentBlob);
-
-                const newProd = {
-                    id: Date.now(),
-                    name: name,
-                    category: 'Spunbond',
-                    price: price,
-                    cost: Math.round(price * 0.6),
-                    minQty: minQty,
-                    colors: ['#ffffff', '#2563eb', '#dc2626', '#16a34a', '#eab308', '#000000'],
-                    img: imageUrl
-                };
-
-                appState.products.push(newProd);
-                localStorage.setItem('ilham_products', JSON.stringify(appState.products));
-                alert('Produk berhasil ditambahkan dengan background transparan otomatis!');
-                loadAdminDashboard();
-            } catch (err) {
-                console.error(err);
-                alert('Gagal memproses gambar otomatis.');
-            } finally {
-                document.getElementById('loading-bg-overlay').classList.add('hidden');
-            }
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                appState.settings.appLogo = e.target.result;
+                localStorage.setItem('ilham_settings', JSON.stringify(appState.settings));
+                updateAppLogoUI();
+                alert('Logo utama aplikasi berhasil diubah!');
+                loadCatalogView();
+            };
+            reader.readAsDataURL(fileInput);
         }
 
         function updateOrderStatus(id, val) {
@@ -500,21 +456,45 @@
             if (o) { o.resi = val; localStorage.setItem('ilham_orders', JSON.stringify(appState.orders)); }
         }
 
+        function markAsPaid(id) {
+            const o = appState.orders.find(item => item.id === id);
+            if (o) {
+                o.paid = true;
+                o.status = 'Selesai / Lunas';
+                localStorage.setItem('ilham_orders', JSON.stringify(appState.orders));
+                loadAdminDashboard();
+            }
+        }
+
         function openMyOrders() {
             const container = document.getElementById('main-content');
             const myOrders = appState.orders.filter(o => o.customer.phone === appState.customer?.phone);
-            let html = `<div class="space-y-4"><div class="flex justify-between items-center"><button onclick="loadCatalogView()" class="text-xs text-blue-600 font-semibold"><i class="fa-solid fa-arrow-left"></i> Katalog</button><h2 class="font-bold text-sm">Riwayat PO Saya</h2></div>`;
-            if (myOrders.length === 0) { html += `<p class="text-xs text-slate-400 text-center py-12">Belum ada PO.</p>`; }
+            let html = `<div class="space-y-4"><div class="flex justify-between items-center"><button onclick="loadCatalogView()" class="text-xs text-blue-600 font-semibold"><i class="fa-solid fa-arrow-left"></i> Katalog</button><h2 class="font-bold text-sm">Riwayat & Tracking PO Saya</h2></div>`;
+            if (myOrders.length === 0) { html += `<p class="text-xs text-slate-400 text-center py-12">Belum ada riwayat PO.</p>`; }
             else {
                 myOrders.forEach(o => {
-                    html += `<div class="bg-white border rounded-xl p-3 text-xs space-y-1"><div class="flex justify-between font-bold text-blue-600"><span>${o.id}</span><span>${o.status}</span></div><p>${o.product} (${o.qty} pcs) - Rp ${o.totalPrice.toLocaleString('id-ID')}</p><p class="text-slate-500">Resi: ${o.resi}</p></div>`;
+                    html += `
+                        <div class="bg-white border rounded-xl p-3 text-xs space-y-2 shadow-sm">
+                            <div class="flex justify-between font-bold text-blue-600">
+                                <span>${o.id}</span>
+                                <span class="px-2 py-0.5 rounded ${o.paid ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700'}">${o.status}</span>
+                            </div>
+                            <div class="flex space-x-3 items-center">
+                                <img src="${o.mockupImg}" class="w-12 h-12 object-cover rounded border">
+                                <div>
+                                    <p class="font-semibold">${o.product} (${o.qty} pcs)</p>
+                                    <p class="text-slate-500">Total: Rp ${o.totalPrice.toLocaleString('id-ID')}</p>
+                                    <p class="text-slate-500">Resi Kurir: <strong class="text-slate-800">${o.resi}</strong></p>
+                                </div>
+                            </div>
+                        </div>`;
                 });
             }
             container.innerHTML = html + `</div>`;
         }
 
         function openAIChatModal() {
-            alert("Siti (AI): Halo! Ada yang ingin ditanyakan seputar katalog atau rekap pesanan di ILHAM SPUNBOND?");
+            alert("Siti (AI Assistant): Halo! Ada yang ingin ditanyakan seputar produk ILHAM SPUNBOND?");
         }
     </script>
 </body>
