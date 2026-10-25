@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -34,8 +35,8 @@
             0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
             70% { transform: scale(1); box-shadow: 0 0 0 8px rgba(16, 185, 129, 0); }
             100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
-        .ai-avatar-glow { animation: pulse-ring 2s infinite; }
         }
+        .ai-avatar-glow { animation: pulse-ring 2s infinite; }
     </style>
 </head>
 <body class="bg-slate-100 text-slate-800 font-sans antialiased pb-32">
@@ -104,7 +105,7 @@
             <p class="text-xs text-emerald-200/90 mt-0.5 font-medium">Pusat Custom Merchandise & Sablon Profesional</p>
         </div>
 
-        <!-- 🤖 AI CUSTOMER CONSULTANT (DENGAN CUSTOM AVATAR / GIF IKON & REAL-TIME VOICE) -->
+        <!-- 🤖 AI CUSTOMER CONSULTANT (DENGAN DINAMIC GIF BICARA / DIAM) -->
         <div class="bg-gradient-to-br from-emerald-900 to-teal-950 text-white p-4 rounded-2xl shadow-lg border border-emerald-500/40 space-y-3">
             <div class="flex items-center justify-between border-b border-emerald-800 pb-2">
                 <div class="flex items-center gap-2">
@@ -126,7 +127,7 @@
             </div>
         </div>
 
-        <!-- 🏬 BAGIAN 1: ETALASE CONTOH HASIL PRODUKSI (GALERI) -->
+        <!-- 🏬 ETALASE PRODUK -->
         <div id="section-etalase" class="space-y-4">
             <div class="bg-emerald-900 text-white p-4 rounded-2xl shadow-md flex items-center justify-between">
                 <div>
@@ -137,7 +138,7 @@
             <div id="etalase-grid-container" class="space-y-4"></div>
         </div>
 
-        <!-- 🎨 BAGIAN 2: STUDIO WORKSHOP DESAIN -->
+        <!-- 🎨 STUDIO WORKSHOP DESAIN -->
         <div id="section-custom-workshop" class="hidden space-y-4">
             <div class="flex items-center justify-between bg-slate-900 text-white p-3.5 rounded-2xl shadow">
                 <button type="button" onclick="backToEtalase()" class="bg-slate-800 hover:bg-slate-700 text-slate-200 px-3 py-1.5 rounded-xl text-xs font-bold cursor-pointer">⬅️ Kembali ke Etalase</button>
@@ -167,7 +168,7 @@
                 </div>
             </div>
 
-            <!-- PREVIEW MOCKUP & KONTROL LOGO -->
+            <!-- PREVIEW MOCKUP -->
             <div class="glass-card p-4 sm:p-5 rounded-2xl shadow-md relative space-y-3.5">
                 <h2 class="text-xs font-extrabold text-slate-800 flex items-center gap-2 uppercase tracking-wider"><span>🛍️</span> Preview Mockup & Atur Posisi Logo</h2>
                 
@@ -235,25 +236,26 @@
             <div class="space-y-2.5">
                 <button type="button" onclick="saveOrderAndSendWhatsApp()" class="w-full bg-gradient-to-r from-emerald-600 to-teal-700 text-white font-bold py-4 rounded-2xl shadow-xl flex items-center justify-center gap-2 text-sm cursor-pointer">Simpan PO & Kirim ke WhatsApp</button>
                 <button type="button" onclick="openCustomerOrderHistory()" class="w-full bg-emerald-800 text-white font-bold py-3.5 rounded-2xl shadow-lg flex items-center justify-center gap-2 text-sm cursor-pointer">📂 Riwayat PO & Resi Saya</button>
-                <button type="button" onclick="verifyAndShowOrderHistory()" class="w-full bg-gradient-to-r from-amber-500 to-amber-600 text-slate-950 font-extrabold py-3.5 rounded-2xl shadow-lg flex items-center justify-center gap-2 text-sm cursor-pointer">🔐 Panel Admin & AI Analisis Keuangan</button>
+                <button type="button" onclick="verifyAndShowOrderHistory()" class="w-full bg-gradient-to-r from-amber-500 to-amber-600 text-slate-950 font-extrabold py-3.5 rounded-2xl shadow-lg flex items-center justify-center gap-2 text-sm cursor-pointer">🔐 Panel Admin & AI Agent</button>
             </div>
         </div>
     </div>
 
-    <!-- PANEL ADMIN DI DALAM MODAL -->
+    <!-- PANEL ADMIN & AI AGENT DI DALAM MODAL -->
     <div id="order-history-modal" class="hidden fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-4">
         <div class="bg-slate-900 text-white w-full max-w-xl max-h-[95vh] rounded-3xl p-5 border border-amber-500/40 flex flex-col space-y-4 shadow-2xl">
             <div class="flex justify-between items-center border-b border-slate-800 pb-3">
-                <h3 class="text-sm font-bold text-amber-400 uppercase">📊 Panel Admin, Produk & AI Analisis</h3>
+                <h3 class="text-sm font-bold text-amber-400 uppercase">📊 Panel Admin & AI Agent Manager</h3>
                 <button type="button" onclick="closeOrderHistoryModal()" class="text-xs text-slate-400 font-bold bg-slate-800 px-3 py-1.5 rounded-lg">Tutup [X]</button>
             </div>
 
             <!-- TABS -->
-            <div class="flex gap-2 border-b border-slate-800 pb-2 overflow-x-auto no-scrollbar">
-                <button type="button" onclick="switchAdminTab('rekap')" id="tab-btn-rekap" class="flex-1 min-w-[70px] bg-amber-500 text-slate-950 font-bold py-2 rounded-xl text-xs cursor-pointer">Rekap</button>
-                <button type="button" onclick="switchAdminTab('produk')" id="tab-btn-produk" class="flex-1 min-w-[70px] bg-slate-800 text-slate-300 font-bold py-2 rounded-xl text-xs cursor-pointer">Produk & AI</button>
-                <button type="button" onclick="switchAdminTab('settings')" id="tab-btn-settings" class="flex-1 min-w-[70px] bg-slate-800 text-slate-300 font-bold py-2 rounded-xl text-xs cursor-pointer">Logo & AI</button>
-                <button type="button" onclick="switchAdminTab('orders')" id="tab-btn-orders" class="flex-1 min-w-[70px] bg-slate-800 text-slate-300 font-bold py-2 rounded-xl text-xs cursor-pointer">Daftar PO</button>
+            <div class="flex gap-1.5 border-b border-slate-800 pb-2 overflow-x-auto no-scrollbar">
+                <button type="button" onclick="switchAdminTab('rekap')" id="tab-btn-rekap" class="flex-1 min-w-[65px] bg-amber-500 text-slate-950 font-bold py-2 rounded-xl text-[11px] cursor-pointer">Rekap</button>
+                <button type="button" onclick="switchAdminTab('agent')" id="tab-btn-agent" class="flex-1 min-w-[65px] bg-slate-800 text-amber-300 font-bold py-2 rounded-xl text-[11px] cursor-pointer">🤖 AI Agent</button>
+                <button type="button" onclick="switchAdminTab('produk')" id="tab-btn-produk" class="flex-1 min-w-[65px] bg-slate-800 text-slate-300 font-bold py-2 rounded-xl text-[11px] cursor-pointer">Produk</button>
+                <button type="button" onclick="switchAdminTab('settings')" id="tab-btn-settings" class="flex-1 min-w-[65px] bg-slate-800 text-slate-300 font-bold py-2 rounded-xl text-[11px] cursor-pointer">Pengaturan</button>
+                <button type="button" onclick="switchAdminTab('orders')" id="tab-btn-orders" class="flex-1 min-w-[65px] bg-slate-800 text-slate-300 font-bold py-2 rounded-xl text-[11px] cursor-pointer">Daftar PO</button>
             </div>
 
             <!-- TAB 1: REKAP TAHUNAN & ANALISIS AI -->
@@ -272,13 +274,36 @@
                 <div id="yearly-report-card" class="space-y-3"></div>
             </div>
 
-            <!-- TAB 2: KELOLA PRODUK, SPESIFIKASI & REKOMENDASI AI -->
+            <!-- TAB 2: 🤖 AI AGENT MANAGER -->
+            <div id="admin-tab-agent" class="hidden flex-1 overflow-y-auto space-y-3 pr-1">
+                <div class="bg-gradient-to-br from-slate-900 to-amber-950/60 p-4 rounded-2xl border border-amber-500/40 space-y-3 text-xs">
+                    <div class="font-black text-amber-400 flex items-center gap-1.5 text-sm">
+                        <span>🤖 Bang Ilham (Admin Assistant Agent)</span>
+                    </div>
+                    <p class="text-slate-300 text-[11px]">Ketik perintah untuk menyortir customer lama atau membuat draf penawaran WhatsApp secara otomatis!</p>
+                    
+                    <div class="space-y-2">
+                        <textarea id="admin-agent-prompt" rows="2" placeholder="Cth: Cari customer yang sudah 2 bulan nggak order, lalu buatkan draf penawaran tas spunbond." class="w-full bg-slate-950 border border-amber-500/40 rounded-xl p-3 text-white outline-none text-xs font-medium"></textarea>
+                        <button type="button" onclick="executeAdminAgentCommand()" class="w-full bg-amber-500 hover:bg-amber-600 text-slate-950 font-extrabold py-2.5 rounded-xl text-xs cursor-pointer shadow">
+                            Jalankan Perintah Agent ⚡
+                        </button>
+                    </div>
+                </div>
+
+                <div id="admin-agent-results" class="space-y-3">
+                    <div class="bg-slate-800 p-3.5 rounded-2xl border border-slate-700 text-center text-xs text-slate-400 italic">
+                        Belum ada perintah dijalankan. Ketik perintah di atas untuk menyuruh Bang Ilham!
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 3: KELOLA PRODUK & SPESIFIKASI -->
             <div id="admin-tab-produk" class="hidden flex-1 overflow-y-auto space-y-3 pr-1">
-                <p class="text-[11px] text-amber-300 italic">ℹ️ Atur Deskripsi, Kekuatan Beban, & Rekomendasi Penggunaan. Data ini otomatis dibaca AI saat customer bertanya!</p>
+                <p class="text-[11px] text-amber-300 italic">ℹ️ Atur Deskripsi, Kekuatan Beban, & Rekomendasi Penggunaan.</p>
                 <div id="admin-model-specs-container" class="space-y-3"></div>
             </div>
 
-            <!-- TAB 3: PENGATURAN LOGO, NAMA AI & CUSTOM AVATAR GIF -->
+            <!-- TAB 4: PENGATURAN LOGO, NAMA AI & AVATAR -->
             <div id="admin-tab-settings" class="hidden flex-1 overflow-y-auto space-y-3 pr-1">
                 <div class="bg-slate-800 p-4 rounded-2xl border border-slate-700 space-y-3">
                     <label class="block text-xs font-bold text-amber-300">🤖 Nama & Avatar / GIF AI Toko</label>
@@ -287,8 +312,12 @@
                         <input type="text" id="admin-ai-name-input" placeholder="Cth: Bang Ilham" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-2.5 text-xs text-white outline-none font-bold">
                     </div>
                     <div>
-                        <label class="block text-[10px] text-slate-400 mb-1">URL Gambar / Link GIF Avatar AI:</label>
-                        <input type="text" id="admin-ai-avatar-input" placeholder="Cth: https://alamat-gambar-gif.com/avatar.gif" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-2.5 text-xs text-white outline-none">
+                        <label class="block text-[10px] text-slate-400 mb-1">URL Gambar GIF Bicara (Aktif saat ngomong):</label>
+                        <input type="text" id="admin-ai-avatar-input" placeholder="Cth: https://alamat-gif-bicara.com/talking.gif" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-2.5 text-xs text-white outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] text-slate-400 mb-1">URL Gambar Diam / Statis (Aktif saat selesai ngomong):</label>
+                        <input type="text" id="admin-ai-avatar-still-input" placeholder="Cth: https://alamat-gambar-diam.com/still.png" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-2.5 text-xs text-white outline-none">
                     </div>
                     <button type="button" onclick="saveAIProfileConfig()" class="w-full bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold py-2 rounded-xl text-xs cursor-pointer">Simpan Profil AI 🚀</button>
                 </div>
@@ -303,7 +332,7 @@
                 </div>
             </div>
 
-            <!-- TAB 4: DAFTAR PO & INPUT RESI -->
+            <!-- TAB 5: DAFTAR PO & INPUT RESI -->
             <div id="admin-tab-orders" class="hidden flex-1 overflow-y-auto space-y-3 pr-1">
                 <p class="text-[11px] text-amber-300 italic">ℹ️ Masukkan nomor resi pengiriman agar otomatis tampil di HP customer.</p>
                 <div id="order-history-list" class="space-y-3"></div>
@@ -322,7 +351,7 @@
         </div>
     </div>
 
-    <!-- Script Utama (Custom Avatar, Real-Time Greeting & RAG Engine) -->
+    <!-- Script Utama (Dynamic Talking GIF / Still Avatar Engine) -->
     <script>
         const cleanDefaultBagSvg = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 500'><path d='M100 150 L100 100 C100 70 120 50 200 50 C280 50 300 70 300 100 L300 150 Z' fill='none' stroke='%23334155' stroke-width='16'/><path d='M60 150 L340 150 C360 150 370 160 370 180 L340 450 C340 470 330 480 310 480 L90 480 C70 480 60 470 60 450 L30 180 C30 160 40 150 60 150 Z' fill='%23ffffff' stroke='%23334155' stroke-width='6'/></svg>";
         const cleanDefaultShirtSvg = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 500'><path d='M120 80 L200 120 L280 80 L320 150 L260 190 L260 420 L140 420 L140 190 L80 150 Z' fill='%23ffffff' stroke='%23334155' stroke-width='8'/></svg>";
@@ -385,7 +414,8 @@
         let bagColors = [{ name: "Putih Bersih", hex: "#ffffff" }, { name: "Hitam", hex: "#0f172a" }, { name: "Biru", hex: "#1d4ed8" }, { name: "Merah", hex: "#dc2626" }];
         let brandLogoUrl = "";
         let aiAssistantName = "Bang Ilham";
-        let aiAvatarUrl = "https://i.giphy.com/media/v1.Y2lkPTc5MGI3NjExM3Zudmp4ajhzZGJkbmV6ZTZsazVndXVqZnp4aXh5Z2R2eGdlcHFjOSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/3oKIPnAiaMCws8nOsE/giphy.gif";
+        let aiAvatarGif = "https://i.giphy.com/media/v1.Y2lkPTc5MGI3NjExM3Zudmp4ajhzZGJkbmV6ZTZsazVndXVqZnp4aXh5Z2R2eGdlcHFjOSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/3oKIPnAiaMCws8nOsE/giphy.gif";
+        let aiAvatarStill = "https://i.giphy.com/media/v1.Y2lkPTc5MGI3NjExM3Zudmp4ajhzZGJkbmV6ZTZsazVndXVqZnp4aXh5Z2R2eGdlcHFjOSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/3oKIPnAiaMCws8nOsE/giphy.gif";
         let pdfPassword = "ilham123";
         let ownerWaNumber = "6289630539563";
 
@@ -404,7 +434,8 @@
             if(localStorage.getItem('ilham_catalogData')) catalogData = JSON.parse(localStorage.getItem('ilham_catalogData'));
             if(localStorage.getItem('ilham_brandLogoUrl')) brandLogoUrl = localStorage.getItem('ilham_brandLogoUrl');
             if(localStorage.getItem('ilham_aiName')) aiAssistantName = localStorage.getItem('ilham_aiName');
-            if(localStorage.getItem('ilham_aiAvatarUrl')) aiAvatarUrl = localStorage.getItem('ilham_aiAvatarUrl');
+            if(localStorage.getItem('ilham_aiAvatarGif')) aiAvatarGif = localStorage.getItem('ilham_aiAvatarGif');
+            if(localStorage.getItem('ilham_aiAvatarStill')) aiAvatarStill = localStorage.getItem('ilham_aiAvatarStill');
             if(localStorage.getItem('ilham_cartItems')) cartItems = JSON.parse(localStorage.getItem('ilham_cartItems'));
         } catch(e) {}
 
@@ -425,9 +456,16 @@
 
         function updateAIProfileUI() {
             document.getElementById('ai-header-title').textContent = `🤖 Konsultan AI (${aiAssistantName})`;
+            setAvatarState('still'); // Default awal diam
+        }
+
+        function setAvatarState(state) {
             const avatarEl = document.getElementById('ai-custom-avatar-icon');
-            if(avatarEl && aiAvatarUrl) {
-                avatarEl.src = aiAvatarUrl;
+            if(!avatarEl) return;
+            if(state === 'talking') {
+                avatarEl.src = aiAvatarGif; // GIF bergerak
+            } else {
+                avatarEl.src = aiAvatarStill || aiAvatarGif; // Gambar diam / statis
             }
         }
 
@@ -459,6 +497,7 @@
             btn.className = isVoiceAIActive ? "bg-emerald-600 hover:bg-emerald-500 text-white px-2.5 py-1 rounded-lg text-[10px] font-bold cursor-pointer" : "bg-slate-700 text-slate-300 px-2.5 py-1 rounded-lg text-[10px] font-bold cursor-pointer";
         }
 
+        // --- SISTEM SUARA & OTOMATIS GERAK/DIAM GIF ---
         function speakTextAI(text) {
             if(!isVoiceAIActive || !('speechSynthesis' in window)) return;
             window.speechSynthesis.cancel();
@@ -466,6 +505,21 @@
             utterance.lang = 'id-ID';
             utterance.pitch = 1.0;
             utterance.rate = 1.0;
+
+            // Ketika AI mulai ngomong -> GIF bergerak
+            utterance.onstart = function() {
+                setAvatarState('talking');
+            };
+
+            // Ketika AI selesai ngomong -> GIF otomatis berhenti (diam)
+            utterance.onend = function() {
+                setAvatarState('still');
+            };
+
+            utterance.onerror = function() {
+                setAvatarState('still');
+            };
+
             window.speechSynthesis.speak(utterance);
         }
 
@@ -505,6 +559,48 @@
             speakTextAI(reply);
         }
 
+        // --- AI AGENT EXECUTION ---
+        function executeAdminAgentCommand() {
+            const promptInput = document.getElementById('admin-agent-prompt').value.trim().toLowerCase();
+            const resultContainer = document.getElementById('admin-agent-results');
+            if(!promptInput) return alert("Masukkan perintah untuk Bang Ilham!");
+
+            const orders = JSON.parse(localStorage.getItem('ilham_local_orders') || '[]');
+            
+            resultContainer.innerHTML = `<div class="bg-slate-800 p-3.5 rounded-2xl border border-amber-500/30 text-amber-300 text-xs italic animate-pulse">🤖 ${aiAssistantName} sedang memproses data customer dan menyusun draf...</div>`;
+
+            setTimeout(() => {
+                if(orders.length === 0) {
+                    resultContainer.innerHTML = `<div class="bg-slate-800 p-3 rounded-2xl border border-slate-700 text-xs text-rose-400">Belum ada data PO atau customer yang tersimpan di sistem untuk di-follow up.</div>`;
+                    return;
+                }
+
+                let htmlOutput = `<div class="font-bold text-amber-400 text-xs mb-2">✨ Hasil Eksekusi Perintah Agent:</div>`;
+                
+                orders.forEach((o, idx) => {
+                    let cleanWa = o.wa ? o.wa.replace(/[^0-9]/g, '') : '6289630539563';
+                    if(cleanWa.startsWith('0')) cleanWa = '62' + cleanWa.slice(1);
+
+                    let promoMessage = `Halo Kak ${o.name}, salam dari ${aiAssistantName} ILHAM SPUNBOND! Kami ingin menawarkan kembali pembuatan custom tas spunbond atau merchandise eksklusif untuk acara/usaha Kakak berikutnya. Ada diskon khusus hari ini lho!`;
+                    let encodedMsg = encodeURIComponent(promoMessage);
+
+                    htmlOutput += `
+                        <div class="bg-slate-800 p-3.5 rounded-2xl border border-slate-700 space-y-2 text-xs mb-2">
+                            <div class="flex justify-between font-bold text-white">
+                                <span>👤 ${o.name} (${o.wa})</span>
+                                <span class="text-emerald-400">PO: ${o.id}</span>
+                            </div>
+                            <div class="text-[11px] text-slate-300 italic bg-slate-900 p-2 rounded-xl">"${promoMessage}"</div>
+                            <a href="https://wa.me/${cleanWa}?text=${encodedMsg}" target="_blank" class="block w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 rounded-xl text-center shadow cursor-pointer">
+                                📲 Kirim Penawaran WhatsApp ke ${o.name}
+                            </a>
+                        </div>`;
+                });
+
+                resultContainer.innerHTML = htmlOutput;
+            }, 800);
+        }
+
         function generateAdminAIInsights(yearOrders, totalOmset, totalModal, labaBersih) {
             const insightEl = document.getElementById('admin-ai-insights');
             if(!insightEl) return;
@@ -515,7 +611,7 @@
             }
 
             let profitMargin = totalOmset > 0 ? Math.round((labaBersih / totalOmset) * 100) : 0;
-            let advice = profitMargin > 40 ? `Performa bisnis sangat luar biasa! Margin keuntungan bersih mencapai ${profitMargin}%.` : `Margin keuntungan bersih berada di angka ${profitMargin}%. Pertimbangkan optimasi harga jual.`;
+            let advice = profitMargin > 40 ? `Performa bisnis sangat luar biasa! Margin keuntungan bersih mencapai ${profitMargin}%.` : `Margin keuntungan bersih berada di angka ${profitMargin}%.`;
             insightEl.textContent = `"${advice} Total ${yearOrders.length} PO telah diproses dengan omset kotor Rp ${totalOmset.toLocaleString('id-ID')}."`;
         }
 
@@ -551,18 +647,23 @@
 
         function saveAIProfileConfig() {
             const nameInput = document.getElementById('admin-ai-name-input').value.trim();
-            const avatarInput = document.getElementById('admin-ai-avatar-input').value.trim();
+            const avatarGifInput = document.getElementById('admin-ai-avatar-input').value.trim();
+            const avatarStillInput = document.getElementById('admin-ai-avatar-still-input').value.trim();
             
             if(nameInput) {
                 aiAssistantName = nameInput;
                 localStorage.setItem('ilham_aiName', aiAssistantName);
             }
-            if(avatarInput) {
-                aiAvatarUrl = avatarInput;
-                localStorage.setItem('ilham_aiAvatarUrl', aiAvatarUrl);
+            if(avatarGifInput) {
+                aiAvatarGif = avatarGifInput;
+                localStorage.setItem('ilham_aiAvatarGif', aiAvatarGif);
+            }
+            if(avatarStillInput) {
+                aiAvatarStill = avatarStillInput;
+                localStorage.setItem('ilham_aiAvatarStill', aiAvatarStill);
             }
             updateAIProfileUI();
-            alert("✅ Profil & Avatar GIF AI berhasil diperbarui!");
+            alert("✅ Profil & Avatar AI berhasil diperbarui!");
         }
 
         function submitCustomerOnboarding() {
@@ -942,28 +1043,29 @@
             catalogData[catKey].models[mIndex].maxWeight = document.getElementById(`weight-${catKey}-${mIndex}`).value;
 
             localStorage.setItem('ilham_catalogData', JSON.stringify(catalogData));
-            alert("✅ Spesifikasi & rekomendasi produk berhasil diperbarui! AI kini otomatis membaca data ini.");
+            alert("✅ Spesifikasi & rekomendasi produk berhasil diperbarui!");
             renderEtalase();
         }
 
         function switchAdminTab(tabName) {
-            ['rekap', 'produk', 'settings', 'orders'].forEach(t => {
+            ['rekap', 'agent', 'produk', 'settings', 'orders'].forEach(t => {
                 const el = document.getElementById(`admin-tab-${t}`);
                 const btn = document.getElementById(`tab-btn-${t}`);
                 if(el) el.classList.add('hidden');
-                if(btn) btn.className = "flex-1 min-w-[70px] bg-slate-800 text-slate-300 font-bold py-2 rounded-xl text-xs cursor-pointer";
+                if(btn) btn.className = "flex-1 min-w-[65px] bg-slate-800 text-slate-300 font-bold py-2 rounded-xl text-[11px] cursor-pointer";
             });
             const activeEl = document.getElementById(`admin-tab-${tabName}`);
             const activeBtn = document.getElementById(`tab-btn-${tabName}`);
             if(activeEl) activeEl.classList.remove('hidden');
-            if(activeBtn) activeBtn.className = "flex-1 min-w-[70px] bg-amber-500 text-slate-950 font-bold py-2 rounded-xl text-xs cursor-pointer";
+            if(activeBtn) activeBtn.className = "flex-1 min-w-[65px] bg-amber-500 text-slate-950 font-bold py-2 rounded-xl text-[11px] cursor-pointer";
 
             if(tabName === 'rekap') renderYearlyReport();
             if(tabName === 'produk') renderAdminProductSpecs();
             if(tabName === 'settings') {
                 applyBrandLogoToUI();
                 document.getElementById('admin-ai-name-input').value = aiAssistantName;
-                document.getElementById('admin-ai-avatar-input').value = aiAvatarUrl;
+                document.getElementById('admin-ai-avatar-input').value = aiAvatarGif;
+                document.getElementById('admin-ai-avatar-still-input').value = aiAvatarStill;
             }
             if(tabName === 'orders') renderAdminOrdersList();
         }
