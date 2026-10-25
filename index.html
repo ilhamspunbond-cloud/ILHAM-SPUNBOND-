@@ -30,6 +30,12 @@
         .no-scrollbar::-webkit-scrollbar-track { background: #f1f5f9; border-radius: 4px; }
         .no-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
         .glass-card { background: rgba(255, 255, 255, 0.98); backdrop-filter: blur(12px); border: 1px solid rgba(226, 232, 240, 0.9); box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.05); }
+        @keyframes pulse-ring {
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+            70% { transform: scale(1); box-shadow: 0 0 0 8px rgba(16, 185, 129, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+        .ai-avatar-glow { animation: pulse-ring 2s infinite; }
+        }
     </style>
 </head>
 <body class="bg-slate-100 text-slate-800 font-sans antialiased pb-32">
@@ -45,7 +51,7 @@
             
             <div class="space-y-3 text-left text-xs pt-1">
                 <div>
-                    <label class="block text-slate-400 mb-1 font-semibold">Nama Lengkap / Panggilan</label>
+                    <label class="block text-slate-400 mb-1 font-semibold">Nama Lengkap / Panggilan (Cth: Bos Andi)</label>
                     <input type="text" id="onboard-name" placeholder="Cth: Bos Andi" class="w-full bg-slate-800 border border-slate-700 rounded-xl p-3 text-white outline-none focus:ring-2 focus:ring-emerald-500 font-medium">
                 </div>
                 <div>
@@ -54,7 +60,7 @@
                 </div>
                 <div>
                     <label class="block text-slate-400 mb-1 font-semibold">Alamat Pengiriman Lengkap</label>
-                    <textarea id="onboard-address" rows="2" placeholder="Cth: Jl. Melati No. 10, Bandung" class="w-full bg-slate-800 border border-slate-700 rounded-xl p-3 text-white outline-none focus:ring-2 focus:ring-emerald-500 font-medium"></textarea>
+                    <textarea id="onboard-address" rows="2" placeholder="Cth: Jl. Melati No. 10, Tangerang" class="w-full bg-slate-800 border border-slate-700 rounded-xl p-3 text-white outline-none focus:ring-2 focus:ring-emerald-500 font-medium"></textarea>
                 </div>
                 <div>
                     <label class="block text-slate-400 mb-1 font-semibold">PIN Sandi Pengaman (4-6 Digit)</label>
@@ -98,15 +104,22 @@
             <p class="text-xs text-emerald-200/90 mt-0.5 font-medium">Pusat Custom Merchandise & Sablon Profesional</p>
         </div>
 
-        <!-- 🤖 AI CUSTOMER CONSULTANT (CHAT & VOICE INTERACTIVE) -->
+        <!-- 🤖 AI CUSTOMER CONSULTANT (DENGAN CUSTOM AVATAR / GIF IKON & REAL-TIME VOICE) -->
         <div class="bg-gradient-to-br from-emerald-900 to-teal-950 text-white p-4 rounded-2xl shadow-lg border border-emerald-500/40 space-y-3">
             <div class="flex items-center justify-between border-b border-emerald-800 pb-2">
-                <span class="text-xs font-black uppercase text-emerald-300 flex items-center gap-1.5">🤖 Konsultan AI ILHAM (Tanya Rekomendasi)</span>
+                <div class="flex items-center gap-2">
+                    <div class="w-8 h-8 rounded-full bg-emerald-800 border-2 border-emerald-400 overflow-hidden flex items-center justify-center shadow-md ai-avatar-glow">
+                        <img id="ai-custom-avatar-icon" src="https://i.giphy.com/media/v1.Y2lkPTc5MGI3NjExM3Zudmp4ajhzZGJkbmV6ZTZsazVndXVqZnp4aXh5Z2R2eGdlcHFjOSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/3oKIPnAiaMCws8nOsE/giphy.gif" alt="AI Avatar" class="w-full h-full object-cover">
+                    </div>
+                    <span id="ai-header-title" class="text-xs font-black uppercase text-emerald-300">🤖 Konsultan AI (Bang Ilham)</span>
+                </div>
                 <button type="button" onclick="toggleVoiceAI()" id="ai-voice-toggle-btn" class="bg-emerald-600 hover:bg-emerald-500 text-white px-2.5 py-1 rounded-lg text-[10px] font-bold cursor-pointer">🔊 Suara AI: ON</button>
             </div>
+            
             <div id="ai-chat-history" class="bg-slate-900/80 p-3 rounded-xl text-xs space-y-2 max-h-36 overflow-y-auto border border-emerald-800/50">
-                <p class="text-emerald-200 italic">"Halo! Mau buat tas untuk kebutuhan apa? Tas HP, kotak nasi, atau hajatan? Ketik atau tanyakan ke saya, nanti saya rekomendasikan ukuran & model terbaik!"</p>
+                <p id="ai-initial-greeting" class="text-emerald-200 italic">"Memuat sapaan..."</p>
             </div>
+            
             <div class="flex gap-2">
                 <input type="text" id="ai-user-input" placeholder="Cth: Rekomendasi buat tas kotak nasi ukuran 20x20..." class="flex-1 bg-slate-900 border border-emerald-700 rounded-xl px-3 py-2 text-xs text-white outline-none">
                 <button type="button" onclick="sendPromptToCustomerAI()" class="bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-extrabold px-4 py-2 rounded-xl text-xs cursor-pointer">Kirim 🚀</button>
@@ -231,16 +244,16 @@
     <div id="order-history-modal" class="hidden fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-4">
         <div class="bg-slate-900 text-white w-full max-w-xl max-h-[95vh] rounded-3xl p-5 border border-amber-500/40 flex flex-col space-y-4 shadow-2xl">
             <div class="flex justify-between items-center border-b border-slate-800 pb-3">
-                <h3 class="text-sm font-bold text-amber-400 uppercase">📊 Panel Admin, Resi & AI Analisis</h3>
+                <h3 class="text-sm font-bold text-amber-400 uppercase">📊 Panel Admin, Produk & AI Analisis</h3>
                 <button type="button" onclick="closeOrderHistoryModal()" class="text-xs text-slate-400 font-bold bg-slate-800 px-3 py-1.5 rounded-lg">Tutup [X]</button>
             </div>
 
             <!-- TABS -->
-            <div class="flex gap-2 border-b border-slate-800 pb-2">
-                <button type="button" onclick="switchAdminTab('rekap')" id="tab-btn-rekap" class="flex-1 bg-amber-500 text-slate-950 font-bold py-2 rounded-xl text-xs cursor-pointer">Rekap AI</button>
-                <button type="button" onclick="switchAdminTab('produk')" id="tab-btn-produk" class="flex-1 bg-slate-800 text-slate-300 font-bold py-2 rounded-xl text-xs cursor-pointer">Harga</button>
-                <button type="button" onclick="switchAdminTab('settings')" id="tab-btn-settings" class="flex-1 bg-slate-800 text-slate-300 font-bold py-2 rounded-xl text-xs cursor-pointer">Logo</button>
-                <button type="button" onclick="switchAdminTab('orders')" id="tab-btn-orders" class="flex-1 bg-slate-800 text-slate-300 font-bold py-2 rounded-xl text-xs cursor-pointer">Daftar PO & Resi</button>
+            <div class="flex gap-2 border-b border-slate-800 pb-2 overflow-x-auto no-scrollbar">
+                <button type="button" onclick="switchAdminTab('rekap')" id="tab-btn-rekap" class="flex-1 min-w-[70px] bg-amber-500 text-slate-950 font-bold py-2 rounded-xl text-xs cursor-pointer">Rekap</button>
+                <button type="button" onclick="switchAdminTab('produk')" id="tab-btn-produk" class="flex-1 min-w-[70px] bg-slate-800 text-slate-300 font-bold py-2 rounded-xl text-xs cursor-pointer">Produk & AI</button>
+                <button type="button" onclick="switchAdminTab('settings')" id="tab-btn-settings" class="flex-1 min-w-[70px] bg-slate-800 text-slate-300 font-bold py-2 rounded-xl text-xs cursor-pointer">Logo & AI</button>
+                <button type="button" onclick="switchAdminTab('orders')" id="tab-btn-orders" class="flex-1 min-w-[70px] bg-slate-800 text-slate-300 font-bold py-2 rounded-xl text-xs cursor-pointer">Daftar PO</button>
             </div>
 
             <!-- TAB 1: REKAP TAHUNAN & ANALISIS AI -->
@@ -252,7 +265,6 @@
                         <option value="2027">Tahun 2027</option>
                     </select>
                 </div>
-                <!-- Kotak Analisis Pintar AI Admin -->
                 <div class="bg-gradient-to-r from-amber-950/60 to-slate-900 border border-amber-500/40 p-3.5 rounded-2xl space-y-1.5 text-xs">
                     <div class="font-extrabold text-amber-400">💡 Analisis Pintar AI Bisnis:</div>
                     <p id="admin-ai-insights" class="text-slate-300 italic">"Memuat analisis data keuangan..."</p>
@@ -260,14 +272,27 @@
                 <div id="yearly-report-card" class="space-y-3"></div>
             </div>
 
-            <!-- TAB 2: KELOLA HARGA -->
+            <!-- TAB 2: KELOLA PRODUK, SPESIFIKASI & REKOMENDASI AI -->
             <div id="admin-tab-produk" class="hidden flex-1 overflow-y-auto space-y-3 pr-1">
-                <p class="text-[11px] text-amber-300 italic">ℹ️ Atur Harga Modal & Harga Jual Multi-Produk.</p>
-                <div id="admin-model-price-container" class="space-y-3"></div>
+                <p class="text-[11px] text-amber-300 italic">ℹ️ Atur Deskripsi, Kekuatan Beban, & Rekomendasi Penggunaan. Data ini otomatis dibaca AI saat customer bertanya!</p>
+                <div id="admin-model-specs-container" class="space-y-3"></div>
             </div>
 
-            <!-- TAB 3: PENGATURAN LOGO -->
+            <!-- TAB 3: PENGATURAN LOGO, NAMA AI & CUSTOM AVATAR GIF -->
             <div id="admin-tab-settings" class="hidden flex-1 overflow-y-auto space-y-3 pr-1">
+                <div class="bg-slate-800 p-4 rounded-2xl border border-slate-700 space-y-3">
+                    <label class="block text-xs font-bold text-amber-300">🤖 Nama & Avatar / GIF AI Toko</label>
+                    <div>
+                        <label class="block text-[10px] text-slate-400 mb-1">Nama Asisten AI:</label>
+                        <input type="text" id="admin-ai-name-input" placeholder="Cth: Bang Ilham" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-2.5 text-xs text-white outline-none font-bold">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] text-slate-400 mb-1">URL Gambar / Link GIF Avatar AI:</label>
+                        <input type="text" id="admin-ai-avatar-input" placeholder="Cth: https://alamat-gambar-gif.com/avatar.gif" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-2.5 text-xs text-white outline-none">
+                    </div>
+                    <button type="button" onclick="saveAIProfileConfig()" class="w-full bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold py-2 rounded-xl text-xs cursor-pointer">Simpan Profil AI 🚀</button>
+                </div>
+
                 <div class="bg-slate-800 p-4 rounded-2xl border border-slate-700 space-y-3">
                     <label class="block text-xs font-bold text-amber-300">🖼️ Upload Logo Resmi Toko</label>
                     <input type="file" id="admin-logo-file" accept="image/*" onchange="uploadAdminBrandLogo(event)" class="w-full text-xs text-slate-400 file:mr-2 file:py-1.5 file:px-3 file:rounded-xl file:border-0 file:bg-amber-500 file:text-slate-950 font-bold cursor-pointer">
@@ -297,7 +322,7 @@
         </div>
     </div>
 
-    <!-- Script Utama (AI & Resi Engine) -->
+    <!-- Script Utama (Custom Avatar, Real-Time Greeting & RAG Engine) -->
     <script>
         const cleanDefaultBagSvg = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 500'><path d='M100 150 L100 100 C100 70 120 50 200 50 C280 50 300 70 300 100 L300 150 Z' fill='none' stroke='%23334155' stroke-width='16'/><path d='M60 150 L340 150 C360 150 370 160 370 180 L340 450 C340 470 330 480 310 480 L90 480 C70 480 60 470 60 450 L30 180 C30 160 40 150 60 150 Z' fill='%23ffffff' stroke='%23334155' stroke-width='6'/></svg>";
         const cleanDefaultShirtSvg = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 500'><path d='M120 80 L200 120 L280 80 L320 150 L260 190 L260 420 L140 420 L140 190 L80 150 Z' fill='%23ffffff' stroke='%23334155' stroke-width='8'/></svg>";
@@ -307,26 +332,60 @@
             tas: {
                 title: "Tas Spunbond", method: "Sablon Manual / DTF",
                 models: [
-                    { name: "Tas Spunbond Oval", etalaseImg: "https://images.unsplash.com/photo-1597484662317-c99bcae44ee5?w=500&auto=format&fit=crop&q=60", image: cleanDefaultBagSvg, sizes: [{ name: "20 x 30 cm", modalBahan: 900, jasaCetak: 300, price: 1400 }, { name: "25 x 35 cm", modalBahan: 1100, jasaCetak: 350, price: 1700 }] },
-                    { name: "Tas HLS Lipat Samping", etalaseImg: "https://images.unsplash.com/photo-1544816155-12df9643f363?w=500&auto=format&fit=crop&q=60", image: cleanDefaultBagSvg, sizes: [{ name: "20 x 30 x 8 cm", modalBahan: 1300, jasaCetak: 350, price: 2000 }] }
+                    { 
+                        name: "Tas Spunbond Oval", 
+                        etalaseImg: "https://images.unsplash.com/photo-1597484662317-c99bcae44ee5?w=500&auto=format&fit=crop&q=60", 
+                        image: cleanDefaultBagSvg, 
+                        desc: "Tas pegangan lubang oval elegan, praktis untuk souvenir dan toko.",
+                        recommendation: "Cocok untuk souvenir hajatan, promosi toko, dan wadah produk ukuran sedang.",
+                        maxWeight: "Kuat beban hingga 3 kg.",
+                        sizes: [{ name: "20 x 30 cm", modalBahan: 900, jasaCetak: 300, price: 1400 }, { name: "25 x 35 cm", modalBahan: 1100, jasaCetak: 350, price: 1700 }] 
+                    },
+                    { 
+                        name: "Tas HLS Lipat Samping", 
+                        etalaseImg: "https://images.unsplash.com/photo-1544816155-12df9643f363?w=500&auto=format&fit=crop&q=60", 
+                        image: cleanDefaultBagSvg, 
+                        desc: "Tas pegangan tali dengan lipat samping yang kokoh dan luas di bagian bawah.",
+                        recommendation: "Sangat direkomendasikan untuk kotak nasi (box nasi), sembako, dan hajatan besar.",
+                        maxWeight: "Kuat beban hingga 6 kg.",
+                        sizes: [{ name: "20 x 30 x 8 cm", modalBahan: 1300, jasaCetak: 350, price: 2000 }] 
+                    }
                 ]
             },
             kaos: {
                 title: "Kaos Custom", method: "Cetak DTF Full Color",
                 models: [
-                    { name: "Kaos Cotton Combed 30s", etalaseImg: "https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=500&auto=format&fit=crop&q=60", image: cleanDefaultShirtSvg, sizes: [{ name: "Size M", modalBahan: 35000, jasaCetak: 5000, price: 55000 }, { name: "Size L", modalBahan: 37000, jasaCetak: 5000, price: 60000 }, { name: "Size XL", modalBahan: 40000, jasaCetak: 5000, price: 65000 }] }
+                    { 
+                        name: "Kaos Cotton Combed 30s", 
+                        etalaseImg: "https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=500&auto=format&fit=crop&q=60", 
+                        image: cleanDefaultShirtSvg, 
+                        desc: "Kaos bahan katun adem, lembut, tidak panas dengan sablon DTF anti luntur.",
+                        recommendation: "Cocok untuk kaos komunitas, gathering kantor, event, dan merchandise eksklusif.",
+                        maxWeight: "-",
+                        sizes: [{ name: "Size M", modalBahan: 35000, jasaCetak: 5000, price: 55000 }, { name: "Size L", modalBahan: 37000, jasaCetak: 5000, price: 60000 }, { name: "Size XL", modalBahan: 40000, jasaCetak: 5000, price: 65000 }] 
+                    }
                 ]
             },
             mug: {
                 title: "Mug / Tumbler Custom", method: "Cetak UV DTF Anti Air",
                 models: [
-                    { name: "Mug Keramik Standard", etalaseImg: "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?w=500&auto=format&fit=crop&q=60", image: cleanDefaultMugSvg, sizes: [{ name: "11 oz (Full Print)", modalBahan: 12000, jasaCetak: 4000, price: 25000 }] }
+                    { 
+                        name: "Mug Keramik Standard", 
+                        etalaseImg: "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?w=500&auto=format&fit=crop&q=60", 
+                        image: cleanDefaultMugSvg, 
+                        desc: "Mug keramik putih berkualitas tinggi dengan cetak UV full color anti air.",
+                        recommendation: "Sangat bagus untuk kado spesial, souvenir pernikahan, dan merchandise kantor.",
+                        maxWeight: "-",
+                        sizes: [{ name: "11 oz (Full Print)", modalBahan: 12000, jasaCetak: 4000, price: 25000 }] 
+                    }
                 ]
             }
         };
 
         let bagColors = [{ name: "Putih Bersih", hex: "#ffffff" }, { name: "Hitam", hex: "#0f172a" }, { name: "Biru", hex: "#1d4ed8" }, { name: "Merah", hex: "#dc2626" }];
         let brandLogoUrl = "";
+        let aiAssistantName = "Bang Ilham";
+        let aiAvatarUrl = "https://i.giphy.com/media/v1.Y2lkPTc5MGI3NjExM3Zudmp4ajhzZGJkbmV6ZTZsazVndXVqZnp4aXh5Z2R2eGdlcHFjOSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/3oKIPnAiaMCws8nOsE/giphy.gif";
         let pdfPassword = "ilham123";
         let ownerWaNumber = "6289630539563";
 
@@ -344,11 +403,14 @@
         try {
             if(localStorage.getItem('ilham_catalogData')) catalogData = JSON.parse(localStorage.getItem('ilham_catalogData'));
             if(localStorage.getItem('ilham_brandLogoUrl')) brandLogoUrl = localStorage.getItem('ilham_brandLogoUrl');
+            if(localStorage.getItem('ilham_aiName')) aiAssistantName = localStorage.getItem('ilham_aiName');
+            if(localStorage.getItem('ilham_aiAvatarUrl')) aiAvatarUrl = localStorage.getItem('ilham_aiAvatarUrl');
             if(localStorage.getItem('ilham_cartItems')) cartItems = JSON.parse(localStorage.getItem('ilham_cartItems'));
         } catch(e) {}
 
         function checkCustomerOnboarding() {
             applyBrandLogoToUI();
+            updateAIProfileUI();
             const savedData = localStorage.getItem('ilham_customer_profile');
             if(!savedData) {
                 document.getElementById('customer-onboarding-modal').style.display = 'flex';
@@ -356,12 +418,40 @@
                 customerData = JSON.parse(savedData);
                 applyCustomerProfileToForm();
                 openWelcomeVideo();
-                initPersonalizedGreeting();
+                initRealtimeGreeting();
             }
             renderEtalase();
         }
 
-        // --- SISTEM AI PINTAR UNTUK CUSTOMER (REKOMENDASI & VOICE) ---
+        function updateAIProfileUI() {
+            document.getElementById('ai-header-title').textContent = `🤖 Konsultan AI (${aiAssistantName})`;
+            const avatarEl = document.getElementById('ai-custom-avatar-icon');
+            if(avatarEl && aiAvatarUrl) {
+                avatarEl.src = aiAvatarUrl;
+            }
+        }
+
+        function getGreetingTime() {
+            const hour = new Date().getHours();
+            if (hour >= 3 && hour < 11) return "Pagi";
+            if (hour >= 11 && hour < 15) return "Siang";
+            if (hour >= 15 && hour < 18) return "Sore";
+            return "Malam";
+        }
+
+        function initRealtimeGreeting() {
+            const timeStr = getGreetingTime();
+            const customerName = customerData.name || 'Bos';
+            const greetingText = `${timeStr}, Bos ${customerName}! Ada yang bisa saya bantu di ILHAM SPUNBOND hari ini? Silakan tanyakan rekomendasi produk ke saya ya!`;
+            
+            const chatHistory = document.getElementById('ai-chat-history');
+            if(chatHistory) {
+                chatHistory.innerHTML += `<div class="text-amber-300 font-medium">🤖 ${aiAssistantName}: "${greetingText}"</div>`;
+                chatHistory.scrollTop = chatHistory.scrollHeight;
+            }
+            speakTextAI(greetingText);
+        }
+
         function toggleVoiceAI() {
             isVoiceAIActive = !isVoiceAIActive;
             const btn = document.getElementById('ai-voice-toggle-btn');
@@ -388,26 +478,33 @@
             chatHistory.innerHTML += `<div class="text-right text-emerald-300 font-bold">Anda: ${sanitizeInput(query)}</div>`;
             inputEl.value = '';
 
-            let reply = "Saya siap membantu Anda memilih produk custom terbaik di ILHAM SPUNBOND!";
-            
-            if(query.includes('kotak nasi') || query.includes('nasi box')) {
-                reply = "Untuk tas kotak nasi, saya sangat merekomendasikan model Tas HLS Lipat Samping ukuran 20x20 atau 22x22 cm. Kokoh, muat box nasi rapi, dan harga terjangkau!";
-            } else if(query.includes('hp') || query.includes('souvenir') || query.includes('kecil')) {
-                reply = "Untuk tas souvenir atau aksesoris HP, pilih Tas Spunbond Oval ukuran 20x30 cm. Praktis, elegan, dan sangat cocok untuk acara promosi.";
-            } else if(query.includes('kaos') || query.includes('baju')) {
-                reply = "Untuk kaos custom, kami menyediakan Kaos Cotton Combed 30s dengan sablon DTF full color anti luntur. Nyaman dipakai sehari-hari!";
-            } else if(query.includes('mug') || query.includes('tumbler')) {
-                reply = "Mug Keramik Standard cetak UV DTF sangat cocok dijadikan kado eksklusif atau merchandise kantor anti air.";
+            let matchedProductInfo = [];
+            Object.keys(catalogData).forEach(catKey => {
+                catalogData[catKey].models.forEach(model => {
+                    let textBlob = (model.name + " " + model.desc + " " + model.recommendation).toLowerCase();
+                    if(query.split(' ').some(word => word.length > 2 && textBlob.includes(word))) {
+                        matchedProductInfo.push(model);
+                    }
+                });
+            });
+
+            let reply = "";
+            if(matchedProductInfo.length > 0) {
+                let p = matchedProductInfo[0];
+                reply = `Berdasarkan database kami, rekomendasi terbaik untuk Anda adalah **${p.name}**. ${p.desc} ${p.recommendation} ${p.maxWeight}`;
+            } else if(query.includes('nasi') || query.includes('kotak') || query.includes('hajatan')) {
+                reply = "Untuk keperluan kotak nasi atau hajatan, kami sangat merekomendasikan **Tas HLS Lipat Samping**. Tas ini sangat kokoh, muat box nasi rapi, dan kuat menahan beban hingga 6 kg!";
+            } else if(query.includes('unik') || query.includes('souvenir') || query.includes('merchandise')) {
+                reply = "Merchandise unik dan eksklusif kami meliputi **Tas Spunbond Oval** untuk promosi, **Kaos Cotton Combed 30s** sablon DTF full color, hingga **Mug Keramik** anti air!";
             } else {
-                reply = `Pertanyaan bagus! Untuk kebutuhan "${query}", Anda bisa memilih model Tas Spunbond atau Kaos Custom di etalase kami, lalu unggah logo Anda untuk melihat preview-nya secara langsung!`;
+                reply = `Pertanyaan bagus! Di ILHAM SPUNBOND, kami menyediakan berbagai tas spunbond dan merchandise berkualitas tinggi. Silakan pilih produk di etalase dan unggah logo Anda untuk melihat preview secara langsung!`;
             }
 
-            chatHistory.innerHTML += `<div class="text-amber-300 font-medium">🤖 AI ILHAM: ${reply}</div>`;
+            chatHistory.innerHTML += `<div class="text-amber-300 font-medium">🤖 ${aiAssistantName}: ${reply}</div>`;
             chatHistory.scrollTop = chatHistory.scrollHeight;
             speakTextAI(reply);
         }
 
-        // --- SISTEM AI ANALISIS KEUANGAN UNTUK ADMIN ---
         function generateAdminAIInsights(yearOrders, totalOmset, totalModal, labaBersih) {
             const insightEl = document.getElementById('admin-ai-insights');
             if(!insightEl) return;
@@ -418,13 +515,7 @@
             }
 
             let profitMargin = totalOmset > 0 ? Math.round((labaBersih / totalOmset) * 100) : 0;
-            let advice = "";
-            if(profitMargin > 40) {
-                advice = `Performa bisnis sangat luar biasa! Margin keuntungan bersih mencapai ${profitMargin}%. Pertahankan efisiensi produksi bahan spunbond Anda.`;
-            } else {
-                advice = `Margin keuntungan bersih berada di angka ${profitMargin}%. Pertimbangkan untuk menaikkan sedikit harga jual jasa cetak atau mengoptimalkan modal bahan baku.`;
-            }
-
+            let advice = profitMargin > 40 ? `Performa bisnis sangat luar biasa! Margin keuntungan bersih mencapai ${profitMargin}%.` : `Margin keuntungan bersih berada di angka ${profitMargin}%. Pertimbangkan optimasi harga jual.`;
             insightEl.textContent = `"${advice} Total ${yearOrders.length} PO telah diproses dengan omset kotor Rp ${totalOmset.toLocaleString('id-ID')}."`;
         }
 
@@ -458,6 +549,22 @@
             reader.readAsDataURL(file);
         }
 
+        function saveAIProfileConfig() {
+            const nameInput = document.getElementById('admin-ai-name-input').value.trim();
+            const avatarInput = document.getElementById('admin-ai-avatar-input').value.trim();
+            
+            if(nameInput) {
+                aiAssistantName = nameInput;
+                localStorage.setItem('ilham_aiName', aiAssistantName);
+            }
+            if(avatarInput) {
+                aiAvatarUrl = avatarInput;
+                localStorage.setItem('ilham_aiAvatarUrl', aiAvatarUrl);
+            }
+            updateAIProfileUI();
+            alert("✅ Profil & Avatar GIF AI berhasil diperbarui!");
+        }
+
         function submitCustomerOnboarding() {
             const name = sanitizeInput(document.getElementById('onboard-name').value.trim());
             const wa = sanitizeInput(document.getElementById('onboard-wa').value.trim());
@@ -470,8 +577,8 @@
             localStorage.setItem('ilham_customer_profile', JSON.stringify(customerData));
             document.getElementById('customer-onboarding-modal').style.display = 'none';
             applyCustomerProfileToForm();
+            initRealtimeGreeting();
             openWelcomeVideo();
-            initPersonalizedGreeting();
         }
 
         function applyCustomerProfileToForm() {
@@ -501,13 +608,6 @@
             }
         }
 
-        function initPersonalizedGreeting() {
-            const dateStr = new Date().toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'short', year: 'numeric' });
-            document.getElementById('daily-date-badge').textContent = dateStr;
-            const greeting = `Halo, selamat datang ${customerData.name || 'Bos'} dari ${customerData.address || 'Indonesia'}! Silakan pilih contoh etalase dan mulai desain custommu.`;
-            document.getElementById('smart-quote-text').textContent = `"${greeting}"`;
-        }
-
         function renderEtalase() {
             const container = document.getElementById('etalase-grid-container');
             if(!container) return;
@@ -526,6 +626,7 @@
                             </div>
                             <div>
                                 <h4 class="text-xs font-black text-slate-800">${model.name}</h4>
+                                <p class="text-[10px] text-slate-500 line-clamp-1 mt-0.5">${model.desc || ''}</p>
                                 <p class="text-[10px] text-emerald-700 font-semibold mt-0.5">Metode: ${cat.method}</p>
                             </div>
                             <button type="button" onclick="openStudioWorkshop('${catKey}', ${mIndex})" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 rounded-xl text-xs shadow transition cursor-pointer flex items-center justify-center gap-1.5">
@@ -754,7 +855,6 @@
             window.open(`https://wa.me/${ownerWaNumber}?text=Halo%20Owner%2C%20Order%20Baru%20${orderId}%20atas%20nama%20${customerData.name}.%20Total%3A%20Rp%20${grandSubtotal}`);
         }
 
-        // --- RIWAYAT PO & INFO RESI UNTUK CUSTOMER ---
         function openCustomerOrderHistory() {
             const container = document.getElementById('customer-order-history-list');
             document.getElementById('customer-order-history-modal').classList.remove('hidden');
@@ -807,25 +907,67 @@
                 </div>`;
         }
 
+        function renderAdminProductSpecs() {
+            const container = document.getElementById('admin-model-specs-container');
+            if(!container) return;
+            container.innerHTML = '';
+
+            Object.keys(catalogData).forEach(catKey => {
+                const cat = catalogData[catKey];
+                cat.models.forEach((model, mIndex) => {
+                    container.innerHTML += `
+                        <div class="bg-slate-800 p-3.5 rounded-2xl border border-slate-700 space-y-2.5 text-xs">
+                            <div class="font-extrabold text-amber-300">📁 ${cat.title} - ${model.name}</div>
+                            <div>
+                                <label class="block text-[10px] text-slate-400 mb-1">Deskripsi Produk:</label>
+                                <input type="text" id="desc-${catKey}-${mIndex}" value="${model.desc || ''}" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-2 text-white outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] text-slate-400 mb-1">Rekomendasi Penggunaan:</label>
+                                <input type="text" id="recom-${catKey}-${mIndex}" value="${model.recommendation || ''}" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-2 text-white outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] text-slate-400 mb-1">Kekuatan / Beban Maksimal:</label>
+                                <input type="text" id="weight-${catKey}-${mIndex}" value="${model.maxWeight || ''}" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-2 text-white outline-none">
+                            </div>
+                            <button type="button" onclick="saveProductSpecs('${catKey}', ${mIndex})" class="w-full bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold py-2 rounded-xl text-xs cursor-pointer">Simpan Spesifikasi Ini</button>
+                        </div>`;
+                });
+            });
+        }
+
+        function saveProductSpecs(catKey, mIndex) {
+            catalogData[catKey].models[mIndex].desc = document.getElementById(`desc-${catKey}-${mIndex}`).value;
+            catalogData[catKey].models[mIndex].recommendation = document.getElementById(`recom-${catKey}-${mIndex}`).value;
+            catalogData[catKey].models[mIndex].maxWeight = document.getElementById(`weight-${catKey}-${mIndex}`).value;
+
+            localStorage.setItem('ilham_catalogData', JSON.stringify(catalogData));
+            alert("✅ Spesifikasi & rekomendasi produk berhasil diperbarui! AI kini otomatis membaca data ini.");
+            renderEtalase();
+        }
+
         function switchAdminTab(tabName) {
             ['rekap', 'produk', 'settings', 'orders'].forEach(t => {
                 const el = document.getElementById(`admin-tab-${t}`);
                 const btn = document.getElementById(`tab-btn-${t}`);
                 if(el) el.classList.add('hidden');
-                if(btn) btn.className = "flex-1 bg-slate-800 text-slate-300 font-bold py-2 rounded-xl text-xs cursor-pointer";
+                if(btn) btn.className = "flex-1 min-w-[70px] bg-slate-800 text-slate-300 font-bold py-2 rounded-xl text-xs cursor-pointer";
             });
             const activeEl = document.getElementById(`admin-tab-${tabName}`);
             const activeBtn = document.getElementById(`tab-btn-${tabName}`);
             if(activeEl) activeEl.classList.remove('hidden');
-            if(activeBtn) activeBtn.className = "flex-1 bg-amber-500 text-slate-950 font-bold py-2 rounded-xl text-xs cursor-pointer";
+            if(activeBtn) activeBtn.className = "flex-1 min-w-[70px] bg-amber-500 text-slate-950 font-bold py-2 rounded-xl text-xs cursor-pointer";
 
             if(tabName === 'rekap') renderYearlyReport();
-            if(tabName === 'produk') renderAdminProductPrices();
-            if(tabName === 'settings') applyBrandLogoToUI();
+            if(tabName === 'produk') renderAdminProductSpecs();
+            if(tabName === 'settings') {
+                applyBrandLogoToUI();
+                document.getElementById('admin-ai-name-input').value = aiAssistantName;
+                document.getElementById('admin-ai-avatar-input').value = aiAvatarUrl;
+            }
             if(tabName === 'orders') renderAdminOrdersList();
         }
 
-        // --- ADMIN: DAFTAR PO & INPUT NOMOR RESI ---
         function renderAdminOrdersList() {
             const container = document.getElementById('order-history-list');
             if(!container) return;
