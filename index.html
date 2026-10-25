@@ -11,8 +11,6 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="ILHAM SPUNBOND">
     <meta name="theme-color" content="#065f46">
-    
-    <!-- Inline Manifest Pangkas Error PWABuilder -->
     <link rel="manifest" href="data:application/manifest+json;charset=utf-8,%7B%22name%22%3A%22ILHAM%20SPUNBOND%22%2C%22short_name%22%3A%22IlhamSpunbond%22%2C%22start_url%22%3A%22.%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%23f8fafc%22%2C%22theme_color%22%3A%22%23065f46%22%2C%22description%22%3A%22Pusat%20Custom%20Merchandise%20%26%20Sablon%20Profesional%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22https%3A%2F%2Fvia.placeholder.com%2F192x192%2F065f46%2Fffffff%3Ftext%3DILHAM%22%2C%22sizes%22%3A%22192x192%22%2C%22type%22%3A%22image%2Fpng%22%7D%2C%7B%22src%22%3A%22https%3A%2F%2Fvia.placeholder.com%2F512x512%2F065f46%2Fffffff%3Ftext%3DILHAM%22%2C%22sizes%22%3A%22512x512%22%2C%22type%22%3A%22image%2Fpng%22%7D%5D%7D">
 
     <!-- Tailwind CSS -->
@@ -109,55 +107,82 @@
             <p id="smart-quote-text" class="text-xs font-semibold text-slate-800 leading-relaxed italic pt-0.5">"Halo! Selamat datang di ILHAM SPUNBOND."</p>
         </div>
 
-        <!-- AREA CUSTOMER -->
-        <div id="customer-view" class="space-y-4">
-            <div id="section-custom" class="glass-card p-4 sm:p-5 rounded-2xl shadow-sm space-y-4">
+        <!-- 🏬 BAGIAN 1: ETALASE CONTOH HASIL PRODUKSI (GALERI) -->
+        <div id="section-etalase" class="space-y-4">
+            <div class="bg-emerald-900 text-white p-4 rounded-2xl shadow-md flex items-center justify-between">
                 <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-1.5">1. Pilih Kategori Produk</label>
-                    <select id="product-category-select" onchange="onCategoryChange()" class="w-full bg-slate-50 border border-slate-300 rounded-xl p-3 text-sm font-semibold text-slate-800 focus:ring-2 focus:ring-emerald-500 outline-none shadow-sm">
-                        <option value="tas">🛍️ Tas Spunbond Custom</option>
-                        <option value="kaos">👕 Kaos Custom (DTF)</option>
-                        <option value="mug">☕ Mug & Tumbler Custom (UV DTF)</option>
-                    </select>
+                    <h2 class="text-sm font-black uppercase tracking-wider">🏬 Etalase Contoh Produksi</h2>
+                    <p class="text-[10px] text-emerald-200">Pilih model dan klik "Mulai Desain" untuk pasang logo Anda!</p>
+                </div>
+            </div>
+            <div id="etalase-grid-container" class="space-y-4">
+                <!-- Diisi otomatis via JavaScript -->
+            </div>
+        </div>
+
+        <!-- 🎨 BAGIAN 2: STUDIO WORKSHOP DESAIN (MOCKUP & PENGATURAN LOGO) -->
+        <div id="section-custom-workshop" class="hidden space-y-4">
+            <div class="flex items-center justify-between bg-slate-900 text-white p-3.5 rounded-2xl shadow">
+                <button type="button" onclick="backToEtalase()" class="bg-slate-800 hover:bg-slate-700 text-slate-200 px-3 py-1.5 rounded-xl text-xs font-bold cursor-pointer">⬅️ Kembali ke Etalase</button>
+                <div class="text-xs font-black text-amber-400 uppercase tracking-wider">🛠️ Studio Desain Custom</div>
+            </div>
+
+            <div class="glass-card p-4 sm:p-5 rounded-2xl shadow-sm space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Produk Dipilih:</label>
+                    <input type="text" id="active-product-title" readonly class="w-full bg-emerald-50 border border-emerald-200 rounded-xl p-3 text-sm font-extrabold text-emerald-900 outline-none">
                 </div>
 
                 <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-1.5">2. Pilih Model / Tipe Produk</label>
-                    <select id="bag-model-select" onchange="onCustomerModelChange()" class="w-full bg-slate-50 border border-slate-300 rounded-xl p-3 text-sm font-semibold text-slate-800 focus:ring-2 focus:ring-emerald-500 outline-none shadow-sm"></select>
+                    <label class="block text-xs font-bold text-slate-700 mb-1.5">Pilih Ukuran / Varian</label>
+                    <select id="bag-size-select" class="w-full bg-slate-50 border border-slate-300 rounded-xl p-3 text-sm font-semibold text-slate-800 focus:ring-2 focus:ring-emerald-500 outline-none shadow-sm"></select>
                 </div>
 
                 <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-1.5">3. Pilih Ukuran / Varian</label>
-                    <select id="bag-size-select" onchange="onCustomerSizeSelect()" class="w-full bg-slate-50 border border-slate-300 rounded-xl p-3 text-sm font-semibold text-slate-800 focus:ring-2 focus:ring-emerald-500 outline-none shadow-sm"></select>
-                </div>
-
-                <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-2">4. Pilih Warna Dasar Produk (<span id="active-color-label" class="text-emerald-700 font-extrabold">Putih Bersih</span>)</label>
+                    <label class="block text-xs font-bold text-slate-700 mb-2">Pilih Warna Dasar Produk (<span id="active-color-label" class="text-emerald-700 font-extrabold">Putih Bersih</span>)</label>
                     <div id="bag-color-buttons" class="flex flex-wrap gap-2"></div>
                 </div>
 
-                <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-1.5">5. Metode Cetak</label>
-                    <input type="text" id="print-method-display" readonly class="w-full bg-emerald-50 border border-emerald-200 rounded-xl p-3 text-sm font-bold text-emerald-800 outline-none">
-                </div>
-
                 <div class="space-y-1.5 pt-1">
-                    <label class="block text-xs font-bold text-slate-700">6. Upload Logo / Desain Anda (Hapus Background Otomatis)</label>
+                    <label class="block text-xs font-bold text-slate-700">Upload Logo / Desain Anda (Hapus Background Otomatis)</label>
                     <input type="file" id="customer-logo-upload" accept="image/*" onchange="loadCustomerLogo(event)" class="w-full text-xs text-slate-500 file:mr-3 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-emerald-50 file:text-emerald-700 cursor-pointer border border-slate-200 rounded-xl p-1 bg-slate-50">
                     <div id="logo-upload-status" class="text-[10px] text-slate-400 italic"></div>
                 </div>
             </div>
 
-            <!-- PREVIEW MOCKUP -->
-            <div id="section-preview" class="glass-card p-4 sm:p-5 rounded-2xl shadow-md relative space-y-3.5">
-                <h2 class="text-xs font-extrabold text-slate-800 flex items-center gap-2 uppercase tracking-wider"><span>🛍️</span> Preview Mockup Produk</h2>
+            <!-- PREVIEW MOCKUP & KONTROL LOGO -->
+            <div class="glass-card p-4 sm:p-5 rounded-2xl shadow-md relative space-y-3.5">
+                <h2 class="text-xs font-extrabold text-slate-800 flex items-center gap-2 uppercase tracking-wider"><span>🛍️</span> Preview Mockup & Atur Posisi Logo</h2>
+                
+                <!-- Area Kanvas Mockup Model Kosong -->
                 <div id="capture-mockup" class="relative w-full h-72 bg-white rounded-2xl flex items-center justify-center overflow-hidden shadow-inner border border-slate-200">
                     <canvas id="bag-preview-canvas" class="absolute inset-0 w-full h-full object-contain p-2 pointer-events-none"></canvas>
                     <div id="logo-layer" class="absolute cursor-move flex items-center justify-center p-2 z-10" style="transform: translate(0px, 0px) scale(1) rotate(0deg);">
-                        <img id="preview-logo-img" src="" alt="Logo" class="max-h-24 object-contain filter drop-shadow-md">
+                        <img id="preview-logo-img" src="" alt="" class="max-h-24 object-contain filter drop-shadow-md hidden">
+                        <span id="preview-placeholder-text" class="text-xs text-slate-400 font-semibold border border-dashed border-slate-300 p-3 rounded-xl bg-slate-50/80">Upload logo Anda di atas</span>
                     </div>
                     <div class="web-watermark"><span class="watermark-single">ILHAM SPUNBOND</span></div>
                 </div>
+
+                <!-- TOMBOL KONTROL POSISI, UKURAN & ROTASI LOGO -->
+                <div class="bg-slate-100 p-3 rounded-xl border border-slate-200 space-y-2">
+                    <div class="text-[10px] font-bold text-slate-600 uppercase tracking-wider text-center">🎛️ Panel Kontrol Posisi, Ukuran & Rotasi Logo</div>
+                    <div class="grid grid-cols-4 gap-1.5">
+                        <button type="button" onclick="moveLogo('up')" class="bg-white hover:bg-slate-200 border border-slate-300 p-2 rounded-lg text-xs font-bold text-slate-700 shadow-sm cursor-pointer">⬆️ Atas</button>
+                        <button type="button" onclick="moveLogo('down')" class="bg-white hover:bg-slate-200 border border-slate-300 p-2 rounded-lg text-xs font-bold text-slate-700 shadow-sm cursor-pointer">⬇️ Bawah</button>
+                        <button type="button" onclick="moveLogo('left')" class="bg-white hover:bg-slate-200 border border-slate-300 p-2 rounded-lg text-xs font-bold text-slate-700 shadow-sm cursor-pointer">⬅️ Kiri</button>
+                        <button type="button" onclick="moveLogo('right')" class="bg-white hover:bg-slate-200 border border-slate-300 p-2 rounded-lg text-xs font-bold text-slate-700 shadow-sm cursor-pointer">➡️ Kanan</button>
+                    </div>
+                    <div class="grid grid-cols-3 gap-1.5 pt-1">
+                        <button type="button" onclick="scaleLogo(0.9)" class="bg-white hover:bg-slate-200 border border-slate-300 py-2 rounded-lg text-xs font-bold text-slate-700 shadow-sm cursor-pointer">🔍 Perkecil</button>
+                        <button type="button" onclick="scaleLogo(1.1)" class="bg-white hover:bg-slate-200 border border-slate-300 py-2 rounded-lg text-xs font-bold text-slate-700 shadow-sm cursor-pointer">🔍 Perbesar</button>
+                        <button type="button" onclick="rotateLogo(15)" class="bg-white hover:bg-slate-200 border border-slate-300 py-2 rounded-lg text-xs font-bold text-slate-700 shadow-sm cursor-pointer">🔄 Putar (+15°)</button>
+                    </div>
+                    <div class="text-center pt-1">
+                        <button type="button" onclick="resetLogoTransform()" class="w-full bg-rose-100 hover:bg-rose-200 border border-rose-300 py-1.5 rounded-lg text-xs font-bold text-rose-700 shadow-sm cursor-pointer">🔄 Reset Posisi & Rotasi</button>
+                    </div>
+                </div>
+
                 <div class="flex items-center gap-3 pt-1">
                     <div class="flex-1">
                         <label class="block text-[11px] font-bold text-slate-600 mb-1">Quantity (Pcs)</label>
@@ -166,99 +191,100 @@
                     <button type="button" onclick="addItemToCart()" class="mt-5 bg-emerald-700 hover:bg-emerald-800 text-white font-bold py-3.5 px-4 rounded-xl text-xs shadow-md cursor-pointer"><span>➕</span> Masukkan Keranjang</button>
                 </div>
             </div>
+        </div>
 
-            <!-- KERANJANG -->
-            <div id="section-cart" class="glass-card p-4 sm:p-5 rounded-2xl shadow-md space-y-3">
-                <h3 class="text-xs font-extrabold text-slate-800 border-b border-slate-100 pb-2.5 flex items-center justify-between uppercase">
-                    <span>🛒 Keranjang Mix Item (<span id="cart-count">0</span>)</span>
-                    <button type="button" onclick="clearCart()" class="text-rose-600 hover:underline text-[10px] font-bold cursor-pointer">Kosongkan</button>
-                </h3>
-                <div id="cart-items-container" class="flex gap-3 overflow-x-auto pb-2 pt-1 no-scrollbar items-center">
-                    <p class="text-xs text-slate-400 text-center py-4 w-full font-medium">Belum ada item ditambahkan.</p>
-                </div>
-            </div>
-
-            <!-- CHECKOUT FORM -->
-            <div id="section-form" class="glass-card p-4 sm:p-6 rounded-2xl shadow-md space-y-4">
-                <h3 class="text-xs font-extrabold text-slate-800 border-b border-slate-100 pb-2.5 uppercase"><span>📋</span> Formulir Pesanan</h3>
-                <div><label class="block text-[11px] font-bold text-slate-600 mb-1">Nama Pemesan</label><input type="text" id="customer-name" readonly class="w-full bg-slate-200 border rounded-xl p-3 text-sm font-bold text-slate-700 outline-none"></div>
-                <div><label class="block text-[11px] font-bold text-slate-600 mb-1">Nomor WhatsApp</label><input type="text" id="customer-wa" readonly class="w-full bg-slate-200 border rounded-xl p-3 text-sm font-bold text-slate-700 outline-none"></div>
-                <div><label class="block text-[11px] font-bold text-slate-600 mb-1">Alamat</label><textarea id="customer-address" rows="2" readonly class="w-full bg-slate-200 border rounded-xl p-3 text-sm font-bold text-slate-700 outline-none"></textarea></div>
-                
-                <div class="bg-gradient-to-br from-emerald-50 to-teal-50 border p-4 rounded-xl space-y-3">
-                    <div class="flex justify-between items-center text-xs"><span>Total Qty:</span><span id="display-total-qty" class="font-extrabold text-sm">0 Pcs</span></div>
-                    <div class="flex justify-between items-center"><span class="text-xs font-extrabold">Total Keseluruhan:</span><span id="display-total-price" class="text-xl font-black text-emerald-950">Rp 0</span></div>
-                </div>
-
-                <div class="space-y-2.5">
-                    <button type="button" onclick="saveOrderAndSendWhatsApp()" class="w-full bg-gradient-to-r from-emerald-600 to-teal-700 text-white font-bold py-4 rounded-2xl shadow-xl flex items-center justify-center gap-2 text-sm cursor-pointer">Simpan PO & Kirim ke WhatsApp</button>
-                    <button type="button" onclick="openCustomerOrderHistory()" class="w-full bg-emerald-800 text-white font-bold py-3.5 rounded-2xl shadow-lg flex items-center justify-center gap-2 text-sm cursor-pointer">📂 Riwayat PO Saya</button>
-                    <button type="button" onclick="verifyAndShowOrderHistory()" class="w-full bg-gradient-to-r from-amber-500 to-amber-600 text-slate-950 font-extrabold py-3.5 rounded-2xl shadow-lg flex items-center justify-center gap-2 text-sm cursor-pointer">🔐 Panel Admin & Rekap Tahunan</button>
-                </div>
+        <!-- KERANJANG -->
+        <div id="section-cart" class="glass-card p-4 sm:p-5 rounded-2xl shadow-md space-y-3">
+            <h3 class="text-xs font-extrabold text-slate-800 border-b border-slate-100 pb-2.5 flex items-center justify-between uppercase">
+                <span>🛒 Keranjang Mix Item (<span id="cart-count">0</span>)</span>
+                <button type="button" onclick="clearCart()" class="text-rose-600 hover:underline text-[10px] font-bold cursor-pointer">Kosongkan</button>
+            </h3>
+            <div id="cart-items-container" class="flex gap-3 overflow-x-auto pb-2 pt-1 no-scrollbar items-center">
+                <p class="text-xs text-slate-400 text-center py-4 w-full font-medium">Belum ada item ditambahkan.</p>
             </div>
         </div>
 
-        <!-- PANEL ADMIN DI DALAM MODAL -->
-        <div id="order-history-modal" class="hidden fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-4">
-            <div class="bg-slate-900 text-white w-full max-w-xl max-h-[95vh] rounded-3xl p-5 border border-amber-500/40 flex flex-col space-y-4 shadow-2xl">
-                <div class="flex justify-between items-center border-b border-slate-800 pb-3">
-                    <h3 class="text-sm font-bold text-amber-400 uppercase">📊 Panel Admin & Rekap Tahunan</h3>
-                    <button type="button" onclick="closeOrderHistoryModal()" class="text-xs text-slate-400 font-bold bg-slate-800 px-3 py-1.5 rounded-lg">Tutup [X]</button>
-                </div>
+        <!-- CHECKOUT FORM -->
+        <div id="section-form" class="glass-card p-4 sm:p-6 rounded-2xl shadow-md space-y-4">
+            <h3 class="text-xs font-extrabold text-slate-800 border-b border-slate-100 pb-2.5 uppercase"><span>📋</span> Formulir Pesanan</h3>
+            <div><label class="block text-[11px] font-bold text-slate-600 mb-1">Nama Pemesan</label><input type="text" id="customer-name" readonly class="w-full bg-slate-200 border rounded-xl p-3 text-sm font-bold text-slate-700 outline-none"></div>
+            <div><label class="block text-[11px] font-bold text-slate-600 mb-1">Nomor WhatsApp</label><input type="text" id="customer-wa" readonly class="w-full bg-slate-200 border rounded-xl p-3 text-sm font-bold text-slate-700 outline-none"></div>
+            <div><label class="block text-[11px] font-bold text-slate-600 mb-1">Alamat</label><textarea id="customer-address" rows="2" readonly class="w-full bg-slate-200 border rounded-xl p-3 text-sm font-bold text-slate-700 outline-none"></textarea></div>
+            
+            <div class="bg-gradient-to-br from-emerald-50 to-teal-50 border p-4 rounded-xl space-y-3">
+                <div class="flex justify-between items-center text-xs"><span>Total Qty:</span><span id="display-total-qty" class="font-extrabold text-sm">0 Pcs</span></div>
+                <div class="flex justify-between items-center"><span class="text-xs font-extrabold">Total Keseluruhan:</span><span id="display-total-price" class="text-xl font-black text-emerald-950">Rp 0</span></div>
+            </div>
 
-                <!-- TABS -->
-                <div class="flex gap-2 border-b border-slate-800 pb-2">
-                    <button type="button" onclick="switchAdminTab('rekap')" id="tab-btn-rekap" class="flex-1 bg-amber-500 text-slate-950 font-bold py-2 rounded-xl text-xs cursor-pointer">Rekap Tahunan</button>
-                    <button type="button" onclick="switchAdminTab('produk')" id="tab-btn-produk" class="flex-1 bg-slate-800 text-slate-300 font-bold py-2 rounded-xl text-xs cursor-pointer">Kelola Harga</button>
-                    <button type="button" onclick="switchAdminTab('settings')" id="tab-btn-settings" class="flex-1 bg-slate-800 text-slate-300 font-bold py-2 rounded-xl text-xs cursor-pointer">Logo</button>
-                    <button type="button" onclick="switchAdminTab('orders')" id="tab-btn-orders" class="flex-1 bg-slate-800 text-slate-300 font-bold py-2 rounded-xl text-xs cursor-pointer">Daftar PO</button>
-                </div>
-
-                <!-- TAB 1: REKAP TAHUNAN -->
-                <div id="admin-tab-rekap" class="flex-1 overflow-y-auto space-y-3 pr-1">
-                    <div class="bg-slate-800 p-4 rounded-2xl border border-amber-500/30 space-y-2">
-                        <label class="block text-xs font-bold text-amber-300">Pilih Tahun Rekap Global:</label>
-                        <select id="rekap-year-select" onchange="renderYearlyReport()" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-2.5 text-xs text-white outline-none font-bold">
-                            <option value="2026">Tahun 2026</option>
-                            <option value="2027">Tahun 2027</option>
-                        </select>
-                    </div>
-                    <div id="yearly-report-card" class="space-y-3"></div>
-                </div>
-
-                <!-- TAB 2: KELOLA MODEL, MODAL & HARGA -->
-                <div id="admin-tab-produk" class="hidden flex-1 overflow-y-auto space-y-3 pr-1">
-                    <p class="text-[11px] text-amber-300 italic">ℹ️ Atur Harga Modal & Harga Jual Multi-Produk.</p>
-                    <div id="admin-model-price-container" class="space-y-3"></div>
-                </div>
-
-                <!-- TAB 3: PENGATURAN LOGO -->
-                <div id="admin-tab-settings" class="hidden flex-1 overflow-y-auto space-y-3 pr-1">
-                    <div class="bg-slate-800 p-4 rounded-2xl border border-slate-700 space-y-3">
-                        <label class="block text-xs font-bold text-amber-300">🖼️ Upload Logo Resmi Toko</label>
-                        <input type="file" id="admin-logo-file" accept="image/*" onchange="uploadAdminBrandLogo(event)" class="w-full text-xs text-slate-400 file:mr-2 file:py-1.5 file:px-3 file:rounded-xl file:border-0 file:bg-amber-500 file:text-slate-950 font-bold cursor-pointer">
-                        <div class="p-2 bg-slate-900 rounded-xl text-center border border-slate-700">
-                            <img id="admin-logo-preview" src="" alt="Belum ada logo" class="max-h-16 mx-auto object-contain">
-                        </div>
-                    </div>
-                </div>
-
-                <!-- TAB 4: DAFTAR PO -->
-                <div id="admin-tab-orders" class="hidden flex-1 overflow-y-auto space-y-3 pr-1">
-                    <div id="order-history-list" class="space-y-3"></div>
-                </div>
+            <div class="space-y-2.5">
+                <button type="button" onclick="saveOrderAndSendWhatsApp()" class="w-full bg-gradient-to-r from-emerald-600 to-teal-700 text-white font-bold py-4 rounded-2xl shadow-xl flex items-center justify-center gap-2 text-sm cursor-pointer">Simpan PO & Kirim ke WhatsApp</button>
+                <button type="button" onclick="openCustomerOrderHistory()" class="w-full bg-emerald-800 text-white font-bold py-3.5 rounded-2xl shadow-lg flex items-center justify-center gap-2 text-sm cursor-pointer">📂 Riwayat PO Saya</button>
+                <button type="button" onclick="verifyAndShowOrderHistory()" class="w-full bg-gradient-to-r from-amber-500 to-amber-600 text-slate-950 font-extrabold py-3.5 rounded-2xl shadow-lg flex items-center justify-center gap-2 text-sm cursor-pointer">🔐 Panel Admin & Rekap Tahunan</button>
             </div>
         </div>
+    </div>
 
-        <!-- MODAL RIWAYAT PO CUSTOMER -->
-        <div id="customer-order-history-modal" class="hidden fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-4">
-            <div class="bg-slate-900 text-white w-full max-w-lg max-h-[90vh] rounded-3xl p-5 border border-emerald-500/40 flex flex-col space-y-4">
-                <div class="flex justify-between items-center border-b border-slate-800 pb-3">
-                    <h3 class="text-sm font-bold text-emerald-400 uppercase">Riwayat Pesanan Saya</h3>
-                    <button type="button" onclick="closeCustomerOrderHistoryModal()" class="text-xs text-slate-400 font-bold bg-slate-800 px-3 py-1.5 rounded-lg">Tutup [X]</button>
-                </div>
-                <div id="customer-order-history-list" class="flex-1 overflow-y-auto space-y-3 pr-1"></div>
+    <!-- PANEL ADMIN DI DALAM MODAL -->
+    <div id="order-history-modal" class="hidden fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-4">
+        <div class="bg-slate-900 text-white w-full max-w-xl max-h-[95vh] rounded-3xl p-5 border border-amber-500/40 flex flex-col space-y-4 shadow-2xl">
+            <div class="flex justify-between items-center border-b border-slate-800 pb-3">
+                <h3 class="text-sm font-bold text-amber-400 uppercase">📊 Panel Admin & Rekap Tahunan</h3>
+                <button type="button" onclick="closeOrderHistoryModal()" class="text-xs text-slate-400 font-bold bg-slate-800 px-3 py-1.5 rounded-lg">Tutup [X]</button>
             </div>
+
+            <!-- TABS -->
+            <div class="flex gap-2 border-b border-slate-800 pb-2">
+                <button type="button" onclick="switchAdminTab('rekap')" id="tab-btn-rekap" class="flex-1 bg-amber-500 text-slate-950 font-bold py-2 rounded-xl text-xs cursor-pointer">Rekap</button>
+                <button type="button" onclick="switchAdminTab('produk')" id="tab-btn-produk" class="flex-1 bg-slate-800 text-slate-300 font-bold py-2 rounded-xl text-xs cursor-pointer">Harga</button>
+                <button type="button" onclick="switchAdminTab('settings')" id="tab-btn-settings" class="flex-1 bg-slate-800 text-slate-300 font-bold py-2 rounded-xl text-xs cursor-pointer">Logo Toko</button>
+                <button type="button" onclick="switchAdminTab('orders')" id="tab-btn-orders" class="flex-1 bg-slate-800 text-slate-300 font-bold py-2 rounded-xl text-xs cursor-pointer">Daftar PO</button>
+            </div>
+
+            <!-- TAB 1: REKAP TAHUNAN -->
+            <div id="admin-tab-rekap" class="flex-1 overflow-y-auto space-y-3 pr-1">
+                <div class="bg-slate-800 p-4 rounded-2xl border border-amber-500/30 space-y-2">
+                    <label class="block text-xs font-bold text-amber-300">Pilih Tahun Rekap Global:</label>
+                    <select id="rekap-year-select" onchange="renderYearlyReport()" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-2.5 text-xs text-white outline-none font-bold">
+                        <option value="2026">Tahun 2026</option>
+                        <option value="2027">Tahun 2027</option>
+                    </select>
+                </div>
+                <div id="yearly-report-card" class="space-y-3"></div>
+            </div>
+
+            <!-- TAB 2: KELOLA MODEL, MODAL & HARGA -->
+            <div id="admin-tab-produk" class="hidden flex-1 overflow-y-auto space-y-3 pr-1">
+                <p class="text-[11px] text-amber-300 italic">ℹ️ Atur Harga Modal & Harga Jual Multi-Produk.</p>
+                <div id="admin-model-price-container" class="space-y-3"></div>
+            </div>
+
+            <!-- TAB 3: PENGATURAN LOGO -->
+            <div id="admin-tab-settings" class="hidden flex-1 overflow-y-auto space-y-3 pr-1">
+                <div class="bg-slate-800 p-4 rounded-2xl border border-slate-700 space-y-3">
+                    <label class="block text-xs font-bold text-amber-300">🖼️ Upload Logo Resmi Toko</label>
+                    <input type="file" id="admin-logo-file" accept="image/*" onchange="uploadAdminBrandLogo(event)" class="w-full text-xs text-slate-400 file:mr-2 file:py-1.5 file:px-3 file:rounded-xl file:border-0 file:bg-amber-500 file:text-slate-950 font-bold cursor-pointer">
+                    <div class="p-2 bg-slate-900 rounded-xl text-center border border-slate-700 min-h-[80px] flex items-center justify-center">
+                        <img id="admin-logo-preview" src="" alt="Belum ada logo" class="max-h-16 mx-auto object-contain">
+                        <span id="admin-no-logo-text" class="text-xs text-slate-500 italic">Belum ada logo di-upload</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 4: DAFTAR PO -->
+            <div id="admin-tab-orders" class="hidden flex-1 overflow-y-auto space-y-3 pr-1">
+                <div id="order-history-list" class="space-y-3"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL RIWAYAT PO CUSTOMER -->
+    <div id="customer-order-history-modal" class="hidden fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-4">
+        <div class="bg-slate-900 text-white w-full max-w-lg max-h-[90vh] rounded-3xl p-5 border border-emerald-500/40 flex flex-col space-y-4">
+            <div class="flex justify-between items-center border-b border-slate-800 pb-3">
+                <h3 class="text-sm font-bold text-emerald-400 uppercase">Riwayat Pesanan Saya</h3>
+                <button type="button" onclick="closeCustomerOrderHistoryModal()" class="text-xs text-slate-400 font-bold bg-slate-800 px-3 py-1.5 rounded-lg">Tutup [X]</button>
+            </div>
+            <div id="customer-order-history-list" class="flex-1 overflow-y-auto space-y-3 pr-1"></div>
         </div>
     </div>
 
@@ -268,24 +294,45 @@
         const cleanDefaultShirtSvg = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 500'><path d='M120 80 L200 120 L280 80 L320 150 L260 190 L260 420 L140 420 L140 190 L80 150 Z' fill='%23ffffff' stroke='%23334155' stroke-width='8'/></svg>";
         const cleanDefaultMugSvg = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 500'><path d='M120 140 L280 140 L260 400 L140 400 Z' fill='%23ffffff' stroke='%23334155' stroke-width='8'/><path d='M280 170 C330 170 330 330 280 330' fill='none' stroke='%23334155' stroke-width='12'/></svg>";
 
+        // Katalog dengan Foto Etalase Contoh Hasil Jadi Produksi
         let catalogData = {
             tas: {
                 title: "Tas Spunbond", method: "Sablon Manual / DTF",
                 models: [
-                    { name: "Tas Spunbond Oval", image: cleanDefaultBagSvg, sizes: [{ name: "20 x 30 cm", modalBahan: 900, jasaCetak: 300, price: 1400 }, { name: "25 x 35 cm", modalBahan: 1100, jasaCetak: 350, price: 1700 }] },
-                    { name: "Tas HLS Lipat Samping", image: cleanDefaultBagSvg, sizes: [{ name: "20 x 30 x 8 cm", modalBahan: 1300, jasaCetak: 350, price: 2000 }] }
+                    { 
+                        name: "Tas Spunbond Oval", 
+                        etalaseImg: "https://images.unsplash.com/photo-1597484662317-c99bcae44ee5?w=500&auto=format&fit=crop&q=60", 
+                        image: cleanDefaultBagSvg, 
+                        sizes: [{ name: "20 x 30 cm", modalBahan: 900, jasaCetak: 300, price: 1400 }, { name: "25 x 35 cm", modalBahan: 1100, jasaCetak: 350, price: 1700 }] 
+                    },
+                    { 
+                        name: "Tas HLS Lipat Samping", 
+                        etalaseImg: "https://images.unsplash.com/photo-1544816155-12df9643f363?w=500&auto=format&fit=crop&q=60", 
+                        image: cleanDefaultBagSvg, 
+                        sizes: [{ name: "20 x 30 x 8 cm", modalBahan: 1300, jasaCetak: 350, price: 2000 }] 
+                    }
                 ]
             },
             kaos: {
                 title: "Kaos Custom", method: "Cetak DTF Full Color",
                 models: [
-                    { name: "Kaos Cotton Combed 30s", image: cleanDefaultShirtSvg, sizes: [{ name: "Size M", modalBahan: 35000, jasaCetak: 5000, price: 55000 }, { name: "Size L", modalBahan: 37000, jasaCetak: 5000, price: 60000 }, { name: "Size XL", modalBahan: 40000, jasaCetak: 5000, price: 65000 }] }
+                    { 
+                        name: "Kaos Cotton Combed 30s", 
+                        etalaseImg: "https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=500&auto=format&fit=crop&q=60", 
+                        image: cleanDefaultShirtSvg, 
+                        sizes: [{ name: "Size M", modalBahan: 35000, jasaCetak: 5000, price: 55000 }, { name: "Size L", modalBahan: 37000, jasaCetak: 5000, price: 60000 }, { name: "Size XL", modalBahan: 40000, jasaCetak: 5000, price: 65000 }] 
+                    }
                 ]
             },
             mug: {
                 title: "Mug / Tumbler Custom", method: "Cetak UV DTF Anti Air",
                 models: [
-                    { name: "Mug Keramik Standard", image: cleanDefaultMugSvg, sizes: [{ name: "11 oz (Full Print)", modalBahan: 12000, jasaCetak: 4000, price: 25000 }] }
+                    { 
+                        name: "Mug Keramik Standard", 
+                        etalaseImg: "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?w=500&auto=format&fit=crop&q=60", 
+                        image: cleanDefaultMugSvg, 
+                        sizes: [{ name: "11 oz (Full Print)", modalBahan: 12000, jasaCetak: 4000, price: 25000 }] 
+                    }
                 ]
             }
         };
@@ -300,6 +347,11 @@
         let rawCustomerLogoImg = null;
         let cartItems = [];
         let customerData = { name: "", wa: "", address: "", pin: "" };
+
+        // Variabel Pengaturan Posisi & Rotasi Logo di Studio Desain
+        let logoX = 0, logoY = 0, logoScale = 1, logoRotation = 0;
+        let selectedCategoryKey = 'tas';
+        let selectedModelIndex = 0;
 
         try {
             if(localStorage.getItem('ilham_catalogData')) catalogData = JSON.parse(localStorage.getItem('ilham_catalogData'));
@@ -318,16 +370,24 @@
                 openWelcomeVideo();
                 initPersonalizedGreeting();
             }
+            renderEtalase();
         }
 
         function applyBrandLogoToUI() {
-            const logoImgs = [document.getElementById('onboard-brand-logo'), document.getElementById('header-brand-logo'), document.getElementById('admin-logo-preview')];
-            logoImgs.forEach(img => {
-                if(img && brandLogoUrl) {
-                    img.src = brandLogoUrl;
-                    img.style.display = 'block';
-                }
-            });
+            const onboardLogo = document.getElementById('onboard-brand-logo');
+            const headerLogo = document.getElementById('header-brand-logo');
+            const adminLogo = document.getElementById('admin-logo-preview');
+            const noLogoText = document.getElementById('admin-no-logo-text');
+
+            if(brandLogoUrl) {
+                if(onboardLogo) onboardLogo.src = brandLogoUrl;
+                if(headerLogo) headerLogo.src = brandLogoUrl;
+                if(adminLogo) { adminLogo.src = brandLogoUrl; adminLogo.style.display = 'block'; }
+                if(noLogoText) noLogoText.style.display = 'none';
+            } else {
+                if(adminLogo) adminLogo.style.display = 'none';
+                if(noLogoText) noLogoText.style.display = 'block';
+            }
         }
 
         async function uploadAdminBrandLogo(e) {
@@ -338,7 +398,7 @@
                 brandLogoUrl = event.target.result;
                 localStorage.setItem('ilham_brandLogoUrl', brandLogoUrl);
                 applyBrandLogoToUI();
-                alert("✅ Logo berhasil di-upload!");
+                alert("✅ Logo toko berhasil di-upload!");
             };
             reader.readAsDataURL(file);
         }
@@ -381,7 +441,7 @@
                 modal.style.display = 'flex';
                 if(video) {
                     video.currentTime = 0;
-                    video.play().catch(e => console.log("Autoplay blocked, controls enabled"));
+                    video.play().catch(e => console.log("Autoplay blocked"));
                 }
             }
         }
@@ -389,106 +449,83 @@
         function initPersonalizedGreeting() {
             const dateStr = new Date().toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'short', year: 'numeric' });
             document.getElementById('daily-date-badge').textContent = dateStr;
-            const greeting = `Halo, selamat datang ${customerData.name || 'Bos'} dari ${customerData.address || 'Indonesia'}! Silakan pilih produk custom favoritmu.`;
+            const greeting = `Halo, selamat datang ${customerData.name || 'Bos'} dari ${customerData.address || 'Indonesia'}! Silakan pilih contoh etalase dan mulai desain custommu.`;
             document.getElementById('smart-quote-text').textContent = `"${greeting}"`;
         }
 
-        function onCategoryChange() { renderAdminPanel(); }
-
-        function renderAdminPanel() {
-            const catKey = document.getElementById('product-category-select').value;
-            const currentCat = catalogData[catKey];
-            const modelSelect = document.getElementById('bag-model-select');
-            
-            if(!modelSelect) return;
-            modelSelect.innerHTML = '';
-            currentCat.models.forEach((item, mIndex) => {
-                modelSelect.innerHTML += `<option value="${mIndex}">${item.name}</option>`;
-            });
-
-            document.getElementById('print-method-display').value = currentCat.method;
-
-            const colorButtons = document.getElementById('bag-color-buttons');
-            if(colorButtons) {
-                colorButtons.innerHTML = '';
-                bagColors.forEach((item) => {
-                    colorButtons.innerHTML += `<button type="button" onclick="activeBagTint='${item.hex}'; activeColorName='${item.name}'; document.getElementById('active-color-label').textContent='${item.name}'; updateBagCanvas();" class="px-3 py-2 rounded-xl text-xs font-semibold shadow-sm border flex items-center gap-2 cursor-pointer" style="background:${item.hex}; color:${item.hex==='#ffffff'?'#0f172a':'#ffffff'}">${item.name}</button>`;
-                });
-            }
-            updateCustomerSizesDropdown();
-            updateBagCanvas();
-            renderCartItems();
-            renderAdminProductPrices();
-        }
-
-        function renderAdminProductPrices() {
-            const container = document.getElementById('admin-model-price-container');
+        // --- RENDER ETALASE CONTOH HASIL PRODUKSI ---
+        function renderEtalase() {
+            const container = document.getElementById('etalase-grid-container');
             if(!container) return;
             container.innerHTML = '';
 
             Object.keys(catalogData).forEach(catKey => {
                 const cat = catalogData[catKey];
                 let modelsHtml = '';
-                cat.models.forEach((item, mIndex) => {
-                    let sizeHtml = '';
-                    item.sizes.forEach((s, sIndex) => {
-                        sizeHtml += `
-                            <div class="bg-slate-900 p-2.5 rounded-xl border border-slate-700 space-y-2 text-xs mt-2">
-                                <div class="font-bold text-amber-300">${s.name}</div>
-                                <div class="grid grid-cols-3 gap-2">
-                                    <div><label class="block text-[9px] text-slate-400">Modal Bahan</label><input type="number" id="m-bahan-${catKey}-${mIndex}-${sIndex}" value="${s.modalBahan}" class="w-full bg-slate-800 border rounded p-1 text-white text-xs"></div>
-                                    <div><label class="block text-[9px] text-slate-400">Jasa Cetak</label><input type="number" id="m-cetak-${catKey}-${mIndex}-${sIndex}" value="${s.jasaCetak}" class="w-full bg-slate-800 border rounded p-1 text-white text-xs"></div>
-                                    <div><label class="block text-[9px] text-emerald-400 font-bold">Harga Jual</label><input type="number" id="m-jual-${catKey}-${mIndex}-${sIndex}" value="${s.price}" class="w-full bg-emerald-950 border rounded p-1 text-emerald-200 text-xs font-bold"></div>
-                                </div>
-                            </div>`;
-                    });
-                    modelsHtml += `<div class="bg-slate-900/50 p-2 rounded-xl mt-2"><div class="font-extrabold text-amber-400">${item.name}</div>${sizeHtml}</div>`;
+
+                cat.models.forEach((model, mIndex) => {
+                    modelsHtml += `
+                        <div class="bg-white p-3.5 rounded-2xl border border-slate-200 shadow-sm space-y-3 flex flex-col justify-between">
+                            <div class="relative w-full h-48 bg-slate-100 rounded-xl overflow-hidden shadow-inner flex items-center justify-center">
+                                <img src="${model.etalaseImg}" alt="${model.name}" class="w-full h-full object-cover">
+                                <span class="absolute bottom-2 left-2 bg-slate-900/80 text-white text-[10px] font-extrabold px-2.5 py-1 rounded-lg backdrop-blur-sm">${cat.title}</span>
+                            </div>
+                            <div>
+                                <h4 class="text-xs font-black text-slate-800">${model.name}</h4>
+                                <p class="text-[10px] text-emerald-700 font-semibold mt-0.5">Metode: ${cat.method}</p>
+                            </div>
+                            <button type="button" onclick="openStudioWorkshop('${catKey}', ${mIndex})" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 rounded-xl text-xs shadow transition cursor-pointer flex items-center justify-center gap-1.5">
+                                🎨 Mulai Desain Model Ini
+                            </button>
+                        </div>`;
                 });
 
                 container.innerHTML += `
-                    <div class="bg-slate-800 p-3 rounded-2xl border border-slate-700 space-y-2">
-                        <div class="font-extrabold text-sm text-emerald-400 uppercase">Kategori: ${cat.title}</div>
-                        ${modelsHtml}
-                        <button type="button" onclick="saveCategoryPrices('${catKey}')" class="w-full bg-amber-500 text-slate-950 font-bold py-2 rounded-xl text-xs cursor-pointer mt-2">💾 Simpan Perubahan (${cat.title})</button>
+                    <div class="space-y-3">
+                        <div class="text-xs font-extrabold text-slate-700 uppercase tracking-wider px-1">📁 ${cat.title}</div>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">${modelsHtml}</div>
                     </div>`;
             });
         }
 
-        function saveCategoryPrices(catKey) {
+        // --- MASUK KE STUDIO WORKSHOP DESAIN ---
+        function openStudioWorkshop(catKey, mIndex) {
+            selectedCategoryKey = catKey;
+            selectedModelIndex = mIndex;
             const cat = catalogData[catKey];
-            cat.models.forEach((item, mIndex) => {
-                item.sizes.forEach((s, sIndex) => {
-                    s.modalBahan = parseInt(document.getElementById(`m-bahan-${catKey}-${mIndex}-${sIndex}`).value) || 0;
-                    s.jasaCetak = parseInt(document.getElementById(`m-cetak-${catKey}-${mIndex}-${sIndex}`).value) || 0;
-                    s.price = parseInt(document.getElementById(`m-jual-${catKey}-${mIndex}-${sIndex}`).value) || 0;
-                });
+            const model = cat.models[mIndex];
+
+            document.getElementById('section-etalase').classList.add('hidden');
+            document.getElementById('section-custom-workshop').classList.remove('hidden');
+            document.getElementById('active-product-title').value = `${cat.title} - ${model.name}`;
+
+            // Render Varian Ukuran
+            const sizeSelect = document.getElementById('bag-size-select');
+            sizeSelect.innerHTML = '';
+            model.sizes.forEach(s => {
+                sizeSelect.innerHTML += `<option value="${s.name}" data-price="${s.price}" data-modal="${s.modalBahan}" data-cetak="${s.jasaCetak}">${s.name} (Rp ${s.price.toLocaleString('id-ID')})</option>`;
             });
-            localStorage.setItem('ilham_catalogData', JSON.stringify(catalogData));
-            alert("✅ Harga berhasil disimpan!");
-            renderAdminPanel();
+
+            // Render Warna Dasar
+            const colorButtons = document.getElementById('bag-color-buttons');
+            colorButtons.innerHTML = '';
+            bagColors.forEach(item => {
+                colorButtons.innerHTML += `<button type="button" onclick="activeBagTint='${item.hex}'; activeColorName='${item.name}'; document.getElementById('active-color-label').textContent='${item.name}'; updateBagCanvas();" class="px-3 py-2 rounded-xl text-xs font-semibold shadow-sm border flex items-center gap-2 cursor-pointer" style="background:${item.hex}; color:${item.hex==='#ffffff'?'#0f172a':'#ffffff'}">${item.name}</button>`;
+            });
+
+            updateBagCanvas();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        function updateCustomerSizesDropdown() {
-            const catKey = document.getElementById('product-category-select').value;
-            const currentCat = catalogData[catKey];
-            const modelSelect = document.getElementById('bag-model-select');
-            const sizeSelect = document.getElementById('bag-size-select');
-            
-            if(!modelSelect || !sizeSelect) return;
-            const currentModel = currentCat.models[modelSelect.value] || currentCat.models[0];
-            sizeSelect.innerHTML = '';
-            if(currentModel && currentModel.sizes) {
-                currentModel.sizes.forEach(s => {
-                    sizeSelect.innerHTML += `<option value="${s.name}" data-price="${s.price}" data-modal="${s.modalBahan}" data-cetak="${s.jasaCetak}">${s.name} (Rp ${s.price.toLocaleString('id-ID')})</option>`;
-                });
-            }
+        function backToEtalase() {
+            document.getElementById('section-custom-workshop').classList.add('hidden');
+            document.getElementById('section-etalase').classList.remove('hidden');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
         function updateBagCanvas() {
-            const catKey = document.getElementById('product-category-select').value;
-            const currentCat = catalogData[catKey];
-            const mIndex = document.getElementById('bag-model-select').value || 0;
-            const currentModel = currentCat.models[mIndex] || currentCat.models[0];
+            const cat = catalogData[selectedCategoryKey];
+            const model = cat.models[selectedModelIndex];
             const canvas = document.getElementById('bag-preview-canvas');
             const ctx = canvas.getContext('2d');
             
@@ -499,14 +536,15 @@
                 ctx.fillStyle = activeBagTint; ctx.fillRect(0, 0, canvas.width, canvas.height);
                 ctx.drawImage(img, 0, 0);
             };
-            img.src = currentModel.image;
+            img.src = model.image;
         }
 
+        // --- FUNGSI PEMBERSIH BACKGROUND LOGO OTOMATIS ---
         async function loadCustomerLogo(e) {
             const file = e.target.files[0];
             if(!file) return;
             const statusEl = document.getElementById('logo-upload-status');
-            if(statusEl) statusEl.textContent = "⏳ Membersihkan background logo...";
+            if(statusEl) statusEl.textContent = "⏳ Memproses & membersihkan background...";
 
             const reader = new FileReader();
             reader.onload = function(event) {
@@ -537,8 +575,15 @@
                     const finalImg = new Image();
                     finalImg.onload = function() {
                         rawCustomerLogoImg = finalImg;
-                        document.getElementById('preview-logo-img').src = transparentDataUrl;
-                        if(statusEl) statusEl.textContent = "✅ Background logo bersih!";
+                        const logoImgEl = document.getElementById('preview-logo-img');
+                        const placeholderEl = document.getElementById('preview-placeholder-text');
+                        
+                        logoImgEl.src = transparentDataUrl;
+                        logoImgEl.classList.remove('hidden');
+                        placeholderEl.classList.add('hidden');
+                        
+                        resetLogoTransform();
+                        if(statusEl) statusEl.textContent = "✅ Logo berhasil dimuat & background bersih!";
                     };
                     finalImg.src = transparentDataUrl;
                 };
@@ -547,15 +592,45 @@
             reader.readAsDataURL(file);
         }
 
-        function onCustomerModelChange() { updateCustomerSizesDropdown(); updateBagCanvas(); }
-        function onCustomerSizeSelect() {}
+        // --- KONTROL POSISI, UKURAN & ROTASI LOGO DI STUDIO ---
+        function moveLogo(direction) {
+            const step = 10;
+            if(direction === 'up') logoY -= step;
+            if(direction === 'down') logoY += step;
+            if(direction === 'left') logoX -= step;
+            if(direction === 'right') logoX += step;
+            applyLogoTransform();
+        }
+
+        function scaleLogo(factor) {
+            logoScale *= factor;
+            if(logoScale < 0.3) logoScale = 0.3;
+            if(logoScale > 3.0) logoScale = 3.0;
+            applyLogoTransform();
+        }
+
+        function rotateLogo(deg) {
+            logoRotation += deg;
+            if(logoRotation >= 360) logoRotation = 0;
+            applyLogoTransform();
+        }
+
+        function resetLogoTransform() {
+            logoX = 0; logoY = 0; logoScale = 1; logoRotation = 0;
+            applyLogoTransform();
+        }
+
+        function applyLogoTransform() {
+            const layer = document.getElementById('logo-layer');
+            if(layer) {
+                layer.style.transform = `translate(${logoX}px, ${logoY}px) scale(${logoScale}) rotate(${logoRotation}deg)`;
+            }
+        }
 
         async function addItemToCart() {
-            if(!rawCustomerLogoImg) return alert("Upload logo terlebih dahulu!");
-            const catKey = document.getElementById('product-category-select').value;
-            const currentCat = catalogData[catKey];
-            const mIndex = document.getElementById('bag-model-select').value || 0;
-            const currentModel = currentCat.models[mIndex] || currentCat.models[0];
+            if(!rawCustomerLogoImg) return alert("Upload logo desain terlebih dahulu!");
+            const cat = catalogData[selectedCategoryKey];
+            const model = cat.models[selectedModelIndex];
             
             const sizeSelect = document.getElementById('bag-size-select');
             const selectedOpt = sizeSelect.options[sizeSelect.selectedIndex];
@@ -567,12 +642,13 @@
             const qty = parseInt(document.getElementById('item-qty').value) || 100;
 
             cartItems.push({
-                category: currentCat.title, model: currentModel.name, size: sizeName, color: activeColorName,
-                method: currentCat.method, qty, unitPrice, modalTotal: (modalBahan + jasaCetak) * qty, subtotal: unitPrice * qty,
+                category: cat.title, model: model.name, size: sizeName, color: activeColorName,
+                method: cat.method, qty, unitPrice, modalTotal: (modalBahan + jasaCetak) * qty, subtotal: unitPrice * qty,
                 mockupImg: document.getElementById('preview-logo-img').src
             });
             renderCartItems();
-            alert("Item ditambahkan ke keranjang!");
+            alert("✅ Item berhasil ditambahkan ke keranjang!");
+            backToEtalase();
         }
 
         function renderCartItems() {
@@ -585,12 +661,12 @@
             }
             cartItems.forEach((item, index) => {
                 container.innerHTML += `
-                    <div class="bg-white p-3 rounded-2xl border flex-shrink-0 w-64 text-xs relative space-y-1">
+                    <div class="bg-white p-3 rounded-2xl border flex-shrink-0 w-64 text-xs relative space-y-1 shadow-sm">
                         <div class="font-extrabold text-emerald-800">${item.category}</div>
                         <div class="font-bold text-slate-800 truncate">${item.model}</div>
                         <div class="text-[10px] text-slate-500">${item.size} | ${item.qty} Pcs</div>
                         <div class="font-black text-emerald-900">Rp ${item.subtotal.toLocaleString('id-ID')}</div>
-                        <button type="button" onclick="cartItems.splice(${index},1); renderCartItems();" class="absolute top-2 right-2 text-rose-500 font-bold">🗑️</button>
+                        <button type="button" onclick="cartItems.splice(${index},1); renderCartItems();" class="absolute top-2 right-2 text-rose-500 font-bold cursor-pointer">🗑️</button>
                     </div>`;
             });
             updateCartTotals();
@@ -604,7 +680,7 @@
         }
 
         async function saveOrderAndSendWhatsApp() {
-            if(cartItems.length === 0) return alert("Keranjang kosong!");
+            if(cartItems.length === 0) return alert("Keranjang masih kosong!");
             const orderId = "PO-" + Math.floor(1000 + Math.random() * 9000);
             let totalQty = 0, grandSubtotal = 0, totalModalProd = 0;
             cartItems.forEach(i => { totalQty += i.qty; grandSubtotal += i.subtotal; totalModalProd += i.modalTotal; });
@@ -652,15 +728,39 @@
 
         function switchAdminTab(tabName) {
             ['rekap', 'produk', 'settings', 'orders'].forEach(t => {
-                document.getElementById(`admin-tab-${t}`).classList.add('hidden');
-                document.getElementById(`tab-btn-${t}`).className = "flex-1 bg-slate-800 text-slate-300 font-bold py-2 rounded-xl text-xs cursor-pointer";
+                const el = document.getElementById(`admin-tab-${t}`);
+                const btn = document.getElementById(`tab-btn-${t}`);
+                if(el) el.classList.add('hidden');
+                if(btn) btn.className = "flex-1 bg-slate-800 text-slate-300 font-bold py-2 rounded-xl text-xs cursor-pointer";
             });
-            document.getElementById(`admin-tab-${tabName}`).classList.remove('hidden');
-            document.getElementById(`tab-btn-${tabName}`).className = "flex-1 bg-amber-500 text-slate-950 font-bold py-2 rounded-xl text-xs cursor-pointer";
+            const activeEl = document.getElementById(`admin-tab-${tabName}`);
+            const activeBtn = document.getElementById(`tab-btn-${tabName}`);
+            if(activeEl) activeEl.classList.remove('hidden');
+            if(activeBtn) activeBtn.className = "flex-1 bg-amber-500 text-slate-950 font-bold py-2 rounded-xl text-xs cursor-pointer";
 
             if(tabName === 'rekap') renderYearlyReport();
             if(tabName === 'produk') renderAdminProductPrices();
             if(tabName === 'settings') applyBrandLogoToUI();
+            if(tabName === 'orders') renderAdminOrdersList();
+        }
+
+        function renderAdminOrdersList() {
+            const container = document.getElementById('order-history-list');
+            if(!container) return;
+            const orders = JSON.parse(localStorage.getItem('ilham_local_orders') || '[]');
+            container.innerHTML = '';
+            if(orders.length === 0) {
+                container.innerHTML = '<p class="text-xs text-slate-400 text-center py-4">Belum ada PO masuk.</p>';
+                return;
+            }
+            orders.forEach(o => {
+                container.innerHTML += `
+                    <div class="bg-slate-800 p-3 rounded-2xl border border-slate-700 space-y-1 text-xs">
+                        <div class="flex justify-between font-bold text-amber-400"><span>${o.id}</span><span>${o.date}</span></div>
+                        <div class="text-white font-semibold">Pemesan: ${o.name} (${o.wa})</div>
+                        <div class="text-emerald-300 font-black">Total: ${o.totalPrice}</div>
+                    </div>`;
+            });
         }
 
         function verifyAndShowOrderHistory() {
@@ -672,12 +772,11 @@
         }
 
         function closeOrderHistoryModal() { document.getElementById('order-history-modal').classList.add('hidden'); }
-        function openCustomerOrderHistory() { document.getElementById('customer-order-history-modal').classList.add('hidden'); }
+        function openCustomerOrderHistory() { document.getElementById('customer-order-history-modal').classList.remove('hidden'); }
         function closeCustomerOrderHistoryModal() { document.getElementById('customer-order-history-modal').classList.add('hidden'); }
 
         window.onload = function() {
             checkCustomerOnboarding();
-            renderAdminPanel();
         };
     </script>
 </body>
