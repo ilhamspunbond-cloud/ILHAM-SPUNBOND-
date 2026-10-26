@@ -1,193 +1,1261 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="ms">
 <head>
+    <link rel="icon" type="image/png" href="Logopit_1745513395623.png">
+    <link rel="apple-touch-icon" href="Logopit_1745513395623.png">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#1e293b">
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ILHAM APLIKASI MASTER - ILHAM SPUNBOND</title>
-    <!-- Tailwind CSS -->
+    <title id="pageTitle">Kebun Belimbing Wuluh Medicalpro</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <!-- PWA Link -->
-    <link rel="manifest" href="manifest.json">
-    <link rel="apple-touch-icon" href="logo.png">
-    <meta name="theme-color" content="#2563eb">
-    <style>body { font-family: 'Poppins', sans-serif; }</style>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <!-- Signature Pad untuk Tanda Tangan Boss di Invoice -->
+    <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.1.7/dist/signature_pad.umd.min.js"></script>
+    <style>
+        @media print {
+            body * { visibility: hidden; }
+            #printableInvoiceArea, #printableInvoiceArea * { visibility: visible; }
+            #printableInvoiceArea { position: absolute; left: 0; top: 0; width: 100%; border: none !important; box-shadow: none !important; }
+            .no-print { display: none !important; }
+        }
+    </style>
 </head>
-<body class="bg-slate-100 text-slate-800 antialiased flex justify-center items-center min-h-screen">
+<body class="bg-slate-950 text-slate-100 font-sans pb-24">
 
-    <div class="max-w-md w-full bg-white shadow-2xl relative flex flex-col justify-between min-h-screen">
-        
-        <!-- HEADER -->
-        <header class="bg-blue-600 text-white p-4 flex justify-between items-center shadow-md sticky top-0 z-50">
-            <div class="flex items-center space-x-3">
-                <div class="w-10 h-10 bg-white rounded-full flex items-center justify-center overflow-hidden shadow border border-blue-400">
-                    <img id="header-custom-logo" src="" alt="Logo" class="w-full h-full object-contain p-1 hidden">
-                    <i id="header-default-icon" class="fa-solid fa-bag-shopping text-blue-600 text-lg"></i>
+    <!-- MODAL PENDAFTARAN NAMA & GELARAN -->
+    <div id="userProfileModal" class="fixed inset-0 bg-black/80 hidden flex items-center justify-center p-4 z-50 backdrop-blur-sm">
+        <div class="bg-slate-900 p-6 rounded-3xl max-w-sm w-full shadow-2xl space-y-4 border border-slate-700">
+            <div class="text-center">
+                <span class="text-4xl">🌱</span>
+                <h3 class="text-lg font-bold text-emerald-400 mt-2">Selamat Datang ke Medicalpro</h3>
+                <p class="text-xs text-slate-400">Sila masukkan nama & pilihan gelaran anda.</p>
+            </div>
+            <div class="space-y-3">
+                <div>
+                    <label class="block text-xs font-bold text-slate-300 mb-1">Nama Penuh Anda</label>
+                    <input type="text" id="inputUserRealName" placeholder="Cth: Rojak" class="w-full border border-slate-700 p-2.5 rounded-xl text-sm bg-slate-800 text-white focus:outline-emerald-500">
                 </div>
                 <div>
-                    <h1 id="brand-title" class="font-bold text-sm leading-tight">ILHAM SPUNBOND</h1>
-                    <p class="text-[10px] text-blue-100">ILHAM APLIKASI MASTER</p>
+                    <label class="block text-xs font-bold text-slate-300 mb-1">Pilihan Gelaran</label>
+                    <select id="inputUserGender" class="w-full border border-slate-700 p-2.5 rounded-xl text-sm bg-slate-800 text-white focus:outline-emerald-500">
+                        <option value="Datu">Datu (Boss / Pemilik Utama)</option>
+                        <option value="Abang">Abang</option>
+                        <option value="Akak">Akak</option>
+                        <option value="Tuan">Tuan</option>
+                        <option value="Puan">Puan</option>
+                        <option value="Pachi">Pachi</option>
+                        <option value="Machi">Machi</option>
+                    </select>
+                </div>
+                <button type="button" onclick="saveUserProfile()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 rounded-xl text-sm shadow-md transition">
+                    Simpan & Masuk Sistem 🚀
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Header & Custom Branding -->
+    <header class="bg-slate-900 text-slate-100 shadow-md border-b border-slate-800">
+        <div class="max-w-7xl mx-auto px-4 py-4 flex flex-col items-center text-center gap-3">
+            
+            <div id="headerLogoContainer" class="w-16 h-16 rounded-full bg-yellow-400 flex items-center justify-center font-bold text-2xl overflow-hidden border-2 border-yellow-500 shadow-sm">
+                🌱
+            </div>
+
+            <div>
+                <h1 id="lblGardenName" class="text-xl sm:text-2xl font-black tracking-wide text-white uppercase">KEBUN BELIMBING WULUH</h1>
+                <h2 class="text-lg sm:text-xl font-extrabold text-emerald-400 tracking-wider">MEDICAL PRO</h2>
+                <p id="lblSubHeader" class="text-xs font-bold text-slate-400 mt-1">Medicalpro Agro Management - Machap</p>
+                <div class="mt-2">
+                    <span id="lblPartnership" class="text-[10px] sm:text-xs font-semibold text-slate-300 bg-slate-800 px-3 py-1 rounded-full inline-block border border-slate-700">
+                        🤝 Kerjasama: NIBM & Gimba Sdn Bhd | Jabatan Pertanian (No. MyGAP: 24.0151)
+                    </span>
                 </div>
             </div>
-            <div class="flex items-center space-x-2">
-                <button onclick="openAdminLogin()" class="bg-blue-700 hover:bg-blue-800 px-3 py-1.5 rounded-lg text-xs font-semibold">
-                    <i class="fa-solid fa-gear mr-1"></i> Admin Panel
+
+            <div class="flex items-center gap-3 mt-2 pt-2 border-t border-slate-800 w-full justify-center">
+                <button onclick="openAdminLogin()" class="bg-slate-800 hover:bg-slate-700 text-emerald-400 px-3 py-1 rounded-lg text-xs font-bold shadow border border-slate-700">
+                    🔐 Panel Admin Utama
                 </button>
-            </div>
-        </header>
-
-        <!-- KONTEN UTAMA -->
-        <main class="p-4 flex-1 space-y-4 overflow-y-auto">
-            <div class="bg-blue-50 border border-blue-200 p-4 rounded-2xl text-center space-y-2">
-                <h2 class="font-bold text-blue-900 text-sm">Selamat Datang di ILHAM SPUNBOND</h2>
-                <p class="text-xs text-slate-600">Aplikasi Master & Kustom Tas Spunbond (Siap PWA / APK).</p>
+                <div class="flex items-center gap-1">
+                    <button onclick="changeLang('ms')" id="btnLangMs" class="px-2.5 py-0.5 rounded text-xs bg-emerald-600 text-white font-bold">MY</button>
+                    <button onclick="changeLang('id')" id="btnLangId" class="px-2.5 py-0.5 rounded text-xs bg-slate-800 text-slate-300">ID</button>
+                    <button onclick="changeLang('en')" id="btnLangEn" class="px-2.5 py-0.5 rounded text-xs bg-slate-800 text-slate-300">EN</button>
+                </div>
             </div>
 
-            <!-- PANEL PEMBERITAHUAN STATUS -->
-            <div id="status-notif" class="hidden p-3 rounded-xl text-xs font-semibold text-center"></div>
+        </div>
+    </header>
 
-            <div class="bg-white border rounded-2xl p-4 shadow-sm space-y-3">
-                <h3 class="font-bold text-xs text-slate-700 uppercase">Aksi Cepat:</h3>
-                <button onclick="openAdminLogin()" class="w-full bg-slate-800 hover:bg-slate-900 text-white font-bold py-2.5 rounded-xl text-xs shadow">
-                    Masuk Panel Admin (Ganti Logo & Kelola Sistem)
-                </button>
+    <main class="max-w-5xl mx-auto px-4 mt-6 space-y-6">
+
+        <!-- Audio Unlock Banner -->
+        <div id="audioUnlockBanner" class="bg-emerald-600 text-white p-3.5 rounded-xl shadow-lg flex flex-col sm:flex-row justify-between items-center gap-3 text-xs font-semibold">
+            <span>🚨 Mod Audio AI & Voice Chat: Sila klik butang di sebelah untuk mengaktifkan suara sistem.</span>
+            <button onclick="unlockAudioSystem()" class="bg-white text-emerald-800 px-4 py-2 rounded-lg font-bold shadow hover:bg-emerald-50">Aktifkan Audio Sistem</button>
+        </div>
+
+        <!-- WIDGET ASISTEN AI -->
+        <section class="bg-gradient-to-br from-indigo-950 via-slate-900 to-slate-950 border border-indigo-500/40 rounded-3xl p-5 text-white shadow-xl space-y-4">
+            <div class="flex items-center justify-between border-b border-indigo-900 pb-3">
+                <div class="flex items-center gap-3">
+                    <div id="aiAvatarContainer" class="w-12 h-12 rounded-full bg-indigo-600 flex items-center justify-center font-bold text-xl overflow-hidden border-2 border-indigo-400 shadow">
+                        👩‍💻
+                    </div>
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <h3 id="lblAiName" class="font-black text-base text-yellow-300">Asisten Kebun AI</h3>
+                            <span class="bg-emerald-500 text-white text-[9px] px-2 py-0.5 rounded-full font-bold">Siap Membantu</span>
+                        </div>
+                        <p id="aiGreetingSubtitle" class="text-xs text-indigo-200">Asisten peribadi kebun Medicalpro</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-2">
+                    <button onclick="startVoiceChat()" id="btnVoiceChat" class="bg-rose-600 hover:bg-rose-500 text-white px-3 py-2 rounded-xl text-xs font-bold flex items-center gap-1 shadow animate-pulse">
+                        🎙️ Cakap AI
+                    </button>
+                    <button onclick="speakLastAiMessage()" class="bg-indigo-800 hover:bg-indigo-700 text-white p-2 rounded-xl text-xs font-bold flex items-center gap-1 shadow">
+                        🔊 Ulang
+                    </button>
+                </div>
             </div>
-        </main>
 
-        <!-- FOOTER -->
-        <footer class="p-3 text-center text-[10px] text-slate-400 border-t">
-            &copy; 2026 ILHAM SPUNBOND - Rajeg, Tangerang
-        </footer>
-    </div>
-
-    <!-- MODAL ADMIN LOGIN -->
-    <div id="modal-admin-login" class="fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-4 hidden">
-        <div class="bg-white rounded-2xl w-full max-w-xs p-5 shadow-2xl space-y-3">
-            <div class="flex justify-between items-center">
-                <h3 class="font-bold text-xs text-slate-800"><i class="fa-solid fa-lock mr-1 text-blue-600"></i>Panel Admin</h3>
-                <button onclick="closeModal('modal-admin-login')" class="text-slate-400 font-bold text-sm">✕</button>
+            <div id="voiceStatusNotice" class="text-xs font-semibold text-amber-300 hidden bg-amber-950/50 p-2 rounded-xl border border-amber-500/30 text-center">
+                🔴 Sedang mendengar suara anda... Sila cakap sekarang!
             </div>
-            <form onsubmit="verifyAdmin(event)" class="space-y-3 text-xs">
-                <input type="password" id="admin-pass-input" placeholder="Kata Sandi Admin" required class="w-full px-3 py-2.5 border rounded-lg outline-none">
-                <button type="submit" class="w-full bg-blue-600 text-white font-semibold py-2.5 rounded-lg shadow">Masuk</button>
+
+            <div id="aiChatResponseBox" class="bg-black/35 backdrop-blur-md rounded-2xl p-4 text-sm leading-relaxed border border-indigo-500/20 min-h-[70px] text-indigo-100">
+                Memuat turun sambutan...
+            </div>
+
+            <div class="flex flex-wrap gap-2 text-xs">
+                <button type="button" onclick="askAi('rekap')" class="bg-emerald-800 hover:bg-emerald-700 px-3 py-1.5 rounded-xl border border-emerald-600 text-white font-semibold">📊 Rekap Bulanan & Pekerja</button>
+                <button type="button" onclick="askAi('baja')" class="bg-amber-800 hover:bg-amber-700 px-3 py-1.5 rounded-xl border border-amber-600 text-white font-semibold">🧪 Stok Baja & Status Habis</button>
+                <button type="button" onclick="askAi('jobdesk')" class="bg-sky-800 hover:bg-sky-700 px-3 py-1.5 rounded-xl border border-sky-600 text-white font-semibold">📋 Rekomendasi Job Desk Pekerja</button>
+            </div>
+
+            <form onsubmit="handleAiManualQuery(event)" class="flex gap-2 pt-1">
+                <input type="text" id="aiManualInput" placeholder="Tanya AI (Cth: Apa rekap bulan ini atau status baja?)..." class="flex-1 bg-slate-900 border border-slate-700 text-white placeholder-slate-400 p-2.5 rounded-xl text-sm focus:outline-none">
+                <button type="submit" class="bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2.5 rounded-xl text-sm font-semibold shadow">Tanya</button>
             </form>
+        </section>
+
+        <!-- KOTAK CUACA STYLE GOOGLE WEATHER -->
+        <section class="bg-slate-900 border border-slate-800 rounded-3xl p-5 sm:p-6 text-white shadow-xl space-y-5">
+            
+            <!-- Lokasi & Waktu Atas -->
+            <div class="flex justify-between items-center border-b border-slate-800 pb-3">
+                <div class="flex items-center gap-2">
+                    <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-ping"></span>
+                    <span class="text-xs sm:text-sm font-bold text-slate-200 tracking-wide">Simpang Renggam, Johor</span>
+                </div>
+                <span id="liveClock" class="text-xs font-mono bg-slate-800 text-slate-300 px-2.5 py-1 rounded-lg font-bold border border-slate-700">--:--:--</span>
+            </div>
+
+            <!-- Bagian Suhu Utama & Kondisi (Style Google Weather) -->
+            <div class="flex justify-between items-center">
+                <div>
+                    <div class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Saat ini</div>
+                    <div class="flex items-baseline gap-3">
+                        <span id="tempDisplay" class="text-5xl sm:text-6xl font-light tracking-tighter">--°</span>
+                        <div id="weatherMainIconContainer" class="text-4xl">⛅</div>
+                    </div>
+                </div>
+                <div class="text-right">
+                    <div id="condDisplay" class="text-lg sm:text-xl font-medium text-slate-200">Memuat turun...</div>
+                    <div id="feelsLikeDisplay" class="text-xs sm:text-sm text-slate-400 mt-0.5">Terasa seperti --°</div>
+                </div>
+            </div>
+
+            <!-- Prediksi Per Jam (Baris 5 Jam ke Depan Style Google) -->
+            <div class="pt-2">
+                <div id="hourlyForecastContainer" class="grid grid-cols-5 gap-2 bg-slate-950/60 p-3 rounded-2xl border border-slate-800/80 text-center">
+                    <!-- Javascript will populate hourly cards here -->
+                </div>
+            </div>
+
+            <!-- Ilustrasi Estetik Bawah Kotak Cuaca -->
+            <div class="relative h-16 rounded-xl bg-gradient-to-t from-slate-950 to-slate-900 border border-slate-800 flex items-center justify-center overflow-hidden px-4">
+                <div class="absolute inset-0 opacity-20 bg-[radial-gradient(#38bdf8_1px,transparent_1px)] [background-size:16px_16px]"></div>
+                <span id="weatherIllustrationText" class="text-xs font-medium text-slate-400 z-10 text-center">🌙 Malam tenang di estet Machap - Sesuai untuk istirahat.</span>
+            </div>
+
+            <!-- Prakiraan Harian (Sen, Sel, Rab, Kam, Jum) Style Google -->
+            <div>
+                <div class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Prakiraan 5 Hari Kedepan</div>
+                <div id="dailyForecastContainer" class="grid grid-cols-5 gap-1.5 sm:gap-2">
+                    <!-- Javascript will populate daily cards here -->
+                </div>
+            </div>
+
+            <!-- Rekomendasi AI Berdasarkan Cuaca -->
+            <div class="bg-slate-950/80 rounded-2xl p-4 border border-slate-800">
+                <div class="text-xs font-bold text-yellow-400 uppercase mb-1">🤖 Keputusan AI Berdasarkan Cuaca & Tanah:</div>
+                <p id="smartRecommendation" class="text-xs sm:text-sm leading-relaxed text-slate-300">Memproses ramalan...</p>
+            </div>
+
+        </section>
+
+        <!-- Boss Portal & Walkie-Talkie -->
+        <section class="bg-amber-950/30 border border-amber-600/30 p-5 rounded-3xl shadow-sm space-y-4 mb-6">
+            <h3 id="lblBossPortalTitle" class="font-bold text-amber-400 flex items-center gap-2 text-base">⚠️ Portal Arahan & Walkie-Talkie Boss</h3>
+            
+            <div class="flex gap-2 border-b border-amber-900/50 pb-2">
+                <button type="button" onclick="switchBossMode('text')" id="btnModeText" class="px-3 py-1 bg-amber-600 text-white rounded-lg text-xs font-bold">Mesej Teks</button>
+                <button type="button" onclick="switchBossMode('voice')" id="btnModeVoice" class="px-3 py-1 bg-slate-800 text-amber-400 rounded-lg text-xs font-bold border border-amber-600/30">🎙️ Rakaman Suara</button>
+            </div>
+
+            <form id="bossOrderForm" class="flex gap-2">
+                <input type="text" id="bossInputMessage" placeholder="Taip arahan baru..." required class="flex-1 border border-slate-700 p-2.5 rounded-xl text-sm bg-slate-900 text-white">
+                <button type="submit" id="btnSendOrder" class="bg-amber-600 hover:bg-amber-500 text-white px-4 py-2.5 rounded-xl text-sm font-semibold shadow">Hantar</button>
+            </form>
+
+            <div id="bossVoiceContainer" class="hidden flex flex-col sm:flex-row items-center gap-3 bg-slate-900 p-3 rounded-xl border border-slate-700">
+                <button type="button" id="btnRecordAudio" onclick="toggleRecording()" class="bg-rose-600 text-white px-4 py-2 rounded-xl text-xs font-bold">🔴 Mula Rakam</button>
+                <span id="recordingStatus" class="text-xs font-semibold text-slate-400">Tekan butang untuk rakam walkie-talkie.</span>
+                <button type="button" id="btnSendVoice" onclick="sendVoiceNote()" class="bg-emerald-600 text-white px-4 py-2 rounded-xl text-xs font-semibold hidden">Kirim</button>
+            </div>
+
+            <div class="space-y-2 pt-2">
+                <h4 id="lblHistoryTitle" class="text-xs font-bold text-amber-500 uppercase tracking-wider">Riwayat Arahan:</h4>
+                <div id="bossHistoryContainer" class="space-y-2"></div>
+            </div>
+        </section>
+
+        <!-- Navigation Tabs -->
+        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-2 sticky top-2 z-40 bg-slate-950/90 backdrop-blur pb-2">
+            <button onclick="switchTab('tasks')" id="tabBtn-tasks" class="bg-emerald-600 text-white p-2.5 rounded-xl shadow-md border border-emerald-500 text-center font-bold text-xs">📋 <span id="navTasks">Tugas Harian</span></button>
+            <button onclick="switchTab('supply')" id="tabBtn-supply" class="bg-slate-900 text-slate-300 p-2.5 rounded-xl shadow-sm border border-slate-800 text-center font-semibold text-xs">📦 <span id="navSupply">Stok & Suplai</span></button>
+            <button onclick="switchTab('inventory')" id="tabBtn-inventory" class="bg-slate-900 text-slate-300 p-2.5 rounded-xl shadow-sm border border-slate-800 text-center font-semibold text-xs">🧪 <span id="navStock">Bio Baja</span></button>
+            <button onclick="switchTab('assets')" id="tabBtn-assets" class="bg-slate-900 text-slate-300 p-2.5 rounded-xl shadow-sm border border-slate-800 text-center font-semibold text-xs">🚜 <span id="navAssets">Aset Kebun</span></button>
+            <button onclick="switchTab('expenses')" id="tabBtn-expenses" class="bg-slate-900 text-slate-300 p-2.5 rounded-xl shadow-sm border border-slate-800 text-center font-semibold text-xs">💰 <span id="navExpenses">Perbelanjaan</span></button>
+            <button onclick="switchTab('income')" id="tabBtn-income" class="bg-slate-900 text-slate-300 p-2.5 rounded-xl shadow-sm border border-slate-800 text-center font-semibold text-xs col-span-2 sm:col-span-1">💵 <span id="navIncome">Pendapatan</span></button>
+        </div>
+
+        <!-- CONTAINER HALAMAN / TAB -->
+        <div id="tabContentContainer">
+
+            <!-- Task Management Page -->
+            <section id="page-tasks" class="tab-page bg-slate-900 border border-slate-800 p-6 rounded-3xl shadow-sm space-y-4">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+                    <h3 id="sectionTaskTitle" class="text-lg font-bold text-emerald-400">📌 Tugas Harian & Jadual Rutin</h3>
+                    <div class="flex items-center gap-2 w-full sm:w-auto">
+                        <select id="filterTaskMonth" onchange="renderTasks()" class="border border-slate-700 p-2 rounded-lg text-xs bg-slate-800 text-white font-semibold">
+                            <option value="all">Semua Bulan (Global)</option>
+                        </select>
+                        <button type="button" onclick="generateMonthlyInvoice('tasks')" class="bg-indigo-600 hover:bg-indigo-500 text-white px-3 py-2 rounded-lg text-xs font-bold shadow">🖨️ Cetak Invoice PDF</button>
+                    </div>
+                </div>
+
+                <form id="taskForm" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                    <input type="text" id="taskTitle" placeholder="Nama Pekerjaan" required class="border border-slate-700 bg-slate-800 text-white p-2 rounded-lg text-sm">
+                    <input type="text" id="taskCategory" placeholder="Kategori" required class="border border-slate-700 bg-slate-800 text-white p-2 rounded-lg text-sm">
+                    <select id="taskWorkerSelect" required class="border border-slate-700 p-2 rounded-lg text-sm bg-slate-800 text-white">
+                        <option value="">Pilih Pekerja</option>
+                    </select>
+                    <input type="date" id="taskDate" required class="border border-slate-700 bg-slate-800 text-white p-2 rounded-lg text-sm">
+                    
+                    <div class="sm:col-span-2 grid grid-cols-2 gap-2 bg-slate-950 p-2.5 rounded-xl border border-slate-800">
+                        <div>
+                            <label class="block text-[10px] font-bold text-slate-400 mb-1">Guna Stok Bio Baja?</label>
+                            <select id="taskStockItem" class="w-full border border-slate-700 p-1.5 rounded-lg text-xs bg-slate-800 text-white">
+                                <option value="">-- Tanpa Stok --</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-bold text-slate-400 mb-1">Jumlah Dipakai</label>
+                            <input type="number" id="taskQty" placeholder="0" min="1" class="w-full border border-slate-700 p-1.5 rounded-lg text-xs bg-slate-800 text-white">
+                        </div>
+                    </div>
+
+                    <div class="sm:col-span-2">
+                        <label class="block text-xs font-semibold text-slate-300 mb-1">Lampiran Foto (HD Maks 1MB)</label>
+                        <input type="file" id="imageInput" accept="image/*" class="w-full border border-slate-700 p-1.5 rounded-lg text-sm bg-slate-800 text-slate-300">
+                    </div>
+                    <button type="submit" class="sm:col-span-4 bg-emerald-600 hover:bg-emerald-500 text-white py-2 rounded-lg font-semibold text-sm">Simpan Report Kerja</button>
+                </form>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-sm border-collapse text-slate-200">
+                        <thead>
+                            <tr class="bg-slate-950 border-b border-slate-800 text-slate-400">
+                                <th class="p-3">Foto HD</th>
+                                <th class="p-3">Tugasan</th>
+                                <th class="p-3">Kategori</th>
+                                <th class="p-3">Pekerja</th>
+                                <th class="p-3">Tarikh</th>
+                                <th class="p-3">Info Stok</th>
+                                <th class="p-3">Status</th>
+                                <th class="p-3">Tindakan</th>
+                            </tr>
+                        </thead>
+                        <tbody id="taskTableBody" class="divide-y divide-slate-800"></tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Supply & Stock Management Page -->
+            <section id="page-supply" class="tab-page bg-slate-900 border border-slate-800 p-6 rounded-3xl shadow-sm hidden space-y-4">
+                <div class="flex justify-between items-center border-b border-slate-800 pb-3">
+                    <div>
+                        <h3 class="text-lg font-bold text-white">📦 Manajemen Stok & Suplai Kebun</h3>
+                        <p class="text-xs text-slate-400">Catat hasil tuai, stok gudang, dan pengiriman suplai harian</p>
+                    </div>
+                </div>
+
+                <form id="supplyForm" class="bg-slate-950 p-4 rounded-2xl space-y-3 border border-slate-800">
+                    <div class="text-xs font-bold text-slate-300 uppercase">➕ Tambah Catatan Baru</div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div>
+                            <label class="text-xs text-slate-400 block mb-1">Tanggal</label>
+                            <input type="date" id="inputDate" required class="w-full text-xs p-2 rounded-xl border border-slate-700 bg-slate-800 text-white">
+                        </div>
+                        <div>
+                            <label class="text-xs text-slate-400 block mb-1">Jenis Hasil Kebun</label>
+                            <select id="inputItem" class="w-full text-xs p-2 rounded-xl border border-slate-700 bg-slate-800 text-white">
+                                <option value="Buah Belimbing Buluh besar">Buah Belimbing Buluh besar</option>
+                                <option value="Buah Belimbing kismis">Buah Belimbing kismis</option>
+                                <option value="Daun Teh Belimbing Buluh">Daun Teh Belimbing Buluh</option>
+                                <option value="Daun obat/krim Belimbing Buluh">Daun obat/krim Belimbing Buluh</option>
+                                <option value="Bunga Kantan">Bunga Kantan</option>
+                                <option value="Bunga Tajus">Bunga Tajus</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                        <div>
+                            <label class="text-xs text-slate-400 block mb-1">Aktivitas</label>
+                            <select id="inputAction" class="w-full text-xs p-2 rounded-xl border border-slate-700 bg-slate-800 text-white">
+                                <option value="tuai">Hasil Tuai (Masuk Stok)</option>
+                                <option value="suplai">Suplai / Kirim (Kurangi Stok)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="text-xs text-slate-400 block mb-1">Jumlah</label>
+                            <input type="number" id="inputQty" placeholder="Contoh: 50" required class="w-full text-xs p-2 rounded-xl border border-slate-700 bg-slate-800 text-white">
+                        </div>
+                        <div>
+                            <label class="text-xs text-slate-400 block mb-1">Keterangan</label>
+                            <input type="text" id="inputDesc" placeholder="Keterangan" class="w-full text-xs p-2 rounded-xl border border-slate-700 bg-slate-800 text-white">
+                        </div>
+                    </div>
+                    <button type="submit" class="w-full bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold py-2.5 rounded-xl">Simpan Data</button>
+                </form>
+
+                <div>
+                    <div class="text-xs font-bold text-slate-300 uppercase mb-2">📊 Sisa Stok:</div>
+                    <div class="grid grid-cols-2 sm:grid-cols-3 gap-2" id="stockSummaryContainer"></div>
+                </div>
+
+                <div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-xs border-collapse text-slate-200">
+                            <thead>
+                                <tr class="bg-slate-950 border-b border-slate-800 text-slate-400"><th class="p-2">Tanggal</th><th class="p-2">Item</th><th class="p-2">Aksi</th><th class="p-2">Jumlah</th><th class="p-2">Keterangan</th><th class="p-2 text-center">Aksi</th></tr>
+                            </thead>
+                            <tbody id="supplyTableBody" class="divide-y divide-slate-800"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Inventory / Stok Section Page -->
+            <section id="page-inventory" class="tab-page bg-slate-900 border border-slate-800 p-6 rounded-3xl shadow-sm hidden space-y-4">
+                <h3 class="text-lg font-bold mb-4 text-emerald-400">🧪 Stok Bio Baja & Nutrisi Organik</h3>
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4" id="inventoryContainer"></div>
+            </section>
+
+            <!-- Assets Section Page -->
+            <section id="page-assets" class="tab-page bg-slate-900 border border-slate-800 p-6 rounded-3xl shadow-sm hidden space-y-4">
+                <div class="flex justify-between items-center">
+                    <h3 class="text-lg font-bold text-emerald-400">🚜 Aset & Peralatan Kebun</h3>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4" id="assetsContainer"></div>
+            </section>
+
+            <!-- Expenses Section Page -->
+            <section id="page-expenses" class="tab-page bg-slate-900 border border-slate-800 p-6 rounded-3xl shadow-sm hidden space-y-4">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+                    <h3 class="text-lg font-bold text-emerald-400">💰 Perbelanjaan Kebun (Bulanan)</h3>
+                    <div class="flex items-center gap-2 w-full sm:w-auto">
+                        <select id="filterExpenseMonth" onchange="renderExpenses()" class="border border-slate-700 p-2 rounded-lg text-xs bg-slate-800 text-white font-semibold">
+                            <option value="all">Semua Bulan (Global)</option>
+                        </select>
+                        <button type="button" onclick="generateMonthlyInvoice('expenses')" class="bg-indigo-600 hover:bg-indigo-500 text-white px-3 py-2 rounded-lg text-xs font-bold shadow">🖨️ Cetak Invoice PDF</button>
+                    </div>
+                </div>
+
+                <form id="expenseForm" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 bg-slate-950 p-4 rounded-xl border border-slate-800">
+                    <input type="text" id="expTitle" placeholder="Keterangan Belanja" required class="border border-slate-700 p-2 rounded-lg text-sm bg-slate-800 text-white">
+                    <input type="text" id="expAmount" placeholder="Jumlah Kos (RM)" required class="border border-slate-700 p-2 rounded-lg text-sm bg-slate-800 text-white">
+                    <input type="date" id="expDate" required class="border border-slate-700 p-2 rounded-lg text-sm bg-slate-800 text-white">
+                    <div>
+                        <label class="block text-[10px] font-semibold text-slate-400 mb-1">Resit HD</label>
+                        <input type="file" id="expReceiptInput" accept="image/*" class="w-full border border-slate-700 p-1 rounded-lg text-xs bg-slate-800 text-slate-300">
+                    </div>
+                    <button type="submit" class="sm:col-span-4 bg-emerald-600 hover:bg-emerald-500 text-white py-2 rounded-lg text-xs font-semibold">Tambah Perbelanjaan</button>
+                </form>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-sm border-collapse text-slate-200">
+                        <thead>
+                            <tr class="bg-slate-950 border-b border-slate-800 text-slate-400"><th class="p-3">Resit HD</th><th class="p-3">Keterangan</th><th class="p-3">Kos</th><th class="p-3">Tarikh</th><th class="p-3">Tindakan</th></tr>
+                        </thead>
+                        <tbody id="expenseTableBody" class="divide-y divide-slate-800"></tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Income Section Page -->
+            <section id="page-income" class="tab-page bg-slate-900 border border-slate-800 p-6 rounded-3xl shadow-sm hidden space-y-4">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+                    <h3 class="text-lg font-bold text-emerald-400">💵 Pendapatan Hasil Kebun</h3>
+                    <div class="flex items-center gap-2 w-full sm:w-auto">
+                        <select id="filterIncomeMonth" onchange="renderIncome()" class="border border-slate-700 p-2 rounded-lg text-xs bg-slate-800 text-white font-semibold">
+                            <option value="all">Semua Bulan (Global)</option>
+                        </select>
+                        <button type="button" onclick="generateMonthlyInvoice('income')" class="bg-indigo-600 hover:bg-indigo-500 text-white px-3 py-2 rounded-lg text-xs font-bold shadow">🖨️ Cetak Invoice PDF</button>
+                    </div>
+                </div>
+
+                <div id="staffLoginPanel" class="bg-emerald-950/40 border border-emerald-600/40 p-4 rounded-xl flex flex-col sm:flex-row justify-between items-center gap-3">
+                    <div>
+                        <h4 class="font-bold text-sm text-emerald-300">🔐 Akses Input Pendapatan (Staff)</h4>
+                        <p class="text-xs text-emerald-400/80" id="staffStatusText">Status: Belum Log Masuk</p>
+                    </div>
+                    <div class="flex gap-2 w-full sm:w-auto">
+                        <input type="password" id="staffPassInput" placeholder="Kata Sandi Staff" class="border border-slate-700 p-2 rounded-lg text-xs bg-slate-800 text-white w-full sm:w-40">
+                        <button type="button" onclick="verifyStaffLogin()" class="bg-emerald-700 hover:bg-emerald-600 text-white px-4 py-2 rounded-lg text-xs font-bold">Masuk</button>
+                    </div>
+                </div>
+
+                <form id="incomeForm" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 bg-slate-950 p-4 rounded-xl border border-slate-800 opacity-50 pointer-events-none">
+                    <input type="text" id="incTitle" placeholder="Produk / Hasil" required class="border border-slate-700 p-2 rounded-lg text-sm bg-slate-800 text-white">
+                    <input type="text" id="incAmount" placeholder="Jumlah (RM)" required class="border border-slate-700 p-2 rounded-lg text-sm bg-slate-800 text-white">
+                    <input type="date" id="incDate" required class="border border-slate-700 p-2 rounded-lg text-sm bg-slate-800 text-white">
+                    <div>
+                        <label class="block text-[10px] font-semibold text-slate-400 mb-1">Bukti Foto HD</label>
+                        <input type="file" id="incPhotoInput" accept="image/*" required class="w-full border border-slate-700 p-1 rounded-lg text-xs bg-slate-800 text-slate-300">
+                    </div>
+                    <button type="submit" class="sm:col-span-4 bg-emerald-600 hover:bg-emerald-500 text-white py-2 rounded-lg text-xs font-semibold">Simpan Pendapatan</button>
+                </form>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-sm border-collapse text-slate-200">
+                        <thead>
+                            <tr class="bg-slate-950 border-b border-slate-800 text-slate-400"><th class="p-3">Bukti Foto HD</th><th class="p-3">Keterangan</th><th class="p-3">Staff</th><th class="p-3">Jumlah</th><th class="p-3">Tarikh</th><th class="p-3">Tindakan</th></tr>
+                        </thead>
+                        <tbody id="incomeTableBody" class="divide-y divide-slate-800"></tbody>
+                    </table>
+                </div>
+            </section>
+
+        </div>
+
+    </main>
+
+    <!-- MODAL INVOICE PDF & TANDA TANGAN -->
+    <div id="invoiceModal" class="fixed inset-0 bg-slate-950/80 hidden overflow-y-auto p-4 z-50">
+        <div class="bg-white text-slate-900 max-w-3xl mx-auto rounded-3xl p-6 sm:p-8 shadow-2xl my-6 space-y-6">
+            
+            <div id="printableInvoiceArea" class="space-y-6 bg-white p-6 rounded-2xl border border-slate-200">
+                <div class="flex justify-between items-start border-b-2 border-emerald-600 pb-4">
+                    <div class="flex items-center gap-3">
+                        <div id="invModalLogo" class="w-14 h-14 rounded-full bg-yellow-400 flex items-center justify-center font-bold text-xl overflow-hidden border-2 border-yellow-500">
+                            🌱
+                        </div>
+                        <div>
+                            <h2 class="text-lg font-black text-blue-900 uppercase">MEDICALPRO AGRO MANAGEMENT</h2>
+                            <p class="text-xs text-slate-500">Machap, Johor, Malaysia | No. MyGAP: 24.0151</p>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <h3 class="text-xl font-extrabold text-emerald-800 uppercase tracking-wider">INVOICE RASMI</h3>
+                        <p class="text-xs text-slate-500 font-mono" id="invModalDateNum">No: INV-2026-001</p>
+                        <p class="text-xs text-slate-500" id="invModalPeriod">Tempoh: Semua Bulan</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 text-xs bg-slate-50 p-3 rounded-xl">
+                    <div>
+                        <span class="text-slate-400 block font-semibold">Pegawai Bertanggungjawab:</span>
+                        <strong class="text-slate-800" id="invModalOwner">Abdul Rojak</strong>
+                    </div>
+                    <div>
+                        <span class="text-slate-400 block font-semibold">Kategori Rekap:</span>
+                        <strong class="text-emerald-700" id="invModalCategoryName">Rekap</strong>
+                    </div>
+                    <div>
+                        <span class="text-slate-400 block font-semibold">Jumlah Rekod:</span>
+                        <strong class="text-blue-700" id="invModalTotalItems">0 Item</strong>
+                    </div>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-xs border-collapse">
+                        <thead>
+                            <tr class="bg-emerald-800 text-white">
+                                <th class="p-2.5 rounded-l-lg">No</th>
+                                <th class="p-2.5">Tarikh</th>
+                                <th class="p-2.5">Keterangan / Item</th>
+                                <th class="p-2.5">Pekerja / Staff</th>
+                                <th class="p-2.5">Lampiran Foto HD</th>
+                                <th class="p-2.5 text-right rounded-r-lg">Jumlah / Kos (RM)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="invoiceTableBody" class="divide-y divide-slate-100"></tbody>
+                    </table>
+                </div>
+
+                <div class="flex justify-end pt-2">
+                    <div class="bg-emerald-50 border border-emerald-200 px-5 py-3 rounded-xl text-right min-w-[200px]">
+                        <span class="text-xs font-bold text-emerald-800 block uppercase">Jumlah Keseluruhan:</span>
+                        <span class="text-lg font-black text-emerald-900" id="invoiceGrandTotal">RM 0.00</span>
+                    </div>
+                </div>
+
+                <div class="pt-4 border-t border-slate-200 flex flex-col sm:flex-row justify-between items-end sm:items-center gap-4">
+                    <div>
+                        <p class="text-xs text-slate-500 italic">* Dokumen rasmi digital sah untuk pengurusan estet Medicalpro.</p>
+                        <p class="text-xs font-bold text-slate-700 mt-1" id="invSignatureRoleLabel">Disahkan Oleh:</p>
+                    </div>
+                    <div class="text-center">
+                        <div class="border-2 border-dashed border-slate-300 rounded-xl bg-slate-50 p-1 w-48 h-24 relative flex items-center justify-center">
+                            <canvas id="signatureCanvas" class="w-full h-full cursor-crosshair"></canvas>
+                            <span id="signaturePlaceholder" class="absolute text-[10px] text-slate-400 pointer-events-none">Tandatangan Di Sini</span>
+                        </div>
+                        <div class="flex gap-1 justify-center mt-1 no-print">
+                            <button type="button" onclick="clearSignature()" class="text-[10px] bg-slate-200 hover:bg-slate-300 px-2 py-0.5 rounded font-semibold text-slate-700">Padam Tanda Tangan</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex justify-end gap-3 pt-2 border-t no-print">
+                <button type="button" onclick="closeInvoiceModal()" class="px-4 py-2.5 bg-slate-200 hover:bg-slate-300 rounded-xl text-xs font-semibold">Tutup ✕</button>
+                <button type="button" onclick="downloadInvoicePdfOrText()" class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold shadow">📄 Muat Turun PDF / Cetak</button>
+            </div>
+
         </div>
     </div>
 
-    <!-- MODAL DASHBOARD ADMIN (UNTUK UPLOAD LOGO) -->
-    <div id="modal-admin-dashboard" class="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4 hidden">
-        <div class="bg-white rounded-2xl w-full max-w-sm p-5 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto text-xs">
-            <div class="flex justify-between items-center border-b pb-2">
-                <h3 class="font-bold text-sm text-slate-800">Dashboard Admin: Pengaturan Logo</h3>
-                <button onclick="closeModal('modal-admin-dashboard')" class="text-rose-600 font-bold text-sm">Tutup ✕</button>
+    <!-- ADMIN MODAL -->
+    <div id="adminLoginModal" class="fixed inset-0 bg-black/70 hidden flex items-center justify-center p-4 z-50">
+        <div class="bg-slate-900 border border-slate-800 p-6 rounded-3xl max-w-sm w-full shadow-xl">
+            <h3 class="text-lg font-bold text-emerald-400 mb-2">🔐 Log Masuk Admin</h3>
+            <input type="password" id="adminPasswordInput" placeholder="Kata Sandi" class="w-full border border-slate-700 bg-slate-800 text-white p-2.5 rounded-xl text-sm mb-4">
+            <div class="flex justify-end gap-2">
+                <button type="button" onclick="closeAdminLogin()" class="px-4 py-2 bg-slate-800 text-slate-300 rounded-xl text-xs font-semibold">Batal</button>
+                <button type="button" onclick="verifyAdmin()" class="px-4 py-2 bg-emerald-600 text-white rounded-xl text-xs font-semibold">Masuk</button>
             </div>
-
-            <div class="bg-blue-50 p-3.5 rounded-xl border border-blue-200 space-y-2">
-                <label class="font-bold text-blue-900 block">Upload Logo Utama Aplikasi:</label>
-                <p class="text-[10px] text-slate-600">Pilih gambar logo format PNG (disarankan transparan).</p>
-                <input type="file" id="admin-logo-file" accept="image/*" class="w-full text-[10px] bg-white p-1.5 border rounded">
-                <button onclick="saveAdminLogoFix()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 rounded-lg shadow">
-                    Simpan Logo Secara Permanen
-                </button>
-            </div>
-
-            <div id="admin-success-msg" class="text-center font-bold text-green-600 hidden"></div>
         </div>
     </div>
 
+    <!-- PANEL ADMIN DASHBOARD -->
+    <div id="adminDashboardModal" class="fixed inset-0 bg-slate-950/80 hidden overflow-y-auto p-4 z-50">
+        <div class="bg-slate-900 border border-slate-800 max-w-4xl mx-auto rounded-3xl p-6 shadow-2xl my-8 space-y-6 text-white">
+            <div class="flex justify-between items-center border-b border-slate-800 pb-4">
+                <h2 class="text-xl font-bold text-emerald-400">⚙️ Panel Tetapan Admin</h2>
+                <button type="button" onclick="closeAdminDashboard()" class="text-rose-400 font-bold px-3 py-1 bg-rose-950/50 rounded-lg text-sm border border-rose-900">Tutup ✕</button>
+            </div>
+
+            <div class="bg-slate-950 p-4 rounded-2xl border border-slate-800 space-y-3">
+                <h4 class="font-bold text-sm text-indigo-400">👩‍💻 Pengurusan AI Asisten Kebun</h4>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                    <input type="text" id="settingAiName" class="w-full border border-slate-700 bg-slate-800 text-white p-2 rounded-lg text-sm" placeholder="Nama AI">
+                    <input type="file" id="settingAiAvatarInput" accept="image/*" class="w-full border border-slate-700 bg-slate-800 text-slate-300 p-1 rounded-lg text-xs">
+                </div>
+                <button type="button" onclick="saveAiSettings()" class="bg-indigo-600 text-white px-4 py-2 rounded-lg text-xs font-semibold">Simpan Tetapan AI</button>
+            </div>
+
+            <div class="bg-slate-950 p-4 rounded-2xl border border-slate-800 space-y-3">
+                <h4 class="font-bold text-sm text-slate-300">Pengurusan Pekerja & Job Desk Kustom</h4>
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                    <input type="text" id="workerNameInput" placeholder="Nama Pekerja" class="border border-slate-700 bg-slate-800 text-white p-2 rounded-lg text-sm">
+                    <input type="text" id="workerMandatoryTask" placeholder="Job Wajib" class="border border-slate-700 bg-slate-800 text-white p-2 rounded-lg text-sm">
+                    <input type="text" id="workerExtraTask" placeholder="Job Sampingan" class="border border-slate-700 bg-slate-800 text-white p-2 rounded-lg text-sm">
+                </div>
+                <button type="button" onclick="addWorkerWithCustomTasks()" class="bg-emerald-600 text-white px-4 py-2 rounded-lg text-xs font-semibold">Tambah Pekerja</button>
+                <div id="workerListTags" class="space-y-2 mt-3"></div>
+            </div>
+
+            <div class="bg-slate-950 p-4 rounded-2xl border border-slate-800">
+                <h4 class="font-bold text-sm text-slate-300 mb-2">Tambah Master Stok Bio Baja</h4>
+                <form id="inventoryForm" class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
+                    <input type="text" id="invName" placeholder="Nama Bio Baja" required class="border border-slate-700 bg-slate-800 text-white p-2 rounded-lg text-sm">
+                    <input type="number" id="invStock" placeholder="Stok Awal" required class="border border-slate-700 bg-slate-800 text-white p-2 rounded-lg text-sm">
+                    <input type="text" id="invAdvice" placeholder="Kegunaan / Manfaat Baja" required class="border border-slate-700 bg-slate-800 text-white p-2 rounded-lg text-sm sm:col-span-2">
+                    <input type="file" id="invImageInput" accept="image/*" class="w-full border border-slate-700 bg-slate-800 text-slate-300 p-1 rounded-lg text-sm sm:col-span-2">
+                    <button type="submit" class="sm:col-span-2 bg-emerald-600 text-white py-2 rounded-lg text-xs font-semibold">Simpan Stok Baja</button>
+                </form>
+                <div class="overflow-x-auto max-h-48 overflow-y-auto border border-slate-800 rounded-lg bg-slate-900">
+                    <table class="w-full text-left text-xs border-collapse">
+                        <thead><tr class="bg-slate-950 border-b border-slate-800 text-slate-400"><th class="p-2">Nama</th><th class="p-2">Stok</th><th class="p-2">Aksi</th></tr></thead>
+                        <tbody id="adminInventoryTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Script JavaScript -->
     <script>
-        const DEFAULT_ADMIN_PASS = "ilhamadmin123";
-
-        window.onload = function() {
-            // Load Service Worker untuk PWA
-            if ('serviceWorker' in navigator) {
-                navigator.serviceWorker.register('sw.js').catch(err => console.log('SW error:', err));
-            }
-            // Load Logo yang tersimpan
-            loadSavedLogo();
+        const firebaseConfig = {
+            apiKey: "AIzaSyD_LWsMJL2j8IkeDw0O1e6Gp3gvvvixuzk",
+            authDomain: "kebun-belimbing-buluh-medical.firebaseapp.com",
+            projectId: "kebun-belimbing-buluh-medical",
+            storageBucket: "kebun-belimbing-buluh-medical.firebasestorage.app",
+            messagingSenderId: "101006363434",
+            appId: "1:101006363434:web:ef0f5360e0e47c105f2c53",
+            measurementId: "G-5CX6N1K1GD"
         };
+        
+        let db = null;
+        try {
+            firebase.initializeApp(firebaseConfig);
+            db = firebase.firestore();
+        } catch(e) {}
 
-        function loadSavedLogo() {
-            const savedLogo = localStorage.getItem('ilham_master_logo');
-            if (savedLogo) {
-                const headerLogo = document.getElementById('header-custom-logo');
-                const headerIcon = document.getElementById('header-default-icon');
-                headerLogo.src = savedLogo;
-                headerLogo.classList.remove('hidden');
-                headerIcon.classList.add('hidden');
-            }
-        }
+        let currentUser = JSON.parse(localStorage.getItem('medicalpro_user_profile')) || null;
 
-        function openAdminLogin() {
-            document.getElementById('modal-admin-login').classList.remove('hidden');
-        }
-
-        function closeModal(id) {
-            document.getElementById(id).classList.add('hidden');
-        }
-
-        function verifyAdmin(e) {
-            e.preventDefault();
-            const pass = document.getElementById('admin-pass-input').value;
-            if (pass === DEFAULT_ADMIN_PASS) {
-                closeModal('modal-admin-login');
-                document.getElementById('admin-pass-input').value = "";
-                document.getElementById('modal-admin-dashboard').classList.remove('hidden');
+        function checkUserProfile() {
+            if (!currentUser || !currentUser.gender) {
+                document.getElementById('userProfileModal').classList.remove('hidden');
             } else {
-                alert('Kata sandi admin salah!');
+                initAiGreeting();
             }
         }
 
-        // Fungsionalitas Simpan Logo Tanpa Hang (Dioptimalkan)
-        function saveAdminLogoFix() {
-            const fileInput = document.getElementById('admin-logo-file').files[0];
-            const msgBox = document.getElementById('admin-success-msg');
+        function saveUserProfile() {
+            const name = document.getElementById('inputUserRealName').value.trim();
+            const gender = document.getElementById('inputUserGender').value;
+            currentUser = { name: name || (gender === 'Datu' ? 'Datu' : gender), gender };
+            localStorage.setItem('medicalpro_user_profile', JSON.stringify(currentUser));
+            document.getElementById('userProfileModal').classList.add('hidden');
+            initAiGreeting();
+        }
 
-            if (!fileInput) {
-                alert('Pilih file gambar logo terlebih dahulu!');
-                return;
+        let aiConfig = { name: "Asisten Kebun AI", avatar: "" };
+        let lastSpokenText = "";
+        let currentWeatherData = { rainSoon: false };
+
+        function applyAiSettings() {
+            document.getElementById('lblAiName').innerText = aiConfig.name || "Asisten Kebun AI";
+            const settingInput = document.getElementById('settingAiName');
+            if (settingInput) settingInput.value = aiConfig.name || "Asisten Kebun AI";
+            if (aiConfig.avatar) {
+                document.getElementById('aiAvatarContainer').innerHTML = `<img src="${aiConfig.avatar}" class="w-full h-full object-cover">`;
+            }
+        }
+
+        if (db) {
+            db.collection("settings").doc("ai_config").get().then((doc) => {
+                if (doc.exists) { aiConfig = doc.data(); applyAiSettings(); }
+            }).catch(() => {});
+        } else { applyAiSettings(); }
+
+        function saveAiSettings() {
+            aiConfig.name = document.getElementById('settingAiName').value;
+            compressImageHD(document.getElementById('settingAiAvatarInput').files[0], function(base64Img) {
+                if (base64Img) aiConfig.avatar = base64Img;
+                if (db) db.collection("settings").doc("ai_config").set(aiConfig).catch(() => {});
+                applyAiSettings();
+                alert("Tetapan AI berjaya dikemaskini!");
+            });
+        }
+
+        function speakText(text) {
+            lastSpokenText = text;
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+                const utterance = new SpeechSynthesisUtterance(text.replace(/[*_#]/g, ''));
+                utterance.lang = 'ms-MY';
+                utterance.rate = 1.0;
+                window.speechSynthesis.speak(utterance);
+            }
+        }
+        function speakLastAiMessage() { if (lastSpokenText) speakText(lastSpokenText); }
+
+        function getFullTitleName() {
+            if (!currentUser) return "Abang Rojak";
+            let title = currentUser.gender || "Abang";
+            let name = currentUser.name || "Rojak";
+            return `${title} ${name}`;
+        }
+
+        let workers = [];
+        let inventory = [];
+        let tasks = [];
+        let expenses = [];
+        let incomeList = [];
+
+        // --- AI KREATIF & MANDIRI ---
+        function generateFriendlyAiResponse(queryType = 'welcome') {
+            const fullName = getFullTitleName();
+
+            let lowStockItems = inventory.filter(i => i.stock < 5).map(i => i.name);
+            let bajaWarning = lowStockItems.length > 0 ? `⚠️ Perhatian: Stok baja berikut hampir habis: ${lowStockItems.join(', ')}!` : `✅ Stok bio baja dalam keadaan selamat dan mencukupi.`;
+
+            let lastBajaTask = tasks.find(t => t.title.toLowerCase().includes('baja') || t.category.toLowerCase().includes('baja'));
+            let daysSinceBaja = 999;
+            if (lastBajaTask && lastBajaTask.date) {
+                let diffTime = Math.abs(new Date() - new Date(lastBajaTask.date));
+                daysSinceBaja = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            }
+            let jobDeskRec = daysSinceBaja >= 14 ? "Estet sudah masuk tempoh 2 minggu. Rekomendasi job pekerja hari ini: **Tabur bio baja rutin**." : "Tempoh baja belum sampai 2 minggu. Rekomendasi job pekerja: **Potong rumput atau pangkas ranting**.";
+
+            let totalEx = expenses.reduce((s, e) => s + parseFloat(e.amount.replace(/[^0-9.]/g, '') || 0), 0);
+            let totalInc = incomeList.reduce((s, i) => s + parseFloat(i.amount.replace(/[^0-9.]/g, '') || 0), 0);
+
+            let responseText = "";
+            if (queryType === 'rekap') {
+                responseText = `📊 **Rekap Data Bulanan & Pekerja**:\n• Total Pekerja Berdaftar: ${workers.length} orang\n• Total Perbelanjaan: RM ${totalEx.toFixed(2)}\n• Total Pendapatan Jualan: RM ${totalInc.toFixed(2)}\n• Jumlah Tugas Tercatat: ${tasks.length} rekod.`;
+            } else if (queryType === 'baja') {
+                responseText = `🧪 **Status Stok Baja**:\n${bajaWarning}\n(Sila semak menu Bio Baja untuk butiran lanjut).`;
+            } else if (queryType === 'jobdesk') {
+                let workerNames = workers.length > 0 ? workers.map(w => typeof w === 'object' ? w.name : w).join(', ') : 'Belum ada pekerja diinput';
+                responseText = `📋 **Rekomendasi Job Desk Pekerja**:\n• Pekerja Bertugas: ${workerNames}\n• ${jobDeskRec}\n• Cuaca Estet: ${currentWeatherData.rainSoon ? 'Ada potensi hujan, utamakan kerja stor.' : 'Cerah dan stabil.'}`;
+            } else {
+                responseText = `Silakan ${fullName}, ada yang bisa saya bantu? Mau tanya soal apa? Rekap pekerjaan, data pekerja, rekap bulanan (pengeluaran/pemasukan), stok baja, atau rekomendasi job desk pekerja?`;
             }
 
-            // Kompresi atau konversi gambar agar tidak melebihi kapasitas LocalStorage
+            return responseText;
+        }
+
+        function initAiGreeting() {
+            let res = generateFriendlyAiResponse('welcome');
+            const chatBox = document.getElementById('aiChatResponseBox');
+            if (chatBox) chatBox.innerText = res;
+            speakText(res);
+        }
+
+        function askAi(topic) {
+            let res = generateFriendlyAiResponse(topic);
+            const chatBox = document.getElementById('aiChatResponseBox');
+            if (chatBox) chatBox.innerText = res;
+            speakText(res);
+        }
+
+        function handleAiManualQuery(e) {
+            e.preventDefault();
+            const val = document.getElementById('aiManualInput').value.toLowerCase();
+            if (val) {
+                let queryType = 'rekap';
+                if (val.includes('baja') || val.includes('stok')) queryType = 'baja';
+                else if (val.includes('job') || val.includes('pekerja') || val.includes('tugas')) queryType = 'jobdesk';
+                
+                let res = generateFriendlyAiResponse(queryType);
+                const chatBox = document.getElementById('aiChatResponseBox');
+                if (chatBox) chatBox.innerText = res;
+                speakText(res);
+                document.getElementById('aiManualInput').value = "";
+            }
+        }
+
+        function startVoiceChat() {
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            if (!SpeechRecognition) { alert("Pelayar tidak menyokong suara."); return; }
+            const recognition = new SpeechRecognition();
+            recognition.lang = 'ms-MY';
+            const statusNotice = document.getElementById('voiceStatusNotice');
+            statusNotice.classList.remove('hidden');
+
+            recognition.onresult = function(event) {
+                statusNotice.classList.add('hidden');
+                let speech = event.results[0][0].transcript.toLowerCase();
+                let qType = 'rekap';
+                if (speech.includes('baja') || speech.includes('stok')) qType = 'baja';
+                else if (speech.includes('job') || speech.includes('tugas')) qType = 'jobdesk';
+
+                let res = generateFriendlyAiResponse(qType);
+                document.getElementById('aiChatResponseBox').innerText = res;
+                speakText(res);
+            };
+            recognition.onerror = recognition.onend = function() { statusNotice.classList.add('hidden'); };
+            try { recognition.start(); } catch(e) {}
+        }
+
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-page').forEach(p => p.classList.add('hidden'));
+            const target = document.getElementById('page-' + tabId);
+            if (target) target.classList.remove('hidden');
+            document.querySelectorAll('[id^="tabBtn-"]').forEach(b => {
+                b.className = "bg-slate-900 text-slate-300 p-2.5 rounded-xl shadow-sm border border-slate-800 text-center font-semibold text-xs";
+            });
+            const activeBtn = document.getElementById('tabBtn-' + tabId);
+            if (activeBtn) activeBtn.className = "bg-emerald-600 text-white p-2.5 rounded-xl shadow-md border border-emerald-500 text-center font-bold text-xs";
+        }
+
+        // --- GOOGLE WEATHER STYLE LIVE PREDICTION & DAILY FORECAST ---
+        function updateLiveClockAndWeather() {
+            const now = new Date();
+            const clockEl = document.getElementById('liveClock');
+            if (clockEl) clockEl.innerText = now.toTimeString().substring(0, 8);
+
+            // Fetch koordinat Simpang Renggam / Machap, Johor (Lat: 1.8227, Lon: 103.3106)
+            fetch('https://api.open-meteo.com/v1/forecast?latitude=1.8227&longitude=103.3106&current_weather=true&hourly=temperature_2m,precipitation&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max,weathercode')
+                .then(res => res.json())
+                .then(data => {
+                    if (data && data.current_weather && data.hourly) {
+                        const temp = Math.round(data.current_weather.temperature);
+                        const feelsLike = Math.round(temp + 3); // estimasi terasa seperti
+                        const hourlyTime = data.hourly.time;
+                        const hourlyPrecip = data.hourly.precipitation;
+                        const hourlyTemp = data.hourly.temperature_2m;
+
+                        const year = now.getFullYear();
+                        const month = String(now.getMonth() + 1).padStart(2, '0');
+                        const day = String(now.getDate()).padStart(2, '0');
+                        const hour = String(now.getHours()).padStart(2, '0');
+                        const currentExactIsoStr = `${year}-${month}-${day}T${hour}:00`;
+
+                        let idx = hourlyTime.findIndex(t => t === currentExactIsoStr);
+                        if (idx === -1) {
+                            const currentHourStr = `T${hour}:`;
+                            idx = hourlyTime.findIndex(t => t.includes(currentHourStr));
+                            if (idx === -1) idx = 0;
+                        }
+
+                        let rainSoon = false;
+                        for(let i = idx; i < idx + 5; i++) {
+                            if (hourlyPrecip[i] && hourlyPrecip[i] > 0.1) { rainSoon = true; break; }
+                        }
+                        currentWeatherData.rainSoon = rainSoon;
+
+                        let currentHourNum = now.getHours();
+                        let isNight = currentHourNum < 6 || currentHourNum >= 18;
+                        let condText = rainSoon ? "Berawan / Hujan" : (isNight ? "Malam Tenang" : "Berawan Sebagian");
+                        let mainIcon = rainSoon ? "🌧️" : (isNight ? "🌙" : "⛅");
+
+                        // Update Google Weather main panel
+                        if (document.getElementById('tempDisplay')) document.getElementById('tempDisplay.innerText = `${temp}°`; // fixed in next line
+                        document.getElementById('tempDisplay').innerText = `${temp}°`;
+                        if (document.getElementById('condDisplay')) document.getElementById('condDisplay').innerText = condText;
+                        if (document.getElementById('feelsLikeDisplay')) document.getElementById('feelsLikeDisplay').innerText = `Terasa seperti ${feelsLike}°`;
+                        if (document.getElementById('weatherMainIconContainer')) document.getElementById('weatherMainIconContainer').innerText = mainIcon;
+
+                        // 5 Jam ke depan (Style Google Weather Hourly)
+                        const hContainer = document.getElementById('hourlyForecastContainer');
+                        if (hContainer) {
+                            hContainer.innerHTML = "";
+                            for (let i = 0; i < 5; i++) {
+                                let tIdx = idx + i;
+                                if (tIdx < hourlyTime.length) {
+                                    let timeStr = hourlyTime[tIdx];
+                                    let timeHourInt = parseInt(timeStr.substring(11, 13), 10);
+                                    
+                                    // Format jam ke format AM/PM ala Google Weather
+                                    let displayHour = "";
+                                    if (i === 0) {
+                                        displayHour = "Sekarang";
+                                    } else {
+                                        let h12 = timeHourInt % 12;
+                                        if (h12 === 0) h12 = 12;
+                                        let ampm = timeHourInt >= 12 ? "PM" : "AM";
+                                        displayHour = `${h12} ${ampm}`;
+                                    }
+
+                                    let pVal = hourlyPrecip[tIdx] || 0;
+                                    let tVal = Math.round(hourlyTemp[tIdx]);
+                                    let itemIsNight = timeHourInt < 6 || timeHourInt >= 18;
+                                    let icon = pVal > 0.2 ? "🌧️" : (itemIsNight ? "🌙" : "⛅");
+                                    let rainPercent = pVal > 0.1 ? Math.round(pVal * 30) + "%" : "";
+
+                                    hContainer.innerHTML += `
+                                        <div class="flex flex-col items-center justify-between py-1">
+                                            <span class="text-[11px] font-medium text-slate-300">${tVal}°</span>
+                                            <span class="text-[10px] text-cyan-400 font-bold my-1">${rainPercent}</span>
+                                            <span class="text-lg my-1">${icon}</span>
+                                            <span class="text-[10px] text-slate-400 font-mono mt-1">${displayHour}</span>
+                                        </div>
+                                    `;
+                                }
+                            }
+                        }
+
+                        // Prakiraan 5 Hari Kedepan (Daily Forecast Style Google)
+                        if (data.daily && data.daily.time) {
+                            const dailyContainer = document.getElementById('dailyForecastContainer');
+                            if (dailyContainer) {
+                                dailyContainer.innerHTML = "";
+                                const daysName = ["Min", "Sen", "Sel", "Rab", "Kam", "Jum", "Sab"];
+                                for (let d = 0; d < 5; d++) {
+                                    let dDate = new Date(data.daily.time[d]);
+                                    let dayStr = d === 0 ? "Hari Ini" : daysName[dDate.getDay()];
+                                    let maxT = Math.round(data.daily.temperature_2m_max[d]);
+                                    let minT = Math.round(data.daily.temperature_2m_min[d]);
+                                    let probRain = data.daily.precipitation_probability_max[d] || 10;
+                                    let dIcon = probRain > 40 ? "🌧️" : "⛅";
+
+                                    dailyContainer.innerHTML += `
+                                        <div class="bg-slate-950/60 p-2 rounded-2xl border border-slate-800 flex flex-col items-center justify-between text-center">
+                                            <span class="text-xs font-bold text-slate-300">${dayStr}</span>
+                                            <span class="text-xl my-1">${dIcon}</span>
+                                            <div class="text-[11px] font-semibold text-slate-200">${maxT}°<span class="text-slate-500 font-normal">/${minT}°</span></div>
+                                        </div>
+                                    `;
+                                }
+                            }
+                        }
+                    }
+                }).catch(() => {});
+        }
+        setInterval(updateLiveClockAndWeather, 1000);
+
+        function compressImageHD(file, callback) {
+            if (!file) { callback(""); return; }
             const reader = new FileReader();
             reader.onload = function(e) {
                 const img = new Image();
                 img.onload = function() {
                     const canvas = document.createElement('canvas');
-                    const MAX_SIZE = 300; // Ukuran optimal untuk logo header
-                    let width = img.width;
-                    let height = img.height;
-                    if (width > height) {
-                        if (width > MAX_SIZE) { height *= MAX_SIZE / width; width = MAX_SIZE; }
-                    } else {
-                        if (height > MAX_SIZE) { width *= MAX_SIZE / height; height = MAX_SIZE; }
-                    }
-                    canvas.width = width;
-                    canvas.height = height;
-                    const ctx = canvas.getContext('2d');
-                    ctx.drawImage(img, 0, 0, width, height);
-                    
-                    const compressedDataUrl = canvas.toDataURL('image/png');
-
-                    try {
-                        localStorage.setItem('ilham_master_logo', compressedDataUrl);
-                        loadSavedLogo();
-                        
-                        msgBox.innerText = "✓ Logo berhasil disimpan secara permanen!";
-                        msgBox.classList.remove('hidden');
-                        setTimeout(() => {
-                            msgBox.classList.add('hidden');
-                            closeModal('modal-admin-dashboard');
-                        }, 1500);
-                    } catch (err) {
-                        alert("Gagal menyimpan: Ukuran file terlalu besar atau memori penuh.");
-                    }
+                    let w = img.width, h = img.height;
+                    if (w > 1200) { h *= 1200 / w; w = 1200; }
+                    canvas.width = w; canvas.height = h;
+                    canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+                    callback(canvas.toDataURL('image/jpeg', 0.85));
                 };
                 img.src = e.target.result;
             };
-            reader.readAsDataURL(fileInput);
+            reader.readAsDataURL(file);
         }
+
+        function downloadImageFile(url, name) {
+            const a = document.createElement('a');
+            a.href = url; a.download = name; a.click();
+        }
+
+        let unlockAudioSystem = () => { document.getElementById('audioUnlockBanner').style.display = 'none'; alert("Audio aktif!"); };
+
+        const secretAdminCode = "rojak123";
+        let openAdminLogin = () => document.getElementById('adminLoginModal').classList.remove('hidden');
+        let closeAdminLogin = () => document.getElementById('adminLoginModal').classList.add('hidden');
+        let verifyAdmin = () => {
+            if (document.getElementById('adminPasswordInput').value === secretAdminCode) {
+                closeAdminLogin();
+                document.getElementById('adminDashboardModal').classList.remove('hidden');
+                renderWorkersAdmin();
+                renderAdminInventoryTable();
+            } else { alert("Salah kata sandi!"); }
+        };
+        let closeAdminDashboard = () => document.getElementById('adminDashboardModal').classList.add('hidden');
+
+        // Firestore sync
+        if (db) {
+            db.collection("settings").doc("workers").get().then(doc => {
+                if (doc.exists && doc.data().list) { workers = doc.data().list; renderWorkersDropdown(); }
+            });
+            db.collection("inventory").onSnapshot(snap => {
+                inventory = [];
+                snap.forEach(d => inventory.push({ firestoreId: d.id, ...d.data() }));
+                renderInventory(); renderAdminInventoryTable();
+            });
+            db.collection("tasks").orderBy("id", "desc").onSnapshot(snap => {
+                tasks = []; let m = new Set();
+                snap.forEach(d => { let x = d.data(); tasks.push({ firestoreId: d.id, ...x }); if(x.month) m.add(x.month); });
+                updateMonthDropdown('filterTaskMonth', m); renderTasks();
+            });
+            db.collection("expenses").orderBy("id", "desc").onSnapshot(snap => {
+                expenses = []; let m = new Set();
+                snap.forEach(d => { let x = d.data(); expenses.push({ firestoreId: d.id, ...x }); if(x.month) m.add(x.month); });
+                updateMonthDropdown('filterExpenseMonth', m); renderExpenses();
+            });
+            db.collection("income").orderBy("id", "desc").onSnapshot(snap => {
+                incomeList = []; let m = new Set();
+                snap.forEach(d => { let x = d.data(); incomeList.push({ firestoreId: d.id, ...x }); if(x.month) m.add(x.month); });
+                updateMonthDropdown('filterIncomeMonth', m); renderIncome();
+            });
+        }
+
+        function renderWorkersDropdown() {
+            const sel = document.getElementById('taskWorkerSelect');
+            if(!sel) return;
+            sel.innerHTML = `<option value="">Pilih Pekerja</option>`;
+            workers.forEach(w => { let n = typeof w === 'object' ? w.name : w; sel.innerHTML += `<option value="${n}">${n}</option>`; });
+        }
+        function renderWorkersAdmin() {
+            const c = document.getElementById('workerListTags');
+            if(!c) return;
+            c.innerHTML = "";
+            workers.forEach((w, i) => {
+                let n = typeof w === 'object' ? w.name : w;
+                c.innerHTML += `<span class="bg-emerald-950 text-emerald-300 border border-emerald-800 px-3 py-1 rounded text-xs font-semibold flex justify-between items-center">👤 ${n} <button type="button" onclick="deleteWorker(${i})" class="text-rose-400 font-bold">×</button></span>`;
+            });
+        }
+        function addWorkerWithCustomTasks() {
+            const n = document.getElementById('workerNameInput').value.trim();
+            if(n) {
+                workers.push({ name: n, mandatory: document.getElementById('workerMandatoryTask').value, extra: document.getElementById('workerExtraTask').value });
+                if(db) db.collection("settings").doc("workers").set({ list: workers });
+                document.getElementById('workerNameInput').value = "";
+                renderWorkersAdmin(); renderWorkersDropdown();
+            }
+        }
+        function deleteWorker(i) {
+            workers.splice(i, 1);
+            if(db) db.collection("settings").doc("workers").set({ list: workers });
+            renderWorkersAdmin(); renderWorkersDropdown();
+        }
+
+        // Suplai lokal
+        let supplyData = JSON.parse(localStorage.getItem('kebunSupplyData')) || [];
+        document.getElementById('inputDate').valueAsDate = new Date();
+        document.getElementById('supplyForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            supplyData.unshift({
+                id: Date.now(),
+                date: document.getElementById('inputDate').value,
+                item: document.getElementById('inputItem').value,
+                action: document.getElementById('inputAction').value,
+                qty: parseFloat(document.getElementById('inputQty').value),
+                desc: document.getElementById('inputDesc').value || '-'
+            });
+            localStorage.setItem('kebunSupplyData', JSON.stringify(supplyData));
+            this.reset(); document.getElementById('inputDate').valueAsDate = new Date();
+            renderSupplyApp();
+        });
+        function renderSupplyApp() {
+            const tbody = document.getElementById('supplyTableBody');
+            const sc = document.getElementById('stockSummaryContainer');
+            if(!tbody || !sc) return;
+            tbody.innerHTML = ""; sc.innerHTML = "";
+            let stocks = {};
+            supplyData.forEach(r => {
+                if(!stocks[r.item]) stocks[r.item] = 0;
+                if(r.action === 'tuai') stocks[r.item] += r.qty; else stocks[r.item] -= r.qty;
+            });
+            ["Buah Belimbing Buluh besar", "Buah Belimbing kismis", "Daun Teh Belimbing Buluh"].forEach(item => {
+                sc.innerHTML += `<div class="bg-slate-900 border border-slate-800 p-2 rounded text-center"><div class="text-[10px] text-slate-400">${item}</div><div class="text-sm font-bold text-cyan-400">${stocks[item]||0} Unit</div></div>`;
+            });
+            supplyData.forEach(r => {
+                tbody.innerHTML += `<tr class="border-b border-slate-800"><td class="p-2">${r.date}</td><td class="p-2">${r.item}</td><td class="p-2">${r.action}</td><td class="p-2 font-bold">${r.qty}</td><td class="p-2">${r.desc}</td><td class="p-2 text-center"><button type="button" onclick="deleteSupply(${r.id})" class="text-rose-400">✕</button></td></tr>`;
+            });
+        }
+        function deleteSupply(id) {
+            supplyData = supplyData.filter(i => i.id !== id);
+            localStorage.setItem('kebunSupplyData', JSON.stringify(supplyData));
+            renderSupplyApp();
+        }
+        renderSupplyApp();
+
+        // Inventory
+        function renderInventory() {
+            const c = document.getElementById('inventoryContainer');
+            const sel = document.getElementById('taskStockItem');
+            if(!c || !sel) return;
+            c.innerHTML = ""; sel.innerHTML = `<option value="">-- Tanpa Stok --</option>`;
+            inventory.forEach(item => {
+                sel.innerHTML += `<option value="${item.name}">${item.name} (Sisa: ${item.stock})</option>`;
+                c.innerHTML += `<div class="bg-slate-900 border border-slate-800 p-4 rounded-xl">${item.photo?`<img src="${item.photo}" class="w-full h-32 object-cover rounded mb-2">`:''}<h4 class="font-bold text-emerald-400">${item.name}</h4><p class="text-xs text-slate-300">Sisa: <b>${item.stock}</b></p><p class="text-xs text-slate-400 mt-1">🌿 ${item.advice}</p></div>`;
+            });
+        }
+        function renderAdminInventoryTable() {
+            const tbody = document.getElementById('adminInventoryTableBody');
+            if(!tbody) return;
+            tbody.innerHTML = "";
+            inventory.forEach((item, i) => {
+                tbody.innerHTML += `<tr class="border-b border-slate-800"><td class="p-2">${item.name}</td><td class="p-2 font-bold">${item.stock}</td><td class="p-2"><button type="button" onclick="deleteInv(${i})" class="text-rose-400">Hapus</button></td></tr>`;
+            });
+        }
+        document.getElementById('inventoryForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const name = document.getElementById('invName').value;
+            const stock = parseInt(document.getElementById('invStock').value) || 0;
+            const advice = document.getElementById('invAdvice').value;
+            compressImageHD(document.getElementById('invImageInput').files[0], function(base64) {
+                if(db) db.collection("inventory").add({ id: Date.now(), name, stock, advice, photo: base64 });
+                this.reset(); alert("Stok baja ditambah!");
+            }.bind(this));
+        });
+        function deleteInv(i) { if(db) db.collection("inventory").doc(inventory[i].firestoreId).delete(); }
+
+        // Tasks
+        let taskPhotoBase64 = "";
+        document.getElementById('imageInput').addEventListener('change', function(e) {
+            compressImageHD(e.target.files[0], b => { taskPhotoBase64 = b; });
+        });
+        document.getElementById('taskForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const dVal = document.getElementById('taskDate').value;
+            const newTask = {
+                id: Date.now(),
+                title: document.getElementById('taskTitle').value,
+                category: document.getElementById('taskCategory').value,
+                worker: document.getElementById('taskWorkerSelect').value,
+                date: dVal,
+                month: dVal ? dVal.substring(0, 7) : new Date().toISOString().substring(0, 7),
+                stockUsed: document.getElementById('taskStockItem').value || "Tiada",
+                photo: taskPhotoBase64 || "",
+                status: "Selesai ✓",
+                amount: "0"
+            };
+            if(db) db.collection("tasks").add(newTask).then(() => { this.reset(); taskPhotoBase64 = ""; alert("Report tugas disimpan!"); });
+        });
+        function updateMonthDropdown(id, set) {
+            const sel = document.getElementById(id);
+            if(!sel) return;
+            let cv = sel.value;
+            sel.innerHTML = `<option value="all">Semua Bulan (Global)</option>`;
+            Array.from(set).sort().reverse().forEach(m => sel.innerHTML += `<option value="${m}">Bulan: ${m}</option>`);
+            sel.value = cv;
+        }
+        function renderTasks() {
+            const tbody = document.getElementById('taskTableBody');
+            const fm = document.getElementById('filterTaskMonth').value;
+            if(!tbody) return; tbody.innerHTML = "";
+            tasks.filter(t => fm === 'all' || t.month === fm).forEach(t => {
+                tbody.innerHTML += `<tr class="border-b border-slate-800"><td class="p-3">${t.photo?`<img src="${t.photo}" class="w-10 h-10 object-cover rounded"><button type="button" onclick="downloadImageFile('${t.photo}','Tugas.jpg')" class="text-[10px] text-cyan-400 underline block">Download</button>`:'Tiada'}</td><td class="p-3">${t.title}</td><td class="p-3">${t.category}</td><td class="p-3 font-bold">${t.worker}</td><td class="p-3">${t.date}</td><td class="p-3">${t.stockUsed}</td><td class="p-3">${t.status}</td><td class="p-3"><button type="button" onclick="deleteTask(${t.id})" class="text-rose-400">Hapus</button></td></tr>`;
+            });
+        }
+        function deleteTask(id) { if(db) db.collection("tasks").where("id","==",id).get().then(s => s.forEach(d => d.ref.delete())); }
+
+        // Expenses
+        let expReceiptBase64 = "";
+        document.getElementById('expReceiptInput').addEventListener('change', function(e) {
+            compressImageHD(e.target.files[0], b => { expReceiptBase64 = b; });
+        });
+        document.getElementById('expenseForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const dVal = document.getElementById('expDate').value;
+            const newEx = {
+                id: Date.now(),
+                title: document.getElementById('expTitle').value,
+                amount: document.getElementById('expAmount').value,
+                date: dVal,
+                month: dVal ? dVal.substring(0, 7) : new Date().toISOString().substring(0, 7),
+                receipt: expReceiptBase64 || ""
+            };
+            if(db) db.collection("expenses").add(newEx).then(() => { this.reset(); expReceiptBase64=""; alert("Perbelanjaan disimpan!"); });
+        });
+        function renderExpenses() {
+            const tbody = document.getElementById('expenseTableBody');
+            const fm = document.getElementById('filterExpenseMonth').value;
+            if(!tbody) return; tbody.innerHTML = "";
+            expenses.filter(e => fm === 'all' || e.month === fm).forEach(ex => {
+                tbody.innerHTML += `<tr class="border-b border-slate-800"><td class="p-3">${ex.receipt?`<img src="${ex.receipt}" class="w-10 h-10 object-cover rounded"><button type="button" onclick="downloadImageFile('${ex.receipt}','Resit.jpg')" class="text-[10px] text-cyan-400 underline block">Download</button>`:'Tiada'}</td><td class="p-3">${ex.title}</td><td class="p-3 font-bold text-rose-400">${ex.amount}</td><td class="p-3">${ex.date}</td><td class="p-3"><button type="button" onclick="deleteExpense(${ex.id})" class="text-rose-400">Hapus</button></td></tr>`;
+            });
+        }
+        function deleteExpense(id) { if(db) db.collection("expenses").where("id","==",id).get().then(s => s.forEach(d => d.ref.delete())); }
+
+        // Income
+        let staffAccounts = [{ name: "Kasir Utama", pass: "kasir123" }];
+        let activeStaffName = "";
+        function verifyStaffLogin() {
+            const p = document.getElementById('staffPassInput').value;
+            const found = staffAccounts.find(s => s.pass === p);
+            if(found) {
+                activeStaffName = found.name;
+                document.getElementById('staffStatusText').innerText = `Log masuk sebagai: ${activeStaffName}`;
+                document.getElementById('incomeForm').classList.remove('opacity-50','pointer-events-none');
+                alert("Berjaya log masuk staff!");
+            } else { alert("Kata sandi salah!"); }
+        }
+        let incPhotoBase64 = "";
+        document.getElementById('incPhotoInput').addEventListener('change', function(e) {
+            compressImageHD(e.target.files[0], b => { incPhotoBase64 = b; });
+        });
+        document.getElementById('incomeForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            if(!activeStaffName) { alert("Sila log masuk staff!"); return; }
+            const dVal = document.getElementById('incDate').value;
+            const newInc = {
+                id: Date.now(),
+                title: document.getElementById('incTitle').value,
+                amount: document.getElementById('incAmount').value,
+                date: dVal,
+                month: dVal ? dVal.substring(0, 7) : new Date().toISOString().substring(0, 7),
+                staff: activeStaffName,
+                photo: incPhotoBase64 || ""
+            };
+            if(db) db.collection("income").add(newInc).then(() => { this.reset(); incPhotoBase64=""; alert("Pendapatan disimpan!"); });
+        });
+        function renderIncome() {
+            const tbody = document.getElementById('incomeTableBody');
+            const fm = document.getElementById('filterIncomeMonth').value;
+            if(!tbody) return; tbody.innerHTML = "";
+            incomeList.filter(i => fm === 'all' || i.month === fm).forEach(inc => {
+                tbody.innerHTML += `<tr class="border-b border-slate-800"><td class="p-3">${inc.photo?`<img src="${inc.photo}" class="w-10 h-10 object-cover rounded"><button type="button" onclick="downloadImageFile('${inc.photo}','Bukti.jpg')" class="text-[10px] text-cyan-400 underline block">Download</button>`:'Tiada'}</td><td class="p-3">${inc.title}</td><td class="p-3 text-xs font-bold">${inc.staff}</td><td class="p-3 font-bold text-emerald-400">${inc.amount}</td><td class="p-3">${inc.date}</td><td class="p-3"><button type="button" onclick="deleteIncome(${inc.id})" class="text-rose-400">Hapus</button></td></tr>`;
+            });
+        }
+        function deleteIncome(id) { if(db) db.collection("income").where("id","==",id).get().then(s => s.forEach(d => d.ref.delete())); }
+
+        // --- SISTEM INVOICE & SIGNATURE ---
+        let signaturePad = null;
+        function initSignaturePad() {
+            const canvas = document.getElementById('signatureCanvas');
+            if (canvas && !signaturePad) {
+                canvas.width = canvas.parentElement.clientWidth;
+                canvas.height = canvas.parentElement.clientHeight;
+                signaturePad = new SignaturePad(canvas, { backgroundColor: 'rgba(0,0,0,0)', penColor: 'rgb(15, 23, 42)' });
+                signaturePad.addEventListener("beginStroke", () => document.getElementById('signaturePlaceholder').style.display = 'none');
+            } else if (signaturePad && canvas) {
+                signaturePad.clear();
+                document.getElementById('signaturePlaceholder').style.display = 'block';
+            }
+        }
+        function clearSignature() { if(signaturePad) { signaturePad.clear(); document.getElementById('signaturePlaceholder').style.display = 'block'; } }
+
+        function generateMonthlyInvoice(type) {
+            let filterVal = 'all', title = "", dataArr = [];
+            if(type === 'tasks') {
+                filterVal = document.getElementById('filterTaskMonth').value;
+                title = "Rekap Tugas Harian Estet";
+                dataArr = tasks.filter(t => filterVal === 'all' || t.month === filterVal);
+            } else if(type === 'expenses') {
+                filterVal = document.getElementById('filterExpenseMonth').value;
+                title = "Rekap Perbelanjaan Kebun";
+                dataArr = expenses.filter(ex => filterVal === 'all' || ex.month === filterVal);
+            } else if(type === 'income') {
+                filterVal = document.getElementById('filterIncomeMonth').value;
+                title = "Rekap Pendapatan Hasil Kebun";
+                dataArr = incomeList.filter(inc => filterVal === 'all' || inc.month === filterVal);
+            }
+
+            document.getElementById('invModalCategoryName').innerText = title;
+            document.getElementById('invModalPeriod').innerText = `Tempoh: ${filterVal === 'all' ? 'Semua Bulan (Global)' : filterVal}`;
+            document.getElementById('invModalTotalItems').innerText = `${dataArr.length} Item`;
+
+            let isBoss = currentUser && currentUser.gender === 'Datu';
+            let ownerName = currentUser ? currentUser.name : "Rojak";
+            let roleLabel = isBoss ? `Disahkan Oleh Boss (Pemilik Utama):` : `Disahkan Oleh Perwakilan Rasmi:`;
+            
+            document.getElementById('invModalOwner').innerText = `${ownerName} ${isBoss ? '(Boss / Datu)' : '(' + (currentUser ? currentUser.gender : 'Perwakilan') + ')'}`;
+            document.getElementById('invSignatureRoleLabel').innerText = roleLabel;
+            document.getElementById('invModalDateNum').innerText = `No: INV-${Date.now().toString().slice(-6)}`;
+
+            const tbody = document.getElementById('invoiceTableBody');
+            tbody.innerHTML = ""; let grandTot = 0;
+
+            if(dataArr.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-slate-400">Tiada rekod untuk tempoh ini.</td></tr>`;
+            } else {
+                dataArr.forEach((item, idx) => {
+                    let desc = item.title || item.item || '-';
+                    let wStaff = item.worker || item.staff || '-';
+                    let amt = parseFloat((item.amount || '0').replace(/[^0-9.]/g, '')) || 0;
+                    grandTot += amt;
+                    let pUrl = item.photo || item.receipt || '';
+                    let pHtml = pUrl ? `<div class="flex items-center gap-2"><img src="${pUrl}" class="w-8 h-8 object-cover rounded"><button type="button" onclick="downloadImageFile('${pUrl}','Foto-${idx+1}.jpg')" class="bg-blue-600 text-white px-2 py-0.5 rounded text-[10px]">Download</button></div>` : 'Tiada';
+
+                    tbody.innerHTML += `<tr class="border-b"><td class="p-2">${idx+1}</td><td class="p-2">${item.date||'-'}</td><td class="p-2 font-medium">${desc}</td><td class="p-2">${wStaff}</td><td class="p-2">${pHtml}</td><td class="p-2 text-right font-bold">${amt>0?'RM '+amt.toFixed(2):'-'}</td></tr>`;
+                });
+            }
+
+            document.getElementById('invoiceGrandTotal').innerText = `RM ${grandTot.toFixed(2)}`;
+            document.getElementById('invoiceModal').classList.remove('hidden');
+            setTimeout(initSignaturePad, 200);
+        }
+
+        function closeInvoiceModal() { document.getElementById('invoiceModal').classList.add('hidden'); }
+        function downloadInvoicePdfOrText() { window.print(); }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            checkUserProfile();
+            updateLiveClockAndWeather();
+        });
     </script>
 </body>
 </html>
