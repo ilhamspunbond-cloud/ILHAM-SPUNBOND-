@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>ILHAM SPUNBOND - Voice AI & Smart Custom Order Pro</title>
     
-    <!-- PWA Manifest Dinamis (Mengikuti Logo Brand Admin) -->
+    <!-- PWA Manifest Dinamis -->
     <link id="dynamic-manifest" rel="manifest" href="data:application/manifest+json;charset=utf-8,%7B%22name%22%3A%22ILHAM%20SPUNBOND%20Pro%22%2C%22short_name%22%3A%22ILHAM%20SPUNBOND%22%2C%22start_url%22%3A%22.%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%23f1f5f9%22%2C%22theme_color%22%3A%22%23065f46%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22https%3A%2F%2Fvia.placeholder.com%2F192x192%2F065f46%2Fffffff%3Ftext%3DILHAM%22%2C%22sizes%22%3A%22192x192%22%2C%22type%22%3A%22image%2Fpng%22%7D%2C%7B%22src%22%3A%22https%3A%2F%2Fvia.placeholder.com%2F512x512%2F065f46%2Fffffff%3Ftext%3DILHAM%22%2C%22sizes%22%3A%22512x512%22%2C%22type%22%3A%22image%2Fpng%22%7D%5D%7D">
     <meta name="theme-color" content="#065f46">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -153,7 +153,6 @@
         <div class="bg-gradient-to-br from-emerald-900 via-emerald-800 to-slate-900 text-white p-5 rounded-3xl shadow-xl text-center flex flex-col items-center justify-center relative overflow-hidden border border-emerald-700/50">
             <div class="absolute -right-10 -top-10 w-32 h-32 bg-emerald-500/20 rounded-full blur-2xl pointer-events-none"></div>
             
-            <!-- Tombol Buka Profil di Kanan Atas Header -->
             <button type="button" onclick="openProfileModal()" class="absolute top-3 right-3 bg-white/10 hover:bg-white/20 border border-white/20 text-white px-2.5 py-1.5 rounded-xl text-[11px] font-semibold flex items-center gap-1 cursor-pointer">
                 <span>👤</span> <span id="header-profile-name">Profil</span>
             </button>
@@ -171,7 +170,7 @@
             <p id="welcome-greeting-text" class="text-xs text-emerald-200/90 mt-0.5 font-medium">Sistem Pemesanan Custom Tas Spunbond & Sablon</p>
         </div>
 
-        <!-- 🤖 VOICE AI ASISTEN & REKOMENDASI CERDAS -->
+        <!-- 🤖 VOICE AI ASISTEN -->
         <div class="bg-white p-4 rounded-2xl shadow-md border border-emerald-200 space-y-3">
             <div class="flex items-center justify-between border-b border-slate-100 pb-2">
                 <h3 class="text-xs font-bold text-emerald-900 flex items-center gap-1.5">
@@ -203,7 +202,6 @@
                 <label class="block text-xs font-semibold text-slate-600 mb-1">2. Pilih Ukuran Tas (Size)</label>
                 <select id="bag-size-select" onchange="onCustomerSizeSelect()" class="w-full bg-slate-50 border border-slate-300 rounded-xl p-3 text-sm font-medium focus:ring-2 focus:ring-emerald-500 outline-none">
                 </select>
-                <!-- Keterangan Rekomendasi Admin yang Dibaca AI -->
                 <div id="size-admin-recommendation-note" class="text-[11px] text-emerald-800 font-medium bg-emerald-50/80 px-3 py-2 rounded-lg border border-emerald-200/60 mt-2 hidden"></div>
             </div>
 
@@ -212,51 +210,96 @@
                 <div id="bag-color-buttons" class="flex flex-wrap gap-2"></div>
             </div>
 
-            <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 space-y-2">
-                <label class="block text-xs font-semibold text-slate-600">4. Upload Logo / Desain Anda (Background Transparan Cepat)</label>
-                <input type="file" id="customer-logo-upload" accept="image/*" onchange="loadCustomerLogo(event)" class="w-full text-xs text-slate-500 file:mr-3 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100 cursor-pointer">
-                <div id="logo-upload-status" class="text-[10px] text-slate-400 italic"></div>
-            </div>
-
             <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200">
-                <label class="block text-xs font-semibold text-slate-600 mb-1">5. Pilih Metode Cetak</label>
+                <label class="block text-xs font-semibold text-slate-600 mb-1">4. Pilih Metode Cetak</label>
                 <select id="print-method" onchange="togglePrintMethod()" class="w-full bg-slate-50 border border-slate-300 rounded-xl p-3 text-sm font-medium focus:ring-2 focus:ring-emerald-500 outline-none">
-                    <option value="manual">Sablon Manual (Warna Tinta Pilihan)</option>
-                    <option value="dtf">DTF Full Color (Warna Asli Desain)</option>
+                    <option value="manual">Sablon Manual Pasta Tinta</option>
+                    <option value="dtf">DTF Full Color</option>
                 </select>
             </div>
 
-            <div id="manual-ink-box" class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200">
-                <label class="block text-xs font-semibold text-slate-600 mb-1">6. Pilih Warna Tinta Sablon Manual</label>
-                <select id="ink-color-select" onchange="updateProcessedLogo()" class="w-full bg-slate-50 border border-slate-300 rounded-xl p-3 text-sm font-medium focus:ring-2 focus:ring-emerald-500 outline-none">
+            <!-- OPSI JUMLAH WARNA SABLON MANUAL -->
+            <div id="sablon-color-mode-box" class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200">
+                <label class="block text-xs font-semibold text-slate-600 mb-1">5. Jumlah Warna Tinta Sablon</label>
+                <select id="sablon-color-count" onchange="toggleSablonColorCount()" class="w-full bg-slate-50 border border-slate-300 rounded-xl p-3 text-sm font-medium focus:ring-2 focus:ring-emerald-500 outline-none">
+                    <option value="1">1 Warna Tinta</option>
+                    <option value="2">2 Warna Tinta (Upload 2 File Logo)</option>
                 </select>
             </div>
 
+            <!-- UPLOAD LOGO 1 -->
+            <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 space-y-2">
+                <label id="label-logo-1" class="block text-xs font-semibold text-slate-600">6. Upload Logo / Desain Utama (Background Transparan)</label>
+                <input type="file" id="customer-logo-upload-1" accept="image/*" onchange="loadCustomerLogo1(event)" class="w-full text-xs text-slate-500 file:mr-3 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100 cursor-pointer">
+                <div id="logo-upload-status-1" class="text-[10px] text-slate-400 italic"></div>
+                
+                <div id="ink-box-1" class="mt-2">
+                    <label class="block text-[11px] font-semibold text-slate-500 mb-1">Pilih Warna Tinta Sablon (Desain 1):</label>
+                    <select id="ink-color-select-1" onchange="updateProcessedLogos()" class="w-full bg-slate-50 border border-slate-300 rounded-xl p-2.5 text-xs font-medium outline-none"></select>
+                </div>
+            </div>
+
+            <!-- UPLOAD LOGO 2 (KHUSUS 2 WARNA) -->
+            <div id="logo-2-container" class="hidden bg-white p-4 rounded-2xl shadow-sm border border-emerald-200 space-y-2">
+                <label class="block text-xs font-semibold text-emerald-800">6b. Upload Logo / Desain Kedua (Background Transparan)</label>
+                <input type="file" id="customer-logo-upload-2" accept="image/*" onchange="loadCustomerLogo2(event)" class="w-full text-xs text-slate-500 file:mr-3 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100 cursor-pointer">
+                <div id="logo-upload-status-2" class="text-[10px] text-slate-400 italic"></div>
+                
+                <div class="mt-2">
+                    <label class="block text-[11px] font-semibold text-slate-500 mb-1">Pilih Warna Tinta Sablon (Desain 2):</label>
+                    <select id="ink-color-select-2" onchange="updateProcessedLogos()" class="w-full bg-slate-50 border border-slate-300 rounded-xl p-2.5 text-xs font-medium outline-none"></select>
+                </div>
+            </div>
+
+            <!-- UKURAN STIKER DTF -->
             <div id="dtf-size-box" class="hidden bg-emerald-50 p-4 rounded-2xl shadow-sm border border-emerald-200 space-y-2">
-                <label class="block text-xs font-semibold text-emerald-800">6. Pilih Ukuran Stiker DTF</label>
+                <label class="block text-xs font-semibold text-emerald-800">Pilih Ukuran Stiker DTF</label>
                 <select id="dtf-size-select" onchange="calculateItemPrice()" class="w-full bg-white border border-emerald-300 rounded-xl p-3 text-sm font-medium focus:ring-2 focus:ring-emerald-500 outline-none text-emerald-900">
                 </select>
             </div>
 
-            <!-- Kontrol Posisi Logo -->
+            <!-- KONTROL POSISI LOGO 1 -->
             <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 space-y-3">
-                <h3 class="text-xs font-bold text-slate-700">🎛️ Pengaturan Posisi & Ukuran Logo</h3>
+                <h3 class="text-xs font-bold text-slate-700">🎛️ Pengaturan Posisi Logo 1</h3>
                 <div class="grid grid-cols-2 gap-3 text-xs">
                     <div>
-                        <label class="block text-slate-500 mb-1">Ukuran Logo (<span id="scale-val">100</span>%)</label>
-                        <input type="range" id="logo-scale" min="40" max="200" value="100" oninput="adjustLogoTransform()" class="w-full accent-emerald-600 py-1">
+                        <label class="block text-slate-500 mb-1">Ukuran (<span id="scale-val-1">100</span>%)</label>
+                        <input type="range" id="logo-scale-1" min="30" max="200" value="100" oninput="adjustLogoTransform()" class="w-full accent-emerald-600 py-1">
                     </div>
                     <div>
-                        <label class="block text-slate-500 mb-1">Rotasi (<span id="rotate-val">0</span>°)</label>
-                        <input type="range" id="logo-rotate" min="-180" max="180" value="0" oninput="adjustLogoTransform()" class="w-full accent-emerald-600 py-1">
+                        <label class="block text-slate-500 mb-1">Rotasi (<span id="rotate-val-1">0</span>°)</label>
+                        <input type="range" id="logo-rotate-1" min="-180" max="180" value="0" oninput="adjustLogoTransform()" class="w-full accent-emerald-600 py-1">
                     </div>
                     <div>
                         <label class="block text-slate-500 mb-1">Geser Kiri/Kanan</label>
-                        <input type="range" id="logo-pos-x" min="-100" max="100" value="0" oninput="adjustLogoTransform()" class="w-full accent-emerald-600 py-1">
+                        <input type="range" id="logo-pos-x-1" min="-100" max="100" value="0" oninput="adjustLogoTransform()" class="w-full accent-emerald-600 py-1">
                     </div>
                     <div>
                         <label class="block text-slate-500 mb-1">Geser Atas/Bawah</label>
-                        <input type="range" id="logo-pos-y" min="-80" max="80" value="0" oninput="adjustLogoTransform()" class="w-full accent-emerald-600 py-1">
+                        <input type="range" id="logo-pos-y-1" min="-80" max="80" value="0" oninput="adjustLogoTransform()" class="w-full accent-emerald-600 py-1">
+                    </div>
+                </div>
+            </div>
+
+            <!-- KONTROL POSISI LOGO 2 (MUNCUL JIKA 2 WARNA) -->
+            <div id="controls-logo-2" class="hidden bg-white p-4 rounded-2xl shadow-sm border border-emerald-200 space-y-3">
+                <h3 class="text-xs font-bold text-emerald-800">🎛️ Pengaturan Posisi Logo 2</h3>
+                <div class="grid grid-cols-2 gap-3 text-xs">
+                    <div>
+                        <label class="block text-slate-500 mb-1">Ukuran (<span id="scale-val-2">100</span>%)</label>
+                        <input type="range" id="logo-scale-2" min="30" max="200" value="100" oninput="adjustLogoTransform()" class="w-full accent-emerald-600 py-1">
+                    </div>
+                    <div>
+                        <label class="block text-slate-500 mb-1">Rotasi (<span id="rotate-val-2">0</span>°)</label>
+                        <input type="range" id="logo-rotate-2" min="-180" max="180" value="0" oninput="adjustLogoTransform()" class="w-full accent-emerald-600 py-1">
+                    </div>
+                    <div>
+                        <label class="block text-slate-500 mb-1">Geser Kiri/Kanan</label>
+                        <input type="range" id="logo-pos-x-2" min="-100" max="100" value="20" oninput="adjustLogoTransform()" class="w-full accent-emerald-600 py-1">
+                    </div>
+                    <div>
+                        <label class="block text-slate-500 mb-1">Geser Atas/Bawah</label>
+                        <input type="range" id="logo-pos-y-2" min="-80" max="80" value="20" oninput="adjustLogoTransform()" class="w-full accent-emerald-600 py-1">
                     </div>
                 </div>
             </div>
@@ -276,8 +319,14 @@
                         <span id="preview-size-label" class="text-emerald-700 text-[11px] font-bold bg-white/90 px-2 py-0.5 rounded shadow-sm border border-slate-200">[ 20 x 30 cm ]</span>
                     </div>
                     
-                    <div id="logo-layer" class="absolute cursor-move flex items-center justify-center p-2 z-10" style="transform: translate(0px, 0px) scale(1) rotate(0deg);">
-                        <img id="preview-logo-img" src="" alt="Logo" class="max-h-24 object-contain filter drop-shadow-md">
+                    <!-- LAYER LOGO 1 -->
+                    <div id="logo-layer-1" class="absolute cursor-move flex items-center justify-center p-2 z-10" style="transform: translate(0px, 0px) scale(1) rotate(0deg);">
+                        <img id="preview-logo-img-1" src="" alt="Logo 1" class="max-h-24 object-contain filter drop-shadow-md">
+                    </div>
+
+                    <!-- LAYER LOGO 2 -->
+                    <div id="logo-layer-2" class="absolute cursor-move flex items-center justify-center p-2 z-10 hidden" style="transform: translate(20px, 20px) scale(1) rotate(0deg);">
+                        <img id="preview-logo-img-2" src="" alt="Logo 2" class="max-h-24 object-contain filter drop-shadow-md">
                     </div>
 
                     <div class="web-watermark">
@@ -313,10 +362,16 @@
                     <span>📐</span> Box 2: Detail Desain & Film Produksi (Preview)
                 </h2>
                 <div id="customer-watermark-box" class="relative bg-white p-4 rounded-xl flex flex-col items-center justify-center min-h-[220px] text-slate-900 space-y-3 overflow-hidden shadow-inner">
-                    <div class="w-full h-56 flex items-center justify-center bg-white rounded-lg border border-slate-200 overflow-hidden p-2">
+                    <div class="w-full h-56 flex items-center justify-center bg-white rounded-lg border border-slate-200 overflow-hidden p-2 relative">
                         <img id="owner-file-img" src="" alt="Belum ada desain diupload" class="max-h-full max-w-full object-contain">
                         <p id="owner-placeholder-text" class="absolute text-xs text-slate-400 font-medium">⬆️ Silakan upload logo/desain di atas terlebih dahulu</p>
                     </div>
+                    
+                    <!-- KETERANGAN WARNA TINTA PRODUKSI DI BOX 2 -->
+                    <div id="production-ink-notes" class="w-full bg-slate-100 p-2.5 rounded-lg text-xs font-semibold text-slate-800 border border-slate-300">
+                        📄 Keterangan Tinta: -
+                    </div>
+
                     <div class="text-center text-xs font-bold text-slate-800 border-t border-slate-200 pt-2 w-full flex justify-between px-2 z-10">
                         <span>Model: <b id="owner-model-txt">-</b></span>
                         <span>Metode: <b id="owner-method-txt">-</b></span>
@@ -372,7 +427,7 @@
                     </div>
                 </div>
 
-                <!-- Info Nomor Rekening Bank -->
+                <!-- Info Rekening -->
                 <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200 space-y-2">
                     <h4 class="text-xs font-bold text-slate-700 flex items-center gap-1.5">
                         <span>💳</span> Informasi Rekening Pembayaran Resmi
@@ -461,7 +516,7 @@
                 </div>
             </div>
 
-            <!-- Kelola Model Tas & Ukuran (Plus Catatan Rekomendasi AI) -->
+            <!-- Kelola Model Tas & Ukuran -->
             <div class="bg-slate-800 p-3 rounded-xl border border-amber-500/30 space-y-3">
                 <label class="block text-xs font-semibold text-amber-300">📦 Kelola Model Tas, Ukuran & Catatan AI</label>
                 <div id="model-admin-container" class="space-y-3 max-h-64 overflow-y-auto pr-1"></div>
@@ -518,7 +573,7 @@
         </div>
     </div>
 
-    <!-- Script Utama (Dynamic PWA Manifest & Voice AI) -->
+    <!-- Script Utama -->
     <script>
         const cleanDefaultBagSvg = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 500'><path d='M100 150 L100 100 C100 70 120 50 200 50 C280 50 300 70 300 100 L300 150 Z' fill='none' stroke='%23334155' stroke-width='16'/><path d='M60 150 L340 150 C360 150 370 160 370 180 L340 450 C340 470 330 480 310 480 L90 480 C70 480 60 470 60 450 L30 180 C30 160 40 150 60 150 Z' fill='%23ffffff' stroke='%23334155' stroke-width='6'/></svg>";
 
@@ -592,17 +647,15 @@
 
         let activeBagTint = "#ffffff";
         let activeColorName = "Putih Bersih";
-        let rawCustomerLogoImg = null;
+        
+        let rawCustomerLogoImg1 = null;
+        let rawCustomerLogoImg2 = null;
+
         let isSyncingFromCloud = false;
         let activeOrdersUnsubscribe = null;
         let cartItems = [];
 
-        let customerProfile = {
-            title: "Bosku",
-            name: "",
-            wa: "",
-            address: ""
-        };
+        let customerProfile = { title: "Bosku", name: "", wa: "", address: "" };
 
         function safeLocalStorageSet(key, val) {
             try { localStorage.setItem(key, val); } catch(e) { console.error("Storage error:", e); }
@@ -632,15 +685,12 @@
             updateDynamicManifest();
             renderAdminPanel();
             checkCustomerOnboarding();
-            if(window.initCloudSync) {
-                window.initCloudSync();
-            }
+            if(window.initCloudSync) { window.initCloudSync(); }
         };
 
         function updateDynamicManifest() {
             const manifestLink = document.getElementById('dynamic-manifest');
             if(!manifestLink) return;
-
             const iconSrc = brandLogoUrl || "https://via.placeholder.com/192x192/065f46/ffffff?text=ILHAM";
             const manifestData = {
                 name: "ILHAM SPUNBOND Pro",
@@ -671,7 +721,6 @@
             const name = document.getElementById('onboard-name').value.trim();
             const wa = document.getElementById('onboard-wa').value.trim();
             const address = document.getElementById('onboard-address').value.trim();
-
             if(!name || !wa || !address) return alert("Harap isi Nama, No WhatsApp, dan Alamat dengan lengkap!");
 
             customerProfile = { title, name, wa, address };
@@ -694,25 +743,20 @@
             document.getElementById('profile-modal').classList.remove('hidden');
         }
 
-        function closeProfileModal() {
-            document.getElementById('profile-modal').classList.add('hidden');
-        }
+        function closeProfileModal() { document.getElementById('profile-modal').classList.add('hidden'); }
 
         function saveCustomerProfile() {
             customerProfile.title = document.getElementById('edit-user-title').value;
             customerProfile.name = document.getElementById('edit-name').value.trim();
             customerProfile.wa = document.getElementById('edit-wa').value.trim();
             customerProfile.address = document.getElementById('edit-address').value.trim();
-
             if(!customerProfile.name || !customerProfile.wa) return alert("Nama dan No WhatsApp wajib diisi!");
-
             safeLocalStorageSet('ilham_customerProfile', JSON.stringify(customerProfile));
             closeProfileModal();
             updateUIWithProfile();
             alert("Profil berhasil diperbarui!");
         }
 
-        // --- VOICE AI & NATURAL SPEECH ENGINE ---
         function speakText(text) {
             if('speechSynthesis' in window) {
                 window.speechSynthesis.cancel();
@@ -733,7 +777,6 @@
         function askAiRecommendation() {
             const queryText = document.getElementById('ai-user-query').value.trim().toLowerCase();
             if(!queryText) return alert("Silakan ketik pertanyaan atau konsultasi Anda terlebih dahulu.");
-
             let recommendationResult = `Maaf ${customerProfile.title}, saya belum menemukan model yang pas untuk "${queryText}". Coba tonton rekomendasi untuk dus nasi, kotak HP, atau souvenir ya!`;
             
             for(let mIdx = 0; mIdx < bagModels.length; mIdx++) {
@@ -743,7 +786,6 @@
                     let note = (sizeObj.note || "").toLowerCase();
                     if(queryText.split(' ').some(keyword => keyword.length > 2 && (note.includes(keyword) || model.name.toLowerCase().includes(keyword) || sizeObj.name.toLowerCase().includes(keyword)))) {
                         recommendationResult = `Rekomendasi untuk ${customerProfile.title}: Gunakan model *${model.name}* ukuran *${sizeObj.name}* (Harga: Rp ${sizeObj.price.toLocaleString('id-ID')} per pcs). Catatan: ${sizeObj.note}`;
-                        
                         document.getElementById('bag-model-select').value = mIdx;
                         updateCustomerSizesDropdown();
                         document.getElementById('bag-size-select').value = sizeObj.name;
@@ -752,7 +794,6 @@
                     }
                 }
             }
-
             document.getElementById('ai-chat-response').textContent = recommendationResult;
             speakText(recommendationResult);
         }
@@ -761,34 +802,22 @@
             if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
                 return alert("Browser Anda tidak mendukung fitur input suara. Silakan ketik manual.");
             }
-
             const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
             const recognition = new SpeechRecognition();
             recognition.lang = 'id-ID';
             recognition.interimResults = false;
-
             const micBtn = document.getElementById('mic-btn');
             micBtn.textContent = "🎙️ Mendengarkan...";
             micBtn.classList.replace('bg-amber-500', 'bg-rose-600');
 
             recognition.onresult = function(event) {
-                const speechToText = event.results[0][0].transcript;
-                document.getElementById('ai-user-query').value = speechToText;
+                document.getElementById('ai-user-query').value = event.results[0][0].transcript;
                 micBtn.textContent = "🎤";
                 micBtn.classList.replace('bg-rose-600', 'bg-amber-500');
                 askAiRecommendation();
             };
-
-            recognition.onerror = function() {
-                micBtn.textContent = "🎤";
-                micBtn.classList.replace('bg-rose-600', 'bg-amber-500');
-            };
-
-            recognition.onend = function() {
-                micBtn.textContent = "🎤";
-                micBtn.classList.replace('bg-rose-600', 'bg-amber-500');
-            };
-
+            recognition.onerror = () => { micBtn.textContent = "🎤"; micBtn.classList.replace('bg-rose-600', 'bg-amber-500'); };
+            recognition.onend = () => { micBtn.textContent = "🎤"; micBtn.classList.replace('bg-rose-600', 'bg-amber-500'); };
             recognition.start();
         }
 
@@ -803,7 +832,6 @@
             const brandStatus = document.getElementById('brand-upload-status');
             
             if(!modelSelect) return;
-
             const prevVal = modelSelect.value || 0;
             if(modelAdminContainer) modelAdminContainer.innerHTML = '';
             modelSelect.innerHTML = '';
@@ -817,7 +845,6 @@
                 if(modelAdminContainer) {
                     const card = document.createElement('div');
                     card.className = "bg-slate-900 p-3 rounded-xl border border-slate-700 flex flex-col gap-2 text-xs";
-                    
                     let sizeRows = '';
                     if(item.sizes) {
                         item.sizes.forEach((s, sIndex) => {
@@ -828,19 +855,18 @@
                                         <button type="button" onclick="deleteSizeFromModel(${mIndex}, ${sIndex})" class="text-rose-400 font-bold px-2 py-0.5 cursor-pointer">Hapus</button>
                                     </div>
                                     <div>
-                                        <input type="text" id="note-m${mIndex}-s${sIndex}" value="${s.note || ''}" placeholder="Catatan/Rekomendasi kegunaan (dibaca AI)..." oninput="updateSizeNote(${mIndex}, ${sIndex})" class="w-full bg-slate-900 border border-slate-700 rounded px-2 py-1 text-[10px] text-amber-300 outline-none">
+                                        <input type="text" id="note-m${mIndex}-s${sIndex}" value="${s.note || ''}" placeholder="Catatan/Rekomendasi kegunaan..." oninput="updateSizeNote(${mIndex}, ${sIndex})" class="w-full bg-slate-900 border border-slate-700 rounded px-2 py-1 text-[10px] text-amber-300 outline-none">
                                     </div>
                                 </div>`;
                         });
                     }
 
                     const isCustomImg = item.image && item.image !== cleanDefaultBagSvg;
-
                     card.innerHTML = `
                         <div class="flex items-center justify-between border-b border-slate-800 pb-1.5"><span class="font-bold text-amber-300 text-sm">${item.name}</span></div>
-                        <div><label class="block text-[10px] text-slate-400 mb-1">Upload Foto Tas:</label><input type="file" accept="image/*" onchange="uploadModelSample(event, ${mIndex})" class="w-full text-[10px] text-slate-400 file:mr-2 file:py-1 file:px-2 file:rounded-lg file:border-0 file:bg-amber-500 file:text-slate-950 cursor-pointer"></div>
-                        <div id="model-status-${mIndex}" class="text-[10px] ${isCustomImg ? 'text-emerald-400 font-semibold' : 'text-slate-400'} italic">
-                            ${isCustomImg ? '✅ Berhasil Di-upload' : 'ℹ️ Menggunakan foto default'}
+                        <div><label class="block text-[10px] text-slate-400 mb-1">Upload Foto Tas (Background Otomatis Transparan):</label><input type="file" accept="image/*" onchange="uploadModelSample(event, ${mIndex})" class="w-full text-[10px] text-slate-400 file:mr-2 file:py-1 file:px-2 file:rounded-lg file:border-0 file:bg-amber-500 file:text-slate-950 cursor-pointer"></div>
+                        <div class="text-[10px] ${isCustomImg ? 'text-emerald-400 font-semibold' : 'text-slate-400'} italic">
+                            ${isCustomImg ? '✅ Berhasil Di-upload (Transparan)' : 'ℹ️ Menggunakan foto default'}
                         </div>
                         <div class="space-y-2 mt-1">${sizeRows}
                             <div class="flex gap-1.5 mt-2"><input type="text" id="new-s-name-${mIndex}" placeholder="Ukuran" class="flex-1 bg-slate-800 rounded-lg px-2 py-2 text-[11px] text-white outline-none"><input type="number" id="new-s-price-${mIndex}" placeholder="Harga" class="w-20 bg-slate-800 rounded-lg px-2 py-2 text-[11px] text-white outline-none"><button type="button" onclick="addSizeToModel(${mIndex})" class="bg-amber-500 text-slate-950 px-3 py-2 rounded-lg text-[11px] font-semibold cursor-pointer">Tambah</button></div>
@@ -852,18 +878,12 @@
             if(modelSelect.options.length > prevVal) modelSelect.value = prevVal;
 
             if(brandStatus) {
-                if(brandLogoUrl) {
-                    brandStatus.textContent = "✅ Logo Brand Permanen Aktif";
-                    brandStatus.className = "text-[10px] text-emerald-400 font-semibold italic";
-                } else {
-                    brandStatus.textContent = "ℹ️ Belum ada logo (menggunakan teks)";
-                    brandStatus.className = "text-[10px] text-slate-400 italic";
-                }
+                brandStatus.textContent = brandLogoUrl ? "✅ Logo Brand Permanen Aktif" : "ℹ️ Belum ada logo (menggunakan teks)";
+                brandStatus.className = brandLogoUrl ? "text-[10px] text-emerald-400 font-semibold italic" : "text-[10px] text-slate-400 italic";
             }
 
             if(bankAdminContainer && bankDisplay) {
-                bankAdminContainer.innerHTML = '';
-                bankDisplay.innerHTML = '';
+                bankAdminContainer.innerHTML = ''; bankDisplay.innerHTML = '';
                 bankAccounts.forEach((b, bIdx) => {
                     bankAdminContainer.innerHTML += `<div class="flex items-center justify-between bg-slate-900 p-2 rounded-lg text-[11px]"><span><b>${b.bank}</b>: ${b.acc} (${b.owner})</span><button type="button" onclick="deleteBank(${bIdx})" class="text-rose-400 font-bold px-2 py-1 cursor-pointer">Hapus</button></div>`;
                     bankDisplay.innerHTML += `<div class="flex justify-between"><span><b>${b.bank}</b>: ${b.acc}</span><span class="text-slate-500">a.n ${b.owner}</span></div>`;
@@ -871,8 +891,7 @@
             }
 
             if(dtfAdminContainer && dtfSelect) {
-                dtfAdminContainer.innerHTML = '';
-                dtfSelect.innerHTML = '';
+                dtfAdminContainer.innerHTML = ''; dtfSelect.innerHTML = '';
                 dtfOptions.forEach((d, dIdx) => {
                     dtfAdminContainer.innerHTML += `<div class="flex items-center justify-between bg-slate-900 p-2 rounded-lg text-[11px]"><span><b>${d.name}</b> (+Rp ${d.price.toLocaleString('id-ID')})</span><button type="button" onclick="deleteDtfOption(${dIdx})" class="text-rose-400 font-bold px-2 py-1 cursor-pointer">Hapus</button></div>`;
                     dtfSelect.innerHTML += `<option value="${d.price}">${d.name} (+Rp ${d.price.toLocaleString('id-ID')})</option>`;
@@ -880,30 +899,26 @@
             }
 
             if(stampPreview) {
-                if(customStampUrl) {
-                    stampPreview.innerHTML = `<div class="flex items-center justify-center gap-2 bg-slate-900 p-2 rounded-xl border border-slate-700"><img src="${customStampUrl}" class="h-10 object-contain"><span class="text-[10px] text-emerald-400 font-semibold">✅ Stempel Cap Permanen Aktif</span><button type="button" onclick="removeStampImage()" class="text-xs text-rose-400 font-semibold underline cursor-pointer">Hapus</button></div>`;
-                } else {
-                    stampPreview.innerHTML = `<span class="text-[10px] text-slate-400 italic">Belum ada stempel/cap diupload.</span>`;
-                }
+                stampPreview.innerHTML = customStampUrl ? `<div class="flex items-center justify-center gap-2 bg-slate-900 p-2 rounded-xl border border-slate-700"><img src="${customStampUrl}" class="h-10 object-contain"><span class="text-[10px] text-emerald-400 font-semibold">✅ Stempel Cap Permanen Aktif</span><button type="button" onclick="removeStampImage()" class="text-xs text-rose-400 font-semibold underline cursor-pointer">Hapus</button></div>` : `<span class="text-[10px] text-slate-400 italic">Belum ada stempel/cap diupload.</span>`;
             }
 
             const inkContainer = document.getElementById('ink-list-container');
-            const inkSelect = document.getElementById('ink-color-select');
-            if(inkContainer && inkSelect) {
-                inkContainer.innerHTML = '';
-                inkSelect.innerHTML = '';
+            const inkSelect1 = document.getElementById('ink-color-select-1');
+            const inkSelect2 = document.getElementById('ink-color-select-2');
+            
+            if(inkContainer && inkSelect1 && inkSelect2) {
+                inkContainer.innerHTML = ''; inkSelect1.innerHTML = ''; inkSelect2.innerHTML = '';
                 inkColors.forEach((ink, idx) => {
                     inkContainer.innerHTML += `<div class="flex items-center justify-between bg-slate-800 px-3 py-2 rounded-lg text-xs"><div class="flex items-center gap-2"><span class="w-3.5 h-3.5 rounded-full inline-block border border-white" style="background:${ink.hex}"></span><span>${ink.name}</span></div><button type="button" onclick="deleteInkColor(${idx})" class="text-rose-400 font-bold px-2 py-1 cursor-pointer">Hapus</button></div>`;
-                    inkSelect.innerHTML += `<option value="${ink.hex}">${ink.name}</option>`;
+                    inkSelect1.innerHTML += `<option value="${ink.hex}">${ink.name}</option>`;
+                    inkSelect2.innerHTML += `<option value="${ink.hex}" ${idx === 1 ? 'selected' : ''}>${ink.name}</option>`;
                 });
             }
 
             const colorContainer = document.getElementById('color-list-container');
             const colorButtons = document.getElementById('bag-color-buttons');
             if(colorContainer && colorButtons) {
-                colorContainer.innerHTML = '';
-                colorButtons.innerHTML = '';
-
+                colorContainer.innerHTML = ''; colorButtons.innerHTML = '';
                 bagColors.forEach((item, index) => {
                     colorContainer.innerHTML += `<div class="flex items-center justify-between bg-slate-800 px-3 py-2 rounded-lg text-xs"><div class="flex items-center gap-2"><span class="w-3.5 h-3.5 rounded-full inline-block border border-white" style="background:${item.hex}"></span><span>${item.name}</span></div><button type="button" onclick="deleteBagColor(${index})" class="text-rose-400 font-bold px-2 py-1 cursor-pointer">Hapus</button></div>`;
                     
@@ -923,27 +938,10 @@
                 });
             }
 
-            const pwdEl = document.getElementById('admin-pdf-password');
-            if(pwdEl) pwdEl.value = pdfPassword;
-            const waEl = document.getElementById('admin-wa-number');
-            if(waEl) waEl.value = ownerWaNumber;
-            const nameEl = document.getElementById('admin-store-name');
-            if(nameEl) nameEl.value = storeName;
-            const addrEl = document.getElementById('admin-store-address');
-            if(addrEl) addrEl.value = storeAddress;
-            const phoneEl = document.getElementById('admin-store-phone');
-            if(phoneEl) phoneEl.value = storePhone;
-            const emailEl = document.getElementById('admin-store-email');
-            if(emailEl) emailEl.value = storeEmail;
-
             const appLauncherLogo = document.getElementById('app-launcher-logo');
-            if(appLauncherLogo) {
-                if(brandLogoUrl) {
-                    appLauncherLogo.src = brandLogoUrl;
-                    appLauncherLogo.className = "max-h-14 w-auto object-contain filter drop-shadow";
-                } else {
-                    appLauncherLogo.src = "https://via.placeholder.com/160x55?text=ILHAM+SPUNBOND";
-                }
+            if(appLauncherLogo && brandLogoUrl) {
+                appLauncherLogo.src = brandLogoUrl;
+                appLauncherLogo.className = "max-h-14 w-auto object-contain filter drop-shadow";
             }
 
             updateCustomerSizesDropdown();
@@ -966,9 +964,7 @@
             const currentModel = bagModels[modelSelect.value] || bagModels[0];
             sizeSelect.innerHTML = '';
             if(currentModel && currentModel.sizes) {
-                currentModel.sizes.forEach(s => {
-                    sizeSelect.innerHTML += `<option value="${s.name}">${s.name}</option>`;
-                });
+                currentModel.sizes.forEach(s => { sizeSelect.innerHTML += `<option value="${s.name}">${s.name}</option>`; });
             }
             updateSizeLabel();
         }
@@ -978,9 +974,7 @@
             const sizeName = document.getElementById('bag-size-select').value;
             const currentModel = bagModels[mIndex] || bagModels[0];
             const foundSize = currentModel.sizes?.find(s => s.name === sizeName);
-
             document.getElementById('preview-size-label').textContent = `[ ${sizeName || '-'} ]`;
-
             const noteBox = document.getElementById('size-admin-recommendation-note');
             if(foundSize && foundSize.note) {
                 noteBox.textContent = `💡 Rekomendasi/Kegunaan: ${foundSize.note}`;
@@ -1004,11 +998,7 @@
             const bank = document.getElementById('new-bank-name').value.trim();
             const acc = document.getElementById('new-bank-acc').value.trim();
             const owner = document.getElementById('new-bank-owner').value.trim();
-            if(bank && acc && owner) {
-                bankAccounts.push({ bank, acc, owner });
-                saveToCloud();
-                renderAdminPanel();
-            }
+            if(bank && acc && owner) { bankAccounts.push({ bank, acc, owner }); saveToCloud(); renderAdminPanel(); }
         }
         function deleteBank(index) { bankAccounts.splice(index, 1); saveToCloud(); renderAdminPanel(); }
 
@@ -1030,25 +1020,19 @@
             const nameInput = document.getElementById(`new-s-name-${mIndex}`);
             const priceInput = document.getElementById(`new-s-price-${mIndex}`);
             if(!nameInput || !priceInput) return;
-            
             const name = nameInput.value.trim();
             const price = parseInt(priceInput.value);
-            
             if(name && !isNaN(price)) {
                 if(!bagModels[mIndex].sizes) bagModels[mIndex].sizes = [];
                 bagModels[mIndex].sizes.push({ name, price, note: "Ukuran kustom baru." });
-                saveToCloud();
-                renderAdminPanel();
-            } else {
-                alert("Harap isi nama ukuran dan harga dengan benar!");
-            }
+                saveToCloud(); renderAdminPanel();
+            } else { alert("Harap isi nama ukuran dan harga dengan benar!"); }
         }
 
         function deleteSizeFromModel(mIndex, sIndex) {
             if(bagModels[mIndex].sizes.length <= 1) return alert("Minimal harus ada 1 ukuran dalam model ini!");
             bagModels[mIndex].sizes.splice(sIndex, 1);
-            saveToCloud();
-            renderAdminPanel();
+            saveToCloud(); renderAdminPanel();
         }
 
         function addBagColor() {
@@ -1061,47 +1045,26 @@
         async function uploadBrandLogo(e) {
             const file = e.target.files[0];
             if(!file) return;
-
-            const statusEl = document.getElementById('brand-upload-status');
-            if(statusEl) {
-                statusEl.textContent = "⏳ Memproses background logo permanen...";
-                statusEl.className = "text-[10px] text-amber-400 font-semibold italic";
-            }
-
             const reader = new FileReader();
             reader.onload = function(event) {
                 const img = new Image();
                 img.onload = function() {
                     const canvas = document.createElement('canvas');
                     let targetW = img.width, targetH = img.height;
-                    if(targetW > 250) {
-                        targetH = Math.round((targetH * 250) / targetW);
-                        targetW = 250;
-                    }
+                    if(targetW > 250) { targetH = Math.round((targetH * 250) / targetW); targetW = 250; }
                     canvas.width = targetW; canvas.height = targetH;
                     const ctx = canvas.getContext('2d');
                     ctx.drawImage(img, 0, 0, targetW, targetH);
-
                     const imgData = ctx.getImageData(0, 0, targetW, targetH);
                     const data = imgData.data;
                     const rBg = data[0], gBg = data[1], bBg = data[2];
-
                     for (let i = 0; i < data.length; i += 4) {
-                        if (Math.abs(data[i] - rBg) < 45 && Math.abs(data[i+1] - gBg) < 45 && Math.abs(data[i+2] - bBg) < 45) {
-                            data[i+3] = 0;
-                        }
+                        if (Math.abs(data[i] - rBg) < 45 && Math.abs(data[i+1] - gBg) < 45 && Math.abs(data[i+2] - bBg) < 45) { data[i+3] = 0; }
                     }
                     ctx.putImageData(imgData, 0, 0);
                     brandLogoUrl = canvas.toDataURL('image/png');
-
                     updateDynamicManifest();
-                    saveToCloud().then(() => {
-                        renderAdminPanel();
-                        if(statusEl) {
-                            statusEl.textContent = "✅ Logo Brand & PWA Icon Permanen Tersimpan!";
-                            statusEl.className = "text-[10px] text-emerald-400 font-semibold italic";
-                        }
-                    });
+                    saveToCloud().then(() => { renderAdminPanel(); });
                 };
                 img.src = event.target.result;
             };
@@ -1112,10 +1075,7 @@
             brandLogoUrl = "";
             safeLocalStorageSet('ilham_brandLogoUrl', "");
             updateDynamicManifest();
-            saveToCloud().then(() => {
-                renderAdminPanel();
-                alert("Logo brand berhasil dihapus.");
-            });
+            saveToCloud().then(() => { renderAdminPanel(); alert("Logo brand berhasil dihapus."); });
         }
 
         async function uploadStampImage(e) {
@@ -1130,8 +1090,7 @@
                         const ctx = canvas.getContext('2d');
                         ctx.drawImage(img, 0, 0);
                         customStampUrl = canvas.toDataURL('image/png');
-                        saveToCloud();
-                        renderAdminPanel();
+                        saveToCloud(); renderAdminPanel();
                     };
                     img.src = event.target.result;
                 };
@@ -1142,43 +1101,79 @@
         function removeStampImage() {
             customStampUrl = "";
             safeLocalStorageSet('ilham_customStampUrl', "");
-            saveToCloud().then(() => {
-                renderAdminPanel();
-                alert("Stempel cap berhasil dihapus.");
-            });
+            saveToCloud().then(() => { renderAdminPanel(); alert("Stempel cap berhasil dihapus."); });
         }
 
         async function uploadModelSample(e, mIndex) {
             const file = e.target.files[0];
-            if(file) {
-                const reader = new FileReader();
-                reader.onload = function(event) {
-                    const img = new Image();
-                    img.onload = function() {
-                        const canvas = document.createElement('canvas');
-                        canvas.width = img.width; canvas.height = img.height;
-                        const ctx = canvas.getContext('2d');
-                        ctx.drawImage(img, 0, 0);
-                        bagModels[mIndex].image = canvas.toDataURL('image/jpeg', 0.5);
-                        saveToCloud();
-                        renderAdminPanel();
-                        updateBagCanvas();
-                    };
-                    img.src = event.target.result;
+            if(!file) return;
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                const img = new Image();
+                img.onload = function() {
+                    const canvas = document.createElement('canvas');
+                    let targetW = img.width, targetH = img.height;
+                    if(targetW > 400) { targetH = Math.round((targetH * 400) / targetW); targetW = 400; }
+                    canvas.width = targetW; canvas.height = targetH;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, targetW, targetH);
+                    const imgData = ctx.getImageData(0, 0, targetW, targetH);
+                    const data = imgData.data;
+                    const rBg = data[0], gBg = data[1], bBg = data[2];
+                    for (let i = 0; i < data.length; i += 4) {
+                        if (Math.abs(data[i] - rBg) < 45 && Math.abs(data[i+1] - gBg) < 45 && Math.abs(data[i+2] - bBg) < 45) { data[i+3] = 0; }
+                    }
+                    ctx.putImageData(imgData, 0, 0);
+                    bagModels[mIndex].image = canvas.toDataURL('image/png');
+                    saveToCloud(); renderAdminPanel(); updateBagCanvas();
+                    alert("Model tas berhasil di-upload dengan background otomatis transparan!");
                 };
-                reader.readAsDataURL(file);
-            }
+                img.src = event.target.result;
+            };
+            reader.readAsDataURL(file);
         }
 
-        function loadCustomerLogo(e) {
+        function togglePrintMethod() {
+            const method = document.getElementById('print-method').value;
+            const isDtf = method === 'dtf';
+            document.getElementById('sablon-color-mode-box').classList.toggle('hidden', isDtf);
+            document.getElementById('dtf-size-box').classList.toggle('hidden', !isDtf);
+            toggleSablonColorCount();
+            updateProcessedLogos();
+        }
+
+        function toggleSablonColorCount() {
+            const method = document.getElementById('print-method').value;
+            const colorCount = document.getElementById('sablon-color-count').value;
+            const isTwoColors = (method === 'manual' && colorCount === '2');
+
+            document.getElementById('logo-2-container').classList.toggle('hidden', !isTwoColors);
+            document.getElementById('controls-logo-2').classList.toggle('hidden', !isTwoColors);
+            document.getElementById('logo-layer-2').classList.toggle('hidden', !isTwoColors);
+            
+            document.getElementById('label-logo-1').textContent = isTwoColors ? "6a. Upload Logo / Desain Bagian 1 (Transparan)" : "6. Upload Logo / Desain Anda (Background Transparan)";
+            updateProcessedLogos();
+        }
+
+        function loadCustomerLogo1(e) {
+            processCustomerLogoFile(e, 1, 'logo-upload-status-1', (imgObj) => {
+                rawCustomerLogoImg1 = imgObj;
+                updateProcessedLogos();
+            });
+        }
+
+        function loadCustomerLogo2(e) {
+            processCustomerLogoFile(e, 2, 'logo-upload-status-2', (imgObj) => {
+                rawCustomerLogoImg2 = imgObj;
+                updateProcessedLogos();
+            });
+        }
+
+        function processCustomerLogoFile(e, logoNum, statusId, callback) {
             const file = e.target.files[0];
             if(!file) return;
-
-            const statusEl = document.getElementById('logo-upload-status');
-            if(statusEl) {
-                statusEl.textContent = "⏳ Memproses latar belakang transparan...";
-                statusEl.className = "text-[10px] text-amber-500 font-semibold italic";
-            }
+            const statusEl = document.getElementById(statusId);
+            if(statusEl) { statusEl.textContent = "⏳ Memproses latar belakang transparan..."; statusEl.className = "text-[10px] text-amber-500 font-semibold italic"; }
 
             const reader = new FileReader();
             reader.onload = function(event) {
@@ -1186,10 +1181,7 @@
                 img.onload = function() {
                     const canvas = document.createElement('canvas');
                     let targetW = img.width, targetH = img.height;
-                    if(targetW > 280) {
-                        targetH = Math.round((targetH * 280) / targetW);
-                        targetW = 280;
-                    }
+                    if(targetW > 280) { targetH = Math.round((targetH * 280) / targetW); targetW = 280; }
                     canvas.width = targetW; canvas.height = targetH;
                     const ctx = canvas.getContext('2d');
                     ctx.drawImage(img, 0, 0, targetW, targetH);
@@ -1197,22 +1189,15 @@
                     const imgData = ctx.getImageData(0, 0, targetW, targetH);
                     const data = imgData.data;
                     const rBg = data[0], gBg = data[1], bBg = data[2];
-
                     for (let i = 0; i < data.length; i += 4) {
-                        if (Math.abs(data[i] - rBg) < 40 && Math.abs(data[i+1] - gBg) < 40 && Math.abs(data[i+2] - bBg) < 40) {
-                            data[i+3] = 0;
-                        }
+                        if (Math.abs(data[i] - rBg) < 40 && Math.abs(data[i+1] - gBg) < 40 && Math.abs(data[i+2] - bBg) < 40) { data[i+3] = 0; }
                     }
                     ctx.putImageData(imgData, 0, 0);
 
                     const processedImg = new Image();
                     processedImg.onload = function() {
-                        rawCustomerLogoImg = processedImg;
-                        updateProcessedLogo();
-                        if(statusEl) {
-                            statusEl.textContent = "✅ Logo berhasil di-upload (Background Transparan, Warna Asli Utuh)!";
-                            statusEl.className = "text-[10px] text-emerald-500 font-semibold italic";
-                        }
+                        if(statusEl) { statusEl.textContent = `✅ Logo ${logoNum} berhasil di-upload (Transparan)!`; statusEl.className = "text-[10px] text-emerald-500 font-semibold italic"; }
+                        callback(processedImg);
                     };
                     processedImg.src = canvas.toDataURL('image/png');
                 };
@@ -1221,64 +1206,116 @@
             reader.readAsDataURL(file);
         }
 
-        function updateProcessedLogo() {
-            if(!rawCustomerLogoImg) return;
+        function updateProcessedLogos() {
             const method = document.getElementById('print-method').value;
-            const inkHex = document.getElementById('ink-color-select').value || '#0f172a';
-            
+            const colorCount = document.getElementById('sablon-color-count').value;
+            const isTwoColors = (method === 'manual' && colorCount === '2');
+
+            const inkHex1 = document.getElementById('ink-color-select-1').value || '#0f172a';
+            const inkHex2 = document.getElementById('ink-color-select-2').value || '#dc2626';
+
+            const select1 = document.getElementById('ink-color-select-1');
+            const select2 = document.getElementById('ink-color-select-2');
+            const name1 = select1.options[select1.selectedIndex]?.text || 'Hitam';
+            const name2 = select2.options[select2.selectedIndex]?.text || 'Merah';
+
             const mSelect = document.getElementById('bag-model-select');
             const modelNameText = (mSelect && mSelect.value !== "" && bagModels[mSelect.value]) ? bagModels[mSelect.value].name : bagModels[0].name;
 
-            document.getElementById('owner-method-txt').textContent = method === 'dtf' ? 'DTF Full Color' : 'Sablon Manual';
+            document.getElementById('owner-method-txt').textContent = method === 'dtf' ? 'DTF Full Color' : (isTwoColors ? 'Sablon Manual 2 Warna' : 'Sablon Manual 1 Warna');
             document.getElementById('owner-model-txt').textContent = modelNameText;
 
-            // --- 1. PREVIEW MOCKUP (Box 1) ---
-            const previewCanvas = document.createElement('canvas');
-            previewCanvas.width = rawCustomerLogoImg.width;
-            previewCanvas.height = rawCustomerLogoImg.height;
-            const pCtx = previewCanvas.getContext('2d');
-            pCtx.drawImage(rawCustomerLogoImg, 0, 0);
-
-            if (method === 'manual') {
-                const pData = pCtx.getImageData(0, 0, previewCanvas.width, previewCanvas.height);
-                const d = pData.data;
-                const rT = parseInt(inkHex.slice(1, 3), 16);
-                const gT = parseInt(inkHex.slice(3, 5), 16);
-                const bT = parseInt(inkHex.slice(5, 7), 16);
-
-                for (let i = 0; i < d.length; i += 4) {
-                    if (d[i + 3] > 15) {
-                        d[i] = rT; d[i + 1] = gT; d[i + 2] = bT;
-                    }
-                }
-                pCtx.putImageData(pData, 0, 0);
+            // --- KETERANGAN TINTA DI BOX 2 ---
+            let inkNoteText = "📄 Keterangan Tinta Produksi: ";
+            if(method === 'dtf') {
+                inkNoteText += "DTF Full Color (Warna Asli Desain)";
+            } else if(isTwoColors) {
+                inkNoteText += `Desain 1 = Tinta ${name1} | Desain 2 = Tinta ${name2} (Film Produksi digabung Hitam Pekat)`;
+            } else {
+                inkNoteText += `Sablon 1 Warna = Tinta ${name1}`;
             }
-            document.getElementById('preview-logo-img').src = previewCanvas.toDataURL('image/png');
+            document.getElementById('production-ink-notes').textContent = inkNoteText;
 
-            // --- 2. PRODUCTION VIEW (Box 2) ---
-            const ownerCanvas = document.createElement('canvas');
-            ownerCanvas.width = rawCustomerLogoImg.width;
-            ownerCanvas.height = rawCustomerLogoImg.height;
-            const oCtx = ownerCanvas.getContext('2d');
-            oCtx.drawImage(rawCustomerLogoImg, 0, 0);
+            // --- RENDER LOGO 1 (MOCKUP & BOX 2) ---
+            if(rawCustomerLogoImg1) {
+                // Mockup 1
+                const c1 = document.createElement('canvas');
+                c1.width = rawCustomerLogoImg1.width; c1.height = rawCustomerLogoImg1.height;
+                const ctx1 = c1.getContext('2d');
+                ctx1.drawImage(rawCustomerLogoImg1, 0, 0);
 
-            if (method === 'manual') {
-                const oData = oCtx.getImageData(0, 0, ownerCanvas.width, ownerCanvas.height);
-                const d2 = oData.data;
-                for (let i = 0; i < d2.length; i += 4) {
-                    if (d2[i + 3] > 15) {
-                        d2[i] = 0; d2[i + 1] = 0; d2[i + 2] = 0; d2[i + 3] = 255;
-                    }
+                if(method === 'manual') {
+                    const imgData = ctx1.getImageData(0, 0, c1.width, c1.height);
+                    const d = imgData.data;
+                    const rT = parseInt(inkHex1.slice(1, 3), 16), gT = parseInt(inkHex1.slice(3, 5), 16), bT = parseInt(inkHex1.slice(5, 7), 16);
+                    for (let i = 0; i < d.length; i += 4) { if (d[i + 3] > 15) { d[i] = rT; d[i + 1] = gT; d[i + 2] = bT; } }
+                    ctx1.putImageData(imgData, 0, 0);
                 }
-                oCtx.putImageData(oData, 0, 0);
+                document.getElementById('preview-logo-img-1').src = c1.toDataURL('image/png');
             }
 
-            const ownerImgEl = document.getElementById('owner-file-img');
-            document.getElementById('owner-placeholder-text').style.display = 'none';
-            ownerImgEl.src = ownerCanvas.toDataURL('image/png');
+            // --- RENDER LOGO 2 (MOCKUP) ---
+            if(rawCustomerLogoImg2 && isTwoColors) {
+                const c2 = document.createElement('canvas');
+                c2.width = rawCustomerLogoImg2.width; c2.height = rawCustomerLogoImg2.height;
+                const ctx2 = c2.getContext('2d');
+                ctx2.drawImage(rawCustomerLogoImg2, 0, 0);
+
+                if(method === 'manual') {
+                    const imgData = ctx2.getImageData(0, 0, c2.width, c2.height);
+                    const d = imgData.data;
+                    const rT = parseInt(inkHex2.slice(1, 3), 16), gT = parseInt(inkHex2.slice(3, 5), 16), bT = parseInt(inkHex2.slice(5, 7), 16);
+                    for (let i = 0; i < d.length; i += 4) { if (d[i + 3] > 15) { d[i] = rT; d[i + 1] = gT; d[i + 2] = bT; } }
+                    ctx2.putImageData(imgData, 0, 0);
+                }
+                document.getElementById('preview-logo-img-2').src = c2.toDataURL('image/png');
+            }
+
+            // --- RENDER BOX 2 (PRODUCTION VIEW - DIGABUNG HITAM PEKAT UNTUK SABLON) ---
+            renderOwnerProductionBox(method, isTwoColors);
         }
 
-        function onCustomerModelChange() { updateCustomerSizesDropdown(); updateBagCanvas(); updateProcessedLogo(); }
+        function renderOwnerProductionBox(method, isTwoColors) {
+            const ownerImgEl = document.getElementById('owner-file-img');
+            const placeholderEl = document.getElementById('owner-placeholder-text');
+
+            if(!rawCustomerLogoImg1) {
+                placeholderEl.style.display = 'block';
+                ownerImgEl.src = "";
+                return;
+            }
+            placeholderEl.style.display = 'none';
+
+            const canvas = document.createElement('canvas');
+            let maxW = 300, maxH = 200;
+            canvas.width = maxW; canvas.height = maxH;
+            const ctx = canvas.getContext('2d');
+
+            // Gambar Logo 1 ke Box 2
+            if(rawCustomerLogoImg1) {
+                ctx.drawImage(rawCustomerLogoImg1, 10, 10, 120, 120);
+            }
+            // Gambar Logo 2 ke Box 2 (Jika 2 Warna)
+            if(rawCustomerLogoImg2 && isTwoColors) {
+                ctx.drawImage(rawCustomerLogoImg2, 150, 10, 120, 120);
+            }
+
+            if(method === 'manual') {
+                // Jadikan Hitam Pekat untuk film afdruk sablon
+                const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                const d = imgData.data;
+                for (let i = 0; i < d.length; i += 4) {
+                    if (d[i + 3] > 15) {
+                        d[i] = 0; d[i + 1] = 0; d[i + 2] = 0; d[i + 3] = 255;
+                    }
+                }
+                ctx.putImageData(imgData, 0, 0);
+            }
+
+            ownerImgEl.src = canvas.toDataURL('image/png');
+        }
+
+        function onCustomerModelChange() { updateCustomerSizesDropdown(); updateBagCanvas(); updateProcessedLogos(); }
         function onCustomerSizeSelect() { updateSizeLabel(); }
 
         function updateBagCanvas() {
@@ -1298,7 +1335,6 @@
                 const tempCanvas = document.createElement('canvas');
                 tempCanvas.width = img.width; tempCanvas.height = img.height;
                 const tCtx = tempCanvas.getContext('2d');
-                
                 tCtx.drawImage(img, 0, 0);
                 const bagData = tCtx.getImageData(0, 0, tempCanvas.width, tempCanvas.height);
                 const d = bagData.data;
@@ -1308,15 +1344,35 @@
 
                 for (let i = 0; i < d.length; i += 4) {
                     if (d[i+3] > 15 && activeBagTint !== '#ffffff') {
-                        d[i]   = Math.round((d[i] * 0.25) + (rTint * 0.75));
-                        d[i+1] = Math.round((d[i+1] * 0.25) + (gTint * 0.75));
-                        d[i+2] = Math.round((d[i+2] * 0.25) + (bTint * 0.75));
+                        d[i]   = Math.round((d[i] * 0.2) + (rTint * 0.8));
+                        d[i+1] = Math.round((d[i+1] * 0.2) + (gTint * 0.8));
+                        d[i+2] = Math.round((d[i+2] * 0.2) + (bTint * 0.8));
                     }
                 }
                 tCtx.putImageData(bagData, 0, 0);
                 ctx.drawImage(tempCanvas, 0, 0);
             };
             img.src = currentModel.image;
+        }
+
+        function adjustLogoTransform() {
+            // Logo 1
+            const s1 = document.getElementById('logo-scale-1').value;
+            const r1 = document.getElementById('logo-rotate-1').value;
+            const x1 = document.getElementById('logo-pos-x-1').value;
+            const y1 = document.getElementById('logo-pos-y-1').value;
+            document.getElementById('scale-val-1').textContent = s1;
+            document.getElementById('rotate-val-1').textContent = r1;
+            document.getElementById('logo-layer-1').style.transform = `translate(${x1}px, ${y1}px) scale(${s1 / 100}) rotate(${r1}deg)`;
+
+            // Logo 2
+            const s2 = document.getElementById('logo-scale-2').value;
+            const r2 = document.getElementById('logo-rotate-2').value;
+            const x2 = document.getElementById('logo-pos-x-2').value;
+            const y2 = document.getElementById('logo-pos-y-2').value;
+            document.getElementById('scale-val-2').textContent = s2;
+            document.getElementById('rotate-val-2').textContent = r2;
+            document.getElementById('logo-layer-2').style.transform = `translate(${x2}px, ${y2}px) scale(${s2 / 100}) rotate(${r2}deg)`;
         }
 
         function calculateItemPrice() {
@@ -1329,46 +1385,53 @@
             if(found) basePrice = found.price;
 
             let unitPrice = basePrice;
-            if(document.getElementById('print-method').value === 'dtf') {
+            const method = document.getElementById('print-method').value;
+            if(method === 'dtf') {
                 const dtfPrice = parseInt(document.getElementById('dtf-size-select').value) || 2000;
                 unitPrice += dtfPrice;
+            } else if(method === 'manual' && document.getElementById('sablon-color-count').value === '2') {
+                unitPrice += 400; // Tambahan biaya afdruk film warna ke-2
             }
             return unitPrice;
         }
 
         async function addItemToCart() {
-            if(!rawCustomerLogoImg) return alert("Silakan upload logo/desain terlebih dahulu!");
+            if(!rawCustomerLogoImg1) return alert("Silakan upload minimal Logo / Desain Utama terlebih dahulu!");
             
             const mIndex = document.getElementById('bag-model-select').value || 0;
             const currentModel = bagModels[mIndex] || bagModels[0];
             const sizeName = document.getElementById('bag-size-select').value;
             const qty = parseInt(document.getElementById('item-qty').value) || 500;
-            const printMethod = document.getElementById('print-method').value === 'dtf' ? 'DTF Full Color' : 'Sablon Manual';
+            const method = document.getElementById('print-method').value;
+            const colorCount = document.getElementById('sablon-color-count').value;
+            
+            let printMethodName = 'Sablon Manual 1 Warna';
+            if(method === 'dtf') printMethodName = 'DTF Full Color';
+            else if(colorCount === '2') printMethodName = 'Sablon Manual 2 Warna';
+
             const unitPrice = calculateItemPrice();
 
             let mockupBase64 = "";
-            let cleanLogoDataUrl = "";
             try {
                 const element = document.getElementById('capture-mockup');
                 const canvas = await html2canvas(element, { scale: 0.7, useCORS: true, backgroundColor: '#ffffff' });
                 mockupBase64 = canvas.toDataURL('image/jpeg', 0.45);
-            } catch(e) {
-                console.log("Mockup capture warning:", e);
-            }
+            } catch(e) { console.log("Mockup capture error:", e); }
 
             const ownerImg = document.getElementById('owner-file-img');
-            if(ownerImg) cleanLogoDataUrl = ownerImg.src;
+            const cleanLogoDataUrl = ownerImg ? ownerImg.src : "";
 
             cartItems.push({
                 model: currentModel.name,
                 size: sizeName,
                 color: activeColorName,
-                method: printMethod,
+                method: printMethodName,
                 qty: qty,
                 unitPrice: unitPrice,
                 subtotal: unitPrice * qty,
                 mockupImg: mockupBase64,
-                cleanLogo: cleanLogoDataUrl
+                cleanLogo: cleanLogoDataUrl,
+                inkNote: document.getElementById('production-ink-notes').textContent
             });
 
             saveToCloud();
@@ -1380,7 +1443,6 @@
             const container = document.getElementById('cart-items-container');
             const countEl = document.getElementById('cart-count');
             if(!container) return;
-
             countEl.textContent = cartItems.length;
             container.innerHTML = '';
 
@@ -1398,39 +1460,22 @@
                             <div class="truncate">
                                 <div class="font-bold text-slate-800 truncate">${item.model} (${item.size})</div>
                                 <div class="text-[11px] text-slate-500">Warna: ${item.color} | ${item.method}</div>
+                                <div class="text-[10px] text-amber-700">${item.inkNote || ''}</div>
                                 <div class="text-[11px] font-semibold text-emerald-700">${item.qty} Pcs x Rp ${item.unitPrice.toLocaleString('id-ID')} = Rp ${item.subtotal.toLocaleString('id-ID')}</div>
                             </div>
                         </div>
                         <button type="button" onclick="removeCartItem(${index})" class="text-rose-600 font-bold p-2 cursor-pointer flex-shrink-0">🗑️</button>
                     </div>`;
             });
-
             updateCartTotals();
         }
 
-        function removeCartItem(index) {
-            cartItems.splice(index, 1);
-            saveToCloud();
-            renderCartItems();
-        }
-
-        function clearCart() {
-            if(confirm("Kosongkan keranjang pesanan?")) {
-                cartItems = [];
-                saveToCloud();
-                renderCartItems();
-            }
-        }
+        function removeCartItem(index) { cartItems.splice(index, 1); saveToCloud(); renderCartItems(); }
+        function clearCart() { if(confirm("Kosongkan keranjang pesanan?")) { cartItems = []; saveToCloud(); renderCartItems(); } }
 
         function updateCartTotals() {
-            let totalQty = 0;
-            let grandSubtotal = 0;
-
-            cartItems.forEach(item => {
-                totalQty += item.qty;
-                grandSubtotal += item.subtotal;
-            });
-
+            let totalQty = 0, grandSubtotal = 0;
+            cartItems.forEach(item => { totalQty += item.qty; grandSubtotal += item.subtotal; });
             let discountVal = totalQty >= 1000 ? grandSubtotal * 0.10 : 0;
             let grandTotal = grandSubtotal - discountVal;
             const region = document.getElementById('shipping-region').value;
@@ -1441,16 +1486,12 @@
             if(discountVal > 0) {
                 document.getElementById('discount-row').classList.remove('hidden');
                 document.getElementById('display-discount-val').textContent = "- Rp " + Math.round(discountVal).toLocaleString('id-ID');
-            } else {
-                document.getElementById('discount-row').classList.add('hidden');
-            }
+            } else { document.getElementById('discount-row').classList.add('hidden'); }
 
             if(region === 'luar') {
                 document.getElementById('dp-row').classList.remove('hidden');
                 document.getElementById('display-dp-val').textContent = "Rp " + Math.round(dpVal).toLocaleString('id-ID') + " (50%)";
-            } else {
-                document.getElementById('dp-row').classList.add('hidden');
-            }
+            } else { document.getElementById('dp-row').classList.add('hidden'); }
 
             document.getElementById('display-total-price').textContent = "Rp " + Math.round(grandTotal).toLocaleString('id-ID');
         }
@@ -1458,30 +1499,8 @@
         function toggleAdminPanel() { document.getElementById('admin-view').classList.toggle('hidden'); }
         function requestAdminLogin() {
             const pwd = prompt("Masukkan Password Admin / Panel Kontrol:");
-            if(pwd === pdfPassword) {
-                toggleAdminPanel();
-            } else if(pwd !== null) {
-                alert("Password Admin Salah!");
-            }
-        }
-
-        function togglePrintMethod() {
-            const isDtf = document.getElementById('print-method').value === 'dtf';
-            document.getElementById('manual-ink-box').classList.toggle('hidden', isDtf);
-            document.getElementById('dtf-size-box').classList.toggle('hidden', !isDtf);
-            updateProcessedLogo();
-        }
-
-        function adjustLogoTransform() {
-            const scaleEl = document.getElementById('logo-scale');
-            const rotateEl = document.getElementById('logo-rotate');
-            const posXEl = document.getElementById('logo-pos-x');
-            const posYEl = document.getElementById('logo-pos-y');
-            
-            if(!scaleEl || !rotateEl || !posXEl || !posYEl) return;
-            document.getElementById('scale-val').textContent = scaleEl.value;
-            document.getElementById('rotate-val').textContent = rotateEl.value;
-            document.getElementById('logo-layer').style.transform = `translate(${posXEl.value}px, ${posYEl.value}px) scale(${scaleEl.value / 100}) rotate(${rotateEl.value}deg)`;
+            if(pwd === pdfPassword) toggleAdminPanel();
+            else if(pwd !== null) alert("Password Admin Salah!");
         }
 
         async function saveToCloud() {
@@ -1501,11 +1520,9 @@
             safeLocalStorageSet('ilham_customerProfile', JSON.stringify(customerProfile));
             
             try {
-                const lightCart = cartItems.map(i => ({ model: i.model, size: i.size, color: i.color, method: i.method, qty: i.qty, unitPrice: i.unitPrice, subtotal: i.subtotal }));
+                const lightCart = cartItems.map(i => ({ model: i.model, size: i.size, color: i.color, method: i.method, qty: i.qty, unitPrice: i.unitPrice, subtotal: i.subtotal, inkNote: i.inkNote }));
                 safeLocalStorageSet('ilham_cartItems', JSON.stringify(lightCart));
-            } catch (err) {
-                console.log(err);
-            }
+            } catch (err) { console.log(err); }
 
             if(!window.firebaseDb) return;
             try {
@@ -1518,16 +1535,11 @@
                 }));
 
                 await setDoc(docRef, {
-                    bagModels: optimizedBagModels,
-                    bankAccounts, bagColors, inkColors, dtfOptions,
-                    storeName, pdfPassword, ownerWaNumber,
-                    brandLogoUrl: brandLogoUrl || "",
-                    customStampUrl: customStampUrl || "",
-                    storeAddress, storePhone, storeEmail
+                    bagModels: optimizedBagModels, bankAccounts, bagColors, inkColors, dtfOptions,
+                    storeName, pdfPassword, ownerWaNumber, brandLogoUrl: brandLogoUrl || "",
+                    customStampUrl: customStampUrl || "", storeAddress, storePhone, storeEmail
                 }, { merge: true });
-            } catch(e) {
-                console.error("Gagal menyimpan ke cloud:", e);
-            }
+            } catch(e) { console.error("Cloud save error:", e); }
         }
 
         window.initCloudSync = function() {
@@ -1537,11 +1549,8 @@
             const docRef = doc(db, "settings", "master_data");
             
             getDoc(docRef).then((docSnap) => {
-                if (docSnap.exists()) {
-                    applyCloudData(docSnap.data());
-                } else {
-                    saveToCloud();
-                }
+                if (docSnap.exists()) applyCloudData(docSnap.data());
+                else saveToCloud();
             }).catch(err => console.log(err));
 
             onSnapshot(docRef, (docSnap) => {
@@ -1575,16 +1584,8 @@
             if(data.storeName) storeName = data.storeName;
             if(data.pdfPassword) pdfPassword = data.pdfPassword;
             if(data.ownerWaNumber) ownerWaNumber = data.ownerWaNumber;
-            
-            if(data.brandLogoUrl) {
-                brandLogoUrl = data.brandLogoUrl;
-                safeLocalStorageSet('ilham_brandLogoUrl', brandLogoUrl);
-            }
-            if(data.customStampUrl) {
-                customStampUrl = data.customStampUrl;
-                safeLocalStorageSet('ilham_customStampUrl', customStampUrl);
-            }
-
+            if(data.brandLogoUrl) { brandLogoUrl = data.brandLogoUrl; safeLocalStorageSet('ilham_brandLogoUrl', brandLogoUrl); }
+            if(data.customStampUrl) { customStampUrl = data.customStampUrl; safeLocalStorageSet('ilham_customStampUrl', customStampUrl); }
             if(data.storeAddress) storeAddress = data.storeAddress;
             if(data.storePhone) storePhone = data.storePhone;
             if(data.storeEmail) storeEmail = data.storeEmail;
@@ -1601,61 +1602,32 @@
             cartItems.forEach(item => { totalQty += item.qty; grandSubtotal += item.subtotal; });
             let discountVal = totalQty >= 1000 ? grandSubtotal * 0.10 : 0;
             let grandTotal = grandSubtotal - discountVal;
-            const region = document.getElementById('shipping-region').value;
-            const dpVal = region === 'luar' ? grandTotal * 0.50 : 0;
 
-            generateInvoicePDF({
-                id: "PO-" + Math.floor(1000 + Math.random() * 9000),
-                name: customerProfile.name,
-                wa: customerProfile.wa,
-                address: customerProfile.address,
-                items: cartItems,
-                subtotal: "Rp " + Math.round(grandSubtotal).toLocaleString('id-ID'),
-                discount: discountVal > 0 ? "- Rp " + Math.round(discountVal).toLocaleString('id-ID') : "Rp 0",
-                dpRequired: dpVal > 0 ? "Rp " + Math.round(dpVal).toLocaleString('id-ID') + " (DP 50%)" : "Tidak Ada",
-                totalPrice: "Rp " + Math.round(grandTotal).toLocaleString('id-ID'),
-                date: new Date().toLocaleString('id-ID', { dateStyle: 'medium', timeStyle: 'medium' }),
-                status: "BELUM LUNAS"
-            }, false);
-        }
-
-        async function generateInvoicePDF(orderData, isPaidInvoice = false) {
             const { jsPDF } = window.jspdf;
             const pdf = new jsPDF('p', 'mm', 'a4');
-            const pageWidth = 210;
-
-            pdf.setFillColor(13, 148, 136);
-            pdf.rect(0, 0, pageWidth, 42, 'F');
-
-            pdf.setTextColor(255, 255, 255);
-            pdf.setFont("helvetica", "bold");
-            pdf.setFontSize(11);
+            pdf.setFillColor(13, 148, 136); pdf.rect(0, 0, 210, 42, 'F');
+            pdf.setTextColor(255, 255, 255); pdf.setFont("helvetica", "bold"); pdf.setFontSize(11);
             pdf.text(storeName.toUpperCase() + " - INVOICE TAGIHAN", 15, 12);
-
-            pdf.setFont("helvetica", "normal");
-            pdf.setFontSize(7.5);
+            pdf.setFont("helvetica", "normal"); pdf.setFontSize(7.5);
             pdf.text("Alamat: " + storeAddress, 15, 18);
             pdf.text("No. WA: " + storePhone, 15, 23);
 
-            pdf.setTextColor(30, 41, 59);
-            pdf.setFont("helvetica", "bold");
-            pdf.setFontSize(9.5);
+            pdf.setTextColor(30, 41, 59); pdf.setFont("helvetica", "bold"); pdf.setFontSize(9.5);
             pdf.text("PELANGGAN:", 15, 50);
-
-            pdf.setFont("helvetica", "normal");
-            pdf.setFontSize(8.5);
-            pdf.text(`Nama: ${orderData.name} (${orderData.wa})`, 15, 56);
-            pdf.text("Alamat Kirim: " + orderData.address, 15, 62);
+            pdf.setFont("helvetica", "normal"); pdf.setFontSize(8.5);
+            pdf.text(`Nama: ${customerProfile.name} (${customerProfile.wa})`, 15, 56);
+            pdf.text("Alamat Kirim: " + customerProfile.address, 15, 62);
 
             let startY = 70;
-            orderData.items.forEach((it, idx) => {
-                pdf.text(`${idx + 1}. ${it.model} (${it.size}) - Qty: ${it.qty} Pcs - Rp ${it.subtotal.toLocaleString('id-ID')}`, 15, startY);
-                startY += 6;
+            cartItems.forEach((it, idx) => {
+                pdf.text(`${idx + 1}. ${it.model} (${it.size}) - ${it.method} - Qty: ${it.qty} Pcs`, 15, startY);
+                pdf.text(`   Catatan: ${it.inkNote || '-'} | Subtotal: Rp ${it.subtotal.toLocaleString('id-ID')}`, 15, startY + 5);
+                startY += 12;
             });
 
-            startY += 10;
-            pdf.text(`Total Pembayaran: ${orderData.totalPrice}`, 15, startY);
-            pdf.save(`Invoice-${orderData.id}.pdf`);
+            startY += 5;
+            pdf.text(`Total Pembayaran: Rp ${Math.round(grandTotal).toLocaleString('id-ID')}`, 15, startY);
+            pdf.save(`Invoice-ILHAM-SPUNBOND.pdf`);
             alert("Invoice PDF berhasil di-download!");
         }
 
@@ -1673,15 +1645,11 @@
 
             const { collection, onSnapshot, query, orderBy } = window.firebaseDeps;
             const q = query(collection(window.firebaseDb, "orders"), orderBy("date", "desc"));
-
             if(activeOrdersUnsubscribe) activeOrdersUnsubscribe();
 
             activeOrdersUnsubscribe = onSnapshot(q, (querySnapshot) => {
                 container.innerHTML = '';
-                if(querySnapshot.empty) {
-                    container.innerHTML = '<p class="text-xs text-slate-400 text-center py-6">Belum ada pesanan masuk.</p>';
-                    return;
-                }
+                if(querySnapshot.empty) { container.innerHTML = '<p class="text-xs text-slate-400 text-center py-6">Belum ada pesanan masuk.</p>'; return; }
                 querySnapshot.forEach((docSnap) => {
                     const o = docSnap.data();
                     container.innerHTML += `
@@ -1728,13 +1696,10 @@
             try {
                 const { doc, setDoc } = window.firebaseDeps;
                 await setDoc(doc(window.firebaseDb, "orders", orderId), newOrder);
-
                 let waMessage = `Halo Owner ${storeName}, saya ${customerProfile.title} ${customerProfile.name} ingin memesan:\nNo PO: ${orderId}\nTotal: Rp ${Math.round(grandTotal).toLocaleString('id-ID')}\nMohon segera diproses!`;
                 alert("Pesanan tersimpan & diarahkan ke WhatsApp owner!");
                 window.open(`https://wa.me/${ownerWaNumber}?text=${encodeURIComponent(waMessage)}`);
-            } catch(e) {
-                alert("Gagal menyimpan pesanan ke cloud.");
-            }
+            } catch(e) { alert("Gagal menyimpan pesanan ke cloud."); }
         }
     </script>
 </body>
