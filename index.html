@@ -163,14 +163,14 @@
 
             <div class="inline-flex items-center gap-1.5 bg-emerald-700/60 border border-emerald-500/40 px-3 py-1 rounded-full text-[10px] font-semibold tracking-wider text-emerald-200 mb-1.5 uppercase">
                 <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                <span>Voice AI Edition v3.5</span>
+                <span>Voice AI Edition v3.8</span>
             </div>
 
             <h1 id="brand-title-text" class="text-xl font-extrabold tracking-wide text-white">ILHAM SPUNBOND</h1>
             <p id="welcome-greeting-text" class="text-xs text-emerald-200/90 mt-0.5 font-medium">Sistem Pemesanan Custom Tas Spunbond & Sablon</p>
         </div>
 
-        <!-- 🤖 VOICE AI ASISTEN -->
+        <!-- 🎙️🤖 VOICE AI ASISTEN -->
         <div class="bg-white p-4 rounded-2xl shadow-md border border-emerald-200 space-y-3">
             <div class="flex items-center justify-between border-b border-slate-100 pb-2">
                 <h3 class="text-xs font-bold text-emerald-900 flex items-center gap-1.5">
@@ -184,7 +184,7 @@
             </div>
 
             <div class="flex items-center gap-2">
-                <input type="text" id="ai-user-query" placeholder="Tanya rekomendasi ukuran/model tas..." class="flex-1 bg-slate-50 border border-slate-300 rounded-xl px-3 py-2.5 text-xs outline-none focus:ring-2 focus:ring-emerald-500 min-w-0">
+                <input type="text" id="ai-user-query" placeholder="Tanya rekomendasi ukuran/model tas..." class="flex-1 bg-slate-50 border border-slate-300 rounded-xl px-3 py-2.5 text-xs outline-none focus:ring-2 focus:ring-emerald-500 min-w-0" onfocus="stopAiSpeech()">
                 <button type="button" onclick="askAiRecommendation()" class="bg-emerald-700 hover:bg-emerald-800 text-white font-semibold px-3.5 py-2.5 rounded-xl text-xs cursor-pointer flex-shrink-0">Kirim</button>
                 <button type="button" id="mic-btn" onclick="toggleVoiceInput()" class="bg-amber-500 hover:bg-amber-600 text-white font-semibold px-3 py-2.5 rounded-xl text-xs cursor-pointer flex-shrink-0" title="Ngomong pakai suara">🎤</button>
             </div>
@@ -496,13 +496,13 @@
             <!-- KNOWLEDGE BASE & AI MEMORY TRAINING -->
             <div class="bg-slate-800 p-3 rounded-xl border border-amber-500/30 space-y-3">
                 <label class="block text-xs font-semibold text-amber-300">🧠 AI Knowledge Base & Ingatan Kustom (FAQ)</label>
-                <p class="text-[10px] text-slate-400">Tambahkan kata kunci pertanyaan customer beserta jawaban yang diinginkan.</p>
+                <p class="text-[10px] text-slate-400">Tambahkan kata kunci & kalimat tambahan khusus per topik.</p>
                 
                 <div id="faq-admin-container" class="space-y-2 max-h-48 overflow-y-auto pr-1"></div>
                 
                 <div class="space-y-2 pt-2 border-t border-slate-700">
-                    <input type="text" id="new-faq-keyword" placeholder="Kata Kunci (Cth: ongkir, harga, minimal order)" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white outline-none">
-                    <textarea id="new-faq-answer" rows="2" placeholder="Jawaban AI..." class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white outline-none"></textarea>
+                    <input type="text" id="new-faq-keyword" placeholder="Kata Kunci (Cth: ongkir, alamat, minimal order)" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white outline-none">
+                    <textarea id="new-faq-answer" rows="2" placeholder="Kalimat tambahan / jawaban AI..." class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white outline-none"></textarea>
                     <button type="button" onclick="addKnowledgeFaq()" class="w-full bg-amber-500 text-slate-950 font-semibold py-2 rounded-xl text-xs cursor-pointer">➕ Tambah Ingatan AI Baru</button>
                 </div>
             </div>
@@ -697,11 +697,12 @@
         ];
         let dtfOptions = [{ name: "Sedang (8x8 cm)", price: 2000 }, { name: "Besar (10x10 cm)", price: 3000 }];
         
+        // Ingatan AI (FAQ) dengan Format: keyword & answer (kalimat tambahan per kata kunci)
         let knowledgeFaq = [
             { keyword: "assalamualaikum", answer: "Wa'alaikumussalam warahmatullah. Selamat datang di ILHAM SPUNBOND, ada yang bisa dibantu?" },
-            { keyword: "minimal order", answer: "Untuk pemesanan custom tas spunbond minimal order sangat terjangkau bosku, siap kami layani!" },
-            { keyword: "alamat", answer: "Lokasi workshop kami ada di Taman Raya Rajeg Blok-K10 No.06, Tangerang-Banten." },
-            { keyword: "ongkir", answer: "Kabar baiknya bosku, untuk pengiriman ke seluruh wilayah Pulau Jawa free ongkir!" }
+            { keyword: "minimal order", answer: "untuk pemesanan custom tas spunbond minimal order sangat terjangkau bosku, siap kami layani!" },
+            { keyword: "alamat", answer: "lokasi workshop kami ada di Taman Raya Rajeg Blok-K10 No.06, Tangerang-Banten." },
+            { keyword: "ongkir", answer: "soal pengiriman, kabar baiknya untuk ke seluruh wilayah Pulau Jawa free ongkir!" }
         ];
         let unansweredLogs = [];
 
@@ -833,9 +834,16 @@
             alert("Profil berhasil diperbarui!");
         }
 
-        function speakText(text) {
+        // FUNGSI KONTROL SUARA AI (DENGAN INTERUPSI OTOMATIS)
+        function stopAiSpeech() {
             if('speechSynthesis' in window) {
                 window.speechSynthesis.cancel();
+            }
+        }
+
+        function speakText(text) {
+            if('speechSynthesis' in window) {
+                stopAiSpeech();
                 const utterance = new SpeechSynthesisUtterance(text);
                 utterance.lang = 'id-ID';
                 utterance.rate = 0.95;
@@ -875,45 +883,52 @@
             }
         }
 
+        // FUNGSI UTAMA AI: MENGGABUNGKAN NAMA CUSTOMER + PENGULANGAN KATA KUNCI + KALIMAT TAMBAHAN KUSTOM
         function askAiRecommendation() {
+            stopAiSpeech();
             const queryText = document.getElementById('ai-user-query').value.trim().toLowerCase();
             if(!queryText) return alert("Silakan ketik pertanyaan atau konsultasi Anda terlebih dahulu.");
-
-            let greetingPrefix = `Siap, ${customerProfile.title} ${customerProfile.name}! `;
-            if(queryText.includes("bro")) greetingPrefix = `Siap, Bro ${customerProfile.name}! `;
-            else if(queryText.includes("bosku")) greetingPrefix = `Siap, Bosku ${customerProfile.name}! `;
 
             let finalAiResponse = "";
             const queryWords = queryText.split(/\s+/).filter(w => w.length > 2);
 
+            // Cek apakah pertanyaan customer cocok dengan ingatan kustom (FAQ)
             let matchedFaq = knowledgeFaq.find(f => {
                 const keywordLower = f.keyword.toLowerCase();
                 return queryText.includes(keywordLower) || queryWords.some(w => keywordLower.includes(w) || w.includes(keywordLower));
             });
 
             if(matchedFaq) {
-                finalAiResponse = greetingPrefix + matchedFaq.answer;
+                // Menerapkan format: "Baik, [Gelar] [Nama], ngomongin soal [kata kunci], [kalimat tambahan kustom dari admin]"
+                finalAiResponse = `Baik, ${customerProfile.title} ${customerProfile.name}, ngomongin soal ${matchedFaq.keyword}, ${matchedFaq.answer}`;
             } else {
+                let foundMatch = false;
                 for(let mIdx = 0; mIdx < bagModels.length; mIdx++) {
                     let model = bagModels[mIdx];
                     for(let sIdx = 0; sIdx < model.sizes.length; sIdx++) {
                         let sizeObj = model.sizes[sIdx];
                         let note = (sizeObj.note || "").toLowerCase();
                         if(queryWords.some(w => note.includes(w) || model.name.toLowerCase().includes(w) || sizeObj.name.toLowerCase().includes(w))) {
-                            finalAiResponse = `${greetingPrefix}Untuk kebutuhan itu, rekomendasi terbaik pakai model *${model.name}* ukuran *${sizeObj.name}* (Harga: Rp ${sizeObj.price.toLocaleString('id-ID')} /pcs). Catatan: ${sizeObj.note}`;
+                            
+                            let matchedKeyword = queryWords.find(w => note.includes(w) || model.name.toLowerCase().includes(w)) || queryText;
+
+                            // Format respons untuk rekomendasi produk tas
+                            finalAiResponse = `Baik, ${customerProfile.title} ${customerProfile.name}, ngomongin soal ${matchedKeyword}, rekomendasi terbaik dari kita pakai model ${model.name} ukuran ${sizeObj.name} (Harga: Rp ${sizeObj.price.toLocaleString('id-ID')} /pcs). Catatan: ${sizeObj.note}`;
+                            
                             document.getElementById('bag-model-select').value = mIdx;
                             updateCustomerSizesDropdown();
                             document.getElementById('bag-size-select').value = sizeObj.name;
                             updateSizeLabel();
+                            foundMatch = true;
                             break;
                         }
                     }
-                    if(finalAiResponse) break;
+                    if(foundMatch) break;
                 }
             }
 
             if(!finalAiResponse) {
-                finalAiResponse = `Maaf, ${customerProfile.title} ${customerProfile.name}, saya belum mengerti pertanyaan "${queryText}". Pertanyaan ini sudah saya catat untuk ditinjau oleh Admin! 🙏`;
+                finalAiResponse = `Baik, ${customerProfile.title} ${customerProfile.name}, ngomongin soal ${queryText}, maaf saya belum mengerti detailnya. Pertanyaan ini sudah saya catat untuk ditinjau oleh Admin! 🙏`;
                 if(!unansweredLogs.includes(queryText)) {
                     unansweredLogs.push(queryText);
                     saveToCloud();
@@ -929,6 +944,9 @@
             if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
                 return alert("Browser Anda tidak mendukung fitur input suara. Silakan ketik manual.");
             }
+            
+            stopAiSpeech();
+
             const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
             const recognition = new SpeechRecognition();
             recognition.lang = 'id-ID';
@@ -948,7 +966,7 @@
             recognition.start();
         }
 
-        // FUNGSI RENDER PANEL ADMIN (DENGAN EDIT MODEL & FITUR HAPUS LOG)
+        // FUNGSI RENDER PANEL ADMIN (DENGAN EDIT INGATAN AI PER KATA KUNCI + KALIMAT TAMBAHAN)
         function renderAdminPanel() {
             const modelAdminContainer = document.getElementById('model-admin-container');
             const bankAdminContainer = document.getElementById('bank-admin-container');
@@ -1025,12 +1043,15 @@
                 faqAdminContainer.innerHTML = '';
                 knowledgeFaq.forEach((faq, fIdx) => {
                     faqAdminContainer.innerHTML += `
-                        <div class="bg-slate-900 p-2.5 rounded-xl border border-slate-700 text-xs space-y-1">
+                        <div class="bg-slate-900 p-2.5 rounded-xl border border-slate-700 text-xs space-y-1.5">
                             <div class="flex justify-between items-center">
-                                <b class="text-amber-300">🔑 ${faq.keyword}</b>
+                                <b class="text-amber-300">🔑 Kata Kunci: <input type="text" id="edit-faq-kw-${fIdx}" value="${faq.keyword}" oninput="updateFaqKeyword(${fIdx})" class="bg-slate-800 border border-slate-700 rounded px-2 py-0.5 text-white font-bold outline-none ml-1"></b>
                                 <button type="button" onclick="deleteKnowledgeFaq(${fIdx})" class="text-rose-400 font-bold px-2 py-0.5 cursor-pointer">Hapus</button>
                             </div>
-                            <div class="text-slate-300 italic text-[11px]">💬 "${faq.answer}"</div>
+                            <div>
+                                <label class="block text-[10px] text-slate-400 mb-0.5">Kalimat Tambahan AI:</label>
+                                <textarea id="edit-faq-ans-${fIdx}" rows="2" oninput="updateFaqAnswer(${fIdx})" class="w-full bg-slate-800 border border-slate-700 rounded p-1.5 text-slate-200 outline-none text-xs">${faq.answer}</textarea>
+                            </div>
                         </div>`;
                 });
             }
@@ -1132,7 +1153,6 @@
             renderCartItems();
         }
 
-        // FUNGSI PENGELOLAAN LOG PERTANYAAN BELUM TERJAWAB
         function deleteSingleUnansweredLog(idx) {
             unansweredLogs.splice(idx, 1);
             saveToCloud();
@@ -1187,13 +1207,29 @@
         function addKnowledgeFaq() {
             const keyword = document.getElementById('new-faq-keyword').value.trim().toLowerCase();
             const answer = document.getElementById('new-faq-answer').value.trim();
-            if(!keyword || !answer) return alert("Harap isi kata kunci dan jawaban AI dengan lengkap!");
+            if(!keyword || !answer) return alert("Harap isi kata kunci dan kalimat tambahan dengan lengkap!");
             knowledgeFaq.push({ keyword, answer });
             document.getElementById('new-faq-keyword').value = "";
             document.getElementById('new-faq-answer').value = "";
             saveToCloud();
             renderAdminPanel();
             alert("Ingatan AI baru berhasil ditambahkan!");
+        }
+
+        function updateFaqKeyword(idx) {
+            const input = document.getElementById(`edit-faq-kw-${idx}`);
+            if(input && knowledgeFaq[idx]) {
+                knowledgeFaq[idx].keyword = input.value.trim().toLowerCase();
+                saveToCloud();
+            }
+        }
+
+        function updateFaqAnswer(idx) {
+            const input = document.getElementById(`edit-faq-ans-${idx}`);
+            if(input && knowledgeFaq[idx]) {
+                knowledgeFaq[idx].answer = input.value.trim();
+                saveToCloud();
+            }
         }
 
         function deleteKnowledgeFaq(idx) {
@@ -1203,7 +1239,7 @@
         }
 
         function promoteLogToFaq(logText, logIdx) {
-            const ans = prompt(`Masukkan jawaban AI untuk pertanyaan: "${logText}"`);
+            const ans = prompt(`Masukkan kalimat tambahan AI untuk pertanyaan: "${logText}"`);
             if(ans) {
                 knowledgeFaq.push({ keyword: logText.toLowerCase(), answer: ans.trim() });
                 unansweredLogs.splice(logIdx, 1);
