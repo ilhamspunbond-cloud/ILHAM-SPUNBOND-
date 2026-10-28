@@ -163,7 +163,7 @@
 
             <div class="inline-flex items-center gap-1.5 bg-emerald-700/60 border border-emerald-500/40 px-3 py-1 rounded-full text-[10px] font-semibold tracking-wider text-emerald-200 mb-1.5 uppercase">
                 <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                <span>Voice AI Edition v3.9</span>
+                <span>Voice AI Edition v3.10</span>
             </div>
 
             <h1 id="brand-title-text" class="text-xl font-extrabold tracking-wide text-white">ILHAM SPUNBOND</h1>
@@ -720,7 +720,7 @@
         ];
         let dtfOptions = [{ name: "Sedang (8x8 cm)", price: 2000 }, { name: "Besar (10x10 cm)", price: 3000 }];
         
-        // Ingatan AI (FAQ) dengan 3 Kolom + repeatKeyword (true/false)
+        // Ingatan AI (FAQ) dengan Format Baru: Prefix + Nama + Keyword + Suffix
         let knowledgeFaq = [
             { prefix: "Waalaikumussalam", keyword: "assalamualaikum", suffix: "Massyaallah bagaimana kabarnya? Ada yg bisa saya bantu untuk cara pemesanan atau rekomendasi tas spunbond yg sesuai kebutuhan?", repeatKeyword: false },
             { prefix: "terkait", keyword: "minimal order", suffix: "untuk pemesanan custom tas spunbond minimal order sangat terjangkau bosku, siap kami layani!", repeatKeyword: true },
@@ -926,18 +926,20 @@
 
             let finalAiResponse = "";
 
-            // 2. CEK INGATAN KUSTOM (FAQ) DENGAN FORMAT 3 KOLOM + OPSI ULANGI KATA KUNCI (TANPA KATA "BAIK" OTOMATIS)
+            // 2. CEK INGATAN KUSTOM (FAQ) -> POSISI NAMA DI PINDAH SETELAH KATA TAMBAHAN AWAL (PREFIX)
             let matchedFaq = knowledgeFaq.find(f => {
                 const keywordLower = (f.keyword || "").toLowerCase();
                 return keywordLower && (queryText.includes(keywordLower) || queryWords.some(w => keywordLower.includes(w) || w.includes(keywordLower)));
             });
 
             if(matchedFaq) {
-                // Susunan Dinamis: Sapaan Nama + Prefix + (Opsional Keyword) + Suffix
+                let prefixPart = matchedFaq.prefix ? matchedFaq.prefix + ", " : "";
+                let namePart = `${customerProfile.title} ${customerProfile.name}, `;
+                
                 if(matchedFaq.repeatKeyword) {
-                    finalAiResponse = `${customerProfile.title} ${customerProfile.name}, ${matchedFaq.prefix} ${matchedFaq.keyword}, ${matchedFaq.suffix}`;
+                    finalAiResponse = `${prefixPart}${namePart}${matchedFaq.keyword}, ${matchedFaq.suffix}`;
                 } else {
-                    finalAiResponse = `${customerProfile.title} ${customerProfile.name}, ${matchedFaq.prefix} ${matchedFaq.suffix}`;
+                    finalAiResponse = `${prefixPart}${namePart}${matchedFaq.suffix}`;
                 }
             } else {
                 let foundMatch = false;
@@ -1031,7 +1033,7 @@
             recognition.start();
         }
 
-        // FUNGSI RENDER PANEL ADMIN (DENGAN TOGGLE REPEAT KATA KUNCI)
+        // FUNGSI RENDER PANEL ADMIN
         function renderAdminPanel() {
             const modelAdminContainer = document.getElementById('model-admin-container');
             const bankAdminContainer = document.getElementById('bank-admin-container');
