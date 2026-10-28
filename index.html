@@ -940,10 +940,64 @@
             speakText(finalAiResponse);
         }
 
-        function toggleVoiceInput() {
+        
+                function toggleVoiceInput() {
             if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
                 return alert("Browser Anda tidak mendukung fitur input suara. Silakan ketik manual.");
             }
+            
+            stopAiSpeech();
+
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            const recognition = new SpeechRecognition();
+            recognition.lang = 'id-ID';
+            recognition.interimResults = true; // Diaktifkan agar teks muncul real-time saat ngomong
+            
+            const micBtn = document.getElementById('mic-btn');
+            const queryInput = document.getElementById('ai-user-query');
+            
+            micBtn.textContent = "🎙️";
+            micBtn.classList.replace('bg-amber-500', 'bg-rose-600');
+
+            recognition.onresult = function(event) {
+                let interimTranscript = '';
+                let finalTranscript = '';
+
+                for (let i = event.resultIndex; i < event.results.length; ++i) {
+                    if (event.results[i].isFinal) {
+                        finalTranscript += event.results[i][0].transcript;
+                    } else {
+                        interimTranscript += event.results[i][0].transcript;
+                    }
+                }
+
+                // Jika ada hasil suara baru, gabungkan dengan teks yang sudah ada (tidak langsung ditimpa total)
+                if (finalTranscript) {
+                    const existingText = queryInput.value.trim();
+                    queryInput.value = existingText ? existingText + " " + finalTranscript : finalTranscript;
+                } else if (interimTranscript) {
+                    const existingText = queryInput.value.trim();
+                    queryInput.placeholder = interimTranscript; // Menampilkan live feedback di placeholder
+                }
+            };
+
+            recognition.onerror = () => { 
+                micBtn.textContent = "🎤"; 
+                micBtn.classList.replace('bg-rose-600', 'bg-amber-500'); 
+            };
+            
+            recognition.onend = () => { 
+                micBtn.textContent = "🎤"; 
+                micBtn.classList.replace('bg-rose-600', 'bg-amber-500');
+                // Otomatis jalankan AI setelah selesai ngomong
+                if(queryInput.value.trim() !== "") {
+                    askAiRecommendation();
+                }
+            };
+            
+            recognition.start();
+        }
+   }
             
             stopAiSpeech();
 
