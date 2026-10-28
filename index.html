@@ -163,7 +163,7 @@
 
             <div class="inline-flex items-center gap-1.5 bg-emerald-700/60 border border-emerald-500/40 px-3 py-1 rounded-full text-[10px] font-semibold tracking-wider text-emerald-200 mb-1.5 uppercase">
                 <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                <span>Voice AI Edition v3.0</span>
+                <span>Voice AI Edition v3.2</span>
             </div>
 
             <h1 id="brand-title-text" class="text-xl font-extrabold tracking-wide text-white">ILHAM SPUNBOND</h1>
@@ -183,10 +183,11 @@
                 "Halo! Silakan ketik atau ngomong kebutuhan tas Anda (contoh: 'Cari tas buat box nasi ukuran 20x20' atau 'Tas kemasan toko HP'), nanti saya carikan rekomendasi pasnya!"
             </div>
 
-            <div class="flex gap-2">
-                <input type="text" id="ai-user-query" placeholder="Tanya rekomendasi ukuran/model tas..." class="flex-1 bg-slate-50 border border-slate-300 rounded-xl px-3 py-2.5 text-xs outline-none focus:ring-2 focus:ring-emerald-500">
-                <button type="button" onclick="askAiRecommendation()" class="bg-emerald-700 hover:bg-emerald-800 text-white font-semibold px-3.5 py-2.5 rounded-xl text-xs cursor-pointer">Kirim</button>
-                <button type="button" id="mic-btn" onclick="toggleVoiceInput()" class="bg-amber-500 hover:bg-amber-600 text-white font-semibold px-3 py-2.5 rounded-xl text-xs cursor-pointer" title="Ngomong pakai suara">🎤</button>
+            <!-- Bar Input Diperbaiki: Tombol Kirim & Mikrofon Berdampingan Rapi Tanpa Bocor -->
+            <div class="flex items-center gap-2">
+                <input type="text" id="ai-user-query" placeholder="Tanya rekomendasi ukuran/model tas..." class="flex-1 bg-slate-50 border border-slate-300 rounded-xl px-3 py-2.5 text-xs outline-none focus:ring-2 focus:ring-emerald-500 min-w-0">
+                <button type="button" onclick="askAiRecommendation()" class="bg-emerald-700 hover:bg-emerald-800 text-white font-semibold px-3 py-2.5 rounded-xl text-xs cursor-pointer flex-shrink-0">Kirim</button>
+                <button type="button" id="mic-btn" onclick="toggleVoiceInput()" class="bg-amber-500 hover:bg-amber-600 text-white font-semibold px-3 py-2.5 rounded-xl text-xs cursor-pointer flex-shrink-0" title="Ngomong pakai suara">🎤</button>
             </div>
         </div>
 
@@ -448,17 +449,17 @@
             <!-- TOMBOL KIRIM KE WHATSAPP OWNER -->
             <button type="button" onclick="saveOrderAndSendWhatsApp()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-4 px-4 rounded-xl shadow-lg flex items-center justify-center gap-2.5 transition text-sm cursor-pointer active:scale-95">
                 <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/></svg>
-                <span>Simpan PO & Kirim Pesan ke WhatsApp Owner</span>
+                <span>Simpan PO & Kirim Rincian Pesanan ke WhatsApp Owner</span>
             </button>
 
             <!-- TOMBOL DOWNLOAD INVOICE PDF -->
             <button type="button" onclick="downloadCustomerInvoicePDF()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3.5 px-4 rounded-xl shadow-lg flex items-center justify-center gap-2 transition text-sm cursor-pointer active:scale-95">
-                <span>📄🖨️</span> Download Invoice Tagihan (PDF)
+                <span>📄🖨️</span> Download Invoice Tagihan (PDF Tabel & Gambar Mockup)
             </button>
 
             <!-- TOMBOL BUKA GALERI RIWAYAT PO OWNER -->
             <button type="button" onclick="verifyAndShowOrderHistory()" class="w-full bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold py-3.5 px-4 rounded-xl shadow-lg flex items-center justify-center gap-2 transition text-sm cursor-pointer active:scale-95">
-                <span>🔐📋</span> Buka Galeri Visual Riwayat PO (Terkunci Password)
+                <span>🔐📋</span> Buka Galeri Visual Riwayat PO & Ekspedisi (Terkunci Password)
             </button>
         </div>
 
@@ -467,7 +468,7 @@
             <div class="bg-slate-900 text-white w-full max-w-lg max-h-[90vh] rounded-2xl p-4 sm:p-5 border border-amber-500/40 flex flex-col space-y-4 shadow-2xl">
                 <div class="flex items-center justify-between border-b border-slate-800 pb-3">
                     <h3 class="text-sm font-bold text-amber-400 flex items-center gap-2">
-                        <span>📋</span> Galeri PO & Rekap Bulanan (Live Sync)
+                        <span>📋</span> Galeri PO, Ekspedisi & Rekap (Live Sync)
                     </h3>
                     <button type="button" onclick="closeOrderHistoryModal()" class="text-xs text-slate-400 hover:text-white font-bold bg-slate-800 px-3 py-1.5 rounded-lg cursor-pointer">Tutup [X]</button>
                 </div>
@@ -496,28 +497,27 @@
             <!-- KNOWLEDGE BASE & AI MEMORY TRAINING -->
             <div class="bg-slate-800 p-3 rounded-xl border border-amber-500/30 space-y-3">
                 <label class="block text-xs font-semibold text-amber-300">🧠 AI Knowledge Base & Ingatan Kustom (FAQ)</label>
-                <p class="text-[10px] text-slate-400">Tambahkan kata kunci pertanyaan customer beserta jawaban yang diinginkan. AI akan otomatis meracik sapaan & nama customer secara natural!</p>
+                <p class="text-[10px] text-slate-400">Tambahkan kata kunci pertanyaan customer beserta jawaban yang diinginkan.</p>
                 
                 <div id="faq-admin-container" class="space-y-2 max-h-48 overflow-y-auto pr-1"></div>
                 
                 <div class="space-y-2 pt-2 border-t border-slate-700">
-                    <input type="text" id="new-faq-keyword" placeholder="Kata Kunci Pertanyaan (Cth: harga tas, minimal order)" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white outline-none">
-                    <textarea id="new-faq-answer" rows="2" placeholder="Jawaban AI (Cth: Untuk harga tergantung ukuran dan quantity bosku...)" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white outline-none"></textarea>
+                    <input type="text" id="new-faq-keyword" placeholder="Kata Kunci (Cth: ongkir, harga, minimal order)" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white outline-none">
+                    <textarea id="new-faq-answer" rows="2" placeholder="Jawaban AI..." class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white outline-none"></textarea>
                     <button type="button" onclick="addKnowledgeFaq()" class="w-full bg-amber-500 text-slate-950 font-semibold py-2 rounded-xl text-xs cursor-pointer">➕ Tambah Ingatan AI Baru</button>
                 </div>
             </div>
 
-            <!-- LOG PERTANYAAN BELUM TERJAWAB (SELF-LEARNING) -->
+            <!-- LOG PERTANYAAN BELUM TERJAWAB -->
             <div class="bg-slate-800 p-3 rounded-xl border border-rose-500/30 space-y-2">
                 <label class="block text-xs font-semibold text-rose-300">📥 Log Pertanyaan Customer Belum Terjawab (Unanswered)</label>
-                <p class="text-[10px] text-slate-400">Daftar pertanyaan customer yang belum dikenali AI. Lu bisa langsung klik tombol untuk menambahkannya ke ingatan di atas!</p>
                 <div id="missing-log-container" class="space-y-1.5 max-h-32 overflow-y-auto pr-1">
                     <p class="text-[10px] text-slate-500 italic">Belum ada pertanyaan tertinggal.</p>
                 </div>
             </div>
 
             <div class="bg-slate-800 p-3 rounded-xl border border-amber-500/30 space-y-2">
-                <label class="block text-xs font-semibold text-amber-300">🖼️ Upload Logo Brand Toko (Auto Transparan - Permanen + PWA Icon)</label>
+                <label class="block text-xs font-semibold text-amber-300">🖼️ Upload Logo Brand Toko (Auto Transparan)</label>
                 <input type="file" id="admin-brand-logo-upload" accept="image/*" onchange="uploadBrandLogo(event)" class="w-full text-xs text-slate-400 file:mr-2 file:py-1.5 file:px-2 file:rounded-lg file:border-0 file:text-[10px] file:font-semibold file:bg-amber-500 file:text-slate-950 cursor-pointer">
                 <div class="flex gap-2 mt-1">
                     <button type="button" onclick="resetBrandLogo()" class="bg-rose-600 hover:bg-rose-700 text-white font-semibold px-3 py-1.5 rounded-lg text-[10px] cursor-pointer">🗑️ Hapus Logo Brand</button>
@@ -535,14 +535,14 @@
             </div>
 
             <div class="bg-slate-800 p-3 rounded-xl border border-amber-500/30 space-y-2">
-                <label class="block text-xs font-semibold text-amber-300">🏅 Upload Gambar Cap / Stempel Lunas (PNG - Permanen)</label>
+                <label class="block text-xs font-semibold text-amber-300">🏅 Upload Gambar Cap / Stempel Lunas (PNG)</label>
                 <input type="file" id="admin-stamp-upload" accept="image/*" onchange="uploadStampImage(event)" class="w-full text-xs text-slate-400 file:mr-2 file:py-1.5 file:px-2 file:rounded-lg file:border-0 file:text-[10px] file:font-semibold file:bg-emerald-500 file:text-slate-950 cursor-pointer">
                 <div id="stamp-preview-container" class="mt-2 text-center"></div>
             </div>
 
             <!-- TANDA TANGAN DIGITAL ADMIN / OWNER -->
             <div class="bg-slate-800 p-3 rounded-xl border border-amber-500/30 space-y-2">
-                <label class="block text-xs font-semibold text-amber-300">✍️ Upload Gambar Tanda Tangan Owner (PNG Transparan)</label>
+                <label class="block text-xs font-semibold text-amber-300">✍️ Upload Gambar Tanda Tangan Owner (PNG)</label>
                 <input type="file" id="admin-sig-upload" accept="image/*" onchange="uploadAdminSignature(event)" class="w-full text-xs text-slate-400 file:mr-2 file:py-1.5 file:px-2 file:rounded-lg file:border-0 file:text-[10px] file:font-semibold file:bg-amber-500 file:text-slate-950 cursor-pointer">
                 <div id="sig-preview-container" class="mt-2 text-center"></div>
             </div>
@@ -631,12 +631,12 @@
 
     <!-- Script Utama -->
     <script>
-        const cleanDefaultBagSvg = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 500'><path d='M100 150 L100 100 C100 70 120 50 200 50 C280 50 300 70 300 100 L300 150 Z' fill='none' stroke='%23334155' stroke-width='16'/><path d='M60 150 L340 150 C360 150 370 160 370 180 L340 450 C340 470 330 480 310 480 L90 480 C70 480 60 470 60 450 L30 180 C30 160 40 150 60 150 Z' fill='%23ffffff' stroke='%23334155' stroke-width='6'/></svg>";
+        const cleanDefaultBagSvg = "data:application/octet-stream;base64,PHN2Zz48L3N2Zz4=";
 
         const defaultBagModels = [
             { 
                 name: "Tas Spunbond Oval", 
-                image: cleanDefaultBagSvg, 
+                image: "https://via.placeholder.com/400x500/ffffff/334155?text=Tas+Oval", 
                 sizes: [
                     { name: "20 x 30 cm", price: 1400, note: "Pas untuk brosur, dokumen, souvenir kecil, dan aksesoris ringan." }, 
                     { name: "25 x 35 cm", price: 1700, note: "Ideal untuk dus nasi ukuran sedang atau baju kaos distro." }, 
@@ -645,7 +645,7 @@
             },
             { 
                 name: "Tas HLS (Handle Lipat Samping)", 
-                image: cleanDefaultBagSvg, 
+                image: "https://via.placeholder.com/400x500/ffffff/334155?text=Tas+HLS", 
                 sizes: [
                     { name: "20 x 30 x 8 cm", price: 2000, note: "Sangat pas untuk kemasan box HP, kosmetik, atau souvenir kotak." }, 
                     { name: "25 x 35 x 10 cm", price: 2500, note: "Cocok untuk tas catering box nasi kuah atau tas toko sepatu anak." },
@@ -654,7 +654,7 @@
             },
             { 
                 name: "Tas HLB Box (Handle Kotak)", 
-                image: cleanDefaultBagSvg, 
+                image: "https://via.placeholder.com/400x500/ffffff/334155?text=Tas+HLB+Box", 
                 sizes: [
                     { name: "25 x 25 x 10 cm", price: 2800, note: "Rekomendasi terbaik untuk dus kue kotak atau box nasi ukuran 20x20 cm." }, 
                     { name: "30 x 30 x 12 cm", price: 3400, note: "Pas untuk kotak catering besar atau kue tart hajatan." }
@@ -662,7 +662,7 @@
             },
             { 
                 name: "Tas HLB Kotak", 
-                image: cleanDefaultBagSvg, 
+                image: "https://via.placeholder.com/400x500/ffffff/334155?text=Tas+HLB+Kotak", 
                 sizes: [
                     { name: "20 x 20 x 15 cm", price: 2500, note: "Cocok untuk tas kotak bekal makanan atau wadah hampers kecil." }, 
                     { name: "30 x 20 x 20 cm", price: 3200, note: "Ideal untuk tas kardus besar, galon mini, atau dus tebal." }
@@ -695,7 +695,8 @@
         let knowledgeFaq = [
             { keyword: "assalamualaikum", answer: "Wa'alaikumussalam warahmatullah. Selamat datang di ILHAM SPUNBOND, ada yang bisa dibantu?" },
             { keyword: "minimal order", answer: "Untuk pemesanan custom tas spunbond minimal order sangat terjangkau bosku, siap kami layani!" },
-            { keyword: "alamat", answer: "Lokasi workshop kami ada di Taman Raya Rajeg Blok-K10 No.06, Tangerang-Banten." }
+            { keyword: "alamat", answer: "Lokasi workshop kami ada di Taman Raya Rajeg Blok-K10 No.06, Tangerang-Banten." },
+            { keyword: "ongkir", answer: "Kabar baiknya bosku, untuk pengiriman ke seluruh wilayah Pulau Jawa free ongkir!" }
         ];
         let unansweredLogs = [];
 
@@ -878,8 +879,13 @@
             else if(queryText.includes("bosku")) greetingPrefix = `Siap, Bosku ${customerProfile.name}! `;
 
             let finalAiResponse = "";
+            const queryWords = queryText.split(/\s+/).filter(w => w.length > 2);
 
-            let matchedFaq = knowledgeFaq.find(f => queryText.includes(f.keyword.toLowerCase()));
+            let matchedFaq = knowledgeFaq.find(f => {
+                const keywordLower = f.keyword.toLowerCase();
+                return queryText.includes(keywordLower) || queryWords.some(w => keywordLower.includes(w) || w.includes(keywordLower));
+            });
+
             if(matchedFaq) {
                 finalAiResponse = greetingPrefix + matchedFaq.answer;
             } else {
@@ -888,7 +894,7 @@
                     for(let sIdx = 0; sIdx < model.sizes.length; sIdx++) {
                         let sizeObj = model.sizes[sIdx];
                         let note = (sizeObj.note || "").toLowerCase();
-                        if(queryText.split(' ').some(keyword => keyword.length > 2 && (note.includes(keyword) || model.name.toLowerCase().includes(keyword) || sizeObj.name.toLowerCase().includes(keyword)))) {
+                        if(queryWords.some(w => note.includes(w) || model.name.toLowerCase().includes(w) || sizeObj.name.toLowerCase().includes(w))) {
                             finalAiResponse = `${greetingPrefix}Untuk kebutuhan itu, rekomendasi terbaik pakai model *${model.name}* ukuran *${sizeObj.name}* (Harga: Rp ${sizeObj.price.toLocaleString('id-ID')} /pcs). Catatan: ${sizeObj.note}`;
                             document.getElementById('bag-model-select').value = mIdx;
                             updateCustomerSizesDropdown();
@@ -902,7 +908,7 @@
             }
 
             if(!finalAiResponse) {
-                finalAiResponse = `Maaf, ${customerProfile.title} ${customerProfile.name}, saya belum mengerti pertanyaan "${queryText}". Pertanyaan ini sudah saya catat untuk ditinjau oleh Admin agar segera ditambahkan jawabannya ya! 🙏`;
+                finalAiResponse = `Maaf, ${customerProfile.title} ${customerProfile.name}, saya belum mengerti pertanyaan "${queryText}". Pertanyaan ini sudah saya catat untuk ditinjau oleh Admin! 🙏`;
                 if(!unansweredLogs.includes(queryText)) {
                     unansweredLogs.push(queryText);
                     saveToCloud();
@@ -923,7 +929,7 @@
             recognition.lang = 'id-ID';
             recognition.interimResults = false;
             const micBtn = document.getElementById('mic-btn');
-            micBtn.textContent = "🎙️ Mendengarkan...";
+            micBtn.textContent = "🎙️";
             micBtn.classList.replace('bg-amber-500', 'bg-rose-600');
 
             recognition.onresult = function(event) {
@@ -980,7 +986,7 @@
                         });
                     }
 
-                    const isCustomImg = item.image && item.image !== cleanDefaultBagSvg;
+                    const isCustomImg = item.image && !item.image.includes('placeholder.com');
                     card.innerHTML = `
                         <div class="flex items-center justify-between border-b border-slate-800 pb-1.5"><span class="font-bold text-amber-300 text-sm">${item.name}</span></div>
                         <div><label class="block text-[10px] text-slate-400 mb-1">Upload Foto Tas (Background Otomatis Transparan):</label><input type="file" accept="image/*" onchange="uploadModelSample(event, ${mIndex})" class="w-full text-[10px] text-slate-400 file:mr-2 file:py-1 file:px-2 file:rounded-lg file:border-0 file:bg-amber-500 file:text-slate-950 cursor-pointer"></div>
@@ -1539,6 +1545,7 @@
             const ctx = canvas.getContext('2d');
             
             const img = new Image();
+            img.crossOrigin = "anonymous";
             img.onload = function() {
                 canvas.width = img.width; canvas.height = img.height;
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -1549,20 +1556,23 @@
                 tempCanvas.width = img.width; tempCanvas.height = img.height;
                 const tCtx = tempCanvas.getContext('2d');
                 tCtx.drawImage(img, 0, 0);
-                const bagData = tCtx.getImageData(0, 0, tempCanvas.width, tempCanvas.height);
-                const d = bagData.data;
-                const rTint = parseInt(activeBagTint.slice(1, 3), 16);
-                const gTint = parseInt(activeBagTint.slice(3, 5), 16);
-                const bTint = parseInt(activeBagTint.slice(5, 7), 16);
+                
+                try {
+                    const bagData = tCtx.getImageData(0, 0, tempCanvas.width, tempCanvas.height);
+                    const d = bagData.data;
+                    const rTint = parseInt(activeBagTint.slice(1, 3), 16);
+                    const gTint = parseInt(activeBagTint.slice(3, 5), 16);
+                    const bTint = parseInt(activeBagTint.slice(5, 7), 16);
 
-                for (let i = 0; i < d.length; i += 4) {
-                    if (d[i+3] > 15 && activeBagTint !== '#ffffff') {
-                        d[i]   = Math.round((d[i] * 0.2) + (rTint * 0.8));
-                        d[i+1] = Math.round((d[i+1] * 0.2) + (gTint * 0.8));
-                        d[i+2] = Math.round((d[i+2] * 0.2) + (bTint * 0.8));
+                    for (let i = 0; i < d.length; i += 4) {
+                        if (d[i+3] > 15 && activeBagTint !== '#ffffff') {
+                            d[i]   = Math.round((d[i] * 0.2) + (rTint * 0.8));
+                            d[i+1] = Math.round((d[i+1] * 0.2) + (gTint * 0.8));
+                            d[i+2] = Math.round((d[i+2] * 0.2) + (bTint * 0.8));
+                        }
                     }
-                }
-                tCtx.putImageData(bagData, 0, 0);
+                    tCtx.putImageData(bagData, 0, 0);
+                } catch(e) {}
                 ctx.drawImage(tempCanvas, 0, 0);
             };
             img.src = currentModel.image;
@@ -1627,7 +1637,7 @@
             try {
                 const element = document.getElementById('capture-mockup');
                 const canvas = await html2canvas(element, { scale: 0.7, useCORS: true, backgroundColor: '#ffffff' });
-                mockupBase64 = canvas.toDataURL('image/jpeg', 0.45);
+                mockupBase64 = canvas.toDataURL('image/jpeg', 0.5);
             } catch(e) { console.log("Mockup capture error:", e); }
 
             const hdCanvas = document.getElementById('owner-hd-canvas');
@@ -1736,7 +1746,7 @@
             safeLocalStorageSet('ilham_customerProfile', JSON.stringify(customerProfile));
             
             try {
-                const lightCart = cartItems.map(i => ({ model: i.model, size: i.size, color: i.color, method: i.method, qty: i.qty, unitPrice: i.unitPrice, subtotal: i.subtotal, inkNote: i.inkNote, cleanLogo: i.cleanLogo }));
+                const lightCart = cartItems.map(i => ({ model: i.model, size: i.size, color: i.color, method: i.method, qty: i.qty, unitPrice: i.unitPrice, subtotal: i.subtotal, inkNote: i.inkNote, cleanLogo: i.cleanLogo, mockupImg: i.mockupImg }));
                 safeLocalStorageSet('ilham_cartItems', JSON.stringify(lightCart));
             } catch (err) { console.log(err); }
 
@@ -1746,7 +1756,7 @@
                 const docRef = doc(window.firebaseDb, "settings", "master_data");
                 const optimizedBagModels = bagModels.map(m => ({
                     name: m.name,
-                    image: (m.image && m.image.length > 60000) ? cleanDefaultBagSvg : m.image,
+                    image: (m.image && m.image.length > 60000 && m.image.includes('placeholder.com')) ? "https://via.placeholder.com/400x500/ffffff/334155?text=Tas" : m.image,
                     sizes: m.sizes
                 }));
 
@@ -1789,7 +1799,7 @@
                     const localModel = bagModels[idx];
                     return {
                         name: m.name,
-                        image: (m.image && m.image !== cleanDefaultBagSvg) ? m.image : (localModel ? localModel.image : cleanDefaultBagSvg),
+                        image: (m.image && !m.image.includes('placeholder.com')) ? m.image : (localModel ? localModel.image : "https://via.placeholder.com/400x500/ffffff/334155?text=Tas"),
                         sizes: m.sizes || (localModel ? localModel.sizes : [])
                     };
                 });
@@ -1820,41 +1830,113 @@
             setTimeout(() => { isSyncingFromCloud = false; }, 500);
         }
 
+        // GENERATOR INVOICE PDF CUSTOMER
         async function downloadCustomerInvoicePDF() {
             if(cartItems.length === 0) return alert("Keranjang pesanan masih kosong!");
             let totalQty = 0, grandSubtotal = 0;
             cartItems.forEach(item => { totalQty += item.qty; grandSubtotal += item.subtotal; });
             let discountVal = totalQty >= 1000 ? grandSubtotal * 0.10 : 0;
             let grandTotal = grandSubtotal - discountVal;
+            const region = document.getElementById('shipping-region').value;
+            const paymentTypeNote = region === 'jabodetabek' ? 'Wilayah Jabodetabek (Bisa COD)' : 'Luar Jabodetabek (Wajib DP 50% / Pelunasan)';
 
             const { jsPDF } = window.jspdf;
             const pdf = new jsPDF('p', 'mm', 'a4');
-            pdf.setFillColor(13, 148, 136); pdf.rect(0, 0, 210, 42, 'F');
-            pdf.setTextColor(255, 255, 255); pdf.setFont("helvetica", "bold"); pdf.setFontSize(11);
-            pdf.text(storeName.toUpperCase() + " - INVOICE PENAGIHAN", 15, 12);
-            pdf.setFont("helvetica", "normal"); pdf.setFontSize(7.5);
-            pdf.text("Alamat: " + storeAddress, 15, 18);
-            pdf.text("No. WA: " + storePhone, 15, 23);
 
-            pdf.setTextColor(30, 41, 59); pdf.setFont("helvetica", "bold"); pdf.setFontSize(9.5);
-            pdf.text("PELANGGAN:", 15, 50);
+            // Header Banner
+            pdf.setFillColor(6, 95, 70); pdf.rect(0, 0, 210, 40, 'F');
+            
+            if(brandLogoUrl) {
+                try { pdf.addImage(brandLogoUrl, 'PNG', 15, 8, 30, 24); } catch(e) {}
+            }
+
+            pdf.setTextColor(255, 255, 255); pdf.setFont("helvetica", "bold"); pdf.setFontSize(14);
+            pdf.text(storeName.toUpperCase(), brandLogoUrl ? 50 : 15, 16);
+            pdf.setFont("helvetica", "normal"); pdf.setFontSize(8);
+            pdf.text("Alamat: " + storeAddress, brandLogoUrl ? 50 : 15, 23);
+            pdf.text("No. WA: " + storePhone + " | Email: " + storeEmail, brandLogoUrl ? 50 : 15, 28);
+
+            // Judul Dokumen
+            pdf.setTextColor(15, 23, 42); pdf.setFont("helvetica", "bold"); pdf.setFontSize(11);
+            pdf.text("INVOICE TAGIHAN PEMESANAN", 15, 48);
             pdf.setFont("helvetica", "normal"); pdf.setFontSize(8.5);
-            pdf.text(`Nama: ${customerProfile.name} (${customerProfile.wa})`, 15, 56);
-            pdf.text("Alamat Kirim: " + customerProfile.address, 15, 62);
+            pdf.text("Tanggal: " + new Date().toLocaleString('id-ID'), 15, 54);
 
-            let startY = 72;
-            cartItems.forEach((it, idx) => {
-                pdf.text(`${idx + 1}. ${it.model} (${it.size}) - ${it.method} - Qty: ${it.qty} Pcs`, 15, startY);
-                pdf.text(`   Catatan: ${it.inkNote || '-'} | Subtotal: Rp ${it.subtotal.toLocaleString('id-ID')}`, 15, startY + 5);
+            // Info Pelanggan
+            pdf.setFont("helvetica", "bold"); pdf.text("INFORMASI PELANGGAN:", 15, 63);
+            pdf.setFont("helvetica", "normal");
+            pdf.text(`Nama: ${customerProfile.title} ${customerProfile.name} (${customerProfile.wa})`, 15, 69);
+            pdf.text(`Alamat Pengiriman: ${customerProfile.address}`, 15, 75);
+            pdf.text(`Ket. Pembayaran: ${paymentTypeNote}`, 15, 81);
+
+            // TABEL KOTAK-KOTAK ITEM PESANAN
+            let startY = 88;
+            pdf.setFillColor(241, 245, 249); pdf.rect(15, startY, 180, 8, 'F');
+            pdf.setFont("helvetica", "bold"); pdf.setFontSize(8);
+            pdf.text("No", 18, startY + 5.5);
+            pdf.text("Jenis & Model Tas / Ukuran", 28, startY + 5.5);
+            pdf.text("Metode & Tinta", 100, startY + 5.5);
+            pdf.text("Qty", 138, startY + 5.5);
+            pdf.text("Harga", 155, startY + 5.5);
+            pdf.text("Subtotal", 178, startY + 5.5);
+
+            startY += 8;
+            pdf.setFont("helvetica", "normal");
+            cartItems.forEach((item, idx) => {
+                pdf.rect(15, startY, 180, 12);
+                pdf.text(String(idx + 1), 18, startY + 7.5);
+                pdf.text(`${item.model} (${item.size}) - ${item.color}`, 28, startY + 5);
+                pdf.setFontSize(7); pdf.text(`Cat: ${item.inkNote || '-'}`, 28, startY + 9.5); pdf.setFontSize(8);
+                pdf.text(item.method, 100, startY + 7.5);
+                pdf.text(item.qty + " Pcs", 138, startY + 7.5);
+                pdf.text("Rp " + item.unitPrice.toLocaleString('id-ID'), 155, startY + 7.5);
+                pdf.text("Rp " + item.subtotal.toLocaleString('id-ID'), 178, startY + 7.5);
                 startY += 12;
             });
 
+            // Rincian Total
             startY += 5;
             pdf.setFont("helvetica", "bold");
+            pdf.text(`Subtotal Keseluruhan: Rp ${grandSubtotal.toLocaleString('id-ID')}`, 130, startY);
+            if(discountVal > 0) {
+                startY += 6;
+                pdf.setTextColor(16, 185, 129);
+                pdf.text(`Diskon Pesanan Besar (10%): - Rp ${Math.round(discountVal).toLocaleString('id-ID')}`, 115, startY);
+                pdf.setTextColor(15, 23, 42);
+            }
+            startY += 6;
             pdf.setFontSize(10);
-            pdf.text(`Total Pembayaran: Rp ${Math.round(grandTotal).toLocaleString('id-ID')}`, 15, startY);
-            pdf.save(`Invoice-ILHAM-SPUNBOND.pdf`);
-            alert("Invoice PDF berhasil di-download!");
+            pdf.text(`TOTAL TAGIHAN: Rp ${Math.round(grandTotal).toLocaleString('id-ID')}`, 115, startY);
+
+            // GAMBAR ILUSTRASI MOCKUP (BOX 1) DI INVOICE
+            if(cartItems[0] && cartItems[0].mockupImg) {
+                try {
+                    startY += 10;
+                    pdf.setFont("helvetica", "bold"); pdf.setFontSize(8.5);
+                    pdf.text("ILUSTRASI PRATINJAU DESAIN (BOX 1):", 15, startY);
+                    startY += 4;
+                    pdf.addImage(cartItems[0].mockupImg, 'JPEG', 15, startY, 45, 45);
+                } catch(e) {}
+            }
+
+            // Info Rekening Bank
+            startY += 50;
+            pdf.setFont("helvetica", "bold"); pdf.setFontSize(8.5);
+            pdf.text("Silakan lakukan transfer pembayaran ke rekening resmi berikut:", 15, startY);
+            startY += 5;
+            pdf.setFont("helvetica", "normal");
+            bankAccounts.forEach(b => {
+                pdf.text(`- Bank ${b.bank}: ${b.acc} (a.n ${b.owner})`, 18, startY);
+                startY += 5;
+            });
+
+            // Ucapan Terima Kasih
+            startY += 8;
+            pdf.setFont("helvetica", "bold"); pdf.setTextColor(6, 95, 70);
+            pdf.text(`Terima kasih ${customerProfile.title} ${customerProfile.name} telah mempercayakan pemesanan tas custom di ${storeName}!`, 15, startY);
+
+            pdf.save(`Invoice-Tagihan-ILHAM-SPUNBOND.pdf`);
+            alert("Invoice Tagihan PDF berhasil di-download!");
         }
 
         function verifyAndShowOrderHistory() {
@@ -1894,6 +1976,9 @@
                     totalOmzetMonthly += numericPrice;
 
                     const isLunas = o.status === "LUNAS";
+                    const currentCourier = o.courier || "J&T Express";
+                    const currentTracking = o.trackingNumber || "";
+
                     container.innerHTML += `
                         <div class="bg-slate-800 p-3 rounded-xl text-xs space-y-2 border border-slate-700">
                             <div class="flex justify-between items-center">
@@ -1904,9 +1989,31 @@
                                 <span>Total: <b class="text-emerald-400">${o.totalPrice}</b></span>
                                 <span class="px-2 py-0.5 rounded font-bold ${isLunas ? 'bg-emerald-900 text-emerald-300' : 'bg-amber-900 text-amber-300'}">${o.status || 'BELUM LUNAS'}</span>
                             </div>
+                            
+                            <!-- PENGATURAN EKSPEDISI & RESI -->
+                            <div class="space-y-1.5 pt-1 border-t border-slate-700">
+                                <label class="block text-[10px] text-slate-300 font-semibold">Pengiriman & Ekspedisi:</label>
+                                <div class="grid grid-cols-2 gap-2">
+                                    <select id="courier-select-${docSnap.id}" class="bg-slate-900 border border-slate-700 rounded-lg px-2 py-1.5 text-xs text-white outline-none">
+                                        <option value="J&T Express" ${currentCourier==='J&T Express'?'selected':''}>J&T Express</option>
+                                        <option value="JNE" ${currentCourier==='JNE'?'selected':''}>JNE</option>
+                                        <option value="SiCepat" ${currentCourier==='SiCepat'?'selected':''}>SiCepat</option>
+                                        <option value="Lalamove" ${currentCourier==='Lalamove'?'selected':''}>Lalamove (Instan)</option>
+                                        <option value="GoSend" ${currentCourier==='GoSend'?'selected':''}>GoSend (Instan)</option>
+                                        <option value="Ambil Sendiri" ${currentCourier==='Ambil Sendiri'?'selected':''}>Ambil Sendiri di Workshop</option>
+                                        <option value="Kurir Toko" ${currentCourier==='Kurir Toko'?'selected':''}>Kurir Toko / COD</option>
+                                    </select>
+                                    <input type="text" id="tracking-input-${docSnap.id}" value="${currentTracking}" placeholder="No Resi (Opsional)" class="bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-white outline-none">
+                                </div>
+                                <div class="flex gap-2 pt-1">
+                                    <button type="button" onclick="saveShippingInfo('${docSnap.id}')" class="bg-amber-500 hover:bg-amber-600 text-slate-950 font-semibold px-3 py-1.5 rounded-lg text-[10px] cursor-pointer flex-1">💾 Simpan Info Pengiriman</button>
+                                    <button type="button" onclick="sendWhatsAppStatusMessage('${docSnap.id}')" class="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-3 py-1.5 rounded-lg text-[10px] cursor-pointer flex-1">💬 Kirim WA & Invoice</button>
+                                </div>
+                            </div>
+
                             <div class="flex flex-wrap gap-2 pt-1 border-t border-slate-700">
-                                <button type="button" onclick="downloadOwnerPoHD('${docSnap.id}')" class="bg-indigo-600 hover:bg-indigo-700 text-white px-2.5 py-1.5 rounded-lg text-[10px] font-semibold cursor-pointer">📥 Download Desain HD (Tanpa Watermark)</button>
-                                <button type="button" onclick="downloadOwnerInvoicePDF('${docSnap.id}')" class="bg-blue-600 hover:bg-blue-700 text-white px-2.5 py-1.5 rounded-lg text-[10px] font-semibold cursor-pointer">📄 Invoice Owner</button>
+                                <button type="button" onclick="downloadOwnerPoHD('${docSnap.id}')" class="bg-indigo-600 hover:bg-indigo-700 text-white px-2.5 py-1.5 rounded-lg text-[10px] font-semibold cursor-pointer">📥 Download Desain HD</button>
+                                <button type="button" onclick="downloadOwnerInvoicePDF('${docSnap.id}')" class="bg-blue-600 hover:bg-blue-700 text-white px-2.5 py-1.5 rounded-lg text-[10px] font-semibold cursor-pointer">📄 Nota / Pelunasan (PDF)</button>
                                 <button type="button" onclick="toggleOrderStatus('${docSnap.id}', '${o.status || 'BELUM LUNAS'}')" class="bg-emerald-600 hover:bg-emerald-700 text-white px-2.5 py-1.5 rounded-lg text-[10px] font-semibold cursor-pointer">🔄 Ubah Status Lunas</button>
                                 <button type="button" onclick="deletePoOrder('${docSnap.id}')" class="bg-rose-600 hover:bg-rose-700 text-white px-2.5 py-1.5 rounded-lg text-[10px] font-semibold cursor-pointer">🗑️ Hapus</button>
                             </div>
@@ -1921,6 +2028,40 @@
         function closeOrderHistoryModal() {
             document.getElementById('order-history-modal').classList.add('hidden');
             if(activeOrdersUnsubscribe) { activeOrdersUnsubscribe(); activeOrdersUnsubscribe = null; }
+        }
+
+        async function saveShippingInfo(docId) {
+            const courier = document.getElementById(`courier-select-${docId}`).value;
+            const tracking = document.getElementById(`tracking-input-${docId}`).value.trim();
+            const { doc, setDoc } = window.firebaseDeps;
+            await setDoc(doc(window.firebaseDb, "orders", docId), { courier, trackingNumber: tracking }, { merge: true });
+            alert("Informasi pengiriman berhasil disimpan!");
+        }
+
+        async function sendWhatsAppStatusMessage(docId) {
+            const { doc, getDoc } = window.firebaseDeps;
+            const docSnap = await getDoc(doc(window.firebaseDb, "orders", docId));
+            if(!docSnap.exists()) return alert("Data PO tidak ditemukan!");
+            const o = docSnap.data();
+
+            await downloadOwnerInvoicePDF(docId, true);
+
+            let targetWa = o.wa.replace(/[^0-9]/g, '');
+            if(targetWa.startsWith('0')) targetWa = '62' + targetWa.slice(1);
+
+            let message = "";
+            const courier = o.courier || "Kurir";
+            const tracking = o.trackingNumber ? o.trackingNumber.trim() : "";
+            const isLunas = o.status === "LUNAS";
+
+            if(tracking || courier === "Lalamove" || courier === "GoSend" || courier === "Ambil Sendiri") {
+                let resiText = tracking ? ` Nomor Resi: *${tracking}*` : "";
+                message = `Halo Kak *${o.name}*, kabar baik! Pesanan custom tas Anda di *${storeName}* (No PO: *${o.id}*) sudah dikirim via *${courier}*${resiText}. Mohon ditunggu kedatangannya ya Bosku. Terima kasih telah mempercayakan pesanan Anda di ${storeName}! 🙏✨`;
+            } else {
+                message = `Halo Kak *${o.name}*, terima kasih banyak telah memesan di *${storeName}* (No PO: *${o.id}*). 🙏\n\nFile Invoice Tagihan resmi telah kami kirimkan di atas. Mohon segera dilakukan pembayaran / DP atas pesanan yang dibuat ke rekening resmi kami agar pesanan dapat segera diproses ke tahap produksi.\n\nJika ada yang ingin ditanyakan, silakan balas pesan ini ya Kak. Terima kasih! 📦📋`;
+            }
+
+            window.open(`https://wa.me/${targetWa}?text=${encodeURIComponent(message)}`);
         }
 
         async function toggleOrderStatus(docId, currentStatus) {
@@ -1953,64 +2094,98 @@
 
             if(!o.items || o.items.length === 0 || !o.items[0].cleanLogo) return alert("File logo HD tidak tersedia pada PO ini.");
             
-            // DOWNLOAD BERSIH TOTAL TANPA TANDA AIR (WATERMARK)
             const link = document.createElement('a');
             link.href = o.items[0].cleanLogo;
             link.download = `Film-Produksi-Bersih-${o.id}.png`;
             link.click();
-            alert("File desain HD bersih tanpa tanda air berhasil di-download untuk siap cetak!");
+            alert("File desain HD bersih tanpa tanda air berhasil di-download!");
         }
 
-        async function downloadOwnerInvoicePDF(docId) {
+        async function downloadOwnerInvoicePDF(docId, silent = false) {
             const { doc, getDoc } = window.firebaseDeps;
             const docSnap = await getDoc(doc(window.firebaseDb, "orders", docId));
             if(!docSnap.exists()) return alert("Data PO tidak ditemukan!");
             const o = docSnap.data();
+            const isLunas = o.status === "LUNAS";
 
             const { jsPDF } = window.jspdf;
             const pdf = new jsPDF('p', 'mm', 'a4');
-            pdf.setFillColor(15, 23, 42); pdf.rect(0, 0, 210, 45, 'F');
-            pdf.setTextColor(255, 255, 255); pdf.setFont("helvetica", "bold"); pdf.setFontSize(12);
-            pdf.text(storeName.toUpperCase() + " - INVOICE & NOTA PRODUKSI", 15, 12);
+
+            pdf.setFillColor(15, 23, 42); pdf.rect(0, 0, 210, 40, 'F');
+            
+            if(brandLogoUrl) {
+                try { pdf.addImage(brandLogoUrl, 'PNG', 15, 8, 30, 24); } catch(e) {}
+            }
+
+            pdf.setTextColor(255, 255, 255); pdf.setFont("helvetica", "bold"); pdf.setFontSize(14);
+            pdf.text(storeName.toUpperCase() + " - NOTA & TAGIHAN", brandLogoUrl ? 50 : 15, 16);
             pdf.setFont("helvetica", "normal"); pdf.setFontSize(8);
-            pdf.text("No PO: " + o.id + " | Tanggal: " + o.date, 15, 18);
-            pdf.text("Alamat: " + storeAddress, 15, 23);
-            pdf.text("No WA: " + storePhone, 15, 28);
-            pdf.text("Status Pembayaran: " + (o.status || 'BELUM LUNAS'), 15, 33);
+            pdf.text("No PO: " + o.id + " | Tanggal: " + o.date, brandLogoUrl ? 50 : 15, 23);
+            pdf.text("Alamat: " + storeAddress + " | No WA: " + storePhone, brandLogoUrl ? 50 : 15, 28);
 
-            pdf.setTextColor(30, 41, 59); pdf.setFont("helvetica", "bold"); pdf.setFontSize(9.5);
-            pdf.text("DATA PEMESAN:", 15, 55);
+            pdf.setTextColor(15, 23, 42); pdf.setFont("helvetica", "bold"); pdf.setFontSize(11);
+            pdf.text(isLunas ? "NOTA PELUNASAN (LUNAS)" : "NOTA TAGIHAN / PEMESANAN", 15, 48);
             pdf.setFont("helvetica", "normal"); pdf.setFontSize(8.5);
-            pdf.text(`Nama: ${o.name} (${o.wa})`, 15, 61);
-            pdf.text("Alamat Kirim: " + o.address, 15, 67);
+            pdf.text(`Status Pembayaran: ${o.status || 'BELUM LUNAS'}`, 15, 54);
 
-            let startY = 78;
-            o.items.forEach((it, idx) => {
-                pdf.text(`${idx + 1}. ${it.model} (${it.size}) - ${it.method} - Qty: ${it.qty} Pcs`, 15, startY);
-                pdf.text(`   Catatan: ${it.inkNote || '-'} | Subtotal: Rp ${it.subtotal.toLocaleString('id-ID')}`, 15, startY + 5);
+            pdf.setFont("helvetica", "bold"); pdf.text("DATA PEMESAN:", 15, 63);
+            pdf.setFont("helvetica", "normal");
+            pdf.text(`Nama: ${o.name} (${o.wa})`, 15, 69);
+            pdf.text(`Alamat Kirim: ${o.address}`, 15, 75);
+
+            let startY = 82;
+            pdf.setFillColor(241, 245, 249); pdf.rect(15, startY, 180, 8, 'F');
+            pdf.setFont("helvetica", "bold"); pdf.setFontSize(8);
+            pdf.text("No", 18, startY + 5.5);
+            pdf.text("Jenis & Model Tas / Ukuran", 28, startY + 5.5);
+            pdf.text("Metode & Tinta", 100, startY + 5.5);
+            pdf.text("Qty", 138, startY + 5.5);
+            pdf.text("Harga", 155, startY + 5.5);
+            pdf.text("Subtotal", 178, startY + 5.5);
+
+            startY += 8;
+            pdf.setFont("helvetica", "normal");
+            o.items.forEach((item, idx) => {
+                pdf.rect(15, startY, 180, 12);
+                pdf.text(String(idx + 1), 18, startY + 7.5);
+                pdf.text(`${item.model} (${item.size}) - ${item.color}`, 28, startY + 5);
+                pdf.setFontSize(7); pdf.text(`Cat: ${item.inkNote || '-'}`, 28, startY + 9.5); pdf.setFontSize(8);
+                pdf.text(item.method, 100, startY + 7.5);
+                pdf.text(item.qty + " Pcs", 138, startY + 7.5);
+                pdf.text("Rp " + item.unitPrice.toLocaleString('id-ID'), 155, startY + 7.5);
+                pdf.text("Rp " + item.subtotal.toLocaleString('id-ID'), 178, startY + 7.5);
                 startY += 12;
             });
 
-            startY += 5;
-            pdf.setFont("helvetica", "bold");
-            pdf.setFontSize(10);
-            pdf.text(`Total Keseluruhan: ${o.totalPrice}`, 15, startY);
+            startY += 6;
+            pdf.setFont("helvetica", "bold"); pdf.setFontSize(10);
+            pdf.text(`TOTAL PEMBAYARAN: ${o.totalPrice}`, 115, startY);
 
-            if(o.status === "LUNAS" && customStampUrl) {
-                try { pdf.addImage(customStampUrl, 'PNG', 130, startY - 10, 40, 20); } catch(e) {}
+            if(o.items[0] && o.items[0].mockupImg) {
+                try {
+                    startY += 8;
+                    pdf.setFont("helvetica", "bold"); pdf.setFontSize(8.5);
+                    pdf.text("ILUSTRASI PRATINJAU DESAIN (BOX 1):", 15, startY);
+                    startY += 4;
+                    pdf.addImage(o.items[0].mockupImg, 'JPEG', 15, startY, 40, 40);
+                } catch(e) {}
+            }
+
+            if(isLunas && customStampUrl) {
+                try { pdf.addImage(customStampUrl, 'PNG', 65, startY + 12, 45, 22); } catch(e) {}
             }
 
             if(adminSignatureUrl) {
                 try {
                     pdf.setFont("helvetica", "normal"); pdf.setFontSize(8);
-                    pdf.text("Hormat Kami,", 150, startY + 15);
-                    pdf.addImage(adminSignatureUrl, 'PNG', 145, startY + 18, 35, 18);
-                    pdf.text("(" + storeName + ")", 145, startY + 40);
+                    pdf.text("Hormat Kami,", 145, startY + 10);
+                    pdf.addImage(adminSignatureUrl, 'PNG', 140, startY + 13, 35, 18);
+                    pdf.text("(" + storeName + ")", 140, startY + 34);
                 } catch(e) {}
             }
 
-            pdf.save(`Invoice-Owner-${o.id}.pdf`);
-            alert("Invoice Owner PDF berhasil didownload!");
+            pdf.save(`Nota-Owner-${o.id}.pdf`);
+            if(!silent) alert("Nota / Pelunasan PDF berhasil didownload!");
         }
 
         async function saveOrderAndSendWhatsApp() {
@@ -2027,13 +2202,22 @@
                 id: orderId, name: customerProfile.name, wa: customerProfile.wa, address: customerProfile.address,
                 items: cartItems, totalPrice: "Rp " + Math.round(grandTotal).toLocaleString('id-ID'),
                 date: new Date().toLocaleString('id-ID', { dateStyle: 'medium', timeStyle: 'medium' }),
-                status: "BELUM LUNAS"
+                status: "BELUM LUNAS",
+                courier: "J&T Express",
+                trackingNumber: ""
             };
 
             try {
                 const { doc, setDoc } = window.firebaseDeps;
                 await setDoc(doc(window.firebaseDb, "orders", orderId), newOrder);
-                let waMessage = `Halo Owner ${storeName}, saya ${customerProfile.title} ${customerProfile.name} ingin memesan:\nNo PO: ${orderId}\nTotal: Rp ${Math.round(grandTotal).toLocaleString('id-ID')}\nMohon segera diproses!`;
+                
+                let itemsDetailText = "";
+                cartItems.forEach((it, idx) => {
+                    itemsDetailText += `\n${idx + 1}. *${it.model} (${it.size})*\n   - Warna: ${it.color}\n   - Cetak: ${it.method}\n   - Qty: ${it.qty} Pcs @Rp ${it.unitPrice.toLocaleString('id-ID')} = *Rp ${it.subtotal.toLocaleString('id-ID')}*`;
+                });
+
+                let waMessage = `Halo Owner *${storeName}*, saya *${customerProfile.title} ${customerProfile.name}* ingin memesan custom tas dengan rincian berikut:\n\n📦 *No PO:* ${orderId}\n👤 *Nama:* ${customerProfile.title} ${customerProfile.name} (${customerProfile.wa})\n📍 *Alamat:* ${customerProfile.address}\n\n*Daftar Item Pesanan:*${itemsDetailText}\n\n💰 *Total Keseluruhan:* *Rp ${Math.round(grandTotal).toLocaleString('id-ID')}*\n\nMohon segera diproses ya bosku, terima kasih! 🙏`;
+
                 alert("Pesanan tersimpan & diarahkan ke WhatsApp owner!");
                 window.open(`https://wa.me/${ownerWaNumber}?text=${encodeURIComponent(waMessage)}`);
             } catch(e) { alert("Gagal menyimpan pesanan ke cloud."); }
