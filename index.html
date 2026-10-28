@@ -493,21 +493,35 @@
                 <button type="button" onclick="toggleAdminPanel()" class="text-xs text-slate-400 hover:text-white font-bold px-2 py-1 bg-slate-800 rounded">Tutup [X]</button>
             </div>
 
-            <!-- KNOWLEDGE BASE & AI MEMORY TRAINING -->
+            <!-- KNOWLEDGE BASE & AI MEMORY TRAINING (3 KOLOM TERPISAH) -->
             <div class="bg-slate-800 p-3 rounded-xl border border-amber-500/30 space-y-3">
-                <label class="block text-xs font-semibold text-amber-300">🧠 AI Knowledge Base & Ingatan Kustom (FAQ)</label>
-                <p class="text-[10px] text-slate-400">Tambahkan kata kunci & kalimat tambahan khusus per topik.</p>
+                <label class="block text-xs font-semibold text-amber-300">🧠 AI Knowledge Base & 3 Kolom Ingatan Kustom</label>
+                <p class="text-[10px] text-slate-400">Atur Kata Tambahan Awal, Kata Kunci, dan Kata Tambahan Akhir.</p>
                 
-                <div id="faq-admin-container" class="space-y-2 max-h-48 overflow-y-auto pr-1"></div>
+                <div id="faq-admin-container" class="space-y-3 max-h-56 overflow-y-auto pr-1"></div>
                 
                 <div class="space-y-2 pt-2 border-t border-slate-700">
-                    <input type="text" id="new-faq-keyword" placeholder="Kata Kunci (Cth: ongkir, alamat, minimal order)" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white outline-none">
-                    <textarea id="new-faq-answer" rows="2" placeholder="Kalimat tambahan / jawaban AI..." class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white outline-none"></textarea>
+                    <input type="text" id="new-faq-prefix" placeholder="Kata Tambahan Awal (Cth: ngomongin soal)" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white outline-none">
+                    <input type="text" id="new-faq-keyword" placeholder="Kata Kunci (Cth: minimal order)" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white outline-none">
+                    <textarea id="new-faq-suffix" rows="2" placeholder="Kata Tambahan Akhir / Jawaban (Cth: untuk pemesanan minimal order sangat terjangkau...)" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white outline-none"></textarea>
                     <button type="button" onclick="addKnowledgeFaq()" class="w-full bg-amber-500 text-slate-950 font-semibold py-2 rounded-xl text-xs cursor-pointer">➕ Tambah Ingatan AI Baru</button>
                 </div>
             </div>
 
-            <!-- LOG PERTANYAAN BELUM TERJAWAB (DENGAN FITUR HAPUS) -->
+            <!-- KELOLA KATA-KATA TERLARANG (BLOCKED WORDS) -->
+            <div class="bg-slate-800 p-3 rounded-xl border border-rose-500/30 space-y-3">
+                <label class="block text-xs font-semibold text-rose-300">🚫 Kelola Kata-Kata Terlarang (Filter Kasar)</label>
+                <p class="text-[10px] text-slate-400">Jika customer mengetik kata ini, AI akan otomatis merespons dengan kalimat yang adem & sopan.</p>
+                
+                <div id="blocked-words-container" class="flex flex-wrap gap-1.5"></div>
+                
+                <div class="flex gap-2 pt-1">
+                    <input type="text" id="new-blocked-word" placeholder="Cth: anjing, asu, bangsat" class="flex-1 bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white outline-none">
+                    <button type="button" onclick="addBlockedWord()" class="bg-rose-600 hover:bg-rose-700 text-white font-semibold px-3 py-2 rounded-xl text-xs cursor-pointer">Tambah Kata</button>
+                </div>
+            </div>
+
+            <!-- LOG PERTANYAAN BELUM TERJAWAB -->
             <div class="bg-slate-800 p-3 rounded-xl border border-rose-500/30 space-y-2">
                 <div class="flex items-center justify-between">
                     <label class="block text-xs font-semibold text-rose-300">📥 Log Pertanyaan Customer Belum Terjawab</label>
@@ -574,7 +588,7 @@
                 </div>
             </div>
 
-            <!-- Kelola Model Tas & Ukuran (DENGAN FITUR EDIT PRODUK) -->
+            <!-- Kelola Model Tas & Ukuran -->
             <div class="bg-slate-800 p-3 rounded-xl border border-amber-500/30 space-y-3">
                 <div class="flex items-center justify-between">
                     <label class="block text-xs font-semibold text-amber-300">📦 Kelola Model Tas & Ukuran (Edit / Tambah)</label>
@@ -697,12 +711,17 @@
         ];
         let dtfOptions = [{ name: "Sedang (8x8 cm)", price: 2000 }, { name: "Besar (10x10 cm)", price: 3000 }];
         
+        // Ingatan AI (FAQ) dengan 3 Kolom: prefix (kata awal), keyword (kata kunci), suffix (kata akhir/jawaban)
         let knowledgeFaq = [
-            { keyword: "assalamualaikum", answer: "Wa'alaikumussalam warahmatullah. Selamat datang di ILHAM SPUNBOND, ada yang bisa dibantu?" },
-            { keyword: "minimal order", answer: "untuk pemesanan custom tas spunbond minimal order sangat terjangkau bosku, siap kami layani!" },
-            { keyword: "alamat", answer: "lokasi workshop kami ada di Taman Raya Rajeg Blok-K10 No.06, Tangerang-Banten." },
-            { keyword: "ongkir", answer: "soal pengiriman, kabar baiknya untuk ke seluruh wilayah Pulau Jawa free ongkir!" }
+            { prefix: "ngomongin soal", keyword: "assalamualaikum", suffix: "wa'alaikumussalam warahmatullah. Selamat datang di ILHAM SPUNBOND, ada yang bisa dibantu?" },
+            { prefix: "terkait", keyword: "minimal order", suffix: "untuk pemesanan custom tas spunbond minimal order sangat terjangkau bosku, siap kami layani!" },
+            { prefix: "mengenai", keyword: "alamat", suffix: "lokasi workshop kami ada di Taman Raya Rajeg Blok-K10 No.06, Tangerang-Banten." },
+            { prefix: "perihal", keyword: "ongkir", suffix: "soal pengiriman, kabar baiknya untuk ke seluruh wilayah Pulau Jawa free ongkir!" }
         ];
+
+        // Daftar Kata Terlarang (Blocked Words)
+        let blockedWords = ["anjing", "asu", "bangsat", "tolol", "goblok", "kampret", "keparat"];
+
         let unansweredLogs = [];
 
         let storeName = "ILHAM SPUNBOND";
@@ -740,6 +759,7 @@
             if(localStorage.getItem('ilham_inkColors')) inkColors = JSON.parse(localStorage.getItem('ilham_inkColors'));
             if(localStorage.getItem('ilham_dtfOptions')) dtfOptions = JSON.parse(localStorage.getItem('ilham_dtfOptions'));
             if(localStorage.getItem('ilham_knowledgeFaq')) knowledgeFaq = JSON.parse(localStorage.getItem('ilham_knowledgeFaq'));
+            if(localStorage.getItem('ilham_blockedWords')) blockedWords = JSON.parse(localStorage.getItem('ilham_blockedWords'));
             if(localStorage.getItem('ilham_unansweredLogs')) unansweredLogs = JSON.parse(localStorage.getItem('ilham_unansweredLogs'));
             if(localStorage.getItem('ilham_extraColorPrice')) extraColorPrice = parseInt(localStorage.getItem('ilham_extraColorPrice')) || 400;
             if(localStorage.getItem('ilham_storeName')) storeName = localStorage.getItem('ilham_storeName');
@@ -886,16 +906,28 @@
             const queryText = document.getElementById('ai-user-query').value.trim().toLowerCase();
             if(!queryText) return alert("Silakan ketik pertanyaan atau konsultasi Anda terlebih dahulu.");
 
-            let finalAiResponse = "";
-            const queryWords = queryText.split(/\s+/).filter(w => w.length > 2);
+            // 1. CEK KATA-KATA TERLARANG (BLOCKED WORDS)
+            const queryWords = queryText.split(/\s+/);
+            const hasForbiddenWord = blockedWords.some(bw => queryText.includes(bw.toLowerCase()) || queryWords.includes(bw.toLowerCase()));
 
+            if(hasForbiddenWord) {
+                const politeResponse = `Mohon maaf, ${customerProfile.title} ${customerProfile.name}, mari kita berbincang dengan lebih santun dan damai ya. Ada hal seputar pemesanan tas spunbond yang bisa saya bantu dengan senang hati?`;
+                document.getElementById('ai-chat-response').textContent = `"${politeResponse}"`;
+                speakText(politeResponse);
+                return;
+            }
+
+            let finalAiResponse = "";
+
+            // 2. CEK INGATAN KUSTOM (FAQ) DENGAN FORMAT 3 KOLOM: Sapaan + Prefix + Keyword + Suffix
             let matchedFaq = knowledgeFaq.find(f => {
-                const keywordLower = f.keyword.toLowerCase();
-                return queryText.includes(keywordLower) || queryWords.some(w => keywordLower.includes(w) || w.includes(keywordLower));
+                const keywordLower = (f.keyword || "").toLowerCase();
+                return keywordLower && (queryText.includes(keywordLower) || queryWords.some(w => keywordLower.includes(w) || w.includes(keywordLower)));
             });
 
             if(matchedFaq) {
-                finalAiResponse = `Baik, ${customerProfile.title} ${customerProfile.name}, ngomongin soal ${matchedFaq.keyword}, ${matchedFaq.answer}`;
+                // Susunan kalimat Sesuai Keinginan: Sapaan + Kata Awal (Prefix) + Kata Kunci + Kata Akhir (Suffix)
+                finalAiResponse = `Baik, ${customerProfile.title} ${customerProfile.name}, ${matchedFaq.prefix} ${matchedFaq.keyword}, ${matchedFaq.suffix}`;
             } else {
                 let foundMatch = false;
                 for(let mIdx = 0; mIdx < bagModels.length; mIdx++) {
@@ -988,11 +1020,13 @@
             recognition.start();
         }
 
+        // FUNGSI RENDER PANEL ADMIN (DENGAN 3 KOLOM FAQ & KELOLA KATA TERLARANG)
         function renderAdminPanel() {
             const modelAdminContainer = document.getElementById('model-admin-container');
             const bankAdminContainer = document.getElementById('bank-admin-container');
             const dtfAdminContainer = document.getElementById('dtf-admin-container');
             const faqAdminContainer = document.getElementById('faq-admin-container');
+            const blockedWordsContainer = document.getElementById('blocked-words-container');
             const missingLogContainer = document.getElementById('missing-log-container');
             const modelSelect = document.getElementById('bag-model-select');
             const dtfSelect = document.getElementById('dtf-size-select');
@@ -1064,15 +1098,36 @@
                 faqAdminContainer.innerHTML = '';
                 knowledgeFaq.forEach((faq, fIdx) => {
                     faqAdminContainer.innerHTML += `
-                        <div class="bg-slate-900 p-2.5 rounded-xl border border-slate-700 text-xs space-y-1.5">
+                        <div class="bg-slate-900 p-3 rounded-xl border border-slate-700 text-xs space-y-2">
                             <div class="flex justify-between items-center">
-                                <b class="text-amber-300">🔑 Kata Kunci: <input type="text" id="edit-faq-kw-${fIdx}" value="${faq.keyword}" oninput="updateFaqKeyword(${fIdx})" class="bg-slate-800 border border-slate-700 rounded px-2 py-0.5 text-white font-bold outline-none ml-1"></b>
+                                <span class="font-bold text-amber-300"># Ingatan AI ${fIdx + 1}</span>
                                 <button type="button" onclick="deleteKnowledgeFaq(${fIdx})" class="text-rose-400 font-bold px-2 py-0.5 cursor-pointer">Hapus</button>
                             </div>
-                            <div>
-                                <label class="block text-[10px] text-slate-400 mb-0.5">Kalimat Tambahan AI:</label>
-                                <textarea id="edit-faq-ans-${fIdx}" rows="2" oninput="updateFaqAnswer(${fIdx})" class="w-full bg-slate-800 border border-slate-700 rounded p-1.5 text-slate-200 outline-none text-xs">${faq.answer}</textarea>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                                <div>
+                                    <label class="block text-[10px] text-slate-400 mb-0.5">Kata Tambahan Awal:</label>
+                                    <input type="text" id="edit-faq-prefix-${fIdx}" value="${faq.prefix || ''}" oninput="updateFaqField(${fIdx}, 'prefix')" class="w-full bg-slate-800 border border-slate-700 rounded px-2.5 py-1.5 text-white outline-none">
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] text-slate-400 mb-0.5">Kata Kunci (1 Kata):</label>
+                                    <input type="text" id="edit-faq-kw-${fIdx}" value="${faq.keyword || ''}" oninput="updateFaqField(${fIdx}, 'keyword')" class="w-full bg-slate-800 border border-slate-700 rounded px-2.5 py-1.5 text-amber-300 font-bold outline-none">
+                                </div>
                             </div>
+                            <div>
+                                <label class="block text-[10px] text-slate-400 mb-0.5">Kata Tambahan Akhir / Jawaban:</label>
+                                <textarea id="edit-faq-suffix-${fIdx}" rows="2" oninput="updateFaqField(${fIdx}, 'suffix')" class="w-full bg-slate-800 border border-slate-700 rounded p-2 text-slate-200 outline-none text-xs">${faq.suffix || ''}</textarea>
+                            </div>
+                        </div>`;
+                });
+            }
+
+            if(blockedWordsContainer) {
+                blockedWordsContainer.innerHTML = '';
+                blockedWords.forEach((bw, bwIdx) => {
+                    blockedWordsContainer.innerHTML += `
+                        <div class="bg-rose-950/80 border border-rose-500/40 text-rose-200 px-2.5 py-1 rounded-lg text-xs flex items-center gap-1.5">
+                            <span>🚫 ${bw}</span>
+                            <button type="button" onclick="deleteBlockedWord(${bwIdx})" class="text-rose-400 hover:text-white font-bold ml-1 cursor-pointer">×</button>
                         </div>`;
                 });
             }
@@ -1226,31 +1281,31 @@
         }
 
         function addKnowledgeFaq() {
+            const prefix = document.getElementById('new-faq-prefix').value.trim();
             const keyword = document.getElementById('new-faq-keyword').value.trim().toLowerCase();
-            const answer = document.getElementById('new-faq-answer').value.trim();
-            if(!keyword || !answer) return alert("Harap isi kata kunci dan kalimat tambahan dengan lengkap!");
-            knowledgeFaq.push({ keyword, answer });
+            const suffix = document.getElementById('new-faq-suffix').value.trim();
+            if(!keyword || !suffix) return alert("Harap isi Kata Kunci dan Jawaban/Kata Akhir dengan lengkap!");
+            knowledgeFaq.push({ prefix, keyword, suffix });
+            document.getElementById('new-faq-prefix').value = "";
             document.getElementById('new-faq-keyword').value = "";
-            document.getElementById('new-faq-answer').value = "";
+            document.getElementById('new-faq-suffix').value = "";
             saveToCloud();
             renderAdminPanel();
             alert("Ingatan AI baru berhasil ditambahkan!");
         }
 
-        function updateFaqKeyword(idx) {
-            const input = document.getElementById(`edit-faq-kw-${idx}`);
-            if(input && knowledgeFaq[idx]) {
-                knowledgeFaq[idx].keyword = input.value.trim().toLowerCase();
-                saveToCloud();
+        function updateFaqField(idx, fieldName) {
+            if(fieldName === 'prefix') {
+                const val = document.getElementById(`edit-faq-prefix-${idx}`).value;
+                if(knowledgeFaq[idx]) knowledgeFaq[idx].prefix = val;
+            } else if(fieldName === 'keyword') {
+                const val = document.getElementById(`edit-faq-kw-${idx}`).value.trim().toLowerCase();
+                if(knowledgeFaq[idx]) knowledgeFaq[idx].keyword = val;
+            } else if(fieldName === 'suffix') {
+                const val = document.getElementById(`edit-faq-suffix-${idx}`).value;
+                if(knowledgeFaq[idx]) knowledgeFaq[idx].suffix = val;
             }
-        }
-
-        function updateFaqAnswer(idx) {
-            const input = document.getElementById(`edit-faq-ans-${idx}`);
-            if(input && knowledgeFaq[idx]) {
-                knowledgeFaq[idx].answer = input.value.trim();
-                saveToCloud();
-            }
+            saveToCloud();
         }
 
         function deleteKnowledgeFaq(idx) {
@@ -1259,10 +1314,31 @@
             renderAdminPanel();
         }
 
+        function addBlockedWord() {
+            const word = document.getElementById('new-blocked-word').value.trim().toLowerCase();
+            if(!word) return alert("Masukkan kata terlarang terlebih dahulu!");
+            if(!blockedWords.includes(word)) {
+                blockedWords.push(word);
+                document.getElementById('new-blocked-word').value = "";
+                saveToCloud();
+                renderAdminPanel();
+                alert("Kata terlarang berhasil ditambahkan!");
+            } else {
+                alert("Kata tersebut sudah ada dalam daftar terlarang.");
+            }
+        }
+
+        function deleteBlockedWord(idx) {
+            blockedWords.splice(idx, 1);
+            saveToCloud();
+            renderAdminPanel();
+        }
+
         function promoteLogToFaq(logText, logIdx) {
-            const ans = prompt(`Masukkan kalimat tambahan AI untuk pertanyaan: "${logText}"`);
-            if(ans) {
-                knowledgeFaq.push({ keyword: logText.toLowerCase(), answer: ans.trim() });
+            const prefix = prompt(`Masukkan Kata Tambahan Awal untuk pertanyaan: "${logText}"`, "ngomongin soal");
+            const suffix = prompt(`Masukkan Kata Tambahan Akhir / Jawaban untuk pertanyaan: "${logText}"`);
+            if(prefix !== null && suffix) {
+                knowledgeFaq.push({ prefix: prefix.trim(), keyword: logText.toLowerCase().trim(), suffix: suffix.trim() });
                 unansweredLogs.splice(logIdx, 1);
                 saveToCloud();
                 renderAdminPanel();
@@ -1864,6 +1940,7 @@
             safeLocalStorageSet('ilham_inkColors', JSON.stringify(inkColors));
             safeLocalStorageSet('ilham_dtfOptions', JSON.stringify(dtfOptions));
             safeLocalStorageSet('ilham_knowledgeFaq', JSON.stringify(knowledgeFaq));
+            safeLocalStorageSet('ilham_blockedWords', JSON.stringify(blockedWords));
             safeLocalStorageSet('ilham_unansweredLogs', JSON.stringify(unansweredLogs));
             safeLocalStorageSet('ilham_extraColorPrice', extraColorPrice);
             safeLocalStorageSet('ilham_storeName', storeName);
@@ -1894,7 +1971,7 @@
 
                 await setDoc(docRef, {
                     bagModels: optimizedBagModels, bankAccounts, bagColors, inkColors, dtfOptions,
-                    knowledgeFaq, unansweredLogs, extraColorPrice, storeName, pdfPassword, ownerWaNumber, 
+                    knowledgeFaq, blockedWords, unansweredLogs, extraColorPrice, storeName, pdfPassword, ownerWaNumber, 
                     brandLogoUrl: brandLogoUrl || "", customStampUrl: customStampUrl || "", 
                     adminSignatureUrl: adminSignatureUrl || "", storeAddress, storePhone, storeEmail
                 }, { merge: true });
@@ -1941,6 +2018,7 @@
             if(data.inkColors) inkColors = data.inkColors;
             if(data.dtfOptions) dtfOptions = data.dtfOptions;
             if(data.knowledgeFaq) knowledgeFaq = data.knowledgeFaq;
+            if(data.blockedWords) blockedWords = data.blockedWords;
             if(data.unansweredLogs) unansweredLogs = data.unansweredLogs;
             if(data.extraColorPrice !== undefined) {
                 extraColorPrice = data.extraColorPrice;
