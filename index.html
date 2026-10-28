@@ -258,53 +258,7 @@
                 </select>
             </div>
 
-            <!-- KONTROL POSISI LOGO 1 -->
-            <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 space-y-3">
-                <h3 class="text-xs font-bold text-slate-700">🎛️ Pengaturan Posisi Logo 1</h3>
-                <div class="grid grid-cols-2 gap-3 text-xs">
-                    <div>
-                        <label class="block text-slate-500 mb-1">Ukuran (<span id="scale-val-1">100</span>%)</label>
-                        <input type="range" id="logo-scale-1" min="30" max="200" value="100" oninput="adjustLogoTransform()" class="w-full accent-emerald-600 py-1">
-                    </div>
-                    <div>
-                        <label class="block text-slate-500 mb-1">Rotasi (<span id="rotate-val-1">0</span>°)</label>
-                        <input type="range" id="logo-rotate-1" min="-180" max="180" value="0" oninput="adjustLogoTransform()" class="w-full accent-emerald-600 py-1">
-                    </div>
-                    <div>
-                        <label class="block text-slate-500 mb-1">Geser Kiri/Kanan</label>
-                        <input type="range" id="logo-pos-x-1" min="-100" max="100" value="0" oninput="adjustLogoTransform()" class="w-full accent-emerald-600 py-1">
-                    </div>
-                    <div>
-                        <label class="block text-slate-500 mb-1">Geser Atas/Bawah</label>
-                        <input type="range" id="logo-pos-y-1" min="-80" max="80" value="0" oninput="adjustLogoTransform()" class="w-full accent-emerald-600 py-1">
-                    </div>
-                </div>
-            </div>
-
-            <!-- KONTROL POSISI LOGO 2 (MUNCUL JIKA 2 WARNA) -->
-            <div id="controls-logo-2" class="hidden bg-white p-4 rounded-2xl shadow-sm border border-emerald-200 space-y-3">
-                <h3 class="text-xs font-bold text-emerald-800">🎛️ Pengaturan Posisi Logo 2</h3>
-                <div class="grid grid-cols-2 gap-3 text-xs">
-                    <div>
-                        <label class="block text-slate-500 mb-1">Ukuran (<span id="scale-val-2">100</span>%)</label>
-                        <input type="range" id="logo-scale-2" min="30" max="200" value="100" oninput="adjustLogoTransform()" class="w-full accent-emerald-600 py-1">
-                    </div>
-                    <div>
-                        <label class="block text-slate-500 mb-1">Rotasi (<span id="rotate-val-2">0</span>°)</label>
-                        <input type="range" id="logo-rotate-2" min="-180" max="180" value="0" oninput="adjustLogoTransform()" class="w-full accent-emerald-600 py-1">
-                    </div>
-                    <div>
-                        <label class="block text-slate-500 mb-1">Geser Kiri/Kanan</label>
-                        <input type="range" id="logo-pos-x-2" min="-100" max="100" value="20" oninput="adjustLogoTransform()" class="w-full accent-emerald-600 py-1">
-                    </div>
-                    <div>
-                        <label class="block text-slate-500 mb-1">Geser Atas/Bawah</label>
-                        <input type="range" id="logo-pos-y-2" min="-80" max="80" value="20" oninput="adjustLogoTransform()" class="w-full accent-emerald-600 py-1">
-                    </div>
-                </div>
-            </div>
-
-            <!-- BOX 1: Preview Mockup Tas -->
+            <!-- BOX 1: Preview Mockup Tas (DI ATAS) -->
             <div class="bg-white p-4 rounded-2xl shadow-md border border-slate-200 relative space-y-3">
                 <h2 class="text-sm font-semibold text-slate-700 flex items-center gap-2">
                     <span>🛍️</span> Box 1: Preview Mockup Tas (Customer View)
@@ -334,7 +288,57 @@
                     </div>
                 </div>
 
-                <div class="flex items-center gap-3">
+                <!-- KONTROL POSISI LOGO 1 (PERCIS DI BAWAH GAMBAR MOCKUP) -->
+                <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200 space-y-3">
+                    <h3 class="text-xs font-bold text-slate-700 flex items-center gap-1.5">
+                        <span>🎛️</span> Pengaturan Posisi & Ukuran Logo 1
+                    </h3>
+                    <div class="grid grid-cols-2 gap-3 text-xs">
+                        <div>
+                            <label class="block text-slate-500 mb-1">Ukuran (<span id="scale-val-1">100</span>%)</label>
+                            <input type="range" id="logo-scale-1" min="30" max="200" value="100" oninput="adjustLogoTransform()" class="w-full accent-emerald-600 py-1">
+                        </div>
+                        <div>
+                            <label class="block text-slate-500 mb-1">Rotasi (<span id="rotate-val-1">0</span>°)</label>
+                            <input type="range" id="logo-rotate-1" min="-180" max="180" value="0" oninput="adjustLogoTransform()" class="w-full accent-emerald-600 py-1">
+                        </div>
+                        <div>
+                            <label class="block text-slate-500 mb-1">Geser Kiri/Kanan</label>
+                            <input type="range" id="logo-pos-x-1" min="-100" max="100" value="0" oninput="adjustLogoTransform()" class="w-full accent-emerald-600 py-1">
+                        </div>
+                        <div>
+                            <label class="block text-slate-500 mb-1">Geser Atas/Bawah</label>
+                            <input type="range" id="logo-pos-y-1" min="-80" max="80" value="0" oninput="adjustLogoTransform()" class="w-full accent-emerald-600 py-1">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- KONTROL POSISI LOGO 2 (MUNCUL JIKA 2 WARNA - PERCIS DI BAWAHNYA) -->
+                <div id="controls-logo-2" class="hidden bg-emerald-50/70 p-3.5 rounded-xl border border-emerald-200 space-y-3">
+                    <h3 class="text-xs font-bold text-emerald-800 flex items-center gap-1.5">
+                        <span>🎛️</span> Pengaturan Posisi & Ukuran Logo 2
+                    </h3>
+                    <div class="grid grid-cols-2 gap-3 text-xs">
+                        <div>
+                            <label class="block text-slate-600 mb-1">Ukuran (<span id="scale-val-2">100</span>%)</label>
+                            <input type="range" id="logo-scale-2" min="30" max="200" value="100" oninput="adjustLogoTransform()" class="w-full accent-emerald-600 py-1">
+                        </div>
+                        <div>
+                            <label class="block text-slate-600 mb-1">Rotasi (<span id="rotate-val-2">0</span>°)</label>
+                            <input type="range" id="logo-rotate-2" min="-180" max="180" value="0" oninput="adjustLogoTransform()" class="w-full accent-emerald-600 py-1">
+                        </div>
+                        <div>
+                            <label class="block text-slate-600 mb-1">Geser Kiri/Kanan</label>
+                            <input type="range" id="logo-pos-x-2" min="-100" max="100" value="20" oninput="adjustLogoTransform()" class="w-full accent-emerald-600 py-1">
+                        </div>
+                        <div>
+                            <label class="block text-slate-600 mb-1">Geser Atas/Bawah</label>
+                            <input type="range" id="logo-pos-y-2" min="-80" max="80" value="20" oninput="adjustLogoTransform()" class="w-full accent-emerald-600 py-1">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-3 pt-2">
                     <div class="flex-1">
                         <label class="block text-[11px] font-semibold text-slate-500 mb-1">Quantity Item Ini (Pcs)</label>
                         <input type="number" id="item-qty" value="500" min="1" class="w-full bg-slate-50 border border-slate-300 rounded-xl p-3 text-sm font-bold text-emerald-700 text-center focus:ring-2 focus:ring-emerald-500 outline-none">
@@ -651,7 +655,7 @@
         let storeEmail = "ilhamspunbond@gmail.com";
         let pdfPassword = "ilham123";
         let ownerWaNumber = "6289630539563";
-        let extraColorPrice = 400; // Biaya tambahan sablon 2 warna per pcs
+        let extraColorPrice = 400;
         let brandLogoUrl = "";
         let customStampUrl = "";
 
@@ -1009,7 +1013,6 @@
             const extraInput = document.getElementById('admin-extra-color-price');
             if(extraInput) {
                 extraColorPrice = parseInt(extraInput.value) || 0;
-                // Update label dinamis di pilihan customer
                 const optLabel = document.getElementById('option-two-colors-label');
                 if(optLabel) optLabel.textContent = `2 Warna Tinta (+Rp ${extraColorPrice.toLocaleString('id-ID')}/pcs - Upload 2 File Logo)`;
             }
@@ -1402,7 +1405,7 @@
                 const dtfPrice = parseInt(document.getElementById('dtf-size-select').value) || 2000;
                 unitPrice += dtfPrice;
             } else if(method === 'manual' && document.getElementById('sablon-color-count').value === '2') {
-                unitPrice += extraColorPrice; // Tambahan biaya admin untuk sablon 2 warna
+                unitPrice += extraColorPrice;
             }
             return unitPrice;
         }
