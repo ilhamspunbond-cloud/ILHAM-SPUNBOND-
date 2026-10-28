@@ -163,7 +163,7 @@
 
             <div class="inline-flex items-center gap-1.5 bg-emerald-700/60 border border-emerald-500/40 px-3 py-1 rounded-full text-[10px] font-semibold tracking-wider text-emerald-200 mb-1.5 uppercase">
                 <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                <span>Voice AI Edition v3.4</span>
+                <span>Voice AI Edition v3.5</span>
             </div>
 
             <h1 id="brand-title-text" class="text-xl font-extrabold tracking-wide text-white">ILHAM SPUNBOND</h1>
@@ -1829,7 +1829,7 @@
             setTimeout(() => { isSyncingFromCloud = false; }, 500);
         }
 
-        // GENERATOR INVOICE PDF CUSTOMER (GAYA EXCEL RESMI)
+        // GENERATOR INVOICE PDF CUSTOMER (DIPERBAIKI RAPI & TIDAK TUMPANG TINDIH)
         async function downloadCustomerInvoicePDF() {
             if(cartItems.length === 0) return alert("Keranjang pesanan masih kosong!");
             let totalQty = 0, grandSubtotal = 0;
@@ -1842,23 +1842,24 @@
             const { jsPDF } = window.jspdf;
             const pdf = new jsPDF('p', 'mm', 'a4');
 
-            // Header Banner
-            pdf.setFillColor(6, 95, 70); pdf.rect(0, 0, 210, 40, 'F');
+            // Header Banner: Biru Soft
+            pdf.setFillColor(219, 234, 254); pdf.rect(0, 0, 210, 40, 'F');
             
             if(brandLogoUrl) {
                 try { pdf.addImage(brandLogoUrl, 'PNG', 15, 8, 30, 24); } catch(e) {}
             }
 
-            pdf.setTextColor(255, 255, 255); pdf.setFont("helvetica", "bold"); pdf.setFontSize(14);
+            // Teks Navy Tebal di Header
+            pdf.setTextColor(15, 23, 42); pdf.setFont("helvetica", "bold"); pdf.setFontSize(14);
             pdf.text(storeName.toUpperCase(), brandLogoUrl ? 50 : 15, 16);
-            pdf.setFont("helvetica", "normal"); pdf.setFontSize(8);
+            pdf.setFont("helvetica", "bold"); pdf.setFontSize(8.5);
             pdf.text("Alamat: " + storeAddress, brandLogoUrl ? 50 : 15, 23);
             pdf.text("No. WA: " + storePhone + " | Email: " + storeEmail, brandLogoUrl ? 50 : 15, 28);
 
-            // No Invoice & Tanggal di Pojok Kanan Atas (Tidak Terlalu Mepet)
+            // No Invoice & Tanggal di Pojok Kanan Atas
             pdf.setFont("helvetica", "bold"); pdf.setFontSize(9);
             pdf.text("INVOICE TAGIHAN", 195, 16, {align: "right"});
-            pdf.setFont("helvetica", "normal"); pdf.setFontSize(7.5);
+            pdf.setFont("helvetica", "bold"); pdf.setFontSize(8);
             pdf.text("No. Inv: INV-" + Math.floor(1000 + Math.random() * 9000), 195, 22, {align: "right"});
             pdf.text("Tanggal: " + new Date().toLocaleString('id-ID'), 195, 27, {align: "right"});
 
@@ -1872,7 +1873,7 @@
 
             // TABEL EXCEL STYLE (BACKGROUND BIRU MUDA & GARIS HITAM)
             let startY = 74;
-            pdf.setFillColor(224, 242, 254); // Biru muda Excel
+            pdf.setFillColor(224, 242, 254); 
             pdf.setDrawColor(0, 0, 0); pdf.setLineWidth(0.3);
             pdf.rect(15, startY, 180, 8, 'FD');
 
@@ -1887,22 +1888,23 @@
             startY += 8;
             pdf.setFont("helvetica", "normal");
             cartItems.forEach((item, idx) => {
+                let cellHeight = 16;
                 pdf.setFillColor(255, 255, 255);
-                pdf.rect(15, startY, 180, 14, 'FD');
+                pdf.rect(15, startY, 180, cellHeight, 'FD');
                 
-                pdf.text(String(idx + 1), 18, startY + 8);
-                pdf.text(`${item.model} (${item.size}) - ${item.color}`, 28, startY + 5);
-                pdf.setFontSize(7); pdf.text(`Cat: ${item.inkNote || '-'}`, 28, startY + 10.5); pdf.setFontSize(8);
-                pdf.text(item.method, 100, startY + 8);
-                pdf.text(item.qty + " Pcs", 138, startY + 8);
-                pdf.text("Rp " + item.unitPrice.toLocaleString('id-ID'), 155, startY + 8);
-                pdf.text("Rp " + item.subtotal.toLocaleString('id-ID'), 178, startY + 8);
-                startY += 14;
+                pdf.text(String(idx + 1), 18, startY + 9);
+                pdf.text(`${item.model} (${item.size}) - ${item.color}`, 28, startY + 5.5);
+                pdf.setFontSize(7.5); pdf.text(`Cat: ${item.inkNote || '-'}`, 28, startY + 11.5); pdf.setFontSize(8);
+                pdf.text(item.method, 100, startY + 9);
+                pdf.text(item.qty + " Pcs", 138, startY + 9);
+                pdf.text("Rp " + item.unitPrice.toLocaleString('id-ID'), 155, startY + 9);
+                pdf.text("Rp " + item.subtotal.toLocaleString('id-ID'), 178, startY + 9);
+                startY += cellHeight;
             });
 
             // Rincian Total
-            startY += 4;
-            pdf.setFont("helvetica", "bold");
+            startY += 6;
+            pdf.setFont("helvetica", "bold"); pdf.setFontSize(8.5);
             pdf.text(`Subtotal Keseluruhan: Rp ${grandSubtotal.toLocaleString('id-ID')}`, 130, startY);
             if(discountVal > 0) {
                 startY += 6;
@@ -1917,16 +1919,16 @@
             // GAMBAR ILUSTRASI MOCKUP (BOX 1) DI INVOICE
             if(cartItems[0] && cartItems[0].mockupImg) {
                 try {
-                    startY += 8;
+                    startY += 10;
                     pdf.setFont("helvetica", "bold"); pdf.setFontSize(8.5);
                     pdf.text("ILUSTRASI PRATINJAU DESAIN (BOX 1):", 15, startY);
                     startY += 4;
-                    pdf.addImage(cartItems[0].mockupImg, 'JPEG', 15, startY, 40, 40);
+                    pdf.addImage(cartItems[0].mockupImg, 'JPEG', 15, startY, 38, 38);
                 } catch(e) {}
             }
 
             // Info Rekening Bank
-            startY += 46;
+            startY += 44;
             pdf.setFont("helvetica", "bold"); pdf.setFontSize(8.5);
             pdf.text("Silakan lakukan transfer pembayaran ke rekening resmi berikut:", 15, startY);
             startY += 5;
@@ -2140,7 +2142,7 @@
             alert("File desain HD bersih tanpa tanda air berhasil di-download!");
         }
 
-        // NOTA / PELUNASAN OWNER (GAYA EXCEL RESMI & STEMPEL SAMAR DI ATAS NOMINAL)
+        // NOTA / PELUNASAN OWNER (DIPERBAIKI RAPI & TIDAK TUMPANG TINDIH)
         async function downloadOwnerInvoicePDF(docId, silent = false) {
             const { doc, getDoc } = window.firebaseDeps;
             const docSnap = await getDoc(doc(window.firebaseDb, "orders", docId));
@@ -2152,21 +2154,23 @@
             const { jsPDF } = window.jspdf;
             const pdf = new jsPDF('p', 'mm', 'a4');
 
-            pdf.setFillColor(15, 23, 42); pdf.rect(0, 0, 210, 40, 'F');
+            // Header Banner: Biru Soft
+            pdf.setFillColor(219, 234, 254); pdf.rect(0, 0, 210, 40, 'F');
             
             if(brandLogoUrl) {
                 try { pdf.addImage(brandLogoUrl, 'PNG', 15, 8, 30, 24); } catch(e) {}
             }
 
-            pdf.setTextColor(255, 255, 255); pdf.setFont("helvetica", "bold"); pdf.setFontSize(14);
+            // Teks Navy Tebal di Header
+            pdf.setTextColor(15, 23, 42); pdf.setFont("helvetica", "bold"); pdf.setFontSize(14);
             pdf.text(storeName.toUpperCase() + " - NOTA & TAGIHAN", brandLogoUrl ? 50 : 15, 16);
-            pdf.setFont("helvetica", "normal"); pdf.setFontSize(8);
+            pdf.setFont("helvetica", "bold"); pdf.setFontSize(8.5);
             pdf.text("Alamat: " + storeAddress + " | No WA: " + storePhone, brandLogoUrl ? 50 : 15, 25);
 
             // No Invoice, PO & Tanggal di Pojok Kanan Atas
             pdf.setFont("helvetica", "bold"); pdf.setFontSize(9);
             pdf.text("NOTA PESANAN", 195, 16, {align: "right"});
-            pdf.setFont("helvetica", "normal"); pdf.setFontSize(7.5);
+            pdf.setFont("helvetica", "bold"); pdf.setFontSize(8);
             pdf.text("No PO: " + o.id, 195, 22, {align: "right"});
             pdf.text("Tanggal: " + o.date, 195, 27, {align: "right"});
 
@@ -2180,7 +2184,7 @@
             pdf.text(`Nama: ${o.name} (${o.wa})`, 15, 68);
             pdf.text(`Alamat Kirim: ${o.address}`, 15, 74);
 
-            // TABEL EXCEL STYLE
+            // TABEL EXCEL STYLE DENGAN KOTAK RAPI DAN TIDAK TUMPANG TINDIH
             let startY = 80;
             pdf.setFillColor(224, 242, 254); 
             pdf.setDrawColor(0, 0, 0); pdf.setLineWidth(0.3);
@@ -2197,17 +2201,18 @@
             startY += 8;
             pdf.setFont("helvetica", "normal");
             o.items.forEach((item, idx) => {
+                let cellHeight = 16;
                 pdf.setFillColor(255, 255, 255);
-                pdf.rect(15, startY, 180, 14, 'FD');
+                pdf.rect(15, startY, 180, cellHeight, 'FD');
                 
-                pdf.text(String(idx + 1), 18, startY + 8);
-                pdf.text(`${item.model} (${item.size}) - ${item.color}`, 28, startY + 5);
-                pdf.setFontSize(7); pdf.text(`Cat: ${item.inkNote || '-'}`, 28, startY + 10.5); pdf.setFontSize(8);
-                pdf.text(item.method, 100, startY + 8);
-                pdf.text(item.qty + " Pcs", 138, startY + 8);
-                pdf.text("Rp " + item.unitPrice.toLocaleString('id-ID'), 155, startY + 8);
-                pdf.text("Rp " + item.subtotal.toLocaleString('id-ID'), 178, startY + 8);
-                startY += 14;
+                pdf.text(String(idx + 1), 18, startY + 9);
+                pdf.text(`${item.model} (${item.size}) - ${item.color}`, 28, startY + 5.5);
+                pdf.setFontSize(7.5); pdf.text(`Cat: ${item.inkNote || '-'}`, 28, startY + 11.5); pdf.setFontSize(8);
+                pdf.text(item.method, 100, startY + 9);
+                pdf.text(item.qty + " Pcs", 138, startY + 9);
+                pdf.text("Rp " + item.unitPrice.toLocaleString('id-ID'), 155, startY + 9);
+                pdf.text("Rp " + item.subtotal.toLocaleString('id-ID'), 178, startY + 9);
+                startY += cellHeight;
             });
 
             startY += 6;
@@ -2217,9 +2222,9 @@
             // STEMPEL LUNAS SAMAR & MENIMPA NOMINAL TOTAL PEMBAYARAN
             if(isLunas && customStampUrl) {
                 try {
-                    pdf.setGState(new pdf.GState({ opacity: 0.35 })); // Stempel dibuat samar
-                    pdf.addImage(customStampUrl, 'PNG', 110, startY - 12, 55, 26); // Sedikit menimpa nominal total pembayaran
-                    pdf.setGState(new pdf.GState({ opacity: 1.0 })); // Reset opacity
+                    pdf.setGState(new pdf.GState({ opacity: 0.35 })); 
+                    pdf.addImage(customStampUrl, 'PNG', 110, startY - 12, 55, 26); 
+                    pdf.setGState(new pdf.GState({ opacity: 1.0 })); 
                 } catch(e) {}
             }
 
