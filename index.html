@@ -1829,7 +1829,7 @@
             setTimeout(() => { isSyncingFromCloud = false; }, 500);
         }
 
-        // GENERATOR INVOICE PDF CUSTOMER (DIPERBAIKI RAPI & TIDAK TUMPANG TINDIH)
+        // GENERATOR INVOICE PDF CUSTOMER (TABEL FLEKSIBEL KE BAWAH DENGAN AUTO-WRAP)
         async function downloadCustomerInvoicePDF() {
             if(cartItems.length === 0) return alert("Keranjang pesanan masih kosong!");
             let totalQty = 0, grandSubtotal = 0;
@@ -1871,7 +1871,7 @@
             pdf.text(`Alamat Pengiriman: ${customerProfile.address}`, 15, 60);
             pdf.text(`Ket. Pembayaran: ${paymentTypeNote}`, 15, 66);
 
-            // TABEL EXCEL STYLE (BACKGROUND BIRU MUDA & GARIS HITAM)
+            // TABEL EXCEL STYLE (FLEXIBLE HEIGHT AUTO-WRAP)
             let startY = 74;
             pdf.setFillColor(224, 242, 254); 
             pdf.setDrawColor(0, 0, 0); pdf.setLineWidth(0.3);
@@ -1879,26 +1879,39 @@
 
             pdf.setTextColor(15, 23, 42); pdf.setFont("helvetica", "bold"); pdf.setFontSize(8);
             pdf.text("No", 18, startY + 5.5);
-            pdf.text("Jenis & Model Tas / Ukuran", 28, startY + 5.5);
-            pdf.text("Metode & Tinta", 100, startY + 5.5);
-            pdf.text("Qty", 138, startY + 5.5);
-            pdf.text("Harga", 155, startY + 5.5);
-            pdf.text("Subtotal", 178, startY + 5.5);
+            pdf.text("Jenis & Model Tas / Ukuran & Keterangan", 28, startY + 5.5);
+            pdf.text("Metode", 100, startY + 5.5);
+            pdf.text("Qty", 132, startY + 5.5);
+            pdf.text("Harga", 152, startY + 5.5);
+            pdf.text("Subtotal", 176, startY + 5.5);
 
             startY += 8;
             pdf.setFont("helvetica", "normal");
+
             cartItems.forEach((item, idx) => {
-                let cellHeight = 16;
+                // Bungkus teks deskripsi agar melar ke bawah jika panjang (max width 68mm)
+                const descLines = pdf.splitTextToSize(`${item.model} (${item.size}) - ${item.color}\nCat: ${item.inkNote || '-'}`, 68);
+                const methodLines = pdf.splitTextToSize(item.method, 28);
+                
+                const maxLineCount = Math.max(descLines.length, methodLines.length, 1);
+                const cellHeight = Math.max(14, maxLineCount * 5 + 4);
+
+                // Cek batas halaman kertas
+                if(startY + cellHeight > 270) {
+                    pdf.addPage();
+                    startY = 20;
+                }
+
                 pdf.setFillColor(255, 255, 255);
                 pdf.rect(15, startY, 180, cellHeight, 'FD');
                 
-                pdf.text(String(idx + 1), 18, startY + 9);
-                pdf.text(`${item.model} (${item.size}) - ${item.color}`, 28, startY + 5.5);
-                pdf.setFontSize(7.5); pdf.text(`Cat: ${item.inkNote || '-'}`, 28, startY + 11.5); pdf.setFontSize(8);
-                pdf.text(item.method, 100, startY + 9);
-                pdf.text(item.qty + " Pcs", 138, startY + 9);
-                pdf.text("Rp " + item.unitPrice.toLocaleString('id-ID'), 155, startY + 9);
-                pdf.text("Rp " + item.subtotal.toLocaleString('id-ID'), 178, startY + 9);
+                pdf.text(String(idx + 1), 18, startY + 5.5);
+                pdf.text(descLines, 28, startY + 5.5);
+                pdf.text(methodLines, 100, startY + 5.5);
+                pdf.text(item.qty + " Pcs", 132, startY + 5.5);
+                pdf.text("Rp " + item.unitPrice.toLocaleString('id-ID'), 152, startY + 5.5);
+                pdf.text("Rp " + item.subtotal.toLocaleString('id-ID'), 176, startY + 5.5);
+                
                 startY += cellHeight;
             });
 
@@ -2142,7 +2155,7 @@
             alert("File desain HD bersih tanpa tanda air berhasil di-download!");
         }
 
-        // NOTA / PELUNASAN OWNER (DIPERBAIKI RAPI & TIDAK TUMPANG TINDIH)
+        // NOTA / PELUNASAN OWNER (TABEL FLEKSIBEL KE BAWAH DENGAN AUTO-WRAP)
         async function downloadOwnerInvoicePDF(docId, silent = false) {
             const { doc, getDoc } = window.firebaseDeps;
             const docSnap = await getDoc(doc(window.firebaseDb, "orders", docId));
@@ -2184,7 +2197,7 @@
             pdf.text(`Nama: ${o.name} (${o.wa})`, 15, 68);
             pdf.text(`Alamat Kirim: ${o.address}`, 15, 74);
 
-            // TABEL EXCEL STYLE DENGAN KOTAK RAPI DAN TIDAK TUMPANG TINDIH
+            // TABEL EXCEL STYLE DENGAN KOTAK RAPI DAN FLEKSIBEL KE BAWAH
             let startY = 80;
             pdf.setFillColor(224, 242, 254); 
             pdf.setDrawColor(0, 0, 0); pdf.setLineWidth(0.3);
@@ -2192,26 +2205,37 @@
 
             pdf.setFont("helvetica", "bold"); pdf.setFontSize(8);
             pdf.text("No", 18, startY + 5.5);
-            pdf.text("Jenis & Model Tas / Ukuran", 28, startY + 5.5);
-            pdf.text("Metode & Tinta", 100, startY + 5.5);
-            pdf.text("Qty", 138, startY + 5.5);
-            pdf.text("Harga", 155, startY + 5.5);
-            pdf.text("Subtotal", 178, startY + 5.5);
+            pdf.text("Jenis & Model Tas / Ukuran & Keterangan", 28, startY + 5.5);
+            pdf.text("Metode", 100, startY + 5.5);
+            pdf.text("Qty", 132, startY + 5.5);
+            pdf.text("Harga", 152, startY + 5.5);
+            pdf.text("Subtotal", 176, startY + 5.5);
 
             startY += 8;
             pdf.setFont("helvetica", "normal");
+
             o.items.forEach((item, idx) => {
-                let cellHeight = 16;
+                const descLines = pdf.splitTextToSize(`${item.model} (${item.size}) - ${item.color}\nCat: ${item.inkNote || '-'}`, 68);
+                const methodLines = pdf.splitTextToSize(item.method, 28);
+                
+                const maxLineCount = Math.max(descLines.length, methodLines.length, 1);
+                const cellHeight = Math.max(14, maxLineCount * 5 + 4);
+
+                if(startY + cellHeight > 270) {
+                    pdf.addPage();
+                    startY = 20;
+                }
+
                 pdf.setFillColor(255, 255, 255);
                 pdf.rect(15, startY, 180, cellHeight, 'FD');
                 
-                pdf.text(String(idx + 1), 18, startY + 9);
-                pdf.text(`${item.model} (${item.size}) - ${item.color}`, 28, startY + 5.5);
-                pdf.setFontSize(7.5); pdf.text(`Cat: ${item.inkNote || '-'}`, 28, startY + 11.5); pdf.setFontSize(8);
-                pdf.text(item.method, 100, startY + 9);
-                pdf.text(item.qty + " Pcs", 138, startY + 9);
-                pdf.text("Rp " + item.unitPrice.toLocaleString('id-ID'), 155, startY + 9);
-                pdf.text("Rp " + item.subtotal.toLocaleString('id-ID'), 178, startY + 9);
+                pdf.text(String(idx + 1), 18, startY + 5.5);
+                pdf.text(descLines, 28, startY + 5.5);
+                pdf.text(methodLines, 100, startY + 5.5);
+                pdf.text(item.qty + " Pcs", 132, startY + 5.5);
+                pdf.text("Rp " + item.unitPrice.toLocaleString('id-ID'), 152, startY + 5.5);
+                pdf.text("Rp " + item.subtotal.toLocaleString('id-ID'), 176, startY + 5.5);
+                
                 startY += cellHeight;
             });
 
