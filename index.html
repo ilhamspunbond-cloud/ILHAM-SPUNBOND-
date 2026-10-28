@@ -697,7 +697,6 @@
         ];
         let dtfOptions = [{ name: "Sedang (8x8 cm)", price: 2000 }, { name: "Besar (10x10 cm)", price: 3000 }];
         
-        // Ingatan AI (FAQ) dengan Format: keyword & answer (kalimat tambahan per kata kunci)
         let knowledgeFaq = [
             { keyword: "assalamualaikum", answer: "Wa'alaikumussalam warahmatullah. Selamat datang di ILHAM SPUNBOND, ada yang bisa dibantu?" },
             { keyword: "minimal order", answer: "untuk pemesanan custom tas spunbond minimal order sangat terjangkau bosku, siap kami layani!" },
@@ -834,7 +833,6 @@
             alert("Profil berhasil diperbarui!");
         }
 
-        // FUNGSI KONTROL SUARA AI (DENGAN INTERUPSI OTOMATIS)
         function stopAiSpeech() {
             if('speechSynthesis' in window) {
                 window.speechSynthesis.cancel();
@@ -883,7 +881,6 @@
             }
         }
 
-        // FUNGSI UTAMA AI: MENGGABUNGKAN NAMA CUSTOMER + PENGULANGAN KATA KUNCI + KALIMAT TAMBAHAN KUSTOM
         function askAiRecommendation() {
             stopAiSpeech();
             const queryText = document.getElementById('ai-user-query').value.trim().toLowerCase();
@@ -892,14 +889,12 @@
             let finalAiResponse = "";
             const queryWords = queryText.split(/\s+/).filter(w => w.length > 2);
 
-            // Cek apakah pertanyaan customer cocok dengan ingatan kustom (FAQ)
             let matchedFaq = knowledgeFaq.find(f => {
                 const keywordLower = f.keyword.toLowerCase();
                 return queryText.includes(keywordLower) || queryWords.some(w => keywordLower.includes(w) || w.includes(keywordLower));
             });
 
             if(matchedFaq) {
-                // Menerapkan format: "Baik, [Gelar] [Nama], ngomongin soal [kata kunci], [kalimat tambahan kustom dari admin]"
                 finalAiResponse = `Baik, ${customerProfile.title} ${customerProfile.name}, ngomongin soal ${matchedFaq.keyword}, ${matchedFaq.answer}`;
             } else {
                 let foundMatch = false;
@@ -912,7 +907,6 @@
                             
                             let matchedKeyword = queryWords.find(w => note.includes(w) || model.name.toLowerCase().includes(w)) || queryText;
 
-                            // Format respons untuk rekomendasi produk tas
                             finalAiResponse = `Baik, ${customerProfile.title} ${customerProfile.name}, ngomongin soal ${matchedKeyword}, rekomendasi terbaik dari kita pakai model ${model.name} ukuran ${sizeObj.name} (Harga: Rp ${sizeObj.price.toLocaleString('id-ID')} /pcs). Catatan: ${sizeObj.note}`;
                             
                             document.getElementById('bag-model-select').value = mIdx;
@@ -940,8 +934,7 @@
             speakText(finalAiResponse);
         }
 
-        
-                function toggleVoiceInput() {
+        function toggleVoiceInput() {
             if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
                 return alert("Browser Anda tidak mendukung fitur input suara. Silakan ketik manual.");
             }
@@ -951,7 +944,7 @@
             const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
             const recognition = new SpeechRecognition();
             recognition.lang = 'id-ID';
-            recognition.interimResults = true; // Diaktifkan agar teks muncul real-time saat ngomong
+            recognition.interimResults = true;
             
             const micBtn = document.getElementById('mic-btn');
             const queryInput = document.getElementById('ai-user-query');
@@ -971,13 +964,11 @@
                     }
                 }
 
-                // Jika ada hasil suara baru, gabungkan dengan teks yang sudah ada (tidak langsung ditimpa total)
                 if (finalTranscript) {
                     const existingText = queryInput.value.trim();
                     queryInput.value = existingText ? existingText + " " + finalTranscript : finalTranscript;
                 } else if (interimTranscript) {
-                    const existingText = queryInput.value.trim();
-                    queryInput.placeholder = interimTranscript; // Menampilkan live feedback di placeholder
+                    queryInput.placeholder = interimTranscript;
                 }
             };
 
@@ -989,7 +980,6 @@
             recognition.onend = () => { 
                 micBtn.textContent = "🎤"; 
                 micBtn.classList.replace('bg-rose-600', 'bg-amber-500');
-                // Otomatis jalankan AI setelah selesai ngomong
                 if(queryInput.value.trim() !== "") {
                     askAiRecommendation();
                 }
@@ -997,30 +987,7 @@
             
             recognition.start();
         }
-   }
-            
-            stopAiSpeech();
 
-            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-            const recognition = new SpeechRecognition();
-            recognition.lang = 'id-ID';
-            recognition.interimResults = false;
-            const micBtn = document.getElementById('mic-btn');
-            micBtn.textContent = "🎙️";
-            micBtn.classList.replace('bg-amber-500', 'bg-rose-600');
-
-            recognition.onresult = function(event) {
-                document.getElementById('ai-user-query').value = event.results[0][0].transcript;
-                micBtn.textContent = "🎤";
-                micBtn.classList.replace('bg-rose-600', 'bg-amber-500');
-                askAiRecommendation();
-            };
-            recognition.onerror = () => { micBtn.textContent = "🎤"; micBtn.classList.replace('bg-rose-600', 'bg-amber-500'); };
-            recognition.onend = () => { micBtn.textContent = "🎤"; micBtn.classList.replace('bg-rose-600', 'bg-amber-500'); };
-            recognition.start();
-        }
-
-        // FUNGSI RENDER PANEL ADMIN (DENGAN EDIT INGATAN AI PER KATA KUNCI + KALIMAT TAMBAHAN)
         function renderAdminPanel() {
             const modelAdminContainer = document.getElementById('model-admin-container');
             const bankAdminContainer = document.getElementById('bank-admin-container');
