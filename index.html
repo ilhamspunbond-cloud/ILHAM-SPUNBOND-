@@ -601,6 +601,10 @@
             address: ""
         };
 
+        function safeLocalStorageSet(key, val) {
+            try { localStorage.setItem(key, val); } catch(e) { console.error("Storage error:", e); }
+        }
+
         try {
             if(localStorage.getItem('ilham_bagModels')) bagModels = JSON.parse(localStorage.getItem('ilham_bagModels'));
             if(localStorage.getItem('ilham_bankAccounts')) bankAccounts = JSON.parse(localStorage.getItem('ilham_bankAccounts'));
@@ -1241,6 +1245,7 @@
             const mIndex = document.getElementById('bag-model-select').value || 0;
             const currentModel = bagModels[mIndex] || bagModels[0];
             const canvas = document.getElementById('bag-preview-canvas');
+            if(!canvas) return;
             const ctx = canvas.getContext('2d');
             
             const img = new Image();
@@ -1411,6 +1416,15 @@
         }
 
         function toggleAdminPanel() { document.getElementById('admin-view').classList.toggle('hidden'); }
+        function requestAdminLogin() {
+            const pwd = prompt("Masukkan Password Admin / Panel Kontrol:");
+            if(pwd === pdfPassword) {
+                toggleAdminPanel();
+            } else if(pwd !== null) {
+                alert("Password Admin Salah!");
+            }
+        }
+
         function togglePrintMethod() {
             const isDtf = document.getElementById('print-method').value === 'dtf';
             document.getElementById('manual-ink-box').classList.toggle('hidden', isDtf);
