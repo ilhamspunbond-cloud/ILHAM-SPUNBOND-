@@ -507,9 +507,12 @@
                 </div>
             </div>
 
-            <!-- LOG PERTANYAAN BELUM TERJAWAB -->
+            <!-- LOG PERTANYAAN BELUM TERJAWAB (DENGAN FITUR HAPUS) -->
             <div class="bg-slate-800 p-3 rounded-xl border border-rose-500/30 space-y-2">
-                <label class="block text-xs font-semibold text-rose-300">📥 Log Pertanyaan Customer Belum Terjawab (Unanswered)</label>
+                <div class="flex items-center justify-between">
+                    <label class="block text-xs font-semibold text-rose-300">📥 Log Pertanyaan Customer Belum Terjawab</label>
+                    <button type="button" onclick="clearAllUnansweredLogs()" class="text-[10px] text-rose-400 hover:underline cursor-pointer">🗑️ Bersihkan Semua</button>
+                </div>
                 <div id="missing-log-container" class="space-y-1.5 max-h-32 overflow-y-auto pr-1">
                     <p class="text-[10px] text-slate-500 italic">Belum ada pertanyaan tertinggal.</p>
                 </div>
@@ -571,9 +574,12 @@
                 </div>
             </div>
 
-            <!-- Kelola Model Tas & Ukuran -->
+            <!-- Kelola Model Tas & Ukuran (DENGAN FITUR EDIT PRODUK) -->
             <div class="bg-slate-800 p-3 rounded-xl border border-amber-500/30 space-y-3">
-                <label class="block text-xs font-semibold text-amber-300">📦 Kelola Model Tas, Ukuran & Catatan AI</label>
+                <div class="flex items-center justify-between">
+                    <label class="block text-xs font-semibold text-amber-300">📦 Kelola Model Tas & Ukuran (Edit / Tambah)</label>
+                    <button type="button" onclick="addNewBagModel()" class="bg-amber-500 text-slate-950 px-2.5 py-1 rounded-lg text-[10px] font-bold cursor-pointer">➕ Tambah Model Tas</button>
+                </div>
                 <div id="model-admin-container" class="space-y-3 max-h-64 overflow-y-auto pr-1"></div>
             </div>
 
@@ -942,6 +948,7 @@
             recognition.start();
         }
 
+        // FUNGSI RENDER PANEL ADMIN (DENGAN EDIT MODEL & FITUR HAPUS LOG)
         function renderAdminPanel() {
             const modelAdminContainer = document.getElementById('model-admin-container');
             const bankAdminContainer = document.getElementById('bank-admin-container');
@@ -974,8 +981,9 @@
                         item.sizes.forEach((s, sIndex) => {
                             sizeRows += `
                                 <div class="bg-slate-800 p-2.5 rounded-lg space-y-1 text-[11px]">
-                                    <div class="flex items-center justify-between">
-                                        <span><b>${s.name}</b> (Rp ${s.price.toLocaleString('id-ID')})</span>
+                                    <div class="flex items-center justify-between gap-1">
+                                        <input type="text" id="edit-sname-${mIndex}-${sIndex}" value="${s.name}" oninput="updateSizeDetail(${mIndex}, ${sIndex})" class="w-28 bg-slate-900 border border-slate-700 rounded px-2 py-1 text-white font-bold outline-none" placeholder="Ukuran">
+                                        <input type="number" id="edit-sprice-${mIndex}-${sIndex}" value="${s.price}" oninput="updateSizeDetail(${mIndex}, ${sIndex})" class="w-24 bg-slate-900 border border-slate-700 rounded px-2 py-1 text-emerald-400 font-bold outline-none" placeholder="Harga">
                                         <button type="button" onclick="deleteSizeFromModel(${mIndex}, ${sIndex})" class="text-rose-400 font-bold px-2 py-0.5 cursor-pointer">Hapus</button>
                                     </div>
                                     <div>
@@ -987,13 +995,25 @@
 
                     const isCustomImg = item.image && !item.image.includes('placeholder.com');
                     card.innerHTML = `
-                        <div class="flex items-center justify-between border-b border-slate-800 pb-1.5"><span class="font-bold text-amber-300 text-sm">${item.name}</span></div>
-                        <div><label class="block text-[10px] text-slate-400 mb-1">Upload Foto Tas (Background Otomatis Transparan):</label><input type="file" accept="image/*" onchange="uploadModelSample(event, ${mIndex})" class="w-full text-[10px] text-slate-400 file:mr-2 file:py-1 file:px-2 file:rounded-lg file:border-0 file:bg-amber-500 file:text-slate-950 cursor-pointer"></div>
-                        <div class="text-[10px] ${isCustomImg ? 'text-emerald-400 font-semibold' : 'text-slate-400'} italic">
-                            ${isCustomImg ? '✅ Berhasil Di-upload (Transparan)' : 'ℹ️ Menggunakan foto default'}
+                        <div class="flex items-center justify-between border-b border-slate-800 pb-1.5 gap-2">
+                            <input type="text" id="edit-model-name-${mIndex}" value="${item.name}" oninput="updateModelName(${mIndex})" class="flex-1 bg-slate-800 border border-slate-700 rounded px-2 py-1 text-amber-300 font-bold text-sm outline-none" placeholder="Nama Model Tas">
+                            <button type="button" onclick="deleteBagModel(${mIndex})" class="text-rose-400 font-bold text-[11px] px-2 py-1 bg-slate-800 rounded cursor-pointer">Hapus Model</button>
                         </div>
-                        <div class="space-y-2 mt-1">${sizeRows}
-                            <div class="flex gap-1.5 mt-2"><input type="text" id="new-s-name-${mIndex}" placeholder="Ukuran" class="flex-1 bg-slate-800 rounded-lg px-2 py-2 text-[11px] text-white outline-none"><input type="number" id="new-s-price-${mIndex}" placeholder="Harga" class="w-20 bg-slate-800 rounded-lg px-2 py-2 text-[11px] text-white outline-none"><button type="button" onclick="addSizeToModel(${mIndex})" class="bg-amber-500 text-slate-950 px-3 py-2 rounded-lg text-[11px] font-semibold cursor-pointer">Tambah</button></div>
+                        <div>
+                            <label class="block text-[10px] text-slate-400 mb-1">Upload/Ganti Foto Tas (Transparan):</label>
+                            <input type="file" accept="image/*" onchange="uploadModelSample(event, ${mIndex})" class="w-full text-[10px] text-slate-400 file:mr-2 file:py-1 file:px-2 file:rounded-lg file:border-0 file:bg-amber-500 file:text-slate-950 cursor-pointer">
+                        </div>
+                        <div class="text-[10px] ${isCustomImg ? 'text-emerald-400 font-semibold' : 'text-slate-400'} italic">
+                            ${isCustomImg ? '✅ Foto Kustom Aktif' : 'ℹ️ Menggunakan foto default'}
+                        </div>
+                        <div class="space-y-2 mt-1">
+                            <div class="text-[11px] font-semibold text-slate-300">Daftar Ukuran & Harga:</div>
+                            ${sizeRows}
+                            <div class="flex gap-1.5 mt-2">
+                                <input type="text" id="new-s-name-${mIndex}" placeholder="Ukuran Baru" class="flex-1 bg-slate-800 rounded-lg px-2 py-2 text-[11px] text-white outline-none">
+                                <input type="number" id="new-s-price-${mIndex}" placeholder="Harga" class="w-20 bg-slate-800 rounded-lg px-2 py-2 text-[11px] text-white outline-none">
+                                <button type="button" onclick="addSizeToModel(${mIndex})" class="bg-amber-500 text-slate-950 px-3 py-2 rounded-lg text-[11px] font-semibold cursor-pointer">Tambah Ukuran</button>
+                            </div>
                         </div>`;
                     modelAdminContainer.appendChild(card);
                 }
@@ -1022,9 +1042,12 @@
                 } else {
                     unansweredLogs.forEach((log, lIdx) => {
                         missingLogContainer.innerHTML += `
-                            <div class="bg-slate-900 p-2 rounded-lg border border-rose-500/30 flex items-center justify-between text-[11px]">
+                            <div class="bg-slate-900 p-2 rounded-lg border border-rose-500/30 flex items-center justify-between text-[11px] gap-2">
                                 <span class="text-rose-200 truncate flex-1">❓ "${log}"</span>
-                                <button type="button" onclick="promoteLogToFaq('${log.replace(/'/g, "\\'")}', ${lIdx})" class="bg-emerald-600 hover:bg-emerald-700 text-white px-2 py-1 rounded text-[10px] font-semibold cursor-pointer ml-2">➕ Jadikan Ingatan</button>
+                                <div class="flex items-center gap-1 flex-shrink-0">
+                                    <button type="button" onclick="promoteLogToFaq('${log.replace(/'/g, "\\'")}', ${lIdx})" class="bg-emerald-600 hover:bg-emerald-700 text-white px-2 py-1 rounded text-[10px] font-semibold cursor-pointer">➕ Jadikan Ingatan</button>
+                                    <button type="button" onclick="deleteSingleUnansweredLog(${lIdx})" class="text-rose-400 hover:text-rose-300 font-bold px-1.5 py-1 text-[11px] cursor-pointer" title="Hapus log ini">🗑️</button>
+                                </div>
                             </div>`;
                     });
                 }
@@ -1107,6 +1130,58 @@
             updateCustomerSizesDropdown();
             updateBagCanvas();
             renderCartItems();
+        }
+
+        // FUNGSI PENGELOLAAN LOG PERTANYAAN BELUM TERJAWAB
+        function deleteSingleUnansweredLog(idx) {
+            unansweredLogs.splice(idx, 1);
+            saveToCloud();
+            renderAdminPanel();
+        }
+
+        function clearAllUnansweredLogs() {
+            if(confirm("Bersihkan semua log pertanyaan belum terjawab?")) {
+                unansweredLogs = [];
+                saveToCloud();
+                renderAdminPanel();
+            }
+        }
+
+        function updateModelName(mIndex) {
+            const input = document.getElementById(`edit-model-name-${mIndex}`);
+            if(input && bagModels[mIndex]) {
+                bagModels[mIndex].name = input.value;
+                saveToCloud();
+            }
+        }
+
+        function updateSizeDetail(mIndex, sIndex) {
+            const nameInput = document.getElementById(`edit-sname-${mIndex}-${sIndex}`);
+            const priceInput = document.getElementById(`edit-sprice-${mIndex}-${sIndex}`);
+            if(nameInput && priceInput && bagModels[mIndex].sizes[sIndex]) {
+                bagModels[mIndex].sizes[sIndex].name = nameInput.value;
+                bagModels[mIndex].sizes[sIndex].price = parseInt(priceInput.value) || 0;
+                saveToCloud();
+            }
+        }
+
+        function addNewBagModel() {
+            bagModels.push({
+                name: "Tas Model Baru",
+                image: "https://via.placeholder.com/400x500/ffffff/334155?text=Tas+Baru",
+                sizes: [{ name: "20 x 30 cm", price: 1500, note: "Ukuran standar tas baru." }]
+            });
+            saveToCloud();
+            renderAdminPanel();
+        }
+
+        function deleteBagModel(mIndex) {
+            if(bagModels.length <= 1) return alert("Minimal harus ada 1 model tas!");
+            if(confirm("Hapus model tas ini?")) {
+                bagModels.splice(mIndex, 1);
+                saveToCloud();
+                renderAdminPanel();
+            }
         }
 
         function addKnowledgeFaq() {
@@ -1444,7 +1519,6 @@
             const mSelect = document.getElementById('bag-model-select');
             const modelNameText = (mSelect && mSelect.value !== "" && bagModels[mSelect.value]) ? bagModels[mSelect.value].name : bagModels[0].name;
 
-            // Bersihkan label agar tidak mengandung karakter kode/mentah
             const cleanMethodName = method === 'dtf' ? 'DTF Full Color' : (isTwoColors ? 'Sablon Manual (2 Warna)' : 'Sablon Manual (1 Warna)');
             document.getElementById('owner-method-txt').textContent = cleanMethodName;
             document.getElementById('owner-model-txt').textContent = modelNameText;
@@ -1628,7 +1702,6 @@
             const method = document.getElementById('print-method').value;
             const colorCount = document.getElementById('sablon-color-count').value;
             
-            // Format nama metode cetak yang bersih dan rapi (tanpa kode mentah)
             let printMethodName = 'Sablon Manual (1 Warna)';
             if(method === 'dtf') printMethodName = 'DTF Full Color';
             else if(colorCount === '2') printMethodName = 'Sablon Manual (2 Warna)';
@@ -1832,7 +1905,6 @@
             setTimeout(() => { isSyncingFromCloud = false; }, 500);
         }
 
-        // GENERATOR INVOICE PDF CUSTOMER (DIPERBAIKI BERSIH DARI KODE & FLEKSIBEL KE BAWAH)
         async function downloadCustomerInvoicePDF() {
             if(cartItems.length === 0) return alert("Keranjang pesanan masih kosong!");
             let totalQty = 0, grandSubtotal = 0;
@@ -1845,28 +1917,24 @@
             const { jsPDF } = window.jspdf;
             const pdf = new jsPDF('p', 'mm', 'a4');
 
-            // Header Banner: Biru Soft
             pdf.setFillColor(219, 234, 254); pdf.rect(0, 0, 210, 40, 'F');
             
             if(brandLogoUrl) {
                 try { pdf.addImage(brandLogoUrl, 'PNG', 15, 8, 30, 24); } catch(e) {}
             }
 
-            // Teks Navy Tebal di Header
             pdf.setTextColor(15, 23, 42); pdf.setFont("helvetica", "bold"); pdf.setFontSize(14);
             pdf.text(storeName.toUpperCase(), brandLogoUrl ? 50 : 15, 16);
             pdf.setFont("helvetica", "bold"); pdf.setFontSize(8.5);
             pdf.text("Alamat: " + storeAddress, brandLogoUrl ? 50 : 15, 23);
             pdf.text("No. WA: " + storePhone + " | Email: " + storeEmail, brandLogoUrl ? 50 : 15, 28);
 
-            // No Invoice & Tanggal di Pojok Kanan Atas
             pdf.setFont("helvetica", "bold"); pdf.setFontSize(9);
             pdf.text("INVOICE TAGIHAN", 195, 16, {align: "right"});
             pdf.setFont("helvetica", "bold"); pdf.setFontSize(8);
             pdf.text("No. Inv: INV-" + Math.floor(1000 + Math.random() * 9000), 195, 22, {align: "right"});
             pdf.text("Tanggal: " + new Date().toLocaleString('id-ID'), 195, 27, {align: "right"});
 
-            // Info Pelanggan
             pdf.setTextColor(15, 23, 42); pdf.setFont("helvetica", "bold"); pdf.setFontSize(10);
             pdf.text("INFORMASI PELANGGAN:", 15, 48);
             pdf.setFont("helvetica", "normal"); pdf.setFontSize(8.5);
@@ -1874,7 +1942,6 @@
             pdf.text(`Alamat Pengiriman: ${customerProfile.address}`, 15, 60);
             pdf.text(`Ket. Pembayaran: ${paymentTypeNote}`, 15, 66);
 
-            // TABEL EXCEL STYLE (FLEXIBLE HEIGHT AUTO-WRAP TANPA KODE MENTAH)
             let startY = 74;
             pdf.setFillColor(224, 242, 254); 
             pdf.setDrawColor(0, 0, 0); pdf.setLineWidth(0.3);
@@ -1917,7 +1984,6 @@
                 startY += cellHeight;
             });
 
-            // Rincian Total
             startY += 6;
             pdf.setFont("helvetica", "bold"); pdf.setFontSize(8.5);
             pdf.text(`Subtotal Keseluruhan: Rp ${grandSubtotal.toLocaleString('id-ID')}`, 130, startY);
@@ -1931,7 +1997,6 @@
             pdf.setFontSize(10);
             pdf.text(`TOTAL TAGIHAN: Rp ${Math.round(grandTotal).toLocaleString('id-ID')}`, 115, startY);
 
-            // GAMBAR ILUSTRASI MOCKUP (BOX 1) DI INVOICE
             if(cartItems[0] && cartItems[0].mockupImg) {
                 try {
                     startY += 10;
@@ -1942,7 +2007,6 @@
                 } catch(e) {}
             }
 
-            // Info Rekening Bank
             startY += 44;
             pdf.setFont("helvetica", "bold"); pdf.setFontSize(8.5);
             pdf.text("Silakan lakukan transfer pembayaran ke rekening resmi berikut:", 15, startY);
@@ -2024,7 +2088,6 @@
                                 <span class="px-2 py-0.5 rounded font-bold ${statusBadgeClass}">${statusVal}</span>
                             </div>
                             
-                            <!-- PENGATURAN EKSPEDISI & RESI -->
                             <div class="space-y-1.5 pt-1 border-t border-slate-700">
                                 <label class="block text-[10px] text-slate-300 font-semibold">Pengiriman & Ekspedisi (${o.region === 'luar' ? 'Luar Jabodetabek' : 'Jabodetabek'}):</label>
                                 <div class="grid grid-cols-2 gap-2">
@@ -2157,7 +2220,6 @@
             alert("File desain HD bersih tanpa tanda air berhasil di-download!");
         }
 
-        // NOTA / PELUNASAN OWNER (DIPERBAIKI BERSIH DARI KODE & FLEKSIBEL KE BAWAH)
         async function downloadOwnerInvoicePDF(docId, silent = false) {
             const { doc, getDoc } = window.firebaseDeps;
             const docSnap = await getDoc(doc(window.firebaseDb, "orders", docId));
@@ -2169,20 +2231,17 @@
             const { jsPDF } = window.jspdf;
             const pdf = new jsPDF('p', 'mm', 'a4');
 
-            // Header Banner: Biru Soft
             pdf.setFillColor(219, 234, 254); pdf.rect(0, 0, 210, 40, 'F');
             
             if(brandLogoUrl) {
                 try { pdf.addImage(brandLogoUrl, 'PNG', 15, 8, 30, 24); } catch(e) {}
             }
 
-            // Teks Navy Tebal di Header
             pdf.setTextColor(15, 23, 42); pdf.setFont("helvetica", "bold"); pdf.setFontSize(14);
             pdf.text(storeName.toUpperCase() + " - NOTA & TAGIHAN", brandLogoUrl ? 50 : 15, 16);
             pdf.setFont("helvetica", "bold"); pdf.setFontSize(8.5);
             pdf.text("Alamat: " + storeAddress + " | No WA: " + storePhone, brandLogoUrl ? 50 : 15, 25);
 
-            // No Invoice, PO & Tanggal di Pojok Kanan Atas
             pdf.setFont("helvetica", "bold"); pdf.setFontSize(9);
             pdf.text("NOTA PESANAN", 195, 16, {align: "right"});
             pdf.setFont("helvetica", "bold"); pdf.setFontSize(8);
@@ -2199,7 +2258,6 @@
             pdf.text(`Nama: ${o.name} (${o.wa})`, 15, 68);
             pdf.text(`Alamat Kirim: ${o.address}`, 15, 74);
 
-            // TABEL EXCEL STYLE DENGAN KOTAK RAPI & FLEKSIBEL KE BAWAH TANPA KODE MENTAH
             let startY = 80;
             pdf.setFillColor(224, 242, 254); 
             pdf.setDrawColor(0, 0, 0); pdf.setLineWidth(0.3);
@@ -2246,7 +2304,6 @@
             pdf.setFont("helvetica", "bold"); pdf.setFontSize(10);
             pdf.text(`TOTAL PEMBAYARAN: ${o.totalPrice}`, 115, startY);
 
-            // STEMPEL LUNAS SAMAR & MENIMPA NOMINAL TOTAL PEMBAYARAN
             if(isLunas && customStampUrl) {
                 try {
                     pdf.setGState(new pdf.GState({ opacity: 0.35 })); 
