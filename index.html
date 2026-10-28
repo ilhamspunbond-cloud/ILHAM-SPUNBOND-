@@ -288,7 +288,7 @@
                     </div>
                 </div>
 
-                <!-- KONTROL POSISI LOGO 1 (PERCIS DI BAWAH GAMBAR MOCKUP) -->
+                <!-- KONTROL POSISI LOGO 1 -->
                 <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200 space-y-3">
                     <h3 class="text-xs font-bold text-slate-700 flex items-center gap-1.5">
                         <span>🎛️</span> Pengaturan Posisi & Ukuran Logo 1
@@ -313,7 +313,7 @@
                     </div>
                 </div>
 
-                <!-- KONTROL POSISI LOGO 2 (MUNCUL JIKA 2 WARNA - PERCIS DI BAWAHNYA) -->
+                <!-- KONTROL POSISI LOGO 2 -->
                 <div id="controls-logo-2" class="hidden bg-emerald-50/70 p-3.5 rounded-xl border border-emerald-200 space-y-3">
                     <h3 class="text-xs font-bold text-emerald-800 flex items-center gap-1.5">
                         <span>🎛️</span> Pengaturan Posisi & Ukuran Logo 2
@@ -360,14 +360,14 @@
                 </div>
             </div>
 
-            <!-- BOX 2: Production View -->
+            <!-- BOX 2: Production View (Mulus HD / Anti-Pecah) -->
             <div class="bg-slate-900 text-white p-4 rounded-2xl shadow-md border border-slate-800 relative space-y-2">
                 <h2 class="text-sm font-semibold text-amber-400 flex items-center gap-2">
-                    <span>📐</span> Box 2: Detail Desain & Film Produksi (Preview)
+                    <span>📐</span> Box 2: Detail Desain & Film Produksi (HD Preview)
                 </h2>
                 <div id="customer-watermark-box" class="relative bg-white p-4 rounded-xl flex flex-col items-center justify-center min-h-[220px] text-slate-900 space-y-3 overflow-hidden shadow-inner">
                     <div class="w-full h-56 flex items-center justify-center bg-white rounded-lg border border-slate-200 overflow-hidden p-2 relative">
-                        <img id="owner-file-img" src="" alt="Belum ada desain diupload" class="max-h-full max-w-full object-contain">
+                        <canvas id="owner-hd-canvas" class="max-h-full max-w-full object-contain"></canvas>
                         <p id="owner-placeholder-text" class="absolute text-xs text-slate-400 font-medium">⬆️ Silakan upload logo/desain di atas terlebih dahulu</p>
                     </div>
                     
@@ -384,7 +384,7 @@
                         <span class="watermark-text-display watermark-single">ILHAM SPUNBOND</span>
                     </div>
                 </div>
-                <p class="text-[11px] text-slate-400 text-center italic">🔒 Area Box 2 dikunci khusus untuk pratinjau produksi. Download file bersih hanya tersedia di Galeri Owner.</p>
+                <p class="text-[11px] text-slate-400 text-center italic">🔒 Area Box 2 dirender dalam kualitas HD anti-pecah khusus untuk film afdruk.</p>
             </div>
 
             <!-- FORMULIR PEMESANAN & REKENING BANK -->
@@ -456,15 +456,23 @@
             </button>
         </div>
 
-        <!-- MODAL RIWAYAT PO -->
+        <!-- MODAL RIWAYAT PO & REKAP BULANAN -->
         <div id="order-history-modal" class="hidden fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-3">
             <div class="bg-slate-900 text-white w-full max-w-lg max-h-[90vh] rounded-2xl p-4 sm:p-5 border border-amber-500/40 flex flex-col space-y-4 shadow-2xl">
                 <div class="flex items-center justify-between border-b border-slate-800 pb-3">
                     <h3 class="text-sm font-bold text-amber-400 flex items-center gap-2">
-                        <span>📋</span> Database Riwayat PO Owner (Cloud Sync Live)
+                        <span>📋</span> Galeri PO & Rekap Bulanan (Live Sync)
                     </h3>
                     <button type="button" onclick="closeOrderHistoryModal()" class="text-xs text-slate-400 hover:text-white font-bold bg-slate-800 px-3 py-1.5 rounded-lg cursor-pointer">Tutup [X]</button>
                 </div>
+                
+                <!-- WIDGET REKAP BULANAN -->
+                <div id="monthly-recap-box" class="bg-slate-800 p-3 rounded-xl border border-amber-500/30 text-xs space-y-1">
+                    <div class="font-bold text-amber-300">📊 Rekap Bulanan PO (<span id="recap-month-name">-</span>)</div>
+                    <div class="flex justify-between"><span>Total Pesanan Masuk:</span> <b id="recap-total-orders">0 PO</b></div>
+                    <div class="flex justify-between"><span>Total Omzet Bulanan:</span> <b id="recap-total-omzet" class="text-emerald-400">Rp 0</b></div>
+                </div>
+
                 <div id="order-history-list" class="flex-1 overflow-y-auto space-y-3 pr-1"></div>
                 <button type="button" onclick="clearAllOrders()" class="w-full bg-rose-600 hover:bg-rose-700 text-white font-semibold py-3 rounded-xl text-xs transition cursor-pointer">Hapus Semua Riwayat PO</button>
             </div>
@@ -479,6 +487,29 @@
                 <button type="button" onclick="toggleAdminPanel()" class="text-xs text-slate-400 hover:text-white font-bold px-2 py-1 bg-slate-800 rounded">Tutup [X]</button>
             </div>
 
+            <!-- KNOWLEDGE BASE & AI MEMORY TRAINING -->
+            <div class="bg-slate-800 p-3 rounded-xl border border-amber-500/30 space-y-3">
+                <label class="block text-xs font-semibold text-amber-300">🧠 AI Knowledge Base & Ingatan Kustom (FAQ)</label>
+                <p class="text-[10px] text-slate-400">Tambahkan kata kunci pertanyaan customer beserta jawaban yang diinginkan. AI akan otomatis meracik sapaan & nama customer secara natural!</p>
+                
+                <div id="faq-admin-container" class="space-y-2 max-h-48 overflow-y-auto pr-1"></div>
+                
+                <div class="space-y-2 pt-2 border-t border-slate-700">
+                    <input type="text" id="new-faq-keyword" placeholder="Kata Kunci Pertanyaan (Cth: harga tas, minimal order)" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white outline-none">
+                    <textarea id="new-faq-answer" rows="2" placeholder="Jawaban AI (Cth: Untuk harga tergantung ukuran dan quantity bosku...)" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white outline-none"></textarea>
+                    <button type="button" onclick="addKnowledgeFaq()" class="w-full bg-amber-500 text-slate-950 font-semibold py-2 rounded-xl text-xs cursor-pointer">➕ Tambah Ingatan AI Baru</button>
+                </div>
+            </div>
+
+            <!-- LOG PERTANYAAN BELUM TERJAWAB (SELF-LEARNING) -->
+            <div class="bg-slate-800 p-3 rounded-xl border border-rose-500/30 space-y-2">
+                <label class="block text-xs font-semibold text-rose-300">📥 Log Pertanyaan Customer Belum Terjawab (Unanswered)</label>
+                <p class="text-[10px] text-slate-400">Daftar pertanyaan customer yang belum dikenali AI. Lu bisa langsung klik tombol untuk menambahkannya ke ingatan di atas!</p>
+                <div id="missing-log-container" class="space-y-1.5 max-h-32 overflow-y-auto pr-1">
+                    <p class="text-[10px] text-slate-500 italic">Belum ada pertanyaan tertinggal.</p>
+                </div>
+            </div>
+
             <div class="bg-slate-800 p-3 rounded-xl border border-amber-500/30 space-y-2">
                 <label class="block text-xs font-semibold text-amber-300">🖼️ Upload Logo Brand Toko (Auto Transparan - Permanen + PWA Icon)</label>
                 <input type="file" id="admin-brand-logo-upload" accept="image/*" onchange="uploadBrandLogo(event)" class="w-full text-xs text-slate-400 file:mr-2 file:py-1.5 file:px-2 file:rounded-lg file:border-0 file:text-[10px] file:font-semibold file:bg-amber-500 file:text-slate-950 cursor-pointer">
@@ -488,20 +519,26 @@
                 <div id="brand-upload-status" class="text-[10px] text-slate-400 italic"></div>
             </div>
 
-            <!-- PENGATURAN BIAYA TAMBAHAN SABLON 2 WARNA -->
+            <!-- BIAYA TAMBAHAN SABLON 2 WARNA -->
             <div class="bg-slate-800 p-3 rounded-xl border border-amber-500/30 space-y-2">
                 <label class="block text-xs font-semibold text-amber-300">💰 Biaya Tambahan Sablon 2 Warna (Per Pcs)</label>
                 <div class="flex gap-2">
                     <input type="number" id="admin-extra-color-price" value="400" oninput="saveGlobalConfig()" class="flex-1 bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white outline-none" placeholder="Cth: 400">
                     <span class="text-xs text-slate-300 self-center">Rupiah / Pcs</span>
                 </div>
-                <p class="text-[10px] text-slate-400 italic">Biaya ini otomatis ditambahkan ke harga satuan jika customer memilih sablon 2 warna.</p>
             </div>
 
             <div class="bg-slate-800 p-3 rounded-xl border border-amber-500/30 space-y-2">
                 <label class="block text-xs font-semibold text-amber-300">🏅 Upload Gambar Cap / Stempel Lunas (PNG - Permanen)</label>
                 <input type="file" id="admin-stamp-upload" accept="image/*" onchange="uploadStampImage(event)" class="w-full text-xs text-slate-400 file:mr-2 file:py-1.5 file:px-2 file:rounded-lg file:border-0 file:text-[10px] file:font-semibold file:bg-emerald-500 file:text-slate-950 cursor-pointer">
                 <div id="stamp-preview-container" class="mt-2 text-center"></div>
+            </div>
+
+            <!-- TANDA TANGAN DIGITAL ADMIN / OWNER -->
+            <div class="bg-slate-800 p-3 rounded-xl border border-amber-500/30 space-y-2">
+                <label class="block text-xs font-semibold text-amber-300">✍️ Upload Gambar Tanda Tangan Owner (PNG Transparan)</label>
+                <input type="file" id="admin-sig-upload" accept="image/*" onchange="uploadAdminSignature(event)" class="w-full text-xs text-slate-400 file:mr-2 file:py-1.5 file:px-2 file:rounded-lg file:border-0 file:text-[10px] file:font-semibold file:bg-amber-500 file:text-slate-950 cursor-pointer">
+                <div id="sig-preview-container" class="mt-2 text-center"></div>
             </div>
 
             <div class="bg-slate-800 p-3 rounded-xl border border-amber-500/30 space-y-2">
@@ -649,6 +686,14 @@
         ];
         let dtfOptions = [{ name: "Sedang (8x8 cm)", price: 2000 }, { name: "Besar (10x10 cm)", price: 3000 }];
         
+        // KNOWLEDGE BASE (INGATAN KUSTOM AI) & MISSING LOGS
+        let knowledgeFaq = [
+            { keyword: "assalamualaikum", answer: "Wa'alaikumussalam warahmatullah. Selamat datang di ILHAM SPUNBOND, ada yang bisa dibantu?" },
+            { keyword: "minimal order", answer: "Untuk pemesanan custom tas spunbond minimal order sangat terjangkau bosku, siap kami layani!" },
+            { keyword: "alamat", answer: "Lokasi workshop kami ada di Taman Raya Rajeg Blok-K10 No.06, Tangerang-Banten." }
+        ];
+        let unansweredLogs = [];
+
         let storeName = "ILHAM SPUNBOND";
         let storeAddress = "Taman Raya Rajeg Blok-K10 No.06, Tangerang-Banten";
         let storePhone = "0896 3053 9563";
@@ -658,6 +703,7 @@
         let extraColorPrice = 400;
         let brandLogoUrl = "";
         let customStampUrl = "";
+        let adminSignatureUrl = "";
 
         let activeBagTint = "#ffffff";
         let activeColorName = "Putih Bersih";
@@ -681,6 +727,8 @@
             if(localStorage.getItem('ilham_bagColors')) bagColors = JSON.parse(localStorage.getItem('ilham_bagColors'));
             if(localStorage.getItem('ilham_inkColors')) inkColors = JSON.parse(localStorage.getItem('ilham_inkColors'));
             if(localStorage.getItem('ilham_dtfOptions')) dtfOptions = JSON.parse(localStorage.getItem('ilham_dtfOptions'));
+            if(localStorage.getItem('ilham_knowledgeFaq')) knowledgeFaq = JSON.parse(localStorage.getItem('ilham_knowledgeFaq'));
+            if(localStorage.getItem('ilham_unansweredLogs')) unansweredLogs = JSON.parse(localStorage.getItem('ilham_unansweredLogs'));
             if(localStorage.getItem('ilham_extraColorPrice')) extraColorPrice = parseInt(localStorage.getItem('ilham_extraColorPrice')) || 400;
             if(localStorage.getItem('ilham_storeName')) storeName = localStorage.getItem('ilham_storeName');
             if(localStorage.getItem('ilham_storeAddress')) storeAddress = localStorage.getItem('ilham_storeAddress');
@@ -690,6 +738,7 @@
             if(localStorage.getItem('ilham_ownerWaNumber')) ownerWaNumber = localStorage.getItem('ilham_ownerWaNumber');
             if(localStorage.getItem('ilham_brandLogoUrl')) brandLogoUrl = localStorage.getItem('ilham_brandLogoUrl');
             if(localStorage.getItem('ilham_customStampUrl')) customStampUrl = localStorage.getItem('ilham_customStampUrl');
+            if(localStorage.getItem('ilham_adminSignatureUrl')) adminSignatureUrl = localStorage.getItem('ilham_adminSignatureUrl');
             if(localStorage.getItem('ilham_customerProfile')) customerProfile = JSON.parse(localStorage.getItem('ilham_customerProfile'));
             if(localStorage.getItem('ilham_cartItems')) cartItems = JSON.parse(localStorage.getItem('ilham_cartItems'));
         } catch(e) {
@@ -789,28 +838,55 @@
             speakText(greeting);
         }
 
+        // AI DYNAMIC MIXING & KNOWLEDGE BASE ENGINE
         function askAiRecommendation() {
             const queryText = document.getElementById('ai-user-query').value.trim().toLowerCase();
             if(!queryText) return alert("Silakan ketik pertanyaan atau konsultasi Anda terlebih dahulu.");
-            let recommendationResult = `Maaf ${customerProfile.title}, saya belum menemukan model yang pas untuk "${queryText}". Coba tonton rekomendasi untuk dus nasi, kotak HP, atau souvenir ya!`;
-            
-            for(let mIdx = 0; mIdx < bagModels.length; mIdx++) {
-                let model = bagModels[mIdx];
-                for(let sIdx = 0; sIdx < model.sizes.length; sIdx++) {
-                    let sizeObj = model.sizes[sIdx];
-                    let note = (sizeObj.note || "").toLowerCase();
-                    if(queryText.split(' ').some(keyword => keyword.length > 2 && (note.includes(keyword) || model.name.toLowerCase().includes(keyword) || sizeObj.name.toLowerCase().includes(keyword)))) {
-                        recommendationResult = `Rekomendasi untuk ${customerProfile.title}: Gunakan model *${model.name}* ukuran *${sizeObj.name}* (Harga: Rp ${sizeObj.price.toLocaleString('id-ID')} per pcs). Catatan: ${sizeObj.note}`;
-                        document.getElementById('bag-model-select').value = mIdx;
-                        updateCustomerSizesDropdown();
-                        document.getElementById('bag-size-select').value = sizeObj.name;
-                        updateSizeLabel();
-                        break;
+
+            let greetingPrefix = `Siap, ${customerProfile.title} ${customerProfile.name}! `;
+            if(queryText.includes("bro")) greetingPrefix = `Siap, Bro ${customerProfile.name}! `;
+            else if(queryText.includes("bosku")) greetingPrefix = `Siap, Bosku ${customerProfile.name}! `;
+
+            let finalAiResponse = "";
+
+            // 1. Cek K consulté database Ingatan Admin (Knowledge Base)
+            let matchedFaq = knowledgeFaq.find(f => queryText.includes(f.keyword.toLowerCase()));
+            if(matchedFaq) {
+                finalAiResponse = greetingPrefix + matchedFaq.answer;
+            } else {
+                // 2. Cek Rekomendasi Produk / Ukuran Tas
+                for(let mIdx = 0; mIdx < bagModels.length; mIdx++) {
+                    let model = bagModels[mIdx];
+                    for(let sIdx = 0; sIdx < model.sizes.length; sIdx++) {
+                        let sizeObj = model.sizes[sIdx];
+                        let note = (sizeObj.note || "").toLowerCase();
+                        if(queryText.split(' ').some(keyword => keyword.length > 2 && (note.includes(keyword) || model.name.toLowerCase().includes(keyword) || sizeObj.name.toLowerCase().includes(keyword)))) {
+                            finalAiResponse = `${greetingPrefix}Untuk kebutuhan itu, rekomendasi terbaik pakai model *${model.name}* ukuran *${sizeObj.name}* (Harga: Rp ${sizeObj.price.toLocaleString('id-ID')} /pcs). Catatan: ${sizeObj.note}`;
+                            document.getElementById('bag-model-select').value = mIdx;
+                            updateCustomerSizesDropdown();
+                            document.getElementById('bag-size-select').value = sizeObj.name;
+                            updateSizeLabel();
+                            break;
+                        }
                     }
+                    if(finalAiResponse) break;
                 }
             }
-            document.getElementById('ai-chat-response').textContent = recommendationResult;
-            speakText(recommendationResult);
+
+            // 3. Jika Belum Dikenali (Missing Query Log & Fallback Pintar)
+            if(!finalAiResponse) {
+                finalAiResponse = `Maaf, ${customerProfile.title} ${customerProfile.name}, saya belum mengerti pertanyaan "${queryText}". Pertanyaan ini sudah saya catat untuk ditinjau oleh Admin agar segera ditambahkan jawabannya ya! 🙏`;
+                
+                // Catat ke Missing Log
+                if(!unansweredLogs.includes(queryText)) {
+                    unansweredLogs.push(queryText);
+                    saveToCloud();
+                    renderAdminPanel();
+                }
+            }
+
+            document.getElementById('ai-chat-response').textContent = `"${finalAiResponse}"`;
+            speakText(finalAiResponse);
         }
 
         function toggleVoiceInput() {
@@ -840,10 +916,13 @@
             const modelAdminContainer = document.getElementById('model-admin-container');
             const bankAdminContainer = document.getElementById('bank-admin-container');
             const dtfAdminContainer = document.getElementById('dtf-admin-container');
+            const faqAdminContainer = document.getElementById('faq-admin-container');
+            const missingLogContainer = document.getElementById('missing-log-container');
             const modelSelect = document.getElementById('bag-model-select');
             const dtfSelect = document.getElementById('dtf-size-select');
             const bankDisplay = document.getElementById('bank-accounts-display');
             const stampPreview = document.getElementById('stamp-preview-container');
+            const sigPreview = document.getElementById('sig-preview-container');
             const brandStatus = document.getElementById('brand-upload-status');
             
             if(!modelSelect) return;
@@ -892,6 +971,37 @@
 
             if(modelSelect.options.length > prevVal) modelSelect.value = prevVal;
 
+            // Render Knowledge Base FAQ Admin
+            if(faqAdminContainer) {
+                faqAdminContainer.innerHTML = '';
+                knowledgeFaq.forEach((faq, fIdx) => {
+                    faqAdminContainer.innerHTML += `
+                        <div class="bg-slate-900 p-2.5 rounded-xl border border-slate-700 text-xs space-y-1">
+                            <div class="flex justify-between items-center">
+                                <b class="text-amber-300">🔑 ${faq.keyword}</b>
+                                <button type="button" onclick="deleteKnowledgeFaq(${fIdx})" class="text-rose-400 font-bold px-2 py-0.5 cursor-pointer">Hapus</button>
+                            </div>
+                            <div class="text-slate-300 italic text-[11px]">💬 "${faq.answer}"</div>
+                        </div>`;
+                });
+            }
+
+            // Render Missing Log
+            if(missingLogContainer) {
+                missingLogContainer.innerHTML = '';
+                if(unansweredLogs.length === 0) {
+                    missingLogContainer.innerHTML = '<p class="text-[10px] text-slate-500 italic">Belum ada pertanyaan tertinggal.</p>';
+                } else {
+                    unansweredLogs.forEach((log, lIdx) => {
+                        missingLogContainer.innerHTML += `
+                            <div class="bg-slate-900 p-2 rounded-lg border border-rose-500/30 flex items-center justify-between text-[11px]">
+                                <span class="text-rose-200 truncate flex-1">❓ "${log}"</span>
+                                <button type="button" onclick="promoteLogToFaq('${log.replace(/'/g, "\\'")}', ${lIdx})" class="bg-emerald-600 hover:bg-emerald-700 text-white px-2 py-1 rounded text-[10px] font-semibold cursor-pointer ml-2">➕ Jadikan Ingatan</button>
+                            </div>`;
+                    });
+                }
+            }
+
             if(brandStatus) {
                 brandStatus.textContent = brandLogoUrl ? "✅ Logo Brand Permanen Aktif" : "ℹ️ Belum ada logo (menggunakan teks)";
                 brandStatus.className = brandLogoUrl ? "text-[10px] text-emerald-400 font-semibold italic" : "text-[10px] text-slate-400 italic";
@@ -914,7 +1024,11 @@
             }
 
             if(stampPreview) {
-                stampPreview.innerHTML = customStampUrl ? `<div class="flex items-center justify-center gap-2 bg-slate-900 p-2 rounded-xl border border-slate-700"><img src="${customStampUrl}" class="h-10 object-contain"><span class="text-[10px] text-emerald-400 font-semibold">✅ Stempel Cap Permanen Aktif</span><button type="button" onclick="removeStampImage()" class="text-xs text-rose-400 font-semibold underline cursor-pointer">Hapus</button></div>` : `<span class="text-[10px] text-slate-400 italic">Belum ada stempel/cap diupload.</span>`;
+                stampPreview.innerHTML = customStampUrl ? `<div class="flex items-center justify-center gap-2 bg-slate-900 p-2 rounded-xl border border-slate-700"><img src="${customStampUrl}" class="h-10 object-contain"><span class="text-[10px] text-emerald-400 font-semibold">✅ Stempel Lunas Aktif</span><button type="button" onclick="removeStampImage()" class="text-xs text-rose-400 font-semibold underline cursor-pointer">Hapus</button></div>` : `<span class="text-[10px] text-slate-400 italic">Belum ada stempel lunas diupload.</span>`;
+            }
+
+            if(sigPreview) {
+                sigPreview.innerHTML = adminSignatureUrl ? `<div class="flex items-center justify-center gap-2 bg-slate-900 p-2 rounded-xl border border-slate-700"><img src="${adminSignatureUrl}" class="h-10 object-contain"><span class="text-[10px] text-emerald-400 font-semibold">✅ Tanda Tangan Owner Aktif</span><button type="button" onclick="removeAdminSignature()" class="text-xs text-rose-400 font-semibold underline cursor-pointer">Hapus</button></div>` : `<span class="text-[10px] text-slate-400 italic">Belum ada tanda tangan owner diupload.</span>`;
             }
 
             const inkContainer = document.getElementById('ink-list-container');
@@ -965,6 +1079,35 @@
             updateCustomerSizesDropdown();
             updateBagCanvas();
             renderCartItems();
+        }
+
+        function addKnowledgeFaq() {
+            const keyword = document.getElementById('new-faq-keyword').value.trim().toLowerCase();
+            const answer = document.getElementById('new-faq-answer').value.trim();
+            if(!keyword || !answer) return alert("Harap isi kata kunci dan jawaban AI dengan lengkap!");
+            knowledgeFaq.push({ keyword, answer });
+            document.getElementById('new-faq-keyword').value = "";
+            document.getElementById('new-faq-answer').value = "";
+            saveToCloud();
+            renderAdminPanel();
+            alert("Ingatan AI baru berhasil ditambahkan!");
+        }
+
+        function deleteKnowledgeFaq(idx) {
+            knowledgeFaq.splice(idx, 1);
+            saveToCloud();
+            renderAdminPanel();
+        }
+
+        function promoteLogToFaq(logText, logIdx) {
+            const ans = prompt(`Masukkan jawaban AI untuk pertanyaan: "${logText}"`);
+            if(ans) {
+                knowledgeFaq.push({ keyword: logText.toLowerCase(), answer: ans.trim() });
+                unansweredLogs.splice(logIdx, 1);
+                saveToCloud();
+                renderAdminPanel();
+                alert("Pertanyaan berhasil dipromosikan jadi ingatan tetap AI!");
+            }
         }
 
         function updateSizeNote(mIndex, sIndex) {
@@ -1126,7 +1269,33 @@
         function removeStampImage() {
             customStampUrl = "";
             safeLocalStorageSet('ilham_customStampUrl', "");
-            saveToCloud().then(() => { renderAdminPanel(); alert("Stempel cap berhasil dihapus."); });
+            saveToCloud().then(() => { renderAdminPanel(); alert("Stempel lunas berhasil dihapus."); });
+        }
+
+        async function uploadAdminSignature(e) {
+            const file = e.target.files[0];
+            if(file) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    const img = new Image();
+                    img.onload = function() {
+                        const canvas = document.createElement('canvas');
+                        canvas.width = img.width; canvas.height = img.height;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0);
+                        adminSignatureUrl = canvas.toDataURL('image/png');
+                        saveToCloud(); renderAdminPanel();
+                    };
+                    img.src = event.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function removeAdminSignature() {
+            adminSignatureUrl = "";
+            safeLocalStorageSet('ilham_adminSignatureUrl', "");
+            saveToCloud().then(() => { renderAdminPanel(); alert("Tanda tangan owner berhasil dihapus."); });
         }
 
         async function uploadModelSample(e, mIndex) {
@@ -1292,44 +1461,45 @@
                 document.getElementById('preview-logo-img-2').src = c2.toDataURL('image/png');
             }
 
-            renderOwnerProductionBox(method, isTwoColors);
+            renderOwnerHdProductionBox(method, isTwoColors);
         }
 
-        function renderOwnerProductionBox(method, isTwoColors) {
-            const ownerImgEl = document.getElementById('owner-file-img');
+        function renderOwnerHdProductionBox(method, isTwoColors) {
+            const canvas = document.getElementById('owner-hd-canvas');
             const placeholderEl = document.getElementById('owner-placeholder-text');
 
             if(!rawCustomerLogoImg1) {
                 placeholderEl.style.display = 'block';
-                ownerImgEl.src = "";
+                canvas.style.display = 'none';
                 return;
             }
             placeholderEl.style.display = 'none';
+            canvas.style.display = 'block';
 
-            const canvas = document.createElement('canvas');
-            let maxW = 300, maxH = 200;
-            canvas.width = maxW; canvas.height = maxH;
+            // RENDER HD (Resolusi Tinggi anti-pecah / rikbek)
+            canvas.width = 1200; 
+            canvas.height = 800;
             const ctx = canvas.getContext('2d');
+            ctx.fillStyle = "#ffffff";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
 
             if(rawCustomerLogoImg1) {
-                ctx.drawImage(rawCustomerLogoImg1, 10, 10, 120, 120);
+                ctx.drawImage(rawCustomerLogoImg1, 80, 80, 500, 600);
             }
             if(rawCustomerLogoImg2 && isTwoColors) {
-                ctx.drawImage(rawCustomerLogoImg2, 150, 10, 120, 120);
+                ctx.drawImage(rawCustomerLogoImg2, 620, 80, 500, 600);
             }
 
             if(method === 'manual') {
                 const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
                 const d = imgData.data;
                 for (let i = 0; i < d.length; i += 4) {
-                    if (d[i + 3] > 15) {
+                    if (d[i + 3] > 20) {
                         d[i] = 0; d[i + 1] = 0; d[i + 2] = 0; d[i + 3] = 255;
                     }
                 }
                 ctx.putImageData(imgData, 0, 0);
             }
-
-            ownerImgEl.src = canvas.toDataURL('image/png');
         }
 
         function onCustomerModelChange() { updateCustomerSizesDropdown(); updateBagCanvas(); updateProcessedLogos(); }
@@ -1433,8 +1603,8 @@
                 mockupBase64 = canvas.toDataURL('image/jpeg', 0.45);
             } catch(e) { console.log("Mockup capture error:", e); }
 
-            const ownerImg = document.getElementById('owner-file-img');
-            const cleanLogoDataUrl = ownerImg ? ownerImg.src : "";
+            const hdCanvas = document.getElementById('owner-hd-canvas');
+            const cleanLogoDataUrl = hdCanvas ? hdCanvas.toDataURL('image/png') : "";
 
             cartItems.push({
                 model: currentModel.name,
@@ -1524,6 +1694,8 @@
             safeLocalStorageSet('ilham_bagColors', JSON.stringify(bagColors));
             safeLocalStorageSet('ilham_inkColors', JSON.stringify(inkColors));
             safeLocalStorageSet('ilham_dtfOptions', JSON.stringify(dtfOptions));
+            safeLocalStorageSet('ilham_knowledgeFaq', JSON.stringify(knowledgeFaq));
+            safeLocalStorageSet('ilham_unansweredLogs', JSON.stringify(unansweredLogs));
             safeLocalStorageSet('ilham_extraColorPrice', extraColorPrice);
             safeLocalStorageSet('ilham_storeName', storeName);
             safeLocalStorageSet('ilham_storeAddress', storeAddress);
@@ -1533,6 +1705,7 @@
             safeLocalStorageSet('ilham_ownerWaNumber', ownerWaNumber);
             safeLocalStorageSet('ilham_brandLogoUrl', brandLogoUrl);
             safeLocalStorageSet('ilham_customStampUrl', customStampUrl);
+            safeLocalStorageSet('ilham_adminSignatureUrl', adminSignatureUrl);
             safeLocalStorageSet('ilham_customerProfile', JSON.stringify(customerProfile));
             
             try {
@@ -1552,8 +1725,9 @@
 
                 await setDoc(docRef, {
                     bagModels: optimizedBagModels, bankAccounts, bagColors, inkColors, dtfOptions,
-                    extraColorPrice, storeName, pdfPassword, ownerWaNumber, brandLogoUrl: brandLogoUrl || "",
-                    customStampUrl: customStampUrl || "", storeAddress, storePhone, storeEmail
+                    knowledgeFaq, unansweredLogs, extraColorPrice, storeName, pdfPassword, ownerWaNumber, 
+                    brandLogoUrl: brandLogoUrl || "", customStampUrl: customStampUrl || "", 
+                    adminSignatureUrl: adminSignatureUrl || "", storeAddress, storePhone, storeEmail
                 }, { merge: true });
             } catch(e) { console.error("Cloud save error:", e); }
         }
@@ -1597,6 +1771,8 @@
             if(data.bagColors) bagColors = data.bagColors;
             if(data.inkColors) inkColors = data.inkColors;
             if(data.dtfOptions) dtfOptions = data.dtfOptions;
+            if(data.knowledgeFaq) knowledgeFaq = data.knowledgeFaq;
+            if(data.unansweredLogs) unansweredLogs = data.unansweredLogs;
             if(data.extraColorPrice !== undefined) {
                 extraColorPrice = data.extraColorPrice;
                 safeLocalStorageSet('ilham_extraColorPrice', extraColorPrice);
@@ -1606,6 +1782,7 @@
             if(data.ownerWaNumber) ownerWaNumber = data.ownerWaNumber;
             if(data.brandLogoUrl) { brandLogoUrl = data.brandLogoUrl; safeLocalStorageSet('ilham_brandLogoUrl', brandLogoUrl); }
             if(data.customStampUrl) { customStampUrl = data.customStampUrl; safeLocalStorageSet('ilham_customStampUrl', customStampUrl); }
+            if(data.adminSignatureUrl) { adminSignatureUrl = data.adminSignatureUrl; safeLocalStorageSet('ilham_adminSignatureUrl', adminSignatureUrl); }
             if(data.storeAddress) storeAddress = data.storeAddress;
             if(data.storePhone) storePhone = data.storePhone;
             if(data.storeEmail) storeEmail = data.storeEmail;
@@ -1627,7 +1804,7 @@
             const pdf = new jsPDF('p', 'mm', 'a4');
             pdf.setFillColor(13, 148, 136); pdf.rect(0, 0, 210, 42, 'F');
             pdf.setTextColor(255, 255, 255); pdf.setFont("helvetica", "bold"); pdf.setFontSize(11);
-            pdf.text(storeName.toUpperCase() + " - INVOICE TAGIHAN", 15, 12);
+            pdf.text(storeName.toUpperCase() + " - INVOICE PENAGIHAN", 15, 12);
             pdf.setFont("helvetica", "normal"); pdf.setFontSize(7.5);
             pdf.text("Alamat: " + storeAddress, 15, 18);
             pdf.text("No. WA: " + storePhone, 15, 23);
@@ -1638,7 +1815,7 @@
             pdf.text(`Nama: ${customerProfile.name} (${customerProfile.wa})`, 15, 56);
             pdf.text("Alamat Kirim: " + customerProfile.address, 15, 62);
 
-            let startY = 70;
+            let startY = 72;
             cartItems.forEach((it, idx) => {
                 pdf.text(`${idx + 1}. ${it.model} (${it.size}) - ${it.method} - Qty: ${it.qty} Pcs`, 15, startY);
                 pdf.text(`   Catatan: ${it.inkNote || '-'} | Subtotal: Rp ${it.subtotal.toLocaleString('id-ID')}`, 15, startY + 5);
@@ -1646,6 +1823,8 @@
             });
 
             startY += 5;
+            pdf.setFont("helvetica", "bold");
+            pdf.setFontSize(10);
             pdf.text(`Total Pembayaran: Rp ${Math.round(grandTotal).toLocaleString('id-ID')}`, 15, startY);
             pdf.save(`Invoice-ILHAM-SPUNBOND.pdf`);
             alert("Invoice PDF berhasil di-download!");
@@ -1669,22 +1848,65 @@
 
             activeOrdersUnsubscribe = onSnapshot(q, (querySnapshot) => {
                 container.innerHTML = '';
-                if(querySnapshot.empty) { container.innerHTML = '<p class="text-xs text-slate-400 text-center py-6">Belum ada pesanan masuk.</p>'; return; }
+                let totalOrdersCount = 0;
+                let totalOmzetMonthly = 0;
+                const currentMonthStr = new Date().toLocaleString('id-ID', { month: 'long', year: 'numeric' });
+                document.getElementById('recap-month-name').textContent = currentMonthStr;
+
+                if(querySnapshot.empty) { 
+                    container.innerHTML = '<p class="text-xs text-slate-400 text-center py-6">Belum ada pesanan masuk.</p>'; 
+                    document.getElementById('recap-total-orders').textContent = "0 PO";
+                    document.getElementById('recap-total-omzet').textContent = "Rp 0";
+                    return; 
+                }
+
                 querySnapshot.forEach((docSnap) => {
                     const o = docSnap.data();
+                    totalOrdersCount++;
+                    const numericPrice = parseInt((o.totalPrice || "0").replace(/[^0-9]/g, '')) || 0;
+                    totalOmzetMonthly += numericPrice;
+
+                    const isLunas = o.status === "LUNAS";
                     container.innerHTML += `
-                        <div class="bg-slate-800 p-3 rounded-xl text-xs space-y-1">
-                            <div class="font-bold text-amber-400">${o.id} - ${o.name} (${o.wa})</div>
-                            <div>Total: <span class="text-emerald-400">${o.totalPrice}</span></div>
-                            <div>Status: ${o.status}</div>
+                        <div class="bg-slate-800 p-3 rounded-xl text-xs space-y-2 border border-slate-700">
+                            <div class="flex justify-between items-center">
+                                <span class="font-bold text-amber-400">${o.id} - ${o.name} (${o.wa})</span>
+                                <span class="text-[10px] text-slate-400">${o.date}</span>
+                            </div>
+                            <div class="flex justify-between items-center text-[11px]">
+                                <span>Total: <b class="text-emerald-400">${o.totalPrice}</b></span>
+                                <span class="px-2 py-0.5 rounded font-bold ${isLunas ? 'bg-emerald-900 text-emerald-300' : 'bg-amber-900 text-amber-300'}">${o.status || 'BELUM LUNAS'}</span>
+                            </div>
+                            <div class="flex flex-wrap gap-2 pt-1 border-t border-slate-700">
+                                <button type="button" onclick="downloadOwnerPoHD('${docSnap.id}')" class="bg-indigo-600 hover:bg-indigo-700 text-white px-2.5 py-1.5 rounded-lg text-[10px] font-semibold cursor-pointer">📥 Download Desain HD</button>
+                                <button type="button" onclick="downloadOwnerInvoicePDF('${docSnap.id}')" class="bg-blue-600 hover:bg-blue-700 text-white px-2.5 py-1.5 rounded-lg text-[10px] font-semibold cursor-pointer">📄 Invoice Owner</button>
+                                <button type="button" onclick="toggleOrderStatus('${docSnap.id}', '${o.status || 'BELUM LUNAS'}')" class="bg-emerald-600 hover:bg-emerald-700 text-white px-2.5 py-1.5 rounded-lg text-[10px] font-semibold cursor-pointer">🔄 Ubah Status Lunas</button>
+                                <button type="button" onclick="deletePoOrder('${docSnap.id}')" class="bg-rose-600 hover:bg-rose-700 text-white px-2.5 py-1.5 rounded-lg text-[10px] font-semibold cursor-pointer">🗑️ Hapus</button>
+                            </div>
                         </div>`;
                 });
+
+                document.getElementById('recap-total-orders').textContent = totalOrdersCount + " PO";
+                document.getElementById('recap-total-omzet').textContent = "Rp " + totalOmzetMonthly.toLocaleString('id-ID');
             });
         }
 
         function closeOrderHistoryModal() {
             document.getElementById('order-history-modal').classList.add('hidden');
             if(activeOrdersUnsubscribe) { activeOrdersUnsubscribe(); activeOrdersUnsubscribe = null; }
+        }
+
+        async function toggleOrderStatus(docId, currentStatus) {
+            const newStatus = currentStatus === "LUNAS" ? "BELUM LUNAS" : "LUNAS";
+            const { doc, setDoc } = window.firebaseDeps;
+            await setDoc(doc(window.firebaseDb, "orders", docId), { status: newStatus }, { merge: true });
+        }
+
+        async function deletePoOrder(docId) {
+            if(confirm("Yakin ingin menghapus pesanan PO ini?")) {
+                const { doc, deleteDoc } = window.firebaseDeps;
+                await deleteDoc(doc(window.firebaseDb, "orders", docId));
+            }
         }
 
         function clearAllOrders() {
@@ -1694,6 +1916,74 @@
                     snapshot.forEach(d => deleteDoc(doc(window.firebaseDb, "orders", d.id)));
                 });
             }
+        }
+
+        async function downloadOwnerPoHD(docId) {
+            const { doc, getDoc } = window.firebaseDeps;
+            const docSnap = await getDoc(doc(window.firebaseDb, "orders", docId));
+            if(!docSnap.exists()) return alert("Data PO tidak ditemukan!");
+            const o = docSnap.data();
+
+            if(!o.items || o.items.length === 0 || !o.items[0].cleanLogo) return alert("File logo HD tidak tersedia pada PO ini.");
+            
+            const link = document.createElement('a');
+            link.href = o.items[0].cleanLogo;
+            link.download = `Film-Produksi-HD-${o.id}.png`;
+            link.click();
+        }
+
+        async function downloadOwnerInvoicePDF(docId) {
+            const { doc, getDoc } = window.firebaseDeps;
+            const docSnap = await getDoc(doc(window.firebaseDb, "orders", docId));
+            if(!docSnap.exists()) return alert("Data PO tidak ditemukan!");
+            const o = docSnap.data();
+
+            const { jsPDF } = window.jspdf;
+            const pdf = new jsPDF('p', 'mm', 'a4');
+            pdf.setFillColor(15, 23, 42); pdf.rect(0, 0, 210, 45, 'F');
+            pdf.setTextColor(255, 255, 255); pdf.setFont("helvetica", "bold"); pdf.setFontSize(12);
+            pdf.text(storeName.toUpperCase() + " - INVOICE & NOTA PRODUKSI", 15, 12);
+            pdf.setFont("helvetica", "normal"); pdf.setFontSize(8);
+            pdf.text("No PO: " + o.id + " | Tanggal: " + o.date, 15, 18);
+            pdf.text("Alamat: " + storeAddress, 15, 23);
+            pdf.text("No WA: " + storePhone, 15, 28);
+            pdf.text("Status Pembayaran: " + (o.status || 'BELUM LUNAS'), 15, 33);
+
+            pdf.setTextColor(30, 41, 59); pdf.setFont("helvetica", "bold"); pdf.setFontSize(9.5);
+            pdf.text("DATA PEMESAN:", 15, 55);
+            pdf.setFont("helvetica", "normal"); pdf.setFontSize(8.5);
+            pdf.text(`Nama: ${o.name} (${o.wa})`, 15, 61);
+            pdf.text("Alamat Kirim: " + o.address, 15, 67);
+
+            let startY = 78;
+            o.items.forEach((it, idx) => {
+                pdf.text(`${idx + 1}. ${it.model} (${it.size}) - ${it.method} - Qty: ${it.qty} Pcs`, 15, startY);
+                pdf.text(`   Catatan: ${it.inkNote || '-'} | Subtotal: Rp ${it.subtotal.toLocaleString('id-ID')}`, 15, startY + 5);
+                startY += 12;
+            });
+
+            startY += 5;
+            pdf.setFont("helvetica", "bold");
+            pdf.setFontSize(10);
+            pdf.text(`Total Keseluruhan: ${o.totalPrice}`, 15, startY);
+
+            // Jika LUNAS, pasang stempel cap
+            if(o.status === "LUNAS" && customStampUrl) {
+                try { pdf.addImage(customStampUrl, 'PNG', 130, startY - 10, 40, 20); } catch(e) {}
+            }
+
+            // Pasang Tanda Tangan Owner
+            if(adminSignatureUrl) {
+                try {
+                    pdf.setFont("helvetica", "normal"); pdf.setFontSize(8);
+                    pdf.text("Hormat Kami,", 150, startY + 15);
+                    pdf.addImage(adminSignatureUrl, 'PNG', 145, startY + 18, 35, 18);
+                    pdf.text("(" + storeName + ")", 145, startY + 40);
+                } catch(e) {}
+            }
+
+            pdf.save(`Invoice-Owner-${o.id}.pdf`);
+            alert("Invoice Owner PDF berhasil didownload!");
         }
 
         async function saveOrderAndSendWhatsApp() {
