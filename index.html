@@ -260,9 +260,14 @@
 
             <!-- BOX 1: Preview Mockup Tas (DI ATAS) -->
             <div class="bg-white p-4 rounded-2xl shadow-md border border-slate-200 relative space-y-3">
-                <h2 class="text-sm font-semibold text-slate-700 flex items-center gap-2">
-                    <span>🛍️</span> Box 1: Preview Mockup Tas (Customer View)
-                </h2>
+                <div class="flex items-center justify-between">
+                    <h2 class="text-sm font-semibold text-slate-700 flex items-center gap-2">
+                        <span>🛍️</span> Box 1: Preview Mockup Tas
+                    </h2>
+                    <button type="button" id="lock-position-btn" onclick="toggleLockPosition()" class="bg-slate-200 hover:bg-slate-300 text-slate-800 text-[11px] font-bold px-3 py-1.5 rounded-xl transition flex items-center gap-1.5 cursor-pointer">
+                        <span id="lock-icon">🔓</span> <span id="lock-text">Buka Kunci</span>
+                    </button>
+                </div>
                 
                 <div id="capture-mockup" class="relative w-full h-72 bg-white rounded-xl flex items-center justify-center overflow-hidden shadow-inner border border-slate-200">
                     <div class="absolute inset-0 bg-white"></div>
@@ -289,7 +294,7 @@
                 </div>
 
                 <!-- KONTROL POSISI LOGO 1 -->
-                <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200 space-y-3">
+                <div id="control-panel-box" class="bg-slate-50 p-3.5 rounded-xl border border-slate-200 space-y-3 transition">
                     <h3 class="text-xs font-bold text-slate-700 flex items-center gap-1.5">
                         <span>🎛️</span> Pengaturan Posisi & Ukuran Logo 1
                     </h3>
@@ -360,7 +365,7 @@
                 </div>
             </div>
 
-            <!-- BOX 2: Production View (Mulus HD / Anti-Pecah) -->
+            <!-- BOX 2: Production View (Mulus HD / Anti-Pecah) DENGAN WATERMARK -->
             <div class="bg-slate-900 text-white p-4 rounded-2xl shadow-md border border-slate-800 relative space-y-2">
                 <h2 class="text-sm font-semibold text-amber-400 flex items-center gap-2">
                     <span>📐</span> Box 2: Detail Desain & Film Produksi (HD Preview)
@@ -380,6 +385,7 @@
                         <span>Metode: <b id="owner-method-txt">-</b></span>
                     </div>
 
+                    <!-- Watermark Khusus Box 2 Customer -->
                     <div class="web-watermark">
                         <span class="watermark-text-display watermark-single">ILHAM SPUNBOND</span>
                     </div>
@@ -686,7 +692,6 @@
         ];
         let dtfOptions = [{ name: "Sedang (8x8 cm)", price: 2000 }, { name: "Besar (10x10 cm)", price: 3000 }];
         
-        // KNOWLEDGE BASE (INGATAN KUSTOM AI) & MISSING LOGS
         let knowledgeFaq = [
             { keyword: "assalamualaikum", answer: "Wa'alaikumussalam warahmatullah. Selamat datang di ILHAM SPUNBOND, ada yang bisa dibantu?" },
             { keyword: "minimal order", answer: "Untuk pemesanan custom tas spunbond minimal order sangat terjangkau bosku, siap kami layani!" },
@@ -707,6 +712,7 @@
 
         let activeBagTint = "#ffffff";
         let activeColorName = "Putih Bersih";
+        let isLogoLocked = false;
         
         let rawCustomerLogoImg1 = null;
         let rawCustomerLogoImg2 = null;
@@ -838,7 +844,31 @@
             speakText(greeting);
         }
 
-        // AI DYNAMIC MIXING & KNOWLEDGE BASE ENGINE
+        function toggleLockPosition() {
+            isLogoLocked = !isLogoLocked;
+            const btn = document.getElementById('lock-position-btn');
+            const icon = document.getElementById('lock-icon');
+            const text = document.getElementById('lock-text');
+            const panel = document.getElementById('control-panel-box');
+            const panel2 = document.getElementById('controls-logo-2');
+
+            if(isLogoLocked) {
+                icon.textContent = "🔒";
+                text.textContent = "Terkunci (Klik untuk Buka)";
+                btn.className = "bg-amber-500 hover:bg-amber-600 text-slate-950 text-[11px] font-bold px-3 py-1.5 rounded-xl transition flex items-center gap-1.5 cursor-pointer";
+                panel.style.opacity = "0.4";
+                panel.style.pointerEvents = "none";
+                if(panel2) { panel2.style.opacity = "0.4"; panel2.style.pointerEvents = "none"; }
+            } else {
+                icon.textContent = "🔓";
+                text.textContent = "Buka Kunci";
+                btn.className = "bg-slate-200 hover:bg-slate-300 text-slate-800 text-[11px] font-bold px-3 py-1.5 rounded-xl transition flex items-center gap-1.5 cursor-pointer";
+                panel.style.opacity = "1";
+                panel.style.pointerEvents = "auto";
+                if(panel2) { panel2.style.opacity = "1"; panel2.style.pointerEvents = "auto"; }
+            }
+        }
+
         function askAiRecommendation() {
             const queryText = document.getElementById('ai-user-query').value.trim().toLowerCase();
             if(!queryText) return alert("Silakan ketik pertanyaan atau konsultasi Anda terlebih dahulu.");
@@ -849,12 +879,10 @@
 
             let finalAiResponse = "";
 
-            // 1. Cek K consulté database Ingatan Admin (Knowledge Base)
             let matchedFaq = knowledgeFaq.find(f => queryText.includes(f.keyword.toLowerCase()));
             if(matchedFaq) {
                 finalAiResponse = greetingPrefix + matchedFaq.answer;
             } else {
-                // 2. Cek Rekomendasi Produk / Ukuran Tas
                 for(let mIdx = 0; mIdx < bagModels.length; mIdx++) {
                     let model = bagModels[mIdx];
                     for(let sIdx = 0; sIdx < model.sizes.length; sIdx++) {
@@ -873,11 +901,8 @@
                 }
             }
 
-            // 3. Jika Belum Dikenali (Missing Query Log & Fallback Pintar)
             if(!finalAiResponse) {
                 finalAiResponse = `Maaf, ${customerProfile.title} ${customerProfile.name}, saya belum mengerti pertanyaan "${queryText}". Pertanyaan ini sudah saya catat untuk ditinjau oleh Admin agar segera ditambahkan jawabannya ya! 🙏`;
-                
-                // Catat ke Missing Log
                 if(!unansweredLogs.includes(queryText)) {
                     unansweredLogs.push(queryText);
                     saveToCloud();
@@ -971,7 +996,6 @@
 
             if(modelSelect.options.length > prevVal) modelSelect.value = prevVal;
 
-            // Render Knowledge Base FAQ Admin
             if(faqAdminContainer) {
                 faqAdminContainer.innerHTML = '';
                 knowledgeFaq.forEach((faq, fIdx) => {
@@ -986,7 +1010,6 @@
                 });
             }
 
-            // Render Missing Log
             if(missingLogContainer) {
                 missingLogContainer.innerHTML = '';
                 if(unansweredLogs.length === 0) {
@@ -1476,7 +1499,6 @@
             placeholderEl.style.display = 'none';
             canvas.style.display = 'block';
 
-            // RENDER HD (Resolusi Tinggi anti-pecah / rikbek)
             canvas.width = 1200; 
             canvas.height = 800;
             const ctx = canvas.getContext('2d');
@@ -1494,8 +1516,12 @@
                 const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
                 const d = imgData.data;
                 for (let i = 0; i < d.length; i += 4) {
-                    if (d[i + 3] > 20) {
-                        d[i] = 0; d[i + 1] = 0; d[i + 2] = 0; d[i + 3] = 255;
+                    if (d[i] < 240 || d[i+1] < 240 || d[i+2] < 240) {
+                        if (d[i + 3] > 20) {
+                            d[i] = 0; d[i + 1] = 0; d[i + 2] = 0; d[i + 3] = 255;
+                        }
+                    } else {
+                        d[i] = 255; d[i + 1] = 255; d[i + 2] = 255; d[i + 3] = 255;
                     }
                 }
                 ctx.putImageData(imgData, 0, 0);
@@ -1543,6 +1569,7 @@
         }
 
         function adjustLogoTransform() {
+            if(isLogoLocked) return;
             const s1 = document.getElementById('logo-scale-1').value;
             const r1 = document.getElementById('logo-rotate-1').value;
             const x1 = document.getElementById('logo-pos-x-1').value;
@@ -1709,7 +1736,7 @@
             safeLocalStorageSet('ilham_customerProfile', JSON.stringify(customerProfile));
             
             try {
-                const lightCart = cartItems.map(i => ({ model: i.model, size: i.size, color: i.color, method: i.method, qty: i.qty, unitPrice: i.unitPrice, subtotal: i.subtotal, inkNote: i.inkNote }));
+                const lightCart = cartItems.map(i => ({ model: i.model, size: i.size, color: i.color, method: i.method, qty: i.qty, unitPrice: i.unitPrice, subtotal: i.subtotal, inkNote: i.inkNote, cleanLogo: i.cleanLogo }));
                 safeLocalStorageSet('ilham_cartItems', JSON.stringify(lightCart));
             } catch (err) { console.log(err); }
 
@@ -1878,7 +1905,7 @@
                                 <span class="px-2 py-0.5 rounded font-bold ${isLunas ? 'bg-emerald-900 text-emerald-300' : 'bg-amber-900 text-amber-300'}">${o.status || 'BELUM LUNAS'}</span>
                             </div>
                             <div class="flex flex-wrap gap-2 pt-1 border-t border-slate-700">
-                                <button type="button" onclick="downloadOwnerPoHD('${docSnap.id}')" class="bg-indigo-600 hover:bg-indigo-700 text-white px-2.5 py-1.5 rounded-lg text-[10px] font-semibold cursor-pointer">📥 Download Desain HD</button>
+                                <button type="button" onclick="downloadOwnerPoHD('${docSnap.id}')" class="bg-indigo-600 hover:bg-indigo-700 text-white px-2.5 py-1.5 rounded-lg text-[10px] font-semibold cursor-pointer">📥 Download Desain HD (Tanpa Watermark)</button>
                                 <button type="button" onclick="downloadOwnerInvoicePDF('${docSnap.id}')" class="bg-blue-600 hover:bg-blue-700 text-white px-2.5 py-1.5 rounded-lg text-[10px] font-semibold cursor-pointer">📄 Invoice Owner</button>
                                 <button type="button" onclick="toggleOrderStatus('${docSnap.id}', '${o.status || 'BELUM LUNAS'}')" class="bg-emerald-600 hover:bg-emerald-700 text-white px-2.5 py-1.5 rounded-lg text-[10px] font-semibold cursor-pointer">🔄 Ubah Status Lunas</button>
                                 <button type="button" onclick="deletePoOrder('${docSnap.id}')" class="bg-rose-600 hover:bg-rose-700 text-white px-2.5 py-1.5 rounded-lg text-[10px] font-semibold cursor-pointer">🗑️ Hapus</button>
@@ -1926,10 +1953,12 @@
 
             if(!o.items || o.items.length === 0 || !o.items[0].cleanLogo) return alert("File logo HD tidak tersedia pada PO ini.");
             
+            // DOWNLOAD BERSIH TOTAL TANPA TANDA AIR (WATERMARK)
             const link = document.createElement('a');
             link.href = o.items[0].cleanLogo;
-            link.download = `Film-Produksi-HD-${o.id}.png`;
+            link.download = `Film-Produksi-Bersih-${o.id}.png`;
             link.click();
+            alert("File desain HD bersih tanpa tanda air berhasil di-download untuk siap cetak!");
         }
 
         async function downloadOwnerInvoicePDF(docId) {
@@ -1967,12 +1996,10 @@
             pdf.setFontSize(10);
             pdf.text(`Total Keseluruhan: ${o.totalPrice}`, 15, startY);
 
-            // Jika LUNAS, pasang stempel cap
             if(o.status === "LUNAS" && customStampUrl) {
                 try { pdf.addImage(customStampUrl, 'PNG', 130, startY - 10, 40, 20); } catch(e) {}
             }
 
-            // Pasang Tanda Tangan Owner
             if(adminSignatureUrl) {
                 try {
                     pdf.setFont("helvetica", "normal"); pdf.setFontSize(8);
