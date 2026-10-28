@@ -222,8 +222,8 @@
             <div id="sablon-color-mode-box" class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200">
                 <label class="block text-xs font-semibold text-slate-600 mb-1">5. Jumlah Warna Tinta Sablon</label>
                 <select id="sablon-color-count" onchange="toggleSablonColorCount()" class="w-full bg-slate-50 border border-slate-300 rounded-xl p-3 text-sm font-medium focus:ring-2 focus:ring-emerald-500 outline-none">
-                    <option value="1">1 Warna Tinta</option>
-                    <option value="2">2 Warna Tinta (Upload 2 File Logo)</option>
+                    <option value="1">1 Warna Tinta (Standar)</option>
+                    <option value="2" id="option-two-colors-label">2 Warna Tinta (+Rp 400/pcs - Upload 2 File Logo)</option>
                 </select>
             </div>
 
@@ -367,7 +367,6 @@
                         <p id="owner-placeholder-text" class="absolute text-xs text-slate-400 font-medium">⬆️ Silakan upload logo/desain di atas terlebih dahulu</p>
                     </div>
                     
-                    <!-- KETERANGAN WARNA TINTA PRODUKSI DI BOX 2 -->
                     <div id="production-ink-notes" class="w-full bg-slate-100 p-2.5 rounded-lg text-xs font-semibold text-slate-800 border border-slate-300">
                         📄 Keterangan Tinta: -
                     </div>
@@ -483,6 +482,16 @@
                     <button type="button" onclick="resetBrandLogo()" class="bg-rose-600 hover:bg-rose-700 text-white font-semibold px-3 py-1.5 rounded-lg text-[10px] cursor-pointer">🗑️ Hapus Logo Brand</button>
                 </div>
                 <div id="brand-upload-status" class="text-[10px] text-slate-400 italic"></div>
+            </div>
+
+            <!-- PENGATURAN BIAYA TAMBAHAN SABLON 2 WARNA -->
+            <div class="bg-slate-800 p-3 rounded-xl border border-amber-500/30 space-y-2">
+                <label class="block text-xs font-semibold text-amber-300">💰 Biaya Tambahan Sablon 2 Warna (Per Pcs)</label>
+                <div class="flex gap-2">
+                    <input type="number" id="admin-extra-color-price" value="400" oninput="saveGlobalConfig()" class="flex-1 bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white outline-none" placeholder="Cth: 400">
+                    <span class="text-xs text-slate-300 self-center">Rupiah / Pcs</span>
+                </div>
+                <p class="text-[10px] text-slate-400 italic">Biaya ini otomatis ditambahkan ke harga satuan jika customer memilih sablon 2 warna.</p>
             </div>
 
             <div class="bg-slate-800 p-3 rounded-xl border border-amber-500/30 space-y-2">
@@ -642,6 +651,7 @@
         let storeEmail = "ilhamspunbond@gmail.com";
         let pdfPassword = "ilham123";
         let ownerWaNumber = "6289630539563";
+        let extraColorPrice = 400; // Biaya tambahan sablon 2 warna per pcs
         let brandLogoUrl = "";
         let customStampUrl = "";
 
@@ -667,6 +677,7 @@
             if(localStorage.getItem('ilham_bagColors')) bagColors = JSON.parse(localStorage.getItem('ilham_bagColors'));
             if(localStorage.getItem('ilham_inkColors')) inkColors = JSON.parse(localStorage.getItem('ilham_inkColors'));
             if(localStorage.getItem('ilham_dtfOptions')) dtfOptions = JSON.parse(localStorage.getItem('ilham_dtfOptions'));
+            if(localStorage.getItem('ilham_extraColorPrice')) extraColorPrice = parseInt(localStorage.getItem('ilham_extraColorPrice')) || 400;
             if(localStorage.getItem('ilham_storeName')) storeName = localStorage.getItem('ilham_storeName');
             if(localStorage.getItem('ilham_storeAddress')) storeAddress = localStorage.getItem('ilham_storeAddress');
             if(localStorage.getItem('ilham_storePhone')) storePhone = localStorage.getItem('ilham_storePhone');
@@ -938,6 +949,9 @@
                 });
             }
 
+            const extraInput = document.getElementById('admin-extra-color-price');
+            if(extraInput) extraInput.value = extraColorPrice;
+
             const appLauncherLogo = document.getElementById('app-launcher-logo');
             if(appLauncherLogo && brandLogoUrl) {
                 appLauncherLogo.src = brandLogoUrl;
@@ -991,6 +1005,14 @@
             storeEmail = document.getElementById('admin-store-email').value;
             ownerWaNumber = document.getElementById('admin-wa-number').value;
             pdfPassword = document.getElementById('admin-pdf-password').value;
+            
+            const extraInput = document.getElementById('admin-extra-color-price');
+            if(extraInput) {
+                extraColorPrice = parseInt(extraInput.value) || 0;
+                // Update label dinamis di pilihan customer
+                const optLabel = document.getElementById('option-two-colors-label');
+                if(optLabel) optLabel.textContent = `2 Warna Tinta (+Rp ${extraColorPrice.toLocaleString('id-ID')}/pcs - Upload 2 File Logo)`;
+            }
             saveToCloud();
         }
 
@@ -1225,7 +1247,6 @@
             document.getElementById('owner-method-txt').textContent = method === 'dtf' ? 'DTF Full Color' : (isTwoColors ? 'Sablon Manual 2 Warna' : 'Sablon Manual 1 Warna');
             document.getElementById('owner-model-txt').textContent = modelNameText;
 
-            // --- KETERANGAN TINTA DI BOX 2 ---
             let inkNoteText = "📄 Keterangan Tinta Produksi: ";
             if(method === 'dtf') {
                 inkNoteText += "DTF Full Color (Warna Asli Desain)";
@@ -1236,9 +1257,7 @@
             }
             document.getElementById('production-ink-notes').textContent = inkNoteText;
 
-            // --- RENDER LOGO 1 (MOCKUP & BOX 2) ---
             if(rawCustomerLogoImg1) {
-                // Mockup 1
                 const c1 = document.createElement('canvas');
                 c1.width = rawCustomerLogoImg1.width; c1.height = rawCustomerLogoImg1.height;
                 const ctx1 = c1.getContext('2d');
@@ -1254,7 +1273,6 @@
                 document.getElementById('preview-logo-img-1').src = c1.toDataURL('image/png');
             }
 
-            // --- RENDER LOGO 2 (MOCKUP) ---
             if(rawCustomerLogoImg2 && isTwoColors) {
                 const c2 = document.createElement('canvas');
                 c2.width = rawCustomerLogoImg2.width; c2.height = rawCustomerLogoImg2.height;
@@ -1271,7 +1289,6 @@
                 document.getElementById('preview-logo-img-2').src = c2.toDataURL('image/png');
             }
 
-            // --- RENDER BOX 2 (PRODUCTION VIEW - DIGABUNG HITAM PEKAT UNTUK SABLON) ---
             renderOwnerProductionBox(method, isTwoColors);
         }
 
@@ -1291,17 +1308,14 @@
             canvas.width = maxW; canvas.height = maxH;
             const ctx = canvas.getContext('2d');
 
-            // Gambar Logo 1 ke Box 2
             if(rawCustomerLogoImg1) {
                 ctx.drawImage(rawCustomerLogoImg1, 10, 10, 120, 120);
             }
-            // Gambar Logo 2 ke Box 2 (Jika 2 Warna)
             if(rawCustomerLogoImg2 && isTwoColors) {
                 ctx.drawImage(rawCustomerLogoImg2, 150, 10, 120, 120);
             }
 
             if(method === 'manual') {
-                // Jadikan Hitam Pekat untuk film afdruk sablon
                 const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
                 const d = imgData.data;
                 for (let i = 0; i < d.length; i += 4) {
@@ -1356,7 +1370,6 @@
         }
 
         function adjustLogoTransform() {
-            // Logo 1
             const s1 = document.getElementById('logo-scale-1').value;
             const r1 = document.getElementById('logo-rotate-1').value;
             const x1 = document.getElementById('logo-pos-x-1').value;
@@ -1365,7 +1378,6 @@
             document.getElementById('rotate-val-1').textContent = r1;
             document.getElementById('logo-layer-1').style.transform = `translate(${x1}px, ${y1}px) scale(${s1 / 100}) rotate(${r1}deg)`;
 
-            // Logo 2
             const s2 = document.getElementById('logo-scale-2').value;
             const r2 = document.getElementById('logo-rotate-2').value;
             const x2 = document.getElementById('logo-pos-x-2').value;
@@ -1390,7 +1402,7 @@
                 const dtfPrice = parseInt(document.getElementById('dtf-size-select').value) || 2000;
                 unitPrice += dtfPrice;
             } else if(method === 'manual' && document.getElementById('sablon-color-count').value === '2') {
-                unitPrice += 400; // Tambahan biaya afdruk film warna ke-2
+                unitPrice += extraColorPrice; // Tambahan biaya admin untuk sablon 2 warna
             }
             return unitPrice;
         }
@@ -1509,6 +1521,7 @@
             safeLocalStorageSet('ilham_bagColors', JSON.stringify(bagColors));
             safeLocalStorageSet('ilham_inkColors', JSON.stringify(inkColors));
             safeLocalStorageSet('ilham_dtfOptions', JSON.stringify(dtfOptions));
+            safeLocalStorageSet('ilham_extraColorPrice', extraColorPrice);
             safeLocalStorageSet('ilham_storeName', storeName);
             safeLocalStorageSet('ilham_storeAddress', storeAddress);
             safeLocalStorageSet('ilham_storePhone', storePhone);
@@ -1536,7 +1549,7 @@
 
                 await setDoc(docRef, {
                     bagModels: optimizedBagModels, bankAccounts, bagColors, inkColors, dtfOptions,
-                    storeName, pdfPassword, ownerWaNumber, brandLogoUrl: brandLogoUrl || "",
+                    extraColorPrice, storeName, pdfPassword, ownerWaNumber, brandLogoUrl: brandLogoUrl || "",
                     customStampUrl: customStampUrl || "", storeAddress, storePhone, storeEmail
                 }, { merge: true });
             } catch(e) { console.error("Cloud save error:", e); }
@@ -1581,6 +1594,10 @@
             if(data.bagColors) bagColors = data.bagColors;
             if(data.inkColors) inkColors = data.inkColors;
             if(data.dtfOptions) dtfOptions = data.dtfOptions;
+            if(data.extraColorPrice !== undefined) {
+                extraColorPrice = data.extraColorPrice;
+                safeLocalStorageSet('ilham_extraColorPrice', extraColorPrice);
+            }
             if(data.storeName) storeName = data.storeName;
             if(data.pdfPassword) pdfPassword = data.pdfPassword;
             if(data.ownerWaNumber) ownerWaNumber = data.ownerWaNumber;
