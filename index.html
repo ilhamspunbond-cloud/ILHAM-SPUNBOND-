@@ -101,8 +101,8 @@
                     <input type="text" id="onboard-name" placeholder="Cth: Budi Santoso" class="w-full bg-slate-50 border border-slate-300 rounded-xl p-3 font-medium outline-none focus:ring-2 focus:ring-emerald-500">
                 </div>
                 <div>
-                    <label class="block font-semibold text-slate-700 mb-1">Nomor WhatsApp</label>
-                    <input type="tel" id="onboard-wa" placeholder="Cth: 08123456789" class="w-full bg-slate-50 border border-slate-300 rounded-xl p-3 font-medium outline-none focus:ring-2 focus:ring-emerald-500">
+                    <label class="block font-semibold text-slate-700 mb-1">Nomor WhatsApp (Bisa 08... atau +62...)</label>
+                    <input type="text" id="onboard-wa" placeholder="Cth: 08123456789 atau +628123456789" class="w-full bg-slate-50 border border-slate-300 rounded-xl p-3 font-medium outline-none focus:ring-2 focus:ring-emerald-500">
                 </div>
                 <div>
                     <label class="block font-semibold text-slate-700 mb-1">Alamat Pengiriman Lengkap</label>
@@ -135,8 +135,8 @@
                     <input type="text" id="edit-name" class="w-full bg-slate-50 border border-slate-300 rounded-xl p-3 outline-none">
                 </div>
                 <div>
-                    <label class="block font-semibold text-slate-600 mb-1">Nomor WhatsApp</label>
-                    <input type="tel" id="edit-wa" class="w-full bg-slate-50 border border-slate-300 rounded-xl p-3 outline-none">
+                    <label class="block font-semibold text-slate-600 mb-1">Nomor WhatsApp (Bisa 08... / +62...)</label>
+                    <input type="text" id="edit-wa" class="w-full bg-slate-50 border border-slate-300 rounded-xl p-3 outline-none">
                 </div>
                 <div>
                     <label class="block font-semibold text-slate-600 mb-1">Alamat Pengiriman</label>
@@ -515,7 +515,7 @@
         </div>
     </div>
 
-    <!-- Script Utama (Voice AI & Smart Profile Management) -->
+    <!-- Script Utama (Flexible Phone Validation & Voice AI) -->
     <script>
         const cleanDefaultBagSvg = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 500'><path d='M100 150 L100 100 C100 70 120 50 200 50 C280 50 300 70 300 100 L300 150 Z' fill='none' stroke='%23334155' stroke-width='16'/><path d='M60 150 L340 150 C360 150 370 160 370 180 L340 450 C340 470 330 480 310 480 L90 480 C70 480 60 470 60 450 L30 180 C30 160 40 150 60 150 Z' fill='%23ffffff' stroke='%23334155' stroke-width='6'/></svg>";
 
@@ -594,7 +594,6 @@
         let activeOrdersUnsubscribe = null;
         let cartItems = [];
 
-        // Customer Profile Memory
         let customerProfile = {
             title: "Bosku",
             name: "",
@@ -677,6 +676,8 @@
             customerProfile.wa = document.getElementById('edit-wa').value.trim();
             customerProfile.address = document.getElementById('edit-address').value.trim();
 
+            if(!customerProfile.name || !customerProfile.wa) return alert("Nama dan No WhatsApp wajib diisi!");
+
             safeLocalStorageSet('ilham_customerProfile', JSON.stringify(customerProfile));
             closeProfileModal();
             updateUIWithProfile();
@@ -689,7 +690,7 @@
                 window.speechSynthesis.cancel();
                 const utterance = new SpeechSynthesisUtterance(text);
                 utterance.lang = 'id-ID';
-                utterance.rate = 0.95; // Sedikit santai & natural
+                utterance.rate = 0.95;
                 utterance.pitch = 1.0;
                 window.speechSynthesis.speak(utterance);
             }
@@ -707,7 +708,6 @@
 
             let recommendationResult = `Maaf ${customerProfile.title}, saya belum menemukan model yang pas untuk "${queryText}". Coba tonton rekomendasi untuk dus nasi, kotak HP, atau souvenir ya!`;
             
-            // Cek kecocokan dengan catatan admin per model & size
             for(let mIdx = 0; mIdx < bagModels.length; mIdx++) {
                 let model = bagModels[mIdx];
                 for(let sIdx = 0; sIdx < model.sizes.length; sIdx++) {
@@ -716,7 +716,6 @@
                     if(queryText.split(' ').some(keyword => keyword.length > 2 && (note.includes(keyword) || model.name.toLowerCase().includes(keyword) || sizeObj.name.toLowerCase().includes(keyword)))) {
                         recommendationResult = `Rekomendasi untuk ${customerProfile.title}: Gunakan model *${model.name}* ukuran *${sizeObj.name}* (Harga: Rp ${sizeObj.price.toLocaleString('id-ID')} per pcs). Catatan: ${sizeObj.note}`;
                         
-                        // Auto set select di form
                         document.getElementById('bag-model-select').value = mIdx;
                         updateCustomerSizesDropdown();
                         document.getElementById('bag-size-select').value = sizeObj.name;
@@ -730,10 +729,9 @@
             speakText(recommendationResult);
         }
 
-        // Speech Recognition (Voice Input dua arah)
         function toggleVoiceInput() {
             if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
-                return alert("Browser Anda tidak mendukung fitur input suara (Voice Recognition). Silakan gunakan ketik manual.");
+                return alert("Browser Anda tidak mendukung fitur input suara. Silakan ketik manual.");
             }
 
             const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -756,7 +754,6 @@
             recognition.onerror = function() {
                 micBtn.textContent = "🎤";
                 micBtn.classList.replace('bg-rose-600', 'bg-amber-500');
-                alert("Gagal mendengarkan suara. Silakan coba lagi.");
             };
 
             recognition.onend = function() {
@@ -767,7 +764,6 @@
             recognition.start();
         }
 
-        // --- ENGINE ADMIN & CUSTOM SIZES NOTES ---
         function renderAdminPanel() {
             const modelAdminContainer = document.getElementById('model-admin-container');
             const bankAdminContainer = document.getElementById('bank-admin-container');
