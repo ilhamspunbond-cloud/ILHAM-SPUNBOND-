@@ -1158,12 +1158,16 @@
 
                     const imgData = ctx.getImageData(0, 0, targetW, targetH);
                     const data = imgData.data;
+                    
+                    // Deteksi warna background dari pojok kiri atas (0,0) untuk dihapus (dijadikan transparan)
                     const rBg = data[0], gBg = data[1], bBg = data[2];
 
                     for (let i = 0; i < data.length; i += 4) {
+                        // Jika warna pixel mirip dengan background pojok, ubah alpha jadi 0 (transparan)
                         if (Math.abs(data[i] - rBg) < 40 && Math.abs(data[i+1] - gBg) < 40 && Math.abs(data[i+2] - bBg) < 40) {
                             data[i+3] = 0;
                         }
+                        // Warna asli logo (di luar background) dibiarkan utuh tanpa diubah/pudar!
                     }
                     ctx.putImageData(imgData, 0, 0);
 
@@ -1172,7 +1176,7 @@
                         rawCustomerLogoImg = processedImg;
                         updateProcessedLogo();
                         if(statusEl) {
-                            statusEl.textContent = "✅ Logo berhasil di-upload & transparan!";
+                            statusEl.textContent = "✅ Logo berhasil di-upload (Background Transparan, Warna Asli Utuh)!";
                             statusEl.className = "text-[10px] text-emerald-500 font-semibold italic";
                         }
                     };
@@ -1194,6 +1198,7 @@
             document.getElementById('owner-method-txt').textContent = method === 'dtf' ? 'DTF Full Color' : 'Sablon Manual';
             document.getElementById('owner-model-txt').textContent = modelNameText;
 
+            // --- 1. PREVIEW MOCKUP (Box 1) ---
             const previewCanvas = document.createElement('canvas');
             previewCanvas.width = rawCustomerLogoImg.width;
             previewCanvas.height = rawCustomerLogoImg.height;
@@ -1201,6 +1206,7 @@
             pCtx.drawImage(rawCustomerLogoImg, 0, 0);
 
             if (method === 'manual') {
+                // Jika Sablon Manual: Warna logo disesuaikan dengan pilihan tinta sablon
                 const pData = pCtx.getImageData(0, 0, previewCanvas.width, previewCanvas.height);
                 const d = pData.data;
                 const rT = parseInt(inkHex.slice(1, 3), 16);
@@ -1208,14 +1214,16 @@
                 const bT = parseInt(inkHex.slice(5, 7), 16);
 
                 for (let i = 0; i < d.length; i += 4) {
-                    if (d[i + 3] > 15) {
+                    if (d[i + 3] > 15) { // Hanya ubah pixel yang tidak transparan
                         d[i] = rT; d[i + 1] = gT; d[i + 2] = bT;
                     }
                 }
                 pCtx.putImageData(pData, 0, 0);
             }
+            // Jika DTF: Warna asli dari file customer dipertahankan 100% tanpa diubah!
             document.getElementById('preview-logo-img').src = previewCanvas.toDataURL('image/png');
 
+            // --- 2. PRODUCTION VIEW (Box 2) ---
             const ownerCanvas = document.createElement('canvas');
             ownerCanvas.width = rawCustomerLogoImg.width;
             ownerCanvas.height = rawCustomerLogoImg.height;
@@ -1232,6 +1240,7 @@
                 }
                 oCtx.putImageData(oData, 0, 0);
             }
+            // Jika DTF di Box 2: Gambar film produksi tetap mempertahankan warna asli logo customer
 
             const ownerImgEl = document.getElementById('owner-file-img');
             document.getElementById('owner-placeholder-text').style.display = 'none';
