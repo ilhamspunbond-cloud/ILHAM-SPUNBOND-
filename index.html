@@ -163,7 +163,7 @@
 
             <div class="inline-flex items-center gap-1.5 bg-emerald-700/60 border border-emerald-500/40 px-3 py-1 rounded-full text-[10px] font-semibold tracking-wider text-emerald-200 mb-1.5 uppercase">
                 <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                <span>Voice AI Edition v3.2</span>
+                <span>Voice AI Edition v3.4</span>
             </div>
 
             <h1 id="brand-title-text" class="text-xl font-extrabold tracking-wide text-white">ILHAM SPUNBOND</h1>
@@ -183,10 +183,9 @@
                 "Halo! Silakan ketik atau ngomong kebutuhan tas Anda (contoh: 'Cari tas buat box nasi ukuran 20x20' atau 'Tas kemasan toko HP'), nanti saya carikan rekomendasi pasnya!"
             </div>
 
-            <!-- Bar Input Diperbaiki: Tombol Kirim & Mikrofon Berdampingan Rapi Tanpa Bocor -->
             <div class="flex items-center gap-2">
                 <input type="text" id="ai-user-query" placeholder="Tanya rekomendasi ukuran/model tas..." class="flex-1 bg-slate-50 border border-slate-300 rounded-xl px-3 py-2.5 text-xs outline-none focus:ring-2 focus:ring-emerald-500 min-w-0">
-                <button type="button" onclick="askAiRecommendation()" class="bg-emerald-700 hover:bg-emerald-800 text-white font-semibold px-3 py-2.5 rounded-xl text-xs cursor-pointer flex-shrink-0">Kirim</button>
+                <button type="button" onclick="askAiRecommendation()" class="bg-emerald-700 hover:bg-emerald-800 text-white font-semibold px-3.5 py-2.5 rounded-xl text-xs cursor-pointer flex-shrink-0">Kirim</button>
                 <button type="button" id="mic-btn" onclick="toggleVoiceInput()" class="bg-amber-500 hover:bg-amber-600 text-white font-semibold px-3 py-2.5 rounded-xl text-xs cursor-pointer flex-shrink-0" title="Ngomong pakai suara">🎤</button>
             </div>
         </div>
@@ -1830,7 +1829,7 @@
             setTimeout(() => { isSyncingFromCloud = false; }, 500);
         }
 
-        // GENERATOR INVOICE PDF CUSTOMER
+        // GENERATOR INVOICE PDF CUSTOMER (GAYA EXCEL RESMI)
         async function downloadCustomerInvoicePDF() {
             if(cartItems.length === 0) return alert("Keranjang pesanan masih kosong!");
             let totalQty = 0, grandSubtotal = 0;
@@ -1838,7 +1837,7 @@
             let discountVal = totalQty >= 1000 ? grandSubtotal * 0.10 : 0;
             let grandTotal = grandSubtotal - discountVal;
             const region = document.getElementById('shipping-region').value;
-            const paymentTypeNote = region === 'jabodetabek' ? 'Wilayah Jabodetabek (Bisa COD)' : 'Luar Jabodetabek (Wajib DP 50% / Pelunasan)';
+            const paymentTypeNote = region === 'jabodetabek' ? 'Wilayah Jabodetabek (Sistem COD / Bayar di Tempat)' : 'Di Luar Jabodetabek (Wajib DP 50% / Pelunasan)';
 
             const { jsPDF } = window.jspdf;
             const pdf = new jsPDF('p', 'mm', 'a4');
@@ -1856,23 +1855,28 @@
             pdf.text("Alamat: " + storeAddress, brandLogoUrl ? 50 : 15, 23);
             pdf.text("No. WA: " + storePhone + " | Email: " + storeEmail, brandLogoUrl ? 50 : 15, 28);
 
-            // Judul Dokumen
-            pdf.setTextColor(15, 23, 42); pdf.setFont("helvetica", "bold"); pdf.setFontSize(11);
-            pdf.text("INVOICE TAGIHAN PEMESANAN", 15, 48);
-            pdf.setFont("helvetica", "normal"); pdf.setFontSize(8.5);
-            pdf.text("Tanggal: " + new Date().toLocaleString('id-ID'), 15, 54);
+            // No Invoice & Tanggal di Pojok Kanan Atas (Tidak Terlalu Mepet)
+            pdf.setFont("helvetica", "bold"); pdf.setFontSize(9);
+            pdf.text("INVOICE TAGIHAN", 195, 16, {align: "right"});
+            pdf.setFont("helvetica", "normal"); pdf.setFontSize(7.5);
+            pdf.text("No. Inv: INV-" + Math.floor(1000 + Math.random() * 9000), 195, 22, {align: "right"});
+            pdf.text("Tanggal: " + new Date().toLocaleString('id-ID'), 195, 27, {align: "right"});
 
             // Info Pelanggan
-            pdf.setFont("helvetica", "bold"); pdf.text("INFORMASI PELANGGAN:", 15, 63);
-            pdf.setFont("helvetica", "normal");
-            pdf.text(`Nama: ${customerProfile.title} ${customerProfile.name} (${customerProfile.wa})`, 15, 69);
-            pdf.text(`Alamat Pengiriman: ${customerProfile.address}`, 15, 75);
-            pdf.text(`Ket. Pembayaran: ${paymentTypeNote}`, 15, 81);
+            pdf.setTextColor(15, 23, 42); pdf.setFont("helvetica", "bold"); pdf.setFontSize(10);
+            pdf.text("INFORMASI PELANGGAN:", 15, 48);
+            pdf.setFont("helvetica", "normal"); pdf.setFontSize(8.5);
+            pdf.text(`Nama: ${customerProfile.title} ${customerProfile.name} (${customerProfile.wa})`, 15, 54);
+            pdf.text(`Alamat Pengiriman: ${customerProfile.address}`, 15, 60);
+            pdf.text(`Ket. Pembayaran: ${paymentTypeNote}`, 15, 66);
 
-            // TABEL KOTAK-KOTAK ITEM PESANAN
-            let startY = 88;
-            pdf.setFillColor(241, 245, 249); pdf.rect(15, startY, 180, 8, 'F');
-            pdf.setFont("helvetica", "bold"); pdf.setFontSize(8);
+            // TABEL EXCEL STYLE (BACKGROUND BIRU MUDA & GARIS HITAM)
+            let startY = 74;
+            pdf.setFillColor(224, 242, 254); // Biru muda Excel
+            pdf.setDrawColor(0, 0, 0); pdf.setLineWidth(0.3);
+            pdf.rect(15, startY, 180, 8, 'FD');
+
+            pdf.setTextColor(15, 23, 42); pdf.setFont("helvetica", "bold"); pdf.setFontSize(8);
             pdf.text("No", 18, startY + 5.5);
             pdf.text("Jenis & Model Tas / Ukuran", 28, startY + 5.5);
             pdf.text("Metode & Tinta", 100, startY + 5.5);
@@ -1883,19 +1887,21 @@
             startY += 8;
             pdf.setFont("helvetica", "normal");
             cartItems.forEach((item, idx) => {
-                pdf.rect(15, startY, 180, 12);
-                pdf.text(String(idx + 1), 18, startY + 7.5);
+                pdf.setFillColor(255, 255, 255);
+                pdf.rect(15, startY, 180, 14, 'FD');
+                
+                pdf.text(String(idx + 1), 18, startY + 8);
                 pdf.text(`${item.model} (${item.size}) - ${item.color}`, 28, startY + 5);
-                pdf.setFontSize(7); pdf.text(`Cat: ${item.inkNote || '-'}`, 28, startY + 9.5); pdf.setFontSize(8);
-                pdf.text(item.method, 100, startY + 7.5);
-                pdf.text(item.qty + " Pcs", 138, startY + 7.5);
-                pdf.text("Rp " + item.unitPrice.toLocaleString('id-ID'), 155, startY + 7.5);
-                pdf.text("Rp " + item.subtotal.toLocaleString('id-ID'), 178, startY + 7.5);
-                startY += 12;
+                pdf.setFontSize(7); pdf.text(`Cat: ${item.inkNote || '-'}`, 28, startY + 10.5); pdf.setFontSize(8);
+                pdf.text(item.method, 100, startY + 8);
+                pdf.text(item.qty + " Pcs", 138, startY + 8);
+                pdf.text("Rp " + item.unitPrice.toLocaleString('id-ID'), 155, startY + 8);
+                pdf.text("Rp " + item.subtotal.toLocaleString('id-ID'), 178, startY + 8);
+                startY += 14;
             });
 
             // Rincian Total
-            startY += 5;
+            startY += 4;
             pdf.setFont("helvetica", "bold");
             pdf.text(`Subtotal Keseluruhan: Rp ${grandSubtotal.toLocaleString('id-ID')}`, 130, startY);
             if(discountVal > 0) {
@@ -1911,16 +1917,16 @@
             // GAMBAR ILUSTRASI MOCKUP (BOX 1) DI INVOICE
             if(cartItems[0] && cartItems[0].mockupImg) {
                 try {
-                    startY += 10;
+                    startY += 8;
                     pdf.setFont("helvetica", "bold"); pdf.setFontSize(8.5);
                     pdf.text("ILUSTRASI PRATINJAU DESAIN (BOX 1):", 15, startY);
                     startY += 4;
-                    pdf.addImage(cartItems[0].mockupImg, 'JPEG', 15, startY, 45, 45);
+                    pdf.addImage(cartItems[0].mockupImg, 'JPEG', 15, startY, 40, 40);
                 } catch(e) {}
             }
 
             // Info Rekening Bank
-            startY += 50;
+            startY += 46;
             pdf.setFont("helvetica", "bold"); pdf.setFontSize(8.5);
             pdf.text("Silakan lakukan transfer pembayaran ke rekening resmi berikut:", 15, startY);
             startY += 5;
@@ -1930,8 +1936,7 @@
                 startY += 5;
             });
 
-            // Ucapan Terima Kasih
-            startY += 8;
+            startY += 6;
             pdf.setFont("helvetica", "bold"); pdf.setTextColor(6, 95, 70);
             pdf.text(`Terima kasih ${customerProfile.title} ${customerProfile.name} telah mempercayakan pemesanan tas custom di ${storeName}!`, 15, startY);
 
@@ -1975,9 +1980,21 @@
                     const numericPrice = parseInt((o.totalPrice || "0").replace(/[^0-9]/g, '')) || 0;
                     totalOmzetMonthly += numericPrice;
 
-                    const isLunas = o.status === "LUNAS";
+                    const statusVal = o.status || "BELUM LUNAS";
+                    const isLunas = statusVal === "LUNAS";
+                    const isDp = statusVal === "DP 50% LUNAS";
+                    const isLuarJadetabek = o.region === "luar";
                     const currentCourier = o.courier || "J&T Express";
                     const currentTracking = o.trackingNumber || "";
+
+                    let statusBadgeClass = "bg-amber-900 text-amber-300";
+                    if(isLunas) statusBadgeClass = "bg-emerald-900 text-emerald-300";
+                    else if(isDp) statusBadgeClass = "bg-blue-900 text-blue-300";
+
+                    let dpButtonHtml = "";
+                    if(isLuarJadetabek && !isLunas) {
+                        dpButtonHtml = `<button type="button" onclick="toggleDpStatus('${docSnap.id}', '${statusVal}')" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-3 py-1.5 rounded-lg text-[10px] cursor-pointer flex-1">💰 ${isDp ? 'Batalkan DP' : '✅ DP 50% Sudah Dibayar'}</button>`;
+                    }
 
                     container.innerHTML += `
                         <div class="bg-slate-800 p-3 rounded-xl text-xs space-y-2 border border-slate-700">
@@ -1987,12 +2004,12 @@
                             </div>
                             <div class="flex justify-between items-center text-[11px]">
                                 <span>Total: <b class="text-emerald-400">${o.totalPrice}</b></span>
-                                <span class="px-2 py-0.5 rounded font-bold ${isLunas ? 'bg-emerald-900 text-emerald-300' : 'bg-amber-900 text-amber-300'}">${o.status || 'BELUM LUNAS'}</span>
+                                <span class="px-2 py-0.5 rounded font-bold ${statusBadgeClass}">${statusVal}</span>
                             </div>
                             
                             <!-- PENGATURAN EKSPEDISI & RESI -->
                             <div class="space-y-1.5 pt-1 border-t border-slate-700">
-                                <label class="block text-[10px] text-slate-300 font-semibold">Pengiriman & Ekspedisi:</label>
+                                <label class="block text-[10px] text-slate-300 font-semibold">Pengiriman & Ekspedisi (${o.region === 'luar' ? 'Luar Jabodetabek' : 'Jabodetabek'}):</label>
                                 <div class="grid grid-cols-2 gap-2">
                                     <select id="courier-select-${docSnap.id}" class="bg-slate-900 border border-slate-700 rounded-lg px-2 py-1.5 text-xs text-white outline-none">
                                         <option value="J&T Express" ${currentCourier==='J&T Express'?'selected':''}>J&T Express</option>
@@ -2006,7 +2023,7 @@
                                     <input type="text" id="tracking-input-${docSnap.id}" value="${currentTracking}" placeholder="No Resi (Opsional)" class="bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-white outline-none">
                                 </div>
                                 <div class="flex gap-2 pt-1">
-                                    <button type="button" onclick="saveShippingInfo('${docSnap.id}')" class="bg-amber-500 hover:bg-amber-600 text-slate-950 font-semibold px-3 py-1.5 rounded-lg text-[10px] cursor-pointer flex-1">💾 Simpan Info Pengiriman</button>
+                                    <button type="button" onclick="saveShippingInfo('${docSnap.id}')" class="bg-amber-500 hover:bg-amber-600 text-slate-950 font-semibold px-3 py-1.5 rounded-lg text-[10px] cursor-pointer flex-1">💾 Simpan Pengiriman</button>
                                     <button type="button" onclick="sendWhatsAppStatusMessage('${docSnap.id}')" class="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-3 py-1.5 rounded-lg text-[10px] cursor-pointer flex-1">💬 Kirim WA & Invoice</button>
                                 </div>
                             </div>
@@ -2014,8 +2031,10 @@
                             <div class="flex flex-wrap gap-2 pt-1 border-t border-slate-700">
                                 <button type="button" onclick="downloadOwnerPoHD('${docSnap.id}')" class="bg-indigo-600 hover:bg-indigo-700 text-white px-2.5 py-1.5 rounded-lg text-[10px] font-semibold cursor-pointer">📥 Download Desain HD</button>
                                 <button type="button" onclick="downloadOwnerInvoicePDF('${docSnap.id}')" class="bg-blue-600 hover:bg-blue-700 text-white px-2.5 py-1.5 rounded-lg text-[10px] font-semibold cursor-pointer">📄 Nota / Pelunasan (PDF)</button>
-                                <button type="button" onclick="toggleOrderStatus('${docSnap.id}', '${o.status || 'BELUM LUNAS'}')" class="bg-emerald-600 hover:bg-emerald-700 text-white px-2.5 py-1.5 rounded-lg text-[10px] font-semibold cursor-pointer">🔄 Ubah Status Lunas</button>
-                                <button type="button" onclick="deletePoOrder('${docSnap.id}')" class="bg-rose-600 hover:bg-rose-700 text-white px-2.5 py-1.5 rounded-lg text-[10px] font-semibold cursor-pointer">🗑️ Hapus</button>
+                                <button type="button" onclick="toggleOrderStatus('${docSnap.id}', '${statusVal}')" class="bg-emerald-600 hover:bg-emerald-700 text-white px-2.5 py-1.5 rounded-lg text-[10px] font-semibold cursor-pointer">🔄 Ubah Status Lunas</button>
+                                <button type="button" onclick="sendShippingWhatsAppMessage('${docSnap.id}')" class="bg-purple-600 hover:bg-purple-700 text-white px-2.5 py-1.5 rounded-lg text-[10px] font-semibold cursor-pointer">🚚 Barang Dalam Pengiriman</button>
+                                ${dpButtonHtml}
+                                <button type="button" onclick="deletePoOrder('${docSnap.id}')" class="bg-rose-600 hover:bg-rose-700 text-white px-2.5 py-1.5 rounded-lg text-[10px] cursor-pointer">🗑️ Hapus</button>
                             </div>
                         </div>`;
                 });
@@ -2050,22 +2069,42 @@
             if(targetWa.startsWith('0')) targetWa = '62' + targetWa.slice(1);
 
             let message = "";
-            const courier = o.courier || "Kurir";
-            const tracking = o.trackingNumber ? o.trackingNumber.trim() : "";
             const isLunas = o.status === "LUNAS";
 
-            if(tracking || courier === "Lalamove" || courier === "GoSend" || courier === "Ambil Sendiri") {
-                let resiText = tracking ? ` Nomor Resi: *${tracking}*` : "";
-                message = `Halo Kak *${o.name}*, kabar baik! Pesanan custom tas Anda di *${storeName}* (No PO: *${o.id}*) sudah dikirim via *${courier}*${resiText}. Mohon ditunggu kedatangannya ya Bosku. Terima kasih telah mempercayakan pesanan Anda di ${storeName}! 🙏✨`;
+            if(isLunas) {
+                message = `Halo Kak *${o.name}*, terima kasih banyak telah melunasi pesanan Anda di *${storeName}* (No PO: *${o.id}*). 🙏\n\nSemoga Kakak selalu diberikan kesehatan, kelancaran rezeki yang berkah, dan kesuksesan selalu. Pesanan Anda akan segera kami kirimkan. Terima kasih telah mempercayakan kebutuhan tas spunbond di ${storeName}! ✨😊`;
             } else {
-                message = `Halo Kak *${o.name}*, terima kasih banyak telah memesan di *${storeName}* (No PO: *${o.id}*). 🙏\n\nFile Invoice Tagihan resmi telah kami kirimkan di atas. Mohon segera dilakukan pembayaran / DP atas pesanan yang dibuat ke rekening resmi kami agar pesanan dapat segera diproses ke tahap produksi.\n\nJika ada yang ingin ditanyakan, silakan balas pesan ini ya Kak. Terima kasih! 📦📋`;
+                message = `Halo Kak *${o.name}*, terima kasih telah memesan di *${storeName}* (No PO: *${o.id}*). 🙏\n\nFile Invoice Tagihan resmi telah kami kirimkan. Silakan lakukan pembayaran sesuai instruksi agar pesanan segera diproses tim produksi. Terima kasih! 📦📋`;
             }
+
+            window.open(`https://wa.me/${targetWa}?text=${encodeURIComponent(message)}`);
+        }
+
+        async function sendShippingWhatsAppMessage(docId) {
+            const courier = document.getElementById(`courier-select-${docId}`).value;
+            const tracking = document.getElementById(`tracking-input-${docId}`).value.trim();
+            const { doc, getDoc } = window.firebaseDeps;
+            const docSnap = await getDoc(doc(window.firebaseDb, "orders", docId));
+            if(!docSnap.exists()) return alert("Data PO tidak ditemukan!");
+            const o = docSnap.data();
+
+            let targetWa = o.wa.replace(/[^0-9]/g, '');
+            if(targetWa.startsWith('0')) targetWa = '62' + targetWa.slice(1);
+
+            let resiText = tracking ? ` dengan No. Resi: *${tracking}*` : "";
+            let message = `Halo Kak *${o.name}*, kabar gembira! Pesanan custom tas Anda di *${storeName}* (No PO: *${o.id}*) saat ini **sedang dalam pengiriman** melalui jasa kirim *${courier}*${resiText}. Mohon ditunggu kedatangannya ya Bosku. Terima kasih! 🚚📦✨`;
 
             window.open(`https://wa.me/${targetWa}?text=${encodeURIComponent(message)}`);
         }
 
         async function toggleOrderStatus(docId, currentStatus) {
             const newStatus = currentStatus === "LUNAS" ? "BELUM LUNAS" : "LUNAS";
+            const { doc, setDoc } = window.firebaseDeps;
+            await setDoc(doc(window.firebaseDb, "orders", docId), { status: newStatus }, { merge: true });
+        }
+
+        async function toggleDpStatus(docId, currentStatus) {
+            const newStatus = currentStatus === "DP 50% LUNAS" ? "BELUM LUNAS" : "DP 50% LUNAS";
             const { doc, setDoc } = window.firebaseDeps;
             await setDoc(doc(window.firebaseDb, "orders", docId), { status: newStatus }, { merge: true });
         }
@@ -2101,12 +2140,14 @@
             alert("File desain HD bersih tanpa tanda air berhasil di-download!");
         }
 
+        // NOTA / PELUNASAN OWNER (GAYA EXCEL RESMI & STEMPEL SAMAR DI ATAS NOMINAL)
         async function downloadOwnerInvoicePDF(docId, silent = false) {
             const { doc, getDoc } = window.firebaseDeps;
             const docSnap = await getDoc(doc(window.firebaseDb, "orders", docId));
             if(!docSnap.exists()) return alert("Data PO tidak ditemukan!");
             const o = docSnap.data();
-            const isLunas = o.status === "LUNAS";
+            const statusVal = o.status || "BELUM LUNAS";
+            const isLunas = statusVal === "LUNAS";
 
             const { jsPDF } = window.jspdf;
             const pdf = new jsPDF('p', 'mm', 'a4');
@@ -2120,21 +2161,31 @@
             pdf.setTextColor(255, 255, 255); pdf.setFont("helvetica", "bold"); pdf.setFontSize(14);
             pdf.text(storeName.toUpperCase() + " - NOTA & TAGIHAN", brandLogoUrl ? 50 : 15, 16);
             pdf.setFont("helvetica", "normal"); pdf.setFontSize(8);
-            pdf.text("No PO: " + o.id + " | Tanggal: " + o.date, brandLogoUrl ? 50 : 15, 23);
-            pdf.text("Alamat: " + storeAddress + " | No WA: " + storePhone, brandLogoUrl ? 50 : 15, 28);
+            pdf.text("Alamat: " + storeAddress + " | No WA: " + storePhone, brandLogoUrl ? 50 : 15, 25);
+
+            // No Invoice, PO & Tanggal di Pojok Kanan Atas
+            pdf.setFont("helvetica", "bold"); pdf.setFontSize(9);
+            pdf.text("NOTA PESANAN", 195, 16, {align: "right"});
+            pdf.setFont("helvetica", "normal"); pdf.setFontSize(7.5);
+            pdf.text("No PO: " + o.id, 195, 22, {align: "right"});
+            pdf.text("Tanggal: " + o.date, 195, 27, {align: "right"});
 
             pdf.setTextColor(15, 23, 42); pdf.setFont("helvetica", "bold"); pdf.setFontSize(11);
-            pdf.text(isLunas ? "NOTA PELUNASAN (LUNAS)" : "NOTA TAGIHAN / PEMESANAN", 15, 48);
+            pdf.text(isLunas ? "NOTA PELUNASAN (LUNAS)" : (statusVal === "DP 50% LUNAS" ? "NOTA TAGIHAN (DP 50% DITERIMA)" : "NOTA TAGIHAN / PEMESANAN"), 15, 48);
             pdf.setFont("helvetica", "normal"); pdf.setFontSize(8.5);
-            pdf.text(`Status Pembayaran: ${o.status || 'BELUM LUNAS'}`, 15, 54);
+            pdf.text(`Status Pembayaran: ${statusVal}`, 15, 54);
 
-            pdf.setFont("helvetica", "bold"); pdf.text("DATA PEMESAN:", 15, 63);
-            pdf.setFont("helvetica", "normal");
-            pdf.text(`Nama: ${o.name} (${o.wa})`, 15, 69);
-            pdf.text(`Alamat Kirim: ${o.address}`, 15, 75);
+            pdf.setFont("helvetica", "bold"); pdf.text("DATA PEMESAN:", 15, 62);
+            pdf.setFont("helvetica", "normal"); pdf.setFontSize(8.5);
+            pdf.text(`Nama: ${o.name} (${o.wa})`, 15, 68);
+            pdf.text(`Alamat Kirim: ${o.address}`, 15, 74);
 
-            let startY = 82;
-            pdf.setFillColor(241, 245, 249); pdf.rect(15, startY, 180, 8, 'F');
+            // TABEL EXCEL STYLE
+            let startY = 80;
+            pdf.setFillColor(224, 242, 254); 
+            pdf.setDrawColor(0, 0, 0); pdf.setLineWidth(0.3);
+            pdf.rect(15, startY, 180, 8, 'FD');
+
             pdf.setFont("helvetica", "bold"); pdf.setFontSize(8);
             pdf.text("No", 18, startY + 5.5);
             pdf.text("Jenis & Model Tas / Ukuran", 28, startY + 5.5);
@@ -2146,41 +2197,48 @@
             startY += 8;
             pdf.setFont("helvetica", "normal");
             o.items.forEach((item, idx) => {
-                pdf.rect(15, startY, 180, 12);
-                pdf.text(String(idx + 1), 18, startY + 7.5);
+                pdf.setFillColor(255, 255, 255);
+                pdf.rect(15, startY, 180, 14, 'FD');
+                
+                pdf.text(String(idx + 1), 18, startY + 8);
                 pdf.text(`${item.model} (${item.size}) - ${item.color}`, 28, startY + 5);
-                pdf.setFontSize(7); pdf.text(`Cat: ${item.inkNote || '-'}`, 28, startY + 9.5); pdf.setFontSize(8);
-                pdf.text(item.method, 100, startY + 7.5);
-                pdf.text(item.qty + " Pcs", 138, startY + 7.5);
-                pdf.text("Rp " + item.unitPrice.toLocaleString('id-ID'), 155, startY + 7.5);
-                pdf.text("Rp " + item.subtotal.toLocaleString('id-ID'), 178, startY + 7.5);
-                startY += 12;
+                pdf.setFontSize(7); pdf.text(`Cat: ${item.inkNote || '-'}`, 28, startY + 10.5); pdf.setFontSize(8);
+                pdf.text(item.method, 100, startY + 8);
+                pdf.text(item.qty + " Pcs", 138, startY + 8);
+                pdf.text("Rp " + item.unitPrice.toLocaleString('id-ID'), 155, startY + 8);
+                pdf.text("Rp " + item.subtotal.toLocaleString('id-ID'), 178, startY + 8);
+                startY += 14;
             });
 
             startY += 6;
             pdf.setFont("helvetica", "bold"); pdf.setFontSize(10);
             pdf.text(`TOTAL PEMBAYARAN: ${o.totalPrice}`, 115, startY);
 
-            if(o.items[0] && o.items[0].mockupImg) {
+            // STEMPEL LUNAS SAMAR & MENIMPA NOMINAL TOTAL PEMBAYARAN
+            if(isLunas && customStampUrl) {
                 try {
-                    startY += 8;
-                    pdf.setFont("helvetica", "bold"); pdf.setFontSize(8.5);
-                    pdf.text("ILUSTRASI PRATINJAU DESAIN (BOX 1):", 15, startY);
-                    startY += 4;
-                    pdf.addImage(o.items[0].mockupImg, 'JPEG', 15, startY, 40, 40);
+                    pdf.setGState(new pdf.GState({ opacity: 0.35 })); // Stempel dibuat samar
+                    pdf.addImage(customStampUrl, 'PNG', 110, startY - 12, 55, 26); // Sedikit menimpa nominal total pembayaran
+                    pdf.setGState(new pdf.GState({ opacity: 1.0 })); // Reset opacity
                 } catch(e) {}
             }
 
-            if(isLunas && customStampUrl) {
-                try { pdf.addImage(customStampUrl, 'PNG', 65, startY + 12, 45, 22); } catch(e) {}
+            if(o.items[0] && o.items[0].mockupImg) {
+                try {
+                    startY += 10;
+                    pdf.setFont("helvetica", "bold"); pdf.setFontSize(8.5);
+                    pdf.text("ILUSTRASI PRATINJAU DESAIN (BOX 1):", 15, startY);
+                    startY += 4;
+                    pdf.addImage(o.items[0].mockupImg, 'JPEG', 15, startY, 38, 38);
+                } catch(e) {}
             }
 
             if(adminSignatureUrl) {
                 try {
                     pdf.setFont("helvetica", "normal"); pdf.setFontSize(8);
-                    pdf.text("Hormat Kami,", 145, startY + 10);
-                    pdf.addImage(adminSignatureUrl, 'PNG', 140, startY + 13, 35, 18);
-                    pdf.text("(" + storeName + ")", 140, startY + 34);
+                    pdf.text("Hormat Kami,", 145, startY + 5);
+                    pdf.addImage(adminSignatureUrl, 'PNG', 140, startY + 8, 35, 18);
+                    pdf.text("(" + storeName + ")", 140, startY + 29);
                 } catch(e) {}
             }
 
@@ -2197,10 +2255,12 @@
             cartItems.forEach(item => { totalQty += item.qty; grandSubtotal += item.subtotal; });
             const discountVal = totalQty >= 1000 ? grandSubtotal * 0.10 : 0;
             const grandTotal = grandSubtotal - discountVal;
+            const region = document.getElementById('shipping-region').value;
+            const dpVal = grandTotal * 0.50;
 
             const newOrder = {
                 id: orderId, name: customerProfile.name, wa: customerProfile.wa, address: customerProfile.address,
-                items: cartItems, totalPrice: "Rp " + Math.round(grandTotal).toLocaleString('id-ID'),
+                region: region, items: cartItems, totalPrice: "Rp " + Math.round(grandTotal).toLocaleString('id-ID'),
                 date: new Date().toLocaleString('id-ID', { dateStyle: 'medium', timeStyle: 'medium' }),
                 status: "BELUM LUNAS",
                 courier: "J&T Express",
@@ -2216,7 +2276,14 @@
                     itemsDetailText += `\n${idx + 1}. *${it.model} (${it.size})*\n   - Warna: ${it.color}\n   - Cetak: ${it.method}\n   - Qty: ${it.qty} Pcs @Rp ${it.unitPrice.toLocaleString('id-ID')} = *Rp ${it.subtotal.toLocaleString('id-ID')}*`;
                 });
 
-                let waMessage = `Halo Owner *${storeName}*, saya *${customerProfile.title} ${customerProfile.name}* ingin memesan custom tas dengan rincian berikut:\n\n📦 *No PO:* ${orderId}\n👤 *Nama:* ${customerProfile.title} ${customerProfile.name} (${customerProfile.wa})\n📍 *Alamat:* ${customerProfile.address}\n\n*Daftar Item Pesanan:*${itemsDetailText}\n\n💰 *Total Keseluruhan:* *Rp ${Math.round(grandTotal).toLocaleString('id-ID')}*\n\nMohon segera diproses ya bosku, terima kasih! 🙏`;
+                let paymentInstruction = "";
+                if(region === 'jabodetabek') {
+                    paymentInstruction = `🚚 *Ket. Pembayaran:* Wilayah Jabodetabek (*Sistem COD / Bayar di Tempat*). Pesanan Anda dengan rincian di atas sedang diproses oleh tim kami.`;
+                } else {
+                    paymentInstruction = `⚠️ *Ket. Pembayaran:* Wilayah Luar Jabodetabek (*Wajib DP 50% sebesar Rp ${Math.round(dpVal).toLocaleString('id-ID')}*) terlebih dahulu sebelum pesanan diproses oleh tim produksi kami.`;
+                }
+
+                let waMessage = `Halo Owner *${storeName}*, saya *${customerProfile.title} ${customerProfile.name}* ingin memesan custom tas dengan rincian berikut:\n\n📦 *No PO:* ${orderId}\n👤 *Nama:* ${customerProfile.title} ${customerProfile.name} (${customerProfile.wa})\n📍 *Alamat:* ${customerProfile.address}\n\n*Daftar Item Pesanan:*${itemsDetailText}\n\n💰 *Total Keseluruhan:* *Rp ${Math.round(grandTotal).toLocaleString('id-ID')}*\n${paymentInstruction}\n\nMohon segera diproses ya bosku, terima kasih! 🙏`;
 
                 alert("Pesanan tersimpan & diarahkan ke WhatsApp owner!");
                 window.open(`https://wa.me/${ownerWaNumber}?text=${encodeURIComponent(waMessage)}`);
