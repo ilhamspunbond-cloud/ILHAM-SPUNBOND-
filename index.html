@@ -1444,16 +1444,18 @@
             const mSelect = document.getElementById('bag-model-select');
             const modelNameText = (mSelect && mSelect.value !== "" && bagModels[mSelect.value]) ? bagModels[mSelect.value].name : bagModels[0].name;
 
-            document.getElementById('owner-method-txt').textContent = method === 'dtf' ? 'DTF Full Color' : (isTwoColors ? 'Sablon Manual 2 Warna' : 'Sablon Manual 1 Warna');
+            // Bersihkan label agar tidak mengandung karakter kode/mentah
+            const cleanMethodName = method === 'dtf' ? 'DTF Full Color' : (isTwoColors ? 'Sablon Manual (2 Warna)' : 'Sablon Manual (1 Warna)');
+            document.getElementById('owner-method-txt').textContent = cleanMethodName;
             document.getElementById('owner-model-txt').textContent = modelNameText;
 
-            let inkNoteText = "📄 Keterangan Tinta Produksi: ";
+            let inkNoteText = "Keterangan Tinta: ";
             if(method === 'dtf') {
                 inkNoteText += "DTF Full Color (Warna Asli Desain)";
             } else if(isTwoColors) {
-                inkNoteText += `Desain 1 = Tinta ${name1} | Desain 2 = Tinta ${name2} (Film Produksi digabung Hitam Pekat)`;
+                inkNoteText += `Desain 1: Tinta ${name1} | Desain 2: Tinta ${name2}`;
             } else {
-                inkNoteText += `Sablon 1 Warna = Tinta ${name1}`;
+                inkNoteText += `Tinta Sablon: ${name1}`;
             }
             document.getElementById('production-ink-notes').textContent = inkNoteText;
 
@@ -1626,9 +1628,10 @@
             const method = document.getElementById('print-method').value;
             const colorCount = document.getElementById('sablon-color-count').value;
             
-            let printMethodName = 'Sablon Manual 1 Warna';
+            // Format nama metode cetak yang bersih dan rapi (tanpa kode mentah)
+            let printMethodName = 'Sablon Manual (1 Warna)';
             if(method === 'dtf') printMethodName = 'DTF Full Color';
-            else if(colorCount === '2') printMethodName = 'Sablon Manual 2 Warna';
+            else if(colorCount === '2') printMethodName = 'Sablon Manual (2 Warna)';
 
             const unitPrice = calculateItemPrice();
 
@@ -1829,7 +1832,7 @@
             setTimeout(() => { isSyncingFromCloud = false; }, 500);
         }
 
-        // GENERATOR INVOICE PDF CUSTOMER (TABEL FLEKSIBEL KE BAWAH DENGAN AUTO-WRAP)
+        // GENERATOR INVOICE PDF CUSTOMER (DIPERBAIKI BERSIH DARI KODE & FLEKSIBEL KE BAWAH)
         async function downloadCustomerInvoicePDF() {
             if(cartItems.length === 0) return alert("Keranjang pesanan masih kosong!");
             let totalQty = 0, grandSubtotal = 0;
@@ -1871,7 +1874,7 @@
             pdf.text(`Alamat Pengiriman: ${customerProfile.address}`, 15, 60);
             pdf.text(`Ket. Pembayaran: ${paymentTypeNote}`, 15, 66);
 
-            // TABEL EXCEL STYLE (FLEXIBLE HEIGHT AUTO-WRAP)
+            // TABEL EXCEL STYLE (FLEXIBLE HEIGHT AUTO-WRAP TANPA KODE MENTAH)
             let startY = 74;
             pdf.setFillColor(224, 242, 254); 
             pdf.setDrawColor(0, 0, 0); pdf.setLineWidth(0.3);
@@ -1879,8 +1882,8 @@
 
             pdf.setTextColor(15, 23, 42); pdf.setFont("helvetica", "bold"); pdf.setFontSize(8);
             pdf.text("No", 18, startY + 5.5);
-            pdf.text("Jenis & Model Tas / Ukuran & Keterangan", 28, startY + 5.5);
-            pdf.text("Metode", 100, startY + 5.5);
+            pdf.text("Jenis & Model Tas / Ukuran & Catatan Tinta", 28, startY + 5.5);
+            pdf.text("Metode Cetak", 100, startY + 5.5);
             pdf.text("Qty", 132, startY + 5.5);
             pdf.text("Harga", 152, startY + 5.5);
             pdf.text("Subtotal", 176, startY + 5.5);
@@ -1889,14 +1892,13 @@
             pdf.setFont("helvetica", "normal");
 
             cartItems.forEach((item, idx) => {
-                // Bungkus teks deskripsi agar melar ke bawah jika panjang (max width 68mm)
-                const descLines = pdf.splitTextToSize(`${item.model} (${item.size}) - ${item.color}\nCat: ${item.inkNote || '-'}`, 68);
+                const descText = `${item.model} (${item.size}) - Kain: ${item.color}\n${item.inkNote || ''}`;
+                const descLines = pdf.splitTextToSize(descText, 68);
                 const methodLines = pdf.splitTextToSize(item.method, 28);
                 
                 const maxLineCount = Math.max(descLines.length, methodLines.length, 1);
-                const cellHeight = Math.max(14, maxLineCount * 5 + 4);
+                const cellHeight = Math.max(15, maxLineCount * 4.5 + 4);
 
-                // Cek batas halaman kertas
                 if(startY + cellHeight > 270) {
                     pdf.addPage();
                     startY = 20;
@@ -2155,7 +2157,7 @@
             alert("File desain HD bersih tanpa tanda air berhasil di-download!");
         }
 
-        // NOTA / PELUNASAN OWNER (TABEL FLEKSIBEL KE BAWAH DENGAN AUTO-WRAP)
+        // NOTA / PELUNASAN OWNER (DIPERBAIKI BERSIH DARI KODE & FLEKSIBEL KE BAWAH)
         async function downloadOwnerInvoicePDF(docId, silent = false) {
             const { doc, getDoc } = window.firebaseDeps;
             const docSnap = await getDoc(doc(window.firebaseDb, "orders", docId));
@@ -2197,7 +2199,7 @@
             pdf.text(`Nama: ${o.name} (${o.wa})`, 15, 68);
             pdf.text(`Alamat Kirim: ${o.address}`, 15, 74);
 
-            // TABEL EXCEL STYLE DENGAN KOTAK RAPI DAN FLEKSIBEL KE BAWAH
+            // TABEL EXCEL STYLE DENGAN KOTAK RAPI & FLEKSIBEL KE BAWAH TANPA KODE MENTAH
             let startY = 80;
             pdf.setFillColor(224, 242, 254); 
             pdf.setDrawColor(0, 0, 0); pdf.setLineWidth(0.3);
@@ -2205,8 +2207,8 @@
 
             pdf.setFont("helvetica", "bold"); pdf.setFontSize(8);
             pdf.text("No", 18, startY + 5.5);
-            pdf.text("Jenis & Model Tas / Ukuran & Keterangan", 28, startY + 5.5);
-            pdf.text("Metode", 100, startY + 5.5);
+            pdf.text("Jenis & Model Tas / Ukuran & Catatan Tinta", 28, startY + 5.5);
+            pdf.text("Metode Cetak", 100, startY + 5.5);
             pdf.text("Qty", 132, startY + 5.5);
             pdf.text("Harga", 152, startY + 5.5);
             pdf.text("Subtotal", 176, startY + 5.5);
@@ -2215,11 +2217,12 @@
             pdf.setFont("helvetica", "normal");
 
             o.items.forEach((item, idx) => {
-                const descLines = pdf.splitTextToSize(`${item.model} (${item.size}) - ${item.color}\nCat: ${item.inkNote || '-'}`, 68);
+                const descText = `${item.model} (${item.size}) - Kain: ${item.color}\n${item.inkNote || ''}`;
+                const descLines = pdf.splitTextToSize(descText, 68);
                 const methodLines = pdf.splitTextToSize(item.method, 28);
                 
                 const maxLineCount = Math.max(descLines.length, methodLines.length, 1);
-                const cellHeight = Math.max(14, maxLineCount * 5 + 4);
+                const cellHeight = Math.max(15, maxLineCount * 4.5 + 4);
 
                 if(startY + cellHeight > 270) {
                     pdf.addPage();
