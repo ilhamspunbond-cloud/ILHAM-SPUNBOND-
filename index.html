@@ -163,28 +163,34 @@
 
             <div class="inline-flex items-center gap-1.5 bg-emerald-700/60 border border-emerald-500/40 px-3 py-1 rounded-full text-[10px] font-semibold tracking-wider text-emerald-200 mb-1.5 uppercase">
                 <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                <span>Voice AI Edition v3.10</span>
+                <span>Voice AI Edition v4.0 (Smart Sales Pro)</span>
             </div>
 
             <h1 id="brand-title-text" class="text-xl font-extrabold tracking-wide text-white">ILHAM SPUNBOND</h1>
             <p id="welcome-greeting-text" class="text-xs text-emerald-200/90 mt-0.5 font-medium">Sistem Pemesanan Custom Tas Spunbond & Sablon</p>
         </div>
 
-        <!-- 🎙️🤖 VOICE AI ASISTEN -->
+        <!-- 🎙️🤖 VOICE AI ASISTEN & RIWAYAT CHAT BERKESINAMBUNGAN -->
         <div class="bg-white p-4 rounded-2xl shadow-md border border-emerald-200 space-y-3">
             <div class="flex items-center justify-between border-b border-slate-100 pb-2">
                 <h3 class="text-xs font-bold text-emerald-900 flex items-center gap-1.5">
-                    <span>🎙️🤖</span> Asisten AI & Konsultasi Rekomendasi
+                    <span>🎙️🤖</span> Asisten AI & Konsultasi Sales Lobi
                 </h3>
-                <button type="button" onclick="speakAiGreeting()" class="text-[10px] bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-semibold px-2.5 py-1 rounded-lg border border-emerald-200 cursor-pointer">🔊 Putar Sapaan AI</button>
+                <div class="flex items-center gap-1.5">
+                    <button type="button" onclick="clearChatHistory()" class="text-[10px] bg-rose-50 hover:bg-rose-100 text-rose-700 font-semibold px-2 py-1 rounded-lg border border-rose-200 cursor-pointer" title="Bersihkan Riwayat Chat">🗑️ Reset Chat</button>
+                    <button type="button" onclick="speakAiGreeting()" class="text-[10px] bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-semibold px-2.5 py-1 rounded-lg border border-emerald-200 cursor-pointer">🔊 Putar Sapaan</button>
+                </div>
             </div>
             
-            <div id="ai-chat-response" class="bg-slate-50 p-3 rounded-xl text-xs text-slate-700 border border-slate-200 italic leading-relaxed">
-                "Halo! Silakan ketik atau ngomong kebutuhan tas Anda (contoh: 'Cari tas buat box nasi ukuran 20x20' atau 'Tas kemasan toko HP'), nanti saya carikan rekomendasi pasnya!"
+            <!-- KOTAK RIWAYAT PERCAKAPAN (CHAT HISTORY BERKESINAMBUNGAN) -->
+            <div id="ai-chat-history-container" class="bg-slate-50 p-3 rounded-xl text-xs text-slate-700 border border-slate-200 space-y-2.5 max-h-60 overflow-y-auto">
+                <div class="p-2.5 bg-emerald-50/80 rounded-xl border border-emerald-200/60 italic leading-relaxed text-slate-800">
+                    🤖 "Halo! Silakan ketik atau ngomong kebutuhan tas Anda, nanti saya carikan rekomendasi pasnya sekaligus siap bantu urus pesanan sampai beres!"
+                </div>
             </div>
 
-            <div class="flex items-center gap-2">
-                <input type="text" id="ai-user-query" placeholder="Tanya rekomendasi ukuran/model tas..." class="flex-1 bg-slate-50 border border-slate-300 rounded-xl px-3 py-2.5 text-xs outline-none focus:ring-2 focus:ring-emerald-500 min-w-0" onfocus="stopAiSpeech()">
+            <div class="flex items-center gap-2 pt-1">
+                <input type="text" id="ai-user-query" placeholder="Ketik pesan atau konsultasi tas..." class="flex-1 bg-slate-50 border border-slate-300 rounded-xl px-3 py-2.5 text-xs outline-none focus:ring-2 focus:ring-emerald-500 min-w-0" onfocus="stopAiSpeech()" onkeypress="if(event.key==='Enter') askAiRecommendation()">
                 <button type="button" onclick="askAiRecommendation()" class="bg-emerald-700 hover:bg-emerald-800 text-white font-semibold px-3.5 py-2.5 rounded-xl text-xs cursor-pointer flex-shrink-0">Kirim</button>
                 <button type="button" id="mic-btn" onclick="toggleVoiceInput()" class="bg-amber-500 hover:bg-amber-600 text-white font-semibold px-3 py-2.5 rounded-xl text-xs cursor-pointer flex-shrink-0" title="Ngomong pakai suara">🎤</button>
             </div>
@@ -720,7 +726,6 @@
         ];
         let dtfOptions = [{ name: "Sedang (8x8 cm)", price: 2000 }, { name: "Besar (10x10 cm)", price: 3000 }];
         
-        // Ingatan AI (FAQ) dengan Format Baru: Prefix + Nama + Keyword + Suffix
         let knowledgeFaq = [
             { prefix: "Waalaikumussalam", keyword: "assalamualaikum", suffix: "Massyaallah bagaimana kabarnya? Ada yg bisa saya bantu untuk cara pemesanan atau rekomendasi tas spunbond yg sesuai kebutuhan?", repeatKeyword: false },
             { prefix: "terkait", keyword: "minimal order", suffix: "untuk pemesanan custom tas spunbond minimal order sangat terjangkau bosku, siap kami layani!", repeatKeyword: true },
@@ -752,6 +757,7 @@
         let isSyncingFromCloud = false;
         let activeOrdersUnsubscribe = null;
         let cartItems = [];
+        let chatHistory = []; // Riwayat chat per HP customer
 
         let customerProfile = { title: "Bosku", name: "", wa: "", address: "" };
 
@@ -780,6 +786,7 @@
             if(localStorage.getItem('ilham_adminSignatureUrl')) adminSignatureUrl = localStorage.getItem('ilham_adminSignatureUrl');
             if(localStorage.getItem('ilham_customerProfile')) customerProfile = JSON.parse(localStorage.getItem('ilham_customerProfile'));
             if(localStorage.getItem('ilham_cartItems')) cartItems = JSON.parse(localStorage.getItem('ilham_cartItems'));
+            if(localStorage.getItem('ilham_chatHistory')) chatHistory = JSON.parse(localStorage.getItem('ilham_chatHistory'));
         } catch(e) {
             console.error("Local storage error:", e);
         }
@@ -787,6 +794,7 @@
         window.onload = function() {
             updateDynamicManifest();
             renderAdminPanel();
+            renderChatHistory();
             checkCustomerOnboarding();
             if(window.initCloudSync) { window.initCloudSync(); }
         };
@@ -815,7 +823,6 @@
                 document.getElementById('onboarding-modal').classList.remove('hidden');
             } else {
                 updateUIWithProfile();
-                speakAiGreeting();
             }
         }
 
@@ -879,8 +886,40 @@
 
         function speakAiGreeting() {
             const greeting = `Halo ${customerProfile.title} ${customerProfile.name}. Selamat datang di pusat pembuatan tas spunbond kustom ILHAM SPUNBOND. Ada yang bisa saya bantu rekomendasikan hari ini?`;
-            document.getElementById('ai-chat-response').textContent = `"${greeting}"`;
+            appendChat("ai", greeting);
             speakText(greeting);
+        }
+
+        function appendChat(sender, text) {
+            chatHistory.push({ sender, text });
+            safeLocalStorageSet('ilham_chatHistory', JSON.stringify(chatHistory));
+            renderChatHistory();
+        }
+
+        function renderChatHistory() {
+            const container = document.getElementById('ai-chat-history-container');
+            if(!container) return;
+            if(chatHistory.length === 0) {
+                container.innerHTML = `<div class="p-2.5 bg-emerald-50/80 rounded-xl border border-emerald-200/60 italic leading-relaxed text-slate-800">🤖 "Halo! Silakan ketik atau ngomong kebutuhan tas Anda, nanti saya carikan rekomendasi pasnya sekaligus siap bantu urus pesanan sampai beres!"</div>`;
+                return;
+            }
+            container.innerHTML = '';
+            chatHistory.forEach(chat => {
+                if(chat.sender === 'user') {
+                    container.innerHTML += `<div class="p-2.5 bg-slate-100 rounded-xl border border-slate-200 text-right text-slate-900 font-medium">🗣️ "${chat.text}"</div>`;
+                } else {
+                    container.innerHTML += `<div class="p-2.5 bg-emerald-50/80 rounded-xl border border-emerald-200/60 italic leading-relaxed text-slate-800">🤖 "${chat.text}"</div>`;
+                }
+            });
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function clearChatHistory() {
+            if(confirm("Bersihkan riwayat percakapan?")) {
+                chatHistory = [];
+                safeLocalStorageSet('ilham_chatHistory', JSON.stringify(chatHistory));
+                renderChatHistory();
+            }
         }
 
         function toggleLockPosition() {
@@ -910,36 +949,51 @@
 
         function askAiRecommendation() {
             stopAiSpeech();
-            const queryText = document.getElementById('ai-user-query').value.trim().toLowerCase();
+            const queryInput = document.getElementById('ai-user-query');
+            const queryText = queryInput.value.trim().toLowerCase();
             if(!queryText) return alert("Silakan ketik pertanyaan atau konsultasi Anda terlebih dahulu.");
 
-            // 1. CEK KATA-KATA TERLARANG (BLOCKED WORDS)
+            appendChat("user", queryInput.value.trim());
+            queryInput.value = "";
+
+            // 1. CEK KATA TERLARANG (BLOCKED WORDS)
             const queryWords = queryText.split(/\s+/);
             const hasForbiddenWord = blockedWords.some(bw => queryText.includes(bw.toLowerCase()) || queryWords.includes(bw.toLowerCase()));
 
             if(hasForbiddenWord) {
                 const politeResponse = `Mohon maaf, ${customerProfile.title} ${customerProfile.name}, mari kita berbincang dengan lebih santun dan damai ya. Ada hal seputar pemesanan tas spunbond yang bisa saya bantu dengan senang hati?`;
-                document.getElementById('ai-chat-response').textContent = `"${politeResponse}"`;
+                appendChat("ai", politeResponse);
                 speakText(politeResponse);
                 return;
             }
 
             let finalAiResponse = "";
 
-            // 2. CEK INGATAN KUSTOM (FAQ) -> POSISI NAMA DI PINDAH SETELAH KATA TAMBAHAN AWAL (PREFIX)
+            // 2. CEK INGATAN KUSTOM (FAQ) DENGAN FOLLOW-UP QUESTION & LOBI SALES
             let matchedFaq = knowledgeFaq.find(f => {
                 const keywordLower = (f.keyword || "").toLowerCase();
                 return keywordLower && (queryText.includes(keywordLower) || queryWords.some(w => keywordLower.includes(w) || w.includes(keywordLower)));
             });
+
+            const followUpPool = [
+                "Ngomong-ngomong, buat acara apa nih Kak tasnya, atau sudah punya desain logo sendiri?",
+                "Mau dibantu dicarikan ukuran pas dengan sampel box makan atau produk tokonya, Bosku?",
+                "Mau langsung kita buatkan preview mockup desain logo di tasnya sekarang?",
+                "Kira-kira butuh quantity berapa pcs nih Kak biar kita hitungkan diskon spesial partai besarnya?"
+            ];
+            const randomFollowUp = followUpPool[Math.floor(Math.random() * followUpPool.length)];
+
+            // Mode Lobi Sales Tambahan
+            const salesLobiPitch = " Oh ya, di ILHAM SPUNBOND kita jamin kualitas jahitan rapi, sablon awet anti luntur, dan khusus Pulau Jawa dapet free ongkir lho! Yuk langsung amankan slot produksinya.";
 
             if(matchedFaq) {
                 let prefixPart = matchedFaq.prefix ? matchedFaq.prefix + ", " : "";
                 let namePart = `${customerProfile.title} ${customerProfile.name}, `;
                 
                 if(matchedFaq.repeatKeyword) {
-                    finalAiResponse = `${prefixPart}${namePart}${matchedFaq.keyword}, ${matchedFaq.suffix}`;
+                    finalAiResponse = `${prefixPart}${namePart}${matchedFaq.keyword}, ${matchedFaq.suffix} ${salesLobiPitch} ${randomFollowUp}`;
                 } else {
-                    finalAiResponse = `${prefixPart}${namePart}${matchedFaq.suffix}`;
+                    finalAiResponse = `${prefixPart}${namePart}${matchedFaq.suffix} ${salesLobiPitch} ${randomFollowUp}`;
                 }
             } else {
                 let foundMatch = false;
@@ -952,7 +1006,7 @@
                             
                             let matchedKeyword = queryWords.find(w => note.includes(w) || model.name.toLowerCase().includes(w)) || queryText;
 
-                            finalAiResponse = `${customerProfile.title} ${customerProfile.name}, ngomongin soal ${matchedKeyword}, rekomendasi terbaik dari kita pakai model ${model.name} ukuran ${sizeObj.name} (Harga: Rp ${sizeObj.price.toLocaleString('id-ID')} /pcs). Catatan: ${sizeObj.note}`;
+                            finalAiResponse = `${customerProfile.title} ${customerProfile.name}, ngomongin soal ${matchedKeyword}, rekomendasi terbaik dari kita pakai model ${model.name} ukuran ${sizeObj.name} (Harga: Rp ${sizeObj.price.toLocaleString('id-ID')} /pcs). Catatan: ${sizeObj.note} ${salesLobiPitch} ${randomFollowUp}`;
                             
                             document.getElementById('bag-model-select').value = mIdx;
                             updateCustomerSizesDropdown();
@@ -967,7 +1021,7 @@
             }
 
             if(!finalAiResponse) {
-                finalAiResponse = `${customerProfile.title} ${customerProfile.name}, ngomongin soal ${queryText}, maaf saya belum mengerti detailnya. Pertanyaan ini sudah saya catat untuk ditinjau oleh Admin! 🙏`;
+                finalAiResponse = `${customerProfile.title} ${customerProfile.name}, ngomongin soal ${queryText}, pilihan tas custom kita lengkap banget mulai dari model oval sampai handle box. ${salesLobiPitch} Pertanyaan ini juga sudah saya catat untuk ditinjau Admin ya! 🙏 ${randomFollowUp}`;
                 if(!unansweredLogs.includes(queryText)) {
                     unansweredLogs.push(queryText);
                     saveToCloud();
@@ -975,7 +1029,7 @@
                 }
             }
 
-            document.getElementById('ai-chat-response').textContent = `"${finalAiResponse}"`;
+            appendChat("ai", finalAiResponse);
             speakText(finalAiResponse);
         }
 
