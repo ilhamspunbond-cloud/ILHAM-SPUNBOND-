@@ -1357,7 +1357,6 @@
             
             if(!keyword || !suffix) return alert("Harap isi Kata Kunci dan Jawaban/Kata Akhir dengan lengkap!");
             
-            // Masukkan ke array lokal
             knowledgeFaq.push({ prefix, keyword, suffix, repeatKeyword });
             
             document.getElementById('new-faq-prefix').value = "";
@@ -1366,15 +1365,14 @@
             
             renderAdminPanel();
             
-            // Kunci sinkronisasi agar tidak bentrok saat update cloud
+            // KUNCI PENGAMAN SYNC CLOUD AGAR DATA TIDAK REBOUND/OVERWRITE
             isSyncingFromCloud = true;
             saveToCloud().then(() => {
-                setTimeout(() => { isSyncingFromCloud = false; }, 800);
+                setTimeout(() => { isSyncingFromCloud = false; }, 1200);
                 alert("Mantap! Ingatan AI baru berhasil disimpan permanen di nomor urut " + knowledgeFaq.length + "!");
             }).catch(err => {
                 isSyncingFromCloud = false;
                 console.error("Gagal simpan FAQ ke cloud:", err);
-                alert("Ingatan AI tersimpan secara lokal!");
             });
         }
 
@@ -1404,7 +1402,7 @@
             knowledgeFaq.splice(idx, 1);
             isSyncingFromCloud = true;
             saveToCloud().then(() => {
-                setTimeout(() => { isSyncingFromCloud = false; }, 800);
+                setTimeout(() => { isSyncingFromCloud = false; }, 1200);
             });
             renderAdminPanel();
         }
@@ -1437,7 +1435,7 @@
                 unansweredLogs.splice(logIdx, 1);
                 isSyncingFromCloud = true;
                 saveToCloud().then(() => {
-                    setTimeout(() => { isSyncingFromCloud = false; }, 800);
+                    setTimeout(() => { isSyncingFromCloud = false; }, 1200);
                 });
                 renderAdminPanel();
                 alert("Pertanyaan berhasil dipromosikan jadi ingatan tetap AI!");
@@ -2125,7 +2123,7 @@
             updateDynamicManifest();
             renderAdminPanel();
             updateBagCanvas();
-            setTimeout(() => { isSyncingFromCloud = false; }, 500);
+            setTimeout(() => { isSyncingFromCloud = false; }, 1000);
         }
 
         async function downloadCustomerInvoicePDF() {
