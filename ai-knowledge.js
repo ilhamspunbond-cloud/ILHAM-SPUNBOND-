@@ -12,14 +12,103 @@ let defaultKnowledgeFaq = [
 // Load dari localStorage jika sudah ada, jika belum pakai data default
 let knowledgeFaq = JSON.parse(localStorage.getItem("ilhamSpunbondKnowledge")) || defaultKnowledgeFaq;
 
-let blockedWords = ["anjing", "asu", "bangsat", "tolol", "goblok", "kampret", "keparat"];
-let unansweredLogs = [];
+let blockedWords = JSON.parse(localStorage.getItem("ilhamSpunbondBlockedWords")) || ["anjing", "asu", "bangsat", "tolol", "goblok", "kampret", "keparat"];
+let unansweredLogs = JSON.parse(localStorage.getItem("ilhamSpunbondUnansweredLogs")) || [];
+
+let isSyncingFromCloud = false;
+
+// ==========================================
+// 2. FUNGSI CLOUD SYNC FIREBASE (REAL-TIME SEMUA HP)
+// ==========================================
+window.initCloudSync = async function() {
+    if (!window.firebaseDb || !window.firebaseDeps) return;
+    const { doc, onSnapshot } = window.firebaseDeps;
+    const db = window.firebaseDb;
+
+    const docRef = doc(db, "ilham_store", "ai_knowledge_db");
+
+    // Mendengarkan perubahan data secara real-time dari semua HP/Admin
+    onSnapshot(docRef, (docSnap) => {
+        if (isSyncingFromCloud) return; // Hindari looping saat admin sedang mengetik/menyimpan
+
+        if (docSnap.exists()) {
+            const cloudData = docSnap.data();
+            if (cloudData.knowledgeFaq && Array.isArray(cloudData.knowledgeFaq)) {
+                knowledgeFaq = cloudData.knowledgeFaq;
+                localStorage.setItem("ilhamSpunbondKnowledge", JSON.stringify(knowledgeFaq));
+            }
+            if (cloudData.blockedWords && Array.isArray(cloudData.blockedWords)) {
+                blockedWords = cloudData.blockedWords;
+                localStorage.setItem("ilhamSpunbondBlockedWords", JSON.stringify(blockedWords));
+            }
+            if (cloudData.unansweredLogs && Array.isArray(cloudData.unansweredLogs)) {
+                unansweredLogs = cloudData.unansweredLogs;
+                localStorage.setItem("ilhamSpunbondUnansweredLogs", JSON.stringify(unansweredLogs));
+            }
+            
+            // Refresh panel admin atau tampilan jika ada fungsi render
+            if (typeof renderAdminPanel === 'function') {
+                renderAdminPanel();
+            }
+
+            const syncEl = document.getElementById('sync-status');
+            if(syncEl) {
+                syncEl.innerText = "☁️ Terhubung Cloud (Live Sync Real-time)";
+                syncEl.className = "text-[11px] bg-emerald-100 text-emerald-800 px-3.5 py-1.5 rounded-full font-medium inline-block shadow-sm";
+            }
+        } else {
+            // Jika database cloud masih kosong, inisialisasi simpan data default
+            saveToCloud();
+        }
+    }, (error) => {
+        console.error("Gagal sinkronisasi cloud: ", error);
+        const syncEl = document.getElementById('sync-status');
+        if(syncEl) {
+            syncEl.innerText = "⚠️ Mode Offline (Menggunakan Memori Lokal)";
+            syncEl.className = "text-[11px] bg-amber-100 text-amber-800 px-3.5 py-1.5 rounded-full font-medium inline-block shadow-sm";
+        }
+    });
+};
+
+// Fungsi untuk menyimpan perubahan ke Firebase Cloud & LocalStorage
+window.saveToCloud = async function() {
+    // Selalu simpan ke localStorage HP sendiri sebagai cadangan
+    localStorage.setItem("ilhamSpunbondKnowledge", JSON.stringify(knowledgeFaq));
+    localStorage.setItem("ilhamSpunbondBlockedWords", JSON.stringify(blockedWords));
+    localStorage.setItem("ilhamSpunbondUnansweredLogs", JSON.stringify(unansweredLogs));
+
+    if (!window.firebaseDb || !window.firebaseDeps) return;
+    const { doc, setDoc } = window.firebaseDeps;
+    const db = window.firebaseDb;
+
+    try {
+        isSyncingFromCloud = true;
+        const docRef = doc(db, "ilham_store", "ai_knowledge_db");
+        await setDoc(docRef, {
+            knowledgeFaq: knowledgeFaq,
+            blockedWords: blockedWords,
+            unansweredLogs: unansweredLogs,
+            updatedAt: new Date().toISOString()
+        }, { merge: true });
+        console.log("Data berhasil disinkronkan ke Cloud!");
+    } catch (error) {
+        console.error("Gagal menyimpan ke cloud: ", error);
+    } finally {
+        setTimeout(() => { isSyncingFromCloud = false; }, 1000);
+    }
+};
+
+// Auto run sync saat halaman dimuat
+window.addEventListener('DOMContentLoaded', () => {
+    if(window.firebaseDb && window.initCloudSync) {
+        window.initCloudSync();
+    }
+});
 
 
 // ==========================================
-// 2. FUNGSI SUARA & UCAPAN AI (SPEECH)
+// 3. FUNGSI SUARA & UCAPAN AI (SPEECH)
 // ==========================================
-
 function stopAiSpeech() {
     if('speechSynthesis' in window) {
         window.speechSynthesis.cancel();
@@ -44,8 +133,10 @@ function speakAiGreeting() {
     appendChat("ai", greeting);
     speakText(greeting);
 }
+
+
 // ==========================================
-// 3. FUNGSI UTAMA PENCARIAN & REKOMENDASI AI
+// 4. FUNGSI UTAMA PENCARIAN & REKOMENDASI AI
 // ==========================================
 function askAiRecommendation() {
     stopAiSpeech();
@@ -73,19 +164,16 @@ function askAiRecommendation() {
 
     let finalAiResponse = "";
 
-    // Cek di Knowledge FAQ (Diperbaiki agar angka/keyword spesifik tidak salah tangkap via includes parsial)
+    // Cek di Knowledge FAQ (Logika anti salah tangkap angka 50 vs 500)
     let matchedFaq = knowledgeFaq.find(f => {
         const keywordLower = (f.keyword || "").toLowerCase().trim();
         if (!keywordLower) return false;
 
-        // Jika keyword berupa angka murni (seperti "50", "500"), wajib match secara exact (sama persis) 
-        // atau kata utuh dalam array queryWords agar "500" tidak dianggap mengandung "50".
         const isNumericKeyword = /^\d+$/.test(keywordLower);
         if (isNumericKeyword) {
             return queryText === keywordLower || queryWords.includes(keywordLower);
         }
 
-        // Untuk keyword kalimat/teks biasa, gunakan pengecekan standar
         return queryText === keywordLower || queryText.includes(keywordLower) || queryWords.includes(keywordLower);
     });
 
@@ -165,8 +253,9 @@ function askAiRecommendation() {
     speakText(finalAiResponse);
 }
 
+
 // ==========================================
-// 4. FUNGSI VOICE INPUT (MICROPHONE)
+// 5. FUNGSI VOICE INPUT (MICROPHONE)
 // ==========================================
 function toggleVoiceInput() {
     if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
@@ -217,8 +306,9 @@ function toggleVoiceInput() {
     recognition.start();
 }
 
+
 // ==========================================
-// 5. FUNGSI MANAJEMEN INGATAN AI (ADMIN)
+// 6. FUNGSI MANAJEMEN INGATAN AI (ADMIN)
 // ==========================================
 async function addKnowledgeFaq() {
     const prefix = document.getElementById('new-faq-prefix').value.trim();
@@ -228,23 +318,22 @@ async function addKnowledgeFaq() {
 
     if(!keyword || !suffix) return alert("Harap isi Kata Kunci dan Jawaban dengan lengkap!");
 
-    // Menambahkan data baru ke array
+    // Menambahkan data baru ke array secara dinamis
     knowledgeFaq.push({ prefix, keyword, suffix, repeatKeyword });
 
-    // Menyimpan secara permanen ke localStorage browser
-    localStorage.setItem("ilhamSpunbondKnowledge", JSON.stringify(knowledgeFaq));
-
+    // Kosongkan form input admin
     document.getElementById('new-faq-prefix').value = "";
     document.getElementById('new-faq-keyword').value = "";
     document.getElementById('new-faq-suffix').value = "";
 
-    renderAdminPanel();
+    if (typeof renderAdminPanel === 'function') {
+        renderAdminPanel();
+    }
 
-    isSyncingFromCloud = true;
+    // Simpan permanen ke localStorage dan Cloud (agar tembus ke semua HP)
     await saveToCloud();
-    setTimeout(() => { isSyncingFromCloud = false; }, 1200);
 
-    alert(`Ingatan AI No. ${knowledgeFaq.length} berhasil disimpan permanen!`);
+    alert(`Ingatan AI No. ${knowledgeFaq.length} berhasil disimpan permanen dan disinkronkan ke semua HP! 🚀`);
 }
 
 function updateFaqField(idx, fieldName) {
@@ -258,9 +347,6 @@ function updateFaqField(idx, fieldName) {
         const val = document.getElementById(`edit-faq-suffix-${idx}`).value;
         if(knowledgeFaq[idx]) knowledgeFaq[idx].suffix = val;
     }
-    
-    // Update juga di localStorage saat diedit
-    localStorage.setItem("ilhamSpunbondKnowledge", JSON.stringify(knowledgeFaq));
     saveToCloud();
 }
 
@@ -268,21 +354,18 @@ function updateFaqRepeat(idx) {
     const selectEl = document.getElementById(`edit-faq-repeat-${idx}`);
     if(selectEl && knowledgeFaq[idx]) {
         knowledgeFaq[idx].repeatKeyword = selectEl.value === "true";
-        localStorage.setItem("ilhamSpunbondKnowledge", JSON.stringify(knowledgeFaq));
         saveToCloud();
     }
 }
 
 async function deleteKnowledgeFaq(idx) {
-    knowledgeFaq.splice(idx, 1);
-    
-    // Perbarui localStorage saat ada yang dihapus
-    localStorage.setItem("ilhamSpunbondKnowledge", JSON.stringify(knowledgeFaq));
-
-    isSyncingFromCloud = true;
-    await saveToCloud();
-    setTimeout(() => { isSyncingFromCloud = false; }, 1200);
-    renderAdminPanel();
+    if(confirm("Yakin ingin menghapus ingatan AI ini?")) {
+        knowledgeFaq.splice(idx, 1);
+        if (typeof renderAdminPanel === 'function') {
+            renderAdminPanel();
+        }
+        await saveToCloud();
+    }
 }
 
 function addBlockedWord() {
@@ -292,7 +375,7 @@ function addBlockedWord() {
         blockedWords.push(word);
         document.getElementById('new-blocked-word').value = "";
         saveToCloud();
-        renderAdminPanel();
+        if (typeof renderAdminPanel === 'function') renderAdminPanel();
         alert("Kata terlarang berhasil ditambahkan!");
     } else {
         alert("Kata tersebut sudah ada dalam daftar terlarang.");
@@ -302,7 +385,7 @@ function addBlockedWord() {
 function deleteBlockedWord(idx) {
     blockedWords.splice(idx, 1);
     saveToCloud();
-    renderAdminPanel();
+    if (typeof renderAdminPanel === 'function') renderAdminPanel();
 }
 
 function promoteLogToFaq(logText, logIdx) {
@@ -310,16 +393,9 @@ function promoteLogToFaq(logText, logIdx) {
     const suffix = prompt(`Masukkan Kata Tambahan Akhir / Jawaban untuk pertanyaan: "${logText}"`);
     if(prefix !== null && suffix) {
         knowledgeFaq.push({ prefix: prefix.trim(), keyword: logText.toLowerCase().trim(), suffix: suffix.trim(), repeatKeyword: true });
-        
-        // Simpan permanen ke localStorage
-        localStorage.setItem("ilhamSpunbondKnowledge", JSON.stringify(knowledgeFaq));
-
         unansweredLogs.splice(logIdx, 1);
-        isSyncingFromCloud = true;
-        saveToCloud().then(() => {
-            setTimeout(() => { isSyncingFromCloud = false; }, 1200);
-        });
-        renderAdminPanel();
+        saveToCloud();
+        if (typeof renderAdminPanel === 'function') renderAdminPanel();
         alert("Pertanyaan berhasil dipromosikan jadi ingatan tetap AI!");
     }
 }
@@ -327,13 +403,13 @@ function promoteLogToFaq(logText, logIdx) {
 function deleteSingleUnansweredLog(idx) {
     unansweredLogs.splice(idx, 1);
     saveToCloud();
-    renderAdminPanel();
+    if (typeof renderAdminPanel === 'function') renderAdminPanel();
 }
 
 function clearAllUnansweredLogs() {
     if(confirm("Bersihkan semua log pertanyaan belum terjawab?")) {
         unansweredLogs = [];
         saveToCloud();
-        renderAdminPanel();
+        if (typeof renderAdminPanel === 'function') renderAdminPanel();
     }
 }
