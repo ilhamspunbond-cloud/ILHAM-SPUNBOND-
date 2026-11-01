@@ -62,11 +62,17 @@ try {
     console.error("Storage error:", e);
 }
 
-// Fungsi Sapaan Awal AI
+// Fungsi Sapaan Awal AI (Otomatis Menarik Nama Customer yang Aktif)
 function speakAiGreeting() {
-    const customer = JSON.parse(localStorage.getItem('ilham_customerProfile') || '{}');
-    const name = customer.name || 'Bosku';
-    const title = customer.title || 'Bosku';
+    // Ambil data profil customer terbaru dari localStorage
+    let activeCustomer = {};
+    try {
+        activeCustomer = JSON.parse(localStorage.getItem('ilham_customerProfile') || '{}');
+    } catch(e) {}
+
+    const title = activeCustomer.title || localStorage.getItem('ilham_customer_title') || 'Bosku';
+    const name = activeCustomer.name || localStorage.getItem('ilham_customer_name') || 'Pelanggan';
+    
     const text = `Halo ${title} ${name}! Selamat datang kembali di ILHAM SPUNBOND. Ada yang bisa saya bantu terkait pemesanan tas custom hari ini?`;
     
     appendChatBubble('ai', text);
@@ -78,12 +84,6 @@ function speakAiGreeting() {
         utterance.rate = 1.0;
         utterance.pitch = 1.0;
         window.speechSynthesis.speak(utterance);
-    }
-}
-
-function stopAiSpeech() {
-    if ('speechSynthesis' in window) {
-        window.speechSynthesis.cancel();
     }
 }
 
