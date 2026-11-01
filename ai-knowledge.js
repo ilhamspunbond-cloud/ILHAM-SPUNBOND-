@@ -118,6 +118,16 @@ function askAiRecommendation() {
             } else {
                 if(!unansweredLogs.includes(rawQuery)) {
                     unansweredLogs.push(rawQuery);
+                
+                    // 🛡️ Batasi maksimal hanya menyimpan 20 log terbaru agar memori tidak bengkak
+                    if (unansweredLogs.length > 20) {
+                        unansweredLogs.shift(); 
+                    }
+
+                    if(typeof saveToCloud === 'function') saveToCloud();
+                }
+                finalAiResponse = `Tentu ${userPrefixName}di ILHAM SPUNBOND semua pesanan custom tas bisa diatur mulai dari sablon manual sampai DTF full color. Mau dibantu hitungkan estimasi harga?`;
+            }
                     if(typeof saveToCloud === 'function') saveToCloud();
                 }
                 finalAiResponse = `Tentu ${userPrefixName}di ILHAM SPUNBOND semua pesanan custom tas bisa diatur mulai dari sablon manual sampai DTF full color. Mau dibantu hitungkan estimasi harga?`;
@@ -254,4 +264,16 @@ function deleteBlockedWord(idx) {
     blockedWords.splice(idx, 1);
     if(typeof saveToCloud === 'function') saveToCloud();
     if (typeof renderAdminPanel === 'function') renderAdminPanel();
+}
+
+// ==========================================
+// PEMBERSIH LOG PERTANYAAN TERTINGGAL
+// ==========================================
+async function clearAllUnansweredLogs() {
+    if(confirm("Hapus semua daftar log pertanyaan customer yang menumpuk?")) {
+        unansweredLogs = [];
+        if(typeof saveToCloud === 'function') await saveToCloud();
+        if(typeof renderAdminPanel === 'function') renderAdminPanel();
+        alert("Semua log pertanyaan tertinggal berhasil dibersihkan! Panel AI kembali ringan.");
+    }
 }
