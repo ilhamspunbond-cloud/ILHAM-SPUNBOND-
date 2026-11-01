@@ -499,13 +499,13 @@
                 <button type="button" onclick="toggleAdminPanel()" class="text-xs text-slate-400 hover:text-white font-bold px-2 py-1 bg-slate-800 rounded">Tutup [X]</button>
             </div>
 
-            <!-- KNOWLEDGE BASE & AI MEMORY TRAINING (3 KOLOM TERPISAH + TOGGLE REPEAT) -->
+            <!-- KNOWLEDGE BASE & AI MEMORY TRAINING (DIUBAH JADI FLEKSIBEL TANPA BATAS SCROLL) -->
             <div class="bg-slate-800 p-3 rounded-xl border border-amber-500/30 space-y-3">
                 <label class="block text-xs font-semibold text-amber-300">🧠 AI Knowledge Base & Opsi Pengulangan Kata</label>
                 <p class="text-[10px] text-slate-400">Atur Kata Tambahan Awal, Kata Kunci, Kata Tambahan Akhir, dan aktifkan/matikan pengulangan kata kunci.</p>
                 
-                <div id="faq-admin-container" class="space-y-3 max-h-[500px] overflow-y-auto pr-1"></div>
-
+                <!-- Container list ingatan AI kini fleksibel memanjang ke bawah otomatis -->
+                <div id="faq-admin-container" class="space-y-3 pr-1"></div>
                 
                 <div class="space-y-2 pt-2 border-t border-slate-700">
                     <input type="text" id="new-faq-prefix" placeholder="Kata Tambahan Awal (Cth: Waalaikumussalam)" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white outline-none">
@@ -1353,7 +1353,6 @@
             }
         }
 
-        // --- DIPERBAIKI: FUNGSI TAMBAH INGATAN AI AGAR LANGSUNG MASUK & TERSIMPAN AMAN ---
         function addKnowledgeFaq() {
             const prefix = document.getElementById('new-faq-prefix').value.trim();
             const keyword = document.getElementById('new-faq-keyword').value.trim().toLowerCase();
@@ -1362,7 +1361,6 @@
             
             if(!keyword || !suffix) return alert("Harap isi Kata Kunci dan Jawaban/Kata Akhir dengan lengkap!");
             
-            // Masukkan ke urutan paling atas array agar langsung terlihat di list teratas
             knowledgeFaq.unshift({ prefix, keyword, suffix, repeatKeyword });
             
             document.getElementById('new-faq-prefix').value = "";
