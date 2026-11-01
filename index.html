@@ -535,10 +535,10 @@
 
             <!-- LOG PERTANYAAN BELUM TERJAWAB -->
             <div class="bg-slate-800 p-3 rounded-xl border border-rose-500/30 space-y-2">
-                <div class="flex items-center justify-between">
-                    <label class="block text-xs font-semibold text-rose-300">📥 Log Pertanyaan Customer Belum Terjawab</label>
-                    <button type="button" onclick="clearAllUnansweredLogs()" class="text-[10px] text-rose-400 hover:underline cursor-pointer">🗑️ Bersihkan Semua</button>
-                </div>
+               <div class="flex justify-between items-center pt-2">
+    <span class="text-[11px] text-slate-400 font-semibold">Daftar Pertanyaan Customer Belum Terjawab:</span>
+    <button type="button" onclick="clearAllUnansweredLogs()" class="text-rose-400 hover:text-rose-300 text-[10px] font-bold underline cursor-pointer">🗑️ Bersihkan Semua Log</button>
+</div>
                 <div id="missing-log-container" class="space-y-1.5 max-h-32 overflow-y-auto pr-1">
                     <p class="text-[10px] text-slate-500 italic">Belum ada pertanyaan tertinggal.</p>
                 </div>
@@ -552,6 +552,8 @@
                 </div>
                 <div id="brand-upload-status" class="text-[10px] text-slate-400 italic"></div>
             </div>
+
+           
 
             <!-- BIAYA TAMBAHAN SABLON 2 WARNA -->
             <div class="bg-slate-800 p-3 rounded-xl border border-amber-500/30 space-y-2">
