@@ -978,19 +978,17 @@
 
             let finalAiResponse = "";
 
-            // 1. CEK APAKAH ADA COCOK DI KNOWLEDGE FAQ / INGATAN BARU ADMIN
+            // 1. PRIORITAS UTAMA: CEK KATA KUNCI DI KNOWLEDGE FAQ / INGATAN BARU ADMIN
             let matchedFaq = knowledgeFaq.find(f => {
-                const keywordLower = (f.keyword || "").toLowerCase();
-                return keywordLower && (queryText.includes(keywordLower) || queryWords.some(w => keywordLower.includes(w) || w.includes(keywordLower)));
+                const keywordLower = (f.keyword || "").toLowerCase().trim();
+                return keywordLower && (queryText === keywordLower || queryWords.includes(keywordLower) || queryText.includes(keywordLower));
             });
 
             if(matchedFaq) {
-                let prefixPart = matchedFaq.prefix ? matchedFaq.prefix + ", " : "";
-                if(matchedFaq.repeatKeyword) {
-                    finalAiResponse = `${prefixPart}${userPrefixName}${matchedFaq.keyword}, ${matchedFaq.suffix}`;
-                } else {
-                    finalAiResponse = `${prefixPart}${userPrefixName}${matchedFaq.suffix}`;
-                }
+                let prefixPart = matchedFaq.prefix ? matchedFaq.prefix + " " : "";
+                let repeatKwd = matchedFaq.repeatKeyword === true ? `${matchedFaq.keyword} ` : "";
+                // URUTAN SESUAI PERMINTAAN: Kata Tambahan Awal -> Nama Panggilan -> Kata Kunci (jika diaktifkan) -> Jawaban
+                finalAiResponse = `${prefixPart}${userPrefixName}${repeatKwd}${matchedFaq.suffix}`;
             } else {
                 // 2. OMNI-SCANNER: SCAN SELURUH MODEL, UKURAN, DAN HARGA SECARA REALTIME
                 let foundSpecificBag = false;
@@ -999,13 +997,11 @@
                     let model = bagModels[mIdx];
                     let modelNameLower = model.name.toLowerCase();
                     
-                    // Cek apakah user menyebut model tas atau ukuran spesifik di dalam database
                     for(let sIdx = 0; sIdx < model.sizes.length; sIdx++) {
                         let sizeObj = model.sizes[sIdx];
                         let sizeNameLower = sizeObj.name.toLowerCase();
                         let noteLower = (sizeObj.note || "").toLowerCase();
 
-                        // Jika query mencocokkan nama model, ukuran, atau kata kunci di catatan
                         let isModelMatch = queryWords.some(w => modelNameLower.includes(w) || w.includes("oval") || w.includes("hls") || w.includes("hlb") || w.includes("box") || w.includes("tas"));
                         let isSizeMatch = queryText.includes(sizeNameLower) || queryWords.some(w => sizeNameLower.includes(w));
                         let isKeywordMatch = queryWords.some(w => noteLower.includes(w) || w.includes("harga") || w.includes("beli") || w.includes("pesan") || w.includes("kegunaan") || w.includes("untuk"));
@@ -1013,7 +1009,6 @@
                         if(isSizeMatch || (isModelMatch && isKeywordMatch) || queryText.includes(modelNameLower)) {
                             finalAiResponse = `${userPrefixName}untuk model *${model.name}* ukuran *${sizeObj.name}*, harganya adalah *Rp ${sizeObj.price.toLocaleString('id-ID')}* per pcs. Catatan & kegunaan: ${sizeObj.note}. Kualitas dijamin mantap dan siap diproses bosku!`;
                             
-                            // Otomatis arahkan pilihan form UI ke item tersebut agar sinkron
                             document.getElementById('bag-model-select').value = mIdx;
                             updateCustomerSizesDropdown();
                             document.getElementById('bag-size-select').value = sizeObj.name;
@@ -1025,7 +1020,6 @@
                     if(foundSpecificBag) break;
                 }
 
-                // Jika belum ketemu dari pencarian spesifik ukuran, scan umum nama model
                 if(!foundSpecificBag) {
                     for(let mIdx = 0; mIdx < bagModels.length; mIdx++) {
                         let model = bagModels[mIdx];
@@ -1041,9 +1035,7 @@
                     }
                 }
 
-                // 3. JIKA MASIH BELUM KETEMU, BERIKAN JAWABAN SALES OMNI YANG CERDAS & AMBIL INFO SELURUH KATALOG
                 if(!foundSpecificBag) {
-                    // Cek pertanyaan umum umum
                     if(queryText.includes("harga") || queryText.includes("list") || queryText.includes("katalog") || queryText.includes("menu")) {
                         let summaryCatalog = bagModels.map(m => `${m.name} (mulai Rp ${m.sizes[0]?.price.toLocaleString('id-ID')})`).join(', ');
                         finalAiResponse = `${userPrefixName}kami menyediakan berbagai model tas custom berkualitas tinggi: ${summaryCatalog}. Silakan pilih model dan ukurannya langsung di menu form pemesanan di atas ya!`;
@@ -1052,7 +1044,10 @@
                     } else if(queryText.includes("kontak") || queryText.includes("owner") || queryText.includes("admin") || queryText.includes("wa")) {
                         finalAiResponse = `${userPrefixName}bisa langsung hubungi nomor WhatsApp resmi kami di ${storePhone} atau klik tombol kirim pesanan ke owner di bawah ya.`;
                     } else {
-                        // Jawaban umum ramah sales yang mencakup seluruh kemampuan aplikasi tanpa masuk ke log tertinggal yang bikin jengkel
+                        if(!unansweredLogs.includes(rawQuery)) {
+                            unansweredLogs.push(rawQuery);
+                            saveToCloud();
+                        }
                         const generalPitches = [
                             `Tentu ${userPrefixName}di ILHAM SPUNBOND semua pesanan custom tas bisa diatur mulai dari sablon manual 1-2 warna sampai DTF full color. Mau dibantu hitungkan estimasi harga untuk jumlah berapa pcs?`,
                             `Siap ${userPrefixName}semua spesifikasi tas, ukuran, dan pilihan warna kain sudah lengkap di aplikasi ini. Ada model tas khusus yang sedang Kakak cari?`,
@@ -1401,8 +1396,8 @@
             
             isSyncingFromCloud = true;
             saveToCloud().then(() => {
-                setTimeout(() => { isSyncingFromCloud = false; }, 1200);
-                alert("Mantap! Ingatan AI baru berhasil disimpan permanen dan langsung aktif!");
+                setTimeout(() => { isSyncingFromCloud = false; }, 1000);
+                alert("Ingatan AI baru berhasil disimpan permanen ke database & cloud!");
             }).catch(err => {
                 isSyncingFromCloud = false;
                 console.error("Gagal simpan FAQ ke cloud:", err);
