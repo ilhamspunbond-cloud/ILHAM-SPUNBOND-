@@ -5,8 +5,8 @@
  * =========================================================================
  */
 
-// Global state default untuk AI & Knowledge Base
-window.aiKnowledgeBase = [
+// Global state default untuk AI & Knowledge Base (disamakan ke knowledgeFaq & blockedWords)
+window.knowledgeFaq = [
     {
         id: "kb-1",
         prefix: "Waalaikumussalam",
@@ -44,15 +44,31 @@ window.aiKnowledgeBase = [
     }
 ];
 
-window.blockedWordsList = ["anjing", "asu", "bangsat", "kampret", "kontol", "memek", "goblok", "tolol"];
+window.blockedWords = ["anjing", "asu", "bangsat", "kampret", "kontol", "memek", "goblok", "tolol"];
 window.unansweredLogs = [];
+
+// Load dari localStorage jika ada penyimpanan kustom dari admin
+try {
+    if(localStorage.getItem('ilham_knowledgeFaq')) {
+        window.knowledgeFaq = JSON.parse(localStorage.getItem('ilham_knowledgeFaq'));
+    }
+    if(localStorage.getItem('ilham_blockedWords')) {
+        window.blockedWords = JSON.parse(localStorage.getItem('ilham_blockedWords'));
+    }
+    if(localStorage.getItem('ilham_unansweredLogs')) {
+        window.unansweredLogs = JSON.parse(localStorage.getItem('ilham_unansweredLogs'));
+    }
+} catch(e) {
+    console.error("Storage error:", e);
+}
 
 // Fungsi Sapaan Awal AI
 function speakAiGreeting() {
-    const name = localStorage.getItem('ilham_customer_name') || 'Bosku';
-    const text = `Halo ${name}! Selamat datang kembali di ILHAM SPUNBOND. Ada yang bisa saya bantu terkait pemesanan tas custom hari ini?`;
+    const customer = JSON.parse(localStorage.getItem('ilham_customerProfile') || '{}');
+    const name = customer.name || 'Bosku';
+    const title = customer.title || 'Bosku';
+    const text = `Halo ${title} ${name}! Selamat datang kembali di ILHAM SPUNBOND. Ada yang bisa saya bantu terkait pemesanan tas custom hari ini?`;
     
-    // Tambahkan ke chat history
     appendChatBubble('ai', text);
     
     if ('speechSynthesis' in window) {
@@ -78,11 +94,11 @@ function appendChatBubble(sender, text) {
     
     const div = document.createElement('div');
     if (sender === 'user') {
-        div.className = 'p-2.5 bg-emerald-700 text-white rounded-xl ml-6 text-right shadow-sm';
-        div.innerHTML = `👤 <b>Anda:</b> ${escapeHtml(text)}`;
+        div.className = 'p-2.5 bg-slate-100 rounded-xl border border-slate-200 text-right text-slate-900 font-medium';
+        div.innerHTML = `🗣️ "${escapeHtml(text)}"`;
     } else {
-        div.className = 'p-2.5 bg-emerald-50/90 text-slate-800 rounded-xl mr-6 border border-emerald-200/70 shadow-sm leading-relaxed';
-        div.innerHTML = `🤖 <b>AI Asisten:</b> ${escapeHtml(text)}`;
+        div.className = 'p-2.5 bg-emerald-50/80 rounded-xl border border-emerald-200/60 italic leading-relaxed text-slate-800';
+        div.innerHTML = `🤖 "${escapeHtml(text)}"`;
     }
     container.appendChild(div);
     container.scrollTop = container.scrollHeight;
@@ -112,7 +128,7 @@ function askAiRecommendation() {
     const lowerQuery = query.toLowerCase();
 
     // 1. Cek Kata Terlarang (Blocked Words)
-    for (let word of window.blockedWordsList) {
+    for (let word of window.blockedWords) {
         if (lowerQuery.includes(word)) {
             const warningText = "Mohon maaf, gunakan bahasa yang sopan dan profesional ya, Bosku. Mari kita ngobrol dengan nyaman! 🙏";
             appendChatBubble('ai', warningText);
@@ -121,9 +137,9 @@ function askAiRecommendation() {
         }
     }
 
-    // 2. Cari di Knowledge Base
+    // 2. Cari di Knowledge Base (knowledgeFaq)
     let matchedKb = null;
-    for (let kb of window.aiKnowledgeBase) {
+    for (let kb of window.knowledgeFaq) {
         if (lowerQuery.includes(kb.keyword.toLowerCase())) {
             matchedKb = kb;
             break;
@@ -133,21 +149,94 @@ function askAiRecommendation() {
     let responseText = "";
     if (matchedKb) {
         let prefix = matchedKb.prefix || "Baik";
-        let keywordPart = matchedKb.repeatKeyword ? `tentang ${matchedKb.keyword}` : "";
+        let keywordPart = (matchedKb.repeatKeyword !== false) ? `tentang ${matchedKb.keyword}` : "";
         responseText = `${prefix}, ${keywordPart} ${matchedKb.suffix}`;
     } else {
         // Log pertanyaan tidak terjawab ke panel admin
-        window.unansweredLogs.push({
-            query: query,
-            time: new Date().toLocaleString()
-        });
-        if (typeof renderMissingLogs === 'function') renderMissingLogs();
+        window.unansweredLogs.push(query);
+        try { localStorage.setItem('ilham_unansweredLogs', JSON.stringify(window.unansweredLogs)); } catch(e) {}
+        if (typeof renderAdminPanel === 'function') renderAdminPanel();
 
         responseText = `Wah, pertanyaan menarik nih, Bosku! Terkait "${query}", tim admin kami akan segera catat. Untuk info cepat seputar tas spunbond, ukuran, atau sablon, Kakak bisa langsung pilih di menu form atau tanyakan detail modelnya ya!`;
     }
 
     appendChatBubble('ai', responseText);
     speakText(responseText);
+}
+
+// Fungsi Admin / Panel Pendukung untuk Mengelola FAQ AI
+function updateFaqField(fIdx, field) {
+    if(!window.knowledgeFaq[fIdx]) return;
+    if(field === 'prefix') window.knowledgeFaq[fIdx].prefix = document.getElementById(`edit-faq-prefix-${fIdx}`).value;
+    if(field === 'keyword') window.knowledgeFaq[fIdx].keyword = document.getElementById(`edit-faq-kw-${fIdx}`).value;
+    if(field === 'suffix') window.knowledgeFaq[fIdx].suffix = document.getElementById(`edit-faq-suffix-${fIdx}`).value;
+    if(typeof saveToCloud === 'function') saveToCloud();
+}
+
+function updateFaqRepeat(fIdx) {
+    if(!window.knowledgeFaq[fIdx]) return;
+    const val = document.getElementById(`edit-faq-repeat-${fIdx}`).value === 'true';
+    window.knowledgeFaq[fIdx].repeatKeyword = val;
+    if(typeof saveToCloud === 'function') saveToCloud();
+}
+
+function deleteKnowledgeFaq(fIdx) {
+    if(confirm("Hapus ingatan AI ini?")) {
+        window.knowledgeFaq.splice(fIdx, 1);
+        if(typeof saveToCloud === 'function') saveToCloud();
+        if(typeof renderAdminPanel === 'function') renderAdminPanel();
+    }
+}
+
+function addKnowledgeFaq() {
+    const prefix = document.getElementById('new-faq-prefix')?.value.trim() || "Baik";
+    const keyword = document.getElementById('new-faq-keyword')?.value.trim();
+    const suffix = document.getElementById('new-faq-suffix')?.value.trim();
+    if(!keyword || !suffix) return alert("Keyword dan Jawaban wajib diisi!");
+    
+    window.knowledgeFaq.push({
+        id: "kb-" + Date.now(),
+        prefix: prefix,
+        keyword: keyword,
+        suffix: suffix,
+        repeatKeyword: false
+    });
+    if(typeof saveToCloud === 'function') saveToCloud();
+    if(typeof renderAdminPanel === 'function') renderAdminPanel();
+    alert("Ingatan AI baru berhasil ditambahkan!");
+}
+
+function deleteBlockedWord(bwIdx) {
+    window.blockedWords.splice(bwIdx, 1);
+    if(typeof saveToCloud === 'function') saveToCloud();
+    if(typeof renderAdminPanel === 'function') renderAdminPanel();
+}
+
+function addBlockedWord() {
+    const word = document.getElementById('new-blocked-word')?.value.trim().toLowerCase();
+    if(word && !window.blockedWords.includes(word)) {
+        window.blockedWords.push(word);
+        if(typeof saveToCloud === 'function') saveToCloud();
+        if(typeof renderAdminPanel === 'function') renderAdminPanel();
+        document.getElementById('new-blocked-word').value = "";
+    }
+}
+
+function deleteSingleUnansweredLog(lIdx) {
+    window.unansweredLogs.splice(lIdx, 1);
+    try { localStorage.setItem('ilham_unansweredLogs', JSON.stringify(window.unansweredLogs)); } catch(e) {}
+    if(typeof renderAdminPanel === 'function') renderAdminPanel();
+}
+
+function promoteLogToFaq(queryText, lIdx) {
+    window.knowledgeFaq.push({
+        id: "kb-" + Date.now(),
+        prefix: "Baik, mengenai",
+        keyword: queryText,
+        suffix: `Informasi terkait "${queryText}" akan segera kami layani dengan maksimal di workshop ILHAM SPUNBOND.`,
+        repeatKeyword: true
+    });
+    deleteSingleUnansweredLog(lIdx);
 }
 
 function speakText(text) {
@@ -177,8 +266,10 @@ function toggleVoiceInput() {
     recognition.interimResults = false;
     recognition.maxAlternatives = 1;
 
-    micBtn.classList.add('bg-rose-600', 'animate-pulse');
-    micBtn.innerText = '🔴';
+    if(micBtn) {
+        micBtn.classList.add('bg-rose-600', 'animate-pulse');
+        micBtn.innerText = '🔴';
+    }
 
     recognition.onstart = function() {
         if (inputEl) inputEl.placeholder = "Mendengarkan suara Anda...";
@@ -193,14 +284,18 @@ function toggleVoiceInput() {
     };
 
     recognition.onerror = function() {
-        micBtn.classList.remove('bg-rose-600', 'animate-pulse');
-        micBtn.innerText = '🎤';
+        if(micBtn) {
+            micBtn.classList.remove('bg-rose-600', 'animate-pulse');
+            micBtn.innerText = '🎤';
+        }
         if (inputEl) inputEl.placeholder = "Tanya model, harga, ukuran, atau custom...";
     };
 
     recognition.onend = function() {
-        micBtn.classList.remove('bg-rose-600', 'animate-pulse');
-        micBtn.innerText = '🎤';
+        if(micBtn) {
+            micBtn.classList.remove('bg-rose-600', 'animate-pulse');
+            micBtn.innerText = '🎤';
+        }
         if (inputEl) inputEl.placeholder = "Tanya model, harga, ukuran, atau custom...";
     };
 
@@ -217,4 +312,4 @@ function escapeHtml(text) {
                .replace(/'/g, "&#039;");
 }
 
-console.log("✅ ai-knowledge.js berhasil dimuat sepenuhnya.");
+console.log("✅ ai-knowledge.js berhasil diselaraskan dan dimuat sepenuhnya.");
