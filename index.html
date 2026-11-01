@@ -2025,13 +2025,15 @@
             else if(pwd !== null) alert("Password Admin Salah!");
         }
 
-        async function saveToCloud() {
+        
+                 async function saveToCloud() {
+            // Pastikan knowledgeFaq disimpan dengan aman ke localStorage dulu
             safeLocalStorageSet('ilham_bagModels', JSON.stringify(bagModels));
             safeLocalStorageSet('ilham_bankAccounts', JSON.stringify(bankAccounts));
             safeLocalStorageSet('ilham_bagColors', JSON.stringify(bagColors));
             safeLocalStorageSet('ilham_inkColors', JSON.stringify(inkColors));
             safeLocalStorageSet('ilham_dtfOptions', JSON.stringify(dtfOptions));
-            safeLocalStorageSet('ilham_knowledgeFaq', JSON.stringify(knowledgeFaq));
+            safeLocalStorageSet('ilham_knowledgeFaq', JSON.stringify(knowledgeFaq)); // Data ingatan AI terbaru
             safeLocalStorageSet('ilham_blockedWords', JSON.stringify(blockedWords));
             safeLocalStorageSet('ilham_unansweredLogs', JSON.stringify(unansweredLogs));
             safeLocalStorageSet('ilham_extraColorPrice', extraColorPrice);
@@ -2046,27 +2048,20 @@
             safeLocalStorageSet('ilham_adminSignatureUrl', adminSignatureUrl);
             safeLocalStorageSet('ilham_customerProfile', JSON.stringify(customerProfile));
             
-            try {
-                const lightCart = cartItems.map(i => ({ model: i.model, size: i.size, color: i.color, method: i.method, qty: i.qty, unitPrice: i.unitPrice, subtotal: i.subtotal, inkNote: i.inkNote, cleanLogo: i.cleanLogo, mockupImg: i.mockupImg }));
-                safeLocalStorageSet('ilham_cartItems', JSON.stringify(lightCart));
-            } catch (err) { console.log(err); }
-
             if(!window.firebaseDb) return;
             try {
                 const { doc, setDoc } = window.firebaseDeps;
                 const docRef = doc(window.firebaseDb, "settings", "master_data");
-                const optimizedBagModels = bagModels.map(m => ({
-                    name: m.name,
-                    image: (m.image && m.image.length > 60000 && m.image.includes('placeholder.com')) ? "https://via.placeholder.com/400x500/ffffff/334155?text=Tas" : m.image,
-                    sizes: m.sizes
-                }));
-
+                
+                // Kirim data lengkap ke Firebase Cloud tanpa batasan
                 await setDoc(docRef, {
-                    bagModels: optimizedBagModels, bankAccounts, bagColors, inkColors, dtfOptions,
-                    knowledgeFaq, blockedWords, unansweredLogs, extraColorPrice, storeName, pdfPassword, ownerWaNumber, 
+                    knowledgeFaq: knowledgeFaq, // Paksa sinkronisasi array ingatan terbaru
+                    bankAccounts, bagColors, inkColors, dtfOptions,
+                    blockedWords, unansweredLogs, extraColorPrice, storeName, pdfPassword, ownerWaNumber, 
                     brandLogoUrl: brandLogoUrl || "", customStampUrl: customStampUrl || "", 
                     adminSignatureUrl: adminSignatureUrl || "", storeAddress, storePhone, storeEmail
                 }, { merge: true });
+                console.log("Cloud sync berhasil, total ingatan:", knowledgeFaq.length);
             } catch(e) { console.error("Cloud save error:", e); }
         }
 
