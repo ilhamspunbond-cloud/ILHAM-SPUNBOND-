@@ -159,7 +159,7 @@ function toggleVoiceInput() {
     recognition.start();
 }
 
-// ADMIN INGATAN AI
+// ADMIN INGATAN AI (BERTAMBAH OTOMATIS & PERMANEN REAL-TIME)
 async function addKnowledgeFaq() {
     const prefix = document.getElementById('new-faq-prefix').value.trim();
     const keyword = document.getElementById('new-faq-keyword').value.trim().toLowerCase();
@@ -167,15 +167,25 @@ async function addKnowledgeFaq() {
     const repeatKeyword = document.getElementById('new-faq-repeat').value === "true";
 
     if(!keyword || !suffix) return alert("Harap isi Kata Kunci dan Jawaban!");
+    
+    // Tambahkan data baru ke array knowledgeFaq
     knowledgeFaq.push({ prefix, keyword, suffix, repeatKeyword });
 
+    // Kosongkan input form tambah baru
     document.getElementById('new-faq-prefix').value = "";
     document.getElementById('new-faq-keyword').value = "";
     document.getElementById('new-faq-suffix').value = "";
 
-    if (typeof renderAdminPanel === 'function') renderAdminPanel();
-    if (typeof saveToCloud === 'function') await saveToCloud();
-    alert("Ingatan AI berhasil disimpan permanen!");
+    // Simpan ke Cloud Firebase & LocalStorage secara serentak
+    if (typeof saveToCloud === 'function') {
+        await saveToCloud();
+    }
+    
+    if (typeof renderAdminPanel === 'function') {
+        renderAdminPanel();
+    }
+    
+    alert("Ingatan AI baru berhasil ditambahkan dan disinkronkan ke semua HP secara real-time!");
 }
 
 function updateFaqField(idx, fieldName) {
@@ -196,9 +206,28 @@ function updateFaqRepeat(idx) {
 async function deleteKnowledgeFaq(idx) {
     if(confirm("Hapus ingatan AI ini?")) {
         knowledgeFaq.splice(idx, 1);
-        if (typeof renderAdminPanel === 'function') renderAdminPanel();
         if (typeof saveToCloud === 'function') await saveToCloud();
+        if (typeof renderAdminPanel === 'function') renderAdminPanel();
     }
+}
+
+function promoteLogToFaq(logText, logIdx) {
+    knowledgeFaq.push({
+        prefix: "Terkait pertanyaan",
+        keyword: logText.toLowerCase(),
+        suffix: "siap kami layani dan kerjakan sesuai kebutuhan custom Kakak di Ilham Spunbond!",
+        repeatKeyword: true
+    });
+    unansweredLogs.splice(logIdx, 1);
+    if(typeof saveToCloud === 'function') saveToCloud();
+    if(typeof renderAdminPanel === 'function') renderAdminPanel();
+    alert("Log pertanyaan berhasil dipromosikan menjadi Ingatan AI baru!");
+}
+
+function deleteSingleUnansweredLog(logIdx) {
+    unansweredLogs.splice(logIdx, 1);
+    if(typeof saveToCloud === 'function') saveToCloud();
+    if(typeof renderAdminPanel === 'function') renderAdminPanel();
 }
 
 function addBlockedWord() {
