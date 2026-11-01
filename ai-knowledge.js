@@ -180,46 +180,52 @@ function askAiRecommendation() {
     speakText(responseText);
 }
 
-// Fungsi Admin / Panel Pendukung untuk Mengelola FAQ AI
+// Fungsi Update Field FAQ (Edit Kata Kunci / Prefix / Suffix) dengan Auto-Save Permanen
 function updateFaqField(fIdx, field) {
-    if(!window.knowledgeFaq[fIdx]) return;
-    if(field === 'prefix') window.knowledgeFaq[fIdx].prefix = document.getElementById(`edit-faq-prefix-${fIdx}`).value;
-    if(field === 'keyword') window.knowledgeFaq[fIdx].keyword = document.getElementById(`edit-faq-kw-${fIdx}`).value;
-    if(field === 'suffix') window.knowledgeFaq[fIdx].suffix = document.getElementById(`edit-faq-suffix-${fIdx}`).value;
-    if(typeof saveToCloud === 'function') saveToCloud();
+    if (!window.knowledgeFaq || !window.knowledgeFaq[fIdx]) return;
+    
+    // Ambil nilai terbaru dari inputan form edit di panel admin
+    const prefixVal = document.getElementById(`edit-faq-prefix-${fIdx}`)?.value || "";
+    const kwVal = document.getElementById(`edit-faq-kw-${fIdx}`)?.value || "";
+    const suffixVal = document.getElementById(`edit-faq-suffix-${fIdx}`)?.value || "";
+    
+    // Perbarui data di array global
+    window.knowledgeFaq[fIdx].prefix = prefixVal;
+    window.knowledgeFaq[fIdx].keyword = kwVal;
+    window.knowledgeFaq[fIdx].suffix = suffixVal;
+    
+    // 1. Simpan otomatis ke LocalStorage seketika
+    try {
+        localStorage.setItem('ilham_knowledgeFaq', JSON.stringify(window.knowledgeFaq));
+    } catch(e) {}
+    
+    // 2. Aktifkan penanda manual update supaya tidak bentrok dengan onSnapshot
+    window.isManualUpdating = true;
+    
+    // 3. Kirim dan simpan permanen ke Firebase Cloud secara otomatis
+    if (typeof saveToCloud === 'function') {
+        saveToCloud().then(() => {
+            setTimeout(() => { window.isManualUpdating = false; }, 1000);
+        });
+    }
 }
 
+// Fungsi Update Opsi Pengulangan Kata Kunci dengan Auto-Save
 function updateFaqRepeat(fIdx) {
-    if(!window.knowledgeFaq[fIdx]) return;
+    if (!window.knowledgeFaq || !window.knowledgeFaq[fIdx]) return;
     const val = document.getElementById(`edit-faq-repeat-${fIdx}`).value === 'true';
     window.knowledgeFaq[fIdx].repeatKeyword = val;
-    if(typeof saveToCloud === 'function') saveToCloud();
-}
-
-// Fungsi Hapus Ingatan AI yang Langsung Paksa Simpan ke Cloud & LocalStorage
-function deleteKnowledgeFaq(fIdx) {
-    if (confirm("Yakin ingin menghapus ingatan AI ini?")) {
-        // Hapus dari array global knowledgeFaq
-        window.knowledgeFaq.splice(fIdx, 1);
-        
-        // Simpan paksa ke LocalStorage detik itu juga
-        try {
-            localStorage.setItem('ilham_knowledgeFaq', JSON.stringify(window.knowledgeFaq));
-        } catch(e) {
-            console.error("Gagal simpan localStorage:", e);
-        }
-        
-        // Paksa sinkronisasi langsung ke Firebase Cloud agar data yang lama tertimpa permanen
-        if (typeof saveToCloud === 'function') {
-            saveToCloud().then(() => {
-                console.log("✅ Data berhasil dihapus dan disinkronkan ke Cloud.");
-            });
-        }
-        
-        // Refresh panel admin agar nomor urut ter-update bersih
-        if (typeof renderAdminPanel === 'function') {
-            renderAdminPanel();
-        }
+    
+    // Simpan otomatis ke LocalStorage & Cloud
+    try {
+        localStorage.setItem('ilham_knowledgeFaq', JSON.stringify(window.knowledgeFaq));
+    } catch(e) {}
+    
+    window.isManualUpdating = true;
+    if (typeof saveToCloud === 'function') {
+        saveToCloud().then(() => {
+            setTimeout(() => { window.isManualUpdating = false; }, 1000);
+        });
     }
 }
 
