@@ -1185,40 +1185,39 @@
             if(modelSelect.options.length > prevVal) modelSelect.value = prevVal;
 
             if(faqAdminContainer) {
-                faqAdminContainer.innerHTML = '';
-                knowledgeFaq.forEach((faq, fIdx) => {
-                    const isRepeat = faq.repeatKeyword !== false;
-                    faqAdminContainer.innerHTML += `
-                        <div class="bg-slate-900 p-3 rounded-xl border border-slate-700 text-xs space-y-2">
-                            <div class="flex justify-between items-center">
-                                <span class="font-bold text-amber-300"># Ingatan AI No. ${fIdx + 1}</span>
-                                <button type="button" onclick="deleteKnowledgeFaq(${fIdx})" class="text-rose-400 font-bold px-2 py-0.5 cursor-pointer">Hapus</button>
-                            </div>
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                                <div>
-                                    <label class="block text-[10px] text-slate-400 mb-0.5">Kata Tambahan Awal:</label>
-                                    <input type="text" id="edit-faq-prefix-${fIdx}" value="${faq.prefix || ''}" oninput="updateFaqField(${fIdx}, 'prefix')" class="w-full bg-slate-800 border border-slate-700 rounded px-2.5 py-1.5 text-white outline-none">
-                                </div>
-                                <div>
-                                    <label class="block text-[10px] text-slate-400 mb-0.5">Kata Kunci (1 Kata):</label>
-                                    <input type="text" id="edit-faq-kw-${fIdx}" value="${faq.keyword || ''}" oninput="updateFaqField(${fIdx}, 'keyword')" class="w-full bg-slate-800 border border-slate-700 rounded px-2.5 py-1.5 text-amber-300 font-bold outline-none">
-                                </div>
+            faqAdminContainer.innerHTML = '';
+            knowledgeFaq.forEach((faq, fIdx) => {
+                const isRepeat = faq.repeatKeyword !== false;
+                faqAdminContainer.innerHTML += `
+                    <div class="bg-slate-900 p-3 rounded-xl border border-slate-700 text-xs space-y-2">
+                        <div class="flex justify-between items-center">
+                            <span class="font-bold text-amber-300"># Ingatan AI No. ${fIdx + 1}</span>
+                            <button type="button" onclick="deleteKnowledgeFaq(${fIdx})" class="text-rose-400 font-bold px-2 py-0.5 cursor-pointer">Hapus</button>
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                            <div>
+                                <label class="block text-[10px] text-slate-400 mb-0.5">Kata Tambahan Awal:</label>
+                                <input type="text" id="edit-faq-prefix-${fIdx}" value="${faq.prefix || ''}" oninput="updateFaqField(${fIdx}, 'prefix')" class="w-full bg-slate-800 border border-slate-700 rounded px-2.5 py-1.5 text-white outline-none">
                             </div>
                             <div>
-                                <label class="block text-[10px] text-slate-400 mb-0.5">Kata Tambahan Akhir / Jawaban:</label>
-                                <textarea id="edit-faq-suffix-${fIdx}" rows="2" oninput="updateFaqField(${fIdx}, 'suffix')" class="w-full bg-slate-800 border border-slate-700 rounded p-2 text-slate-200 outline-none text-xs">${faq.suffix || ''}</textarea>
+                                <label class="block text-[10px] text-slate-400 mb-0.5">Kata Kunci:</label>
+                                <input type="text" id="edit-faq-kw-${fIdx}" value="${faq.keyword || ''}" oninput="updateFaqField(${fIdx}, 'keyword')" class="w-full bg-slate-800 border border-slate-700 rounded px-2.5 py-1.5 text-amber-300 font-bold outline-none">
                             </div>
-                            <div class="flex items-center justify-between bg-slate-800 p-2 rounded-lg border border-slate-700">
-                                <span class="text-[11px] text-slate-300">Ulangi Kata Kunci di Jawaban?</span>
-                                <select id="edit-faq-repeat-${fIdx}" onchange="updateFaqRepeat(${fIdx})" class="bg-slate-900 border border-slate-700 rounded px-2 py-1 text-[11px] text-amber-400 font-semibold outline-none">
-                                    <option value="false" ${!isRepeat ? 'selected' : ''}>Tidak (Natural)</option>
-                                    <option value="true" ${isRepeat ? 'selected' : ''}>Ya (Diulang)</option>
-                                </select>
-                            </div>
-                        </div>`;
-                });
-            }
-
+                        </div>
+                        <div>
+                            <label class="block text-[10px] text-slate-400 mb-0.5">Kata Tambahan Akhir / Jawaban:</label>
+                            <textarea id="edit-faq-suffix-${fIdx}" rows="2" oninput="updateFaqField(${fIdx}, 'suffix')" class="w-full bg-slate-800 border border-slate-700 rounded p-2 text-slate-200 outline-none text-xs">${faq.suffix || ''}</textarea>
+                        </div>
+                        <div class="flex items-center justify-between bg-slate-800 p-2 rounded-lg border border-slate-700">
+                            <span class="text-[11px] text-slate-300">Ulangi Kata Kunci di Jawaban?</span>
+                            <select id="edit-faq-repeat-${fIdx}" onchange="updateFaqRepeat(${fIdx})" class="bg-slate-900 border border-slate-700 rounded px-2 py-1 text-[11px] text-amber-400 font-semibold outline-none">
+                                <option value="false" ${!isRepeat ? 'selected' : ''}>Tidak (Natural)</option>
+                                <option value="true" ${isRepeat ? 'selected' : ''}>Ya (Diulang)</option>
+                            </select>
+                        </div>
+                    </div>`;
+            });
+        }
             if(blockedWordsContainer) {
                 blockedWordsContainer.innerHTML = '';
                 blockedWords.forEach((bw, bwIdx) => {
@@ -1378,29 +1377,32 @@
             }
         }
 
-      function addKnowledgeFaq() {
-    const prefix = document.getElementById('new-faq-prefix').value.trim();
-    const keyword = document.getElementById('new-faq-keyword').value.trim().toLowerCase();
-    const suffix = document.getElementById('new-faq-suffix').value.trim();
-    const repeatKeyword = document.getElementById('new-faq-repeat').value === "true";
-    
-    if(!keyword || !suffix) return alert("Harap isi Kata Kunci dan Jawaban dengan lengkap!");
-    
-    knowledgeFaq.push({ prefix, keyword, suffix, repeatKeyword });
-    
-    document.getElementById('new-faq-prefix').value = "";
-    document.getElementById('new-faq-keyword').value = "";
-    document.getElementById('new-faq-suffix').value = "";
-    
-    renderAdminPanel();
-    
-    // SIMPAN PERMANEN KE CLOUD SUPAYA TIDAK HILANG SAAT REFRESH
-    isSyncingFromCloud = true;
-    saveToCloud().then(() => {
-        setTimeout(() => { isSyncingFromCloud = false; }, 1000);
-        alert("Ingatan AI baru berhasil disimpan permanen ke database cloud!");
-    });
-}
+    async function addKnowledgeFaq() {
+            const prefix = document.getElementById('new-faq-prefix').value.trim();
+            const keyword = document.getElementById('new-faq-keyword').value.trim().toLowerCase();
+            const suffix = document.getElementById('new-faq-suffix').value.trim();
+            const repeatKeyword = document.getElementById('new-faq-repeat').value === "true";
+
+            if(!keyword || !suffix) return alert("Harap isi Kata Kunci dan Jawaban dengan lengkap!");
+
+            // Masukkan ke array lokal
+            knowledgeFaq.push({ prefix, keyword, suffix, repeatKeyword });
+
+            // Kosongkan form input
+            document.getElementById('new-faq-prefix').value = "";
+            document.getElementById('new-faq-keyword').value = "";
+            document.getElementById('new-faq-suffix').value = "";
+
+            // Render ulang panel agar nomor urut baru langsung tampil
+            renderAdminPanel();
+
+            // Simpan ke Cloud & LocalStorage dengan proteksi sinkronisasi
+            isSyncingFromCloud = true;
+            await saveToCloud();
+            setTimeout(() => { isSyncingFromCloud = false; }, 1200);
+
+            alert(`Ingatan AI No. ${knowledgeFaq.length} berhasil disimpan permanen!`);
+        }
 
         function updateFaqField(idx, fieldName) {
             if(fieldName === 'prefix') {
@@ -2129,7 +2131,13 @@
             if(data.bagColors) bagColors = data.bagColors;
             if(data.inkColors) inkColors = data.inkColors;
             if(data.dtfOptions) dtfOptions = data.dtfOptions;
-            if(data.knowledgeFaq) knowledgeFaq = data.knowledgeFaq;
+            
+            // AMBIL DATA FAQ SECARA UTUH DARI CLOUD SUPAYA NOMORNYA SELALU UPDATE
+            if(data.knowledgeFaq && Array.isArray(data.knowledgeFaq)) {
+                knowledgeFaq = data.knowledgeFaq;
+                safeLocalStorageSet('ilham_knowledgeFaq', JSON.stringify(knowledgeFaq));
+            }
+
             if(data.blockedWords) blockedWords = data.blockedWords;
             if(data.unansweredLogs) unansweredLogs = data.unansweredLogs;
             if(data.extraColorPrice !== undefined) {
