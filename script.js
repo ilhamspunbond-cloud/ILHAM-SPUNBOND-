@@ -1170,8 +1170,11 @@ window.initCloudSync = function() {
 };
 
 function applyCloudData(data) {
+    // 🔥 TAMBAHAN ANTI-BENTROK: Jika sedang update manual, abaikan timpaan dari cloud
+    if (window.isManualUpdating) return;
+
     isSyncingFromCloud = true;
-    if(data.bagModels && data.bagModels.length > 0) { 
+    if(data.bagModels && data.bagModels.length > 0) {  
         bagModels = data.bagModels.map((m, idx) => {
             const localModel = bagModels[idx];
             return {
@@ -1212,7 +1215,6 @@ function applyCloudData(data) {
     updateBagCanvas();
     setTimeout(() => { isSyncingFromCloud = false; }, 1000);
 }
-
 
 // ==========================================
 // 5. PDF & ORDER MANAGEMENT
