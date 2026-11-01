@@ -499,12 +499,11 @@
                 <button type="button" onclick="toggleAdminPanel()" class="text-xs text-slate-400 hover:text-white font-bold px-2 py-1 bg-slate-800 rounded">Tutup [X]</button>
             </div>
 
-            <!-- KNOWLEDGE BASE & AI MEMORY TRAINING (DENGAN KOTAK SCROLL RAPI DI DALAM SATU KOLOM) -->
+            <!-- KNOWLEDGE BASE & AI MEMORY TRAINING -->
             <div class="bg-slate-800 p-3 rounded-xl border border-amber-500/30 space-y-3">
                 <label class="block text-xs font-semibold text-amber-300">🧠 AI Knowledge Base & Opsi Pengulangan Kata</label>
                 <p class="text-[10px] text-slate-400">Atur Kata Tambahan Awal, Kata Kunci, Kata Tambahan Akhir, dan aktifkan/matikan pengulangan kata kunci.</p>
                 
-                <!-- Container list ingatan AI kini rapi dalam satu kolom dengan tinggi max-h-72 dan scroll di dalamnya -->
                 <div id="faq-admin-container" class="space-y-3 max-h-72 overflow-y-auto pr-1"></div>
                 
                 <div class="space-y-2 pt-2 border-t border-slate-700">
@@ -527,10 +526,7 @@
             <!-- KELOLA KATA-KATA TERLARANG (BLOCKED WORDS) -->
             <div class="bg-slate-800 p-3 rounded-xl border border-rose-500/30 space-y-3">
                 <label class="block text-xs font-semibold text-rose-300">🚫 Kelola Kata-Kata Terlarang (Filter Kasar)</label>
-                <p class="text-[10px] text-slate-400">Jika customer mengetik kata ini, AI akan otomatis merespons dengan kalimat yang adem & sopan.</p>
-                
                 <div id="blocked-words-container" class="flex flex-wrap gap-1.5"></div>
-                
                 <div class="flex gap-2 pt-1">
                     <input type="text" id="new-blocked-word" placeholder="Cth: anjing, asu, bangsat" class="flex-1 bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white outline-none">
                     <button type="button" onclick="addBlockedWord()" class="bg-rose-600 hover:bg-rose-700 text-white font-semibold px-3 py-2 rounded-xl text-xs cursor-pointer">Tambah Kata</button>
@@ -1166,7 +1162,7 @@
                     faqAdminContainer.innerHTML += `
                         <div class="bg-slate-900 p-3 rounded-xl border border-slate-700 text-xs space-y-2">
                             <div class="flex justify-between items-center">
-                                <span class="font-bold text-amber-300"># Ingatan AI ${fIdx + 1}</span>
+                                <span class="font-bold text-amber-300"># Ingatan AI No. ${fIdx + 1}</span>
                                 <button type="button" onclick="deleteKnowledgeFaq(${fIdx})" class="text-rose-400 font-bold px-2 py-0.5 cursor-pointer">Hapus</button>
                             </div>
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
@@ -1186,8 +1182,8 @@
                             <div class="flex items-center justify-between bg-slate-800 p-2 rounded-lg border border-slate-700">
                                 <span class="text-[11px] text-slate-300">Ulangi Kata Kunci di Jawaban?</span>
                                 <select id="edit-faq-repeat-${fIdx}" onchange="updateFaqRepeat(${fIdx})" class="bg-slate-900 border border-slate-700 rounded px-2 py-1 text-[11px] text-amber-400 font-semibold outline-none">
-                                    <option value="false" ${!isRepeat ? 'selected' : ''}>Tidak (Kata Berulang: Tidak)</option>
-                                    <option value="true" ${isRepeat ? 'selected' : ''}>Ya (Kata Berulang: Ya)</option>
+                                    <option value="false" ${!isRepeat ? 'selected' : ''}>Tidak (Natural)</option>
+                                    <option value="true" ${isRepeat ? 'selected' : ''}>Ya (Diulang)</option>
                                 </select>
                             </div>
                         </div>`;
@@ -1361,8 +1357,8 @@
             
             if(!keyword || !suffix) return alert("Harap isi Kata Kunci dan Jawaban/Kata Akhir dengan lengkap!");
             
-            // Perbaikan agar state ter-trigger penuh dan bablas nembus angka 28, 29, 30, dst.
-            knowledgeFaq = [{ prefix, keyword, suffix, repeatKeyword }, ...knowledgeFaq];
+            // PERBAIKAN UTAMA: Menggunakan .push() agar ingatan bertambah ke bawah tanpa batas nomor
+            knowledgeFaq.push({ prefix, keyword, suffix, repeatKeyword });
             
             document.getElementById('new-faq-prefix').value = "";
             document.getElementById('new-faq-keyword').value = "";
@@ -1371,7 +1367,7 @@
             renderAdminPanel();
             
             saveToCloud().then(() => {
-                alert("Ingatan AI baru berhasil disimpan permanen (Total: " + knowledgeFaq.length + " ingatan)!");
+                alert("Ingatan AI baru berhasil disimpan permanen di nomor urut " + knowledgeFaq.length + "!");
             }).catch(err => {
                 console.error("Gagal simpan FAQ ke cloud:", err);
                 alert("Ingatan AI tersimpan secara lokal!");
@@ -1430,7 +1426,7 @@
             const prefix = prompt(`Masukkan Kata Tambahan Awal untuk pertanyaan: "${logText}"`, "ngomongin soal");
             const suffix = prompt(`Masukkan Kata Tambahan Akhir / Jawaban untuk pertanyaan: "${logText}"`);
             if(prefix !== null && suffix) {
-                knowledgeFaq.unshift({ prefix: prefix.trim(), keyword: logText.toLowerCase().trim(), suffix: suffix.trim(), repeatKeyword: true });
+                knowledgeFaq.push({ prefix: prefix.trim(), keyword: logText.toLowerCase().trim(), suffix: suffix.trim(), repeatKeyword: true });
                 unansweredLogs.splice(logIdx, 1);
                 saveToCloud();
                 renderAdminPanel();
@@ -2603,4 +2599,4 @@
         }
     </script>
 </body>
-                            </html>
+</html>
