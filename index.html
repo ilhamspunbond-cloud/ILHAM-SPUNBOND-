@@ -1378,28 +1378,29 @@
             }
         }
 
-        function addKnowledgeFaq() {
-            const prefix = document.getElementById('new-faq-prefix').value.trim();
-            const keyword = document.getElementById('new-faq-keyword').value.trim().toLowerCase();
-            const suffix = document.getElementById('new-faq-suffix').value.trim();
-            const repeatKeyword = document.getElementById('new-faq-repeat').value === "true";
-            
-            if(!keyword || !suffix) return alert("Harap isi Kata Kunci dan Jawaban dengan lengkap!");
-            
-            knowledgeFaq.push({ prefix, keyword, suffix, repeatKeyword });
-            
-            document.getElementById('new-faq-prefix').value = "";
-            document.getElementById('new-faq-keyword').value = "";
-            document.getElementById('new-faq-suffix').value = "";
-            
-            renderAdminPanel();
-            
-            isSyncingFromCloud = true;
-            saveToCloud().then(() => {
-                setTimeout(() => { isSyncingFromCloud = false; }, 1000);
-                alert("Ingatan AI baru berhasil disimpan permanen!");
-            });
-        }
+      function addKnowledgeFaq() {
+    const prefix = document.getElementById('new-faq-prefix').value.trim();
+    const keyword = document.getElementById('new-faq-keyword').value.trim().toLowerCase();
+    const suffix = document.getElementById('new-faq-suffix').value.trim();
+    const repeatKeyword = document.getElementById('new-faq-repeat').value === "true";
+    
+    if(!keyword || !suffix) return alert("Harap isi Kata Kunci dan Jawaban dengan lengkap!");
+    
+    knowledgeFaq.push({ prefix, keyword, suffix, repeatKeyword });
+    
+    document.getElementById('new-faq-prefix').value = "";
+    document.getElementById('new-faq-keyword').value = "";
+    document.getElementById('new-faq-suffix').value = "";
+    
+    renderAdminPanel();
+    
+    // SIMPAN PERMANEN KE CLOUD SUPAYA TIDAK HILANG SAAT REFRESH
+    isSyncingFromCloud = true;
+    saveToCloud().then(() => {
+        setTimeout(() => { isSyncingFromCloud = false; }, 1000);
+        alert("Ingatan AI baru berhasil disimpan permanen ke database cloud!");
+    });
+}
 
         function updateFaqField(idx, fieldName) {
             if(fieldName === 'prefix') {
@@ -1423,15 +1424,14 @@
             }
         }
 
-        function deleteKnowledgeFaq(idx) {
-            knowledgeFaq.splice(idx, 1);
-            isSyncingFromCloud = true;
-            saveToCloud().then(() => {
-                setTimeout(() => { isSyncingFromCloud = false; }, 1200);
-            });
-            renderAdminPanel();
-        }
-
+       function deleteKnowledgeFaq(idx) {
+    knowledgeFaq.splice(idx, 1);
+    isSyncingFromCloud = true;
+    saveToCloud().then(() => {
+        setTimeout(() => { isSyncingFromCloud = false; }, 1200);
+    });
+    renderAdminPanel();
+}
         function addBlockedWord() {
             const word = document.getElementById('new-blocked-word').value.trim().toLowerCase();
             if(!word) return alert("Masukkan kata terlarang terlebih dahulu!");
