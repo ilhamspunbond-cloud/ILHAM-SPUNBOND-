@@ -1,6 +1,7 @@
 // ==========================================
-// 1. DATA ARRAY INGATAN AI & FILTER KATA
+// KNOWLEDGE BASE & AI ENGINE (ai-knowledge.js)
 // ==========================================
+
 let defaultKnowledgeFaq = [
     { prefix: "Waalaikumussalam", keyword: "assalamualaikum", suffix: "Massyaallah bagaimana kabarnya? Ada yg bisa saya bantu untuk cara pemesanan atau rekomendasi tas spunbond yg sesuai kebutuhan?", repeatKeyword: false },
     { prefix: "terkait", keyword: "minimal order", suffix: "untuk pemesanan custom tas spunbond minimal order sangat terjangkau bosku, siap kami layani!", repeatKeyword: true },
@@ -9,110 +10,13 @@ let defaultKnowledgeFaq = [
     { prefix: "Pilihan jumlah pesanan yang sangat pas untuk kebutuhan acara,", keyword: "500", suffix: "Untuk cetak sablon dengan jumlah 500 pcs, estimasi waktu proses pengerjaannya adalah 3 hari terhitung dari turun PO sampai siap dikirim. Namun jika memilih cetak DTF dengan jumlah tersebut, disarankan untuk koordinasi dan chat langsung dengan owner Ilham Spunbond terlebih dahulu supaya jadwalnya bisa disesuaikan dengan baik dan tidak terkejar deadline waktu. Mau langsung dibantu lanjut ke proses desainnya, Bosku?", repeatKeyword: true }
 ];
 
-// Load dari localStorage jika sudah ada, jika belum pakai data default
-let knowledgeFaq = JSON.parse(localStorage.getItem("ilhamSpunbondKnowledge")) || defaultKnowledgeFaq;
+let knowledgeFaq = JSON.parse(localStorage.getItem("ilham_knowledgeFaq")) || defaultKnowledgeFaq;
+let blockedWords = JSON.parse(localStorage.getItem("ilham_blockedWords")) || ["anjing", "asu", "bangsat", "tolol", "goblok", "kampret", "keparat"];
+let unansweredLogs = JSON.parse(localStorage.getItem("ilham_unansweredLogs")) || [];
 
-let blockedWords = JSON.parse(localStorage.getItem("ilhamSpunbondBlockedWords")) || ["anjing", "asu", "bangsat", "tolol", "goblok", "kampret", "keparat"];
-let unansweredLogs = JSON.parse(localStorage.getItem("ilhamSpunbondUnansweredLogs")) || [];
-
-let isSyncingFromCloud = false;
-
-// ==========================================
-// 2. FUNGSI CLOUD SYNC FIREBASE (REAL-TIME SEMUA HP)
-// ==========================================
-window.initCloudSync = async function() {
-    if (!window.firebaseDb || !window.firebaseDeps) return;
-    const { doc, onSnapshot } = window.firebaseDeps;
-    const db = window.firebaseDb;
-
-    const docRef = doc(db, "ilham_store", "ai_knowledge_db");
-
-    // Mendengarkan perubahan data secara real-time dari semua HP/Admin
-    onSnapshot(docRef, (docSnap) => {
-        if (isSyncingFromCloud) return; // Hindari looping saat admin sedang mengetik/menyimpan
-
-        if (docSnap.exists()) {
-            const cloudData = docSnap.data();
-            if (cloudData.knowledgeFaq && Array.isArray(cloudData.knowledgeFaq)) {
-                knowledgeFaq = cloudData.knowledgeFaq;
-                localStorage.setItem("ilhamSpunbondKnowledge", JSON.stringify(knowledgeFaq));
-            }
-            if (cloudData.blockedWords && Array.isArray(cloudData.blockedWords)) {
-                blockedWords = cloudData.blockedWords;
-                localStorage.setItem("ilhamSpunbondBlockedWords", JSON.stringify(blockedWords));
-            }
-            if (cloudData.unansweredLogs && Array.isArray(cloudData.unansweredLogs)) {
-                unansweredLogs = cloudData.unansweredLogs;
-                localStorage.setItem("ilhamSpunbondUnansweredLogs", JSON.stringify(unansweredLogs));
-            }
-            
-            // Refresh panel admin atau tampilan jika ada fungsi render
-            if (typeof renderAdminPanel === 'function') {
-                renderAdminPanel();
-            }
-
-            const syncEl = document.getElementById('sync-status');
-            if(syncEl) {
-                syncEl.innerText = "☁️ Terhubung Cloud (Live Sync Real-time)";
-                syncEl.className = "text-[11px] bg-emerald-100 text-emerald-800 px-3.5 py-1.5 rounded-full font-medium inline-block shadow-sm";
-            }
-        } else {
-            // Jika database cloud masih kosong, inisialisasi simpan data default
-            saveToCloud();
-        }
-    }, (error) => {
-        console.error("Gagal sinkronisasi cloud: ", error);
-        const syncEl = document.getElementById('sync-status');
-        if(syncEl) {
-            syncEl.innerText = "⚠️ Mode Offline (Menggunakan Memori Lokal)";
-            syncEl.className = "text-[11px] bg-amber-100 text-amber-800 px-3.5 py-1.5 rounded-full font-medium inline-block shadow-sm";
-        }
-    });
-};
-
-// Fungsi untuk menyimpan perubahan ke Firebase Cloud & LocalStorage
-window.saveToCloud = async function() {
-    // Selalu simpan ke localStorage HP sendiri sebagai cadangan
-    localStorage.setItem("ilhamSpunbondKnowledge", JSON.stringify(knowledgeFaq));
-    localStorage.setItem("ilhamSpunbondBlockedWords", JSON.stringify(blockedWords));
-    localStorage.setItem("ilhamSpunbondUnansweredLogs", JSON.stringify(unansweredLogs));
-
-    if (!window.firebaseDb || !window.firebaseDeps) return;
-    const { doc, setDoc } = window.firebaseDeps;
-    const db = window.firebaseDb;
-
-    try {
-        isSyncingFromCloud = true;
-        const docRef = doc(db, "ilham_store", "ai_knowledge_db");
-        await setDoc(docRef, {
-            knowledgeFaq: knowledgeFaq,
-            blockedWords: blockedWords,
-            unansweredLogs: unansweredLogs,
-            updatedAt: new Date().toISOString()
-        }, { merge: true });
-        console.log("Data berhasil disinkronkan ke Cloud!");
-    } catch (error) {
-        console.error("Gagal menyimpan ke cloud: ", error);
-    } finally {
-        setTimeout(() => { isSyncingFromCloud = false; }, 1000);
-    }
-};
-
-// Auto run sync saat halaman dimuat
-window.addEventListener('DOMContentLoaded', () => {
-    if(window.firebaseDb && window.initCloudSync) {
-        window.initCloudSync();
-    }
-});
-
-
-// ==========================================
-// 3. FUNGSI SUARA & UCAPAN AI (SPEECH)
-// ==========================================
+// 🎙️ FITUR SUARA (SPEECH)
 function stopAiSpeech() {
-    if('speechSynthesis' in window) {
-        window.speechSynthesis.cancel();
-    }
+    if('speechSynthesis' in window) { window.speechSynthesis.cancel(); }
 }
 
 function speakText(text) {
@@ -127,20 +31,18 @@ function speakText(text) {
 }
 
 function speakAiGreeting() {
-    let safeTitle = (customerProfile.title && customerProfile.title !== "undefined") ? customerProfile.title : "Bosku";
-    let safeName = (customerProfile.name && customerProfile.name !== "undefined") ? customerProfile.name : "Rojak";
+    let safeTitle = (customerProfile && customerProfile.title) ? customerProfile.title : "Bosku";
+    let safeName = (customerProfile && customerProfile.name) ? customerProfile.name : "Rojak";
     const greeting = `Halo ${safeTitle} ${safeName}. Saya asisten AI pintar ILHAM SPUNBOND. Saya sudah membaca seluruh database model tas, harga, dan ingatan terbaru Anda. Ada yang ingin ditanyakan?`;
     appendChat("ai", greeting);
     speakText(greeting);
 }
 
-
-// ==========================================
-// 4. FUNGSI UTAMA PENCARIAN & REKOMENDASI AI
-// ==========================================
+// 🤖 PENCARIAN & REKOMENDASI AI
 function askAiRecommendation() {
     stopAiSpeech();
     const queryInput = document.getElementById('ai-user-query');
+    if(!queryInput) return;
     const rawQuery = queryInput.value.trim();
     const queryText = rawQuery.toLowerCase();
     if(!queryText) return alert("Silakan ketik pertanyaan atau konsultasi Anda terlebih dahulu.");
@@ -148,8 +50,8 @@ function askAiRecommendation() {
     appendChat("user", rawQuery);
     queryInput.value = "";
 
-    let safeTitle = (customerProfile.title && customerProfile.title !== "undefined") ? customerProfile.title : "Bosku";
-    let safeName = (customerProfile.name && customerProfile.name !== "undefined") ? customerProfile.name : "Rojak";
+    let safeTitle = (customerProfile && customerProfile.title) ? customerProfile.title : "Bosku";
+    let safeName = (customerProfile && customerProfile.name) ? customerProfile.name : "Rojak";
     let userPrefixName = `${safeTitle} ${safeName}, `;
 
     const queryWords = queryText.split(/\s+/);
@@ -163,17 +65,12 @@ function askAiRecommendation() {
     }
 
     let finalAiResponse = "";
-
-    // Cek di Knowledge FAQ (Logika anti salah tangkap angka 50 vs 500)
     let matchedFaq = knowledgeFaq.find(f => {
         const keywordLower = (f.keyword || "").toLowerCase().trim();
         if (!keywordLower) return false;
-
-        const isNumericKeyword = /^\d+$/.test(keywordLower);
-        if (isNumericKeyword) {
+        if (/^\d+$/.test(keywordLower)) {
             return queryText === keywordLower || queryWords.includes(keywordLower);
         }
-
         return queryText === keywordLower || queryText.includes(keywordLower) || queryWords.includes(keywordLower);
     });
 
@@ -183,68 +80,47 @@ function askAiRecommendation() {
         finalAiResponse = `${prefixPart}${userPrefixName}${repeatKwd}${matchedFaq.suffix}`;
     } else {
         let foundSpecificBag = false;
-
-        for(let mIdx = 0; mIdx < bagModels.length; mIdx++) {
-            let model = bagModels[mIdx];
-            let modelNameLower = model.name.toLowerCase();
-
-            for(let sIdx = 0; sIdx < model.sizes.length; sIdx++) {
-                let sizeObj = model.sizes[sIdx];
-                let sizeNameLower = sizeObj.name.toLowerCase();
-                let noteLower = (sizeObj.note || "").toLowerCase();
-
-                let isModelMatch = queryWords.some(w => modelNameLower.includes(w) || w.includes("oval") || w.includes("hls") || w.includes("hlb") || w.includes("box") || w.includes("tas"));
-                let isSizeMatch = queryText.includes(sizeNameLower) || queryWords.some(w => sizeNameLower.includes(w));
-                let isKeywordMatch = queryWords.some(w => noteLower.includes(w) || w.includes("harga") || w.includes("beli") || w.includes("pesan") || w.includes("kegunaan") || w.includes("untuk"));
-
-                if(isSizeMatch || (isModelMatch && isKeywordMatch) || queryText.includes(modelNameLower)) {
-                    finalAiResponse = `${userPrefixName}untuk model *${model.name}* ukuran *${sizeObj.name}*, harganya adalah *Rp ${sizeObj.price.toLocaleString('id-ID')}* per pcs. Catatan & kegunaan: ${sizeObj.note}. Kualitas dijamin mantap dan siap diproses bosku!`;
-
-                    document.getElementById('bag-model-select').value = mIdx;
-                    updateCustomerSizesDropdown();
-                    document.getElementById('bag-size-select').value = sizeObj.name;
-                    updateSizeLabel();
-                    foundSpecificBag = true;
-                    break;
-                }
-            }
-            if(foundSpecificBag) break;
-        }
-
-        if(!foundSpecificBag) {
+        if(typeof bagModels !== 'undefined') {
             for(let mIdx = 0; mIdx < bagModels.length; mIdx++) {
                 let model = bagModels[mIdx];
-                if(queryText.includes(model.name.toLowerCase()) || queryWords.some(w => model.name.toLowerCase().includes(w))) {
-                    let sizeListStr = model.sizes.map(s => `${s.name} (Rp ${s.price.toLocaleString('id-ID')})`).join(', ');
-                    finalAiResponse = `${userPrefixName}mengenai *${model.name}*, kami punya beberapa pilihan ukuran lengkap: ${sizeListStr}. Silakan pilih ukuran yang pas di form atas ya Bosku!`;
+                let modelNameLower = model.name.toLowerCase();
 
-                    document.getElementById('bag-model-select').value = mIdx;
-                    updateCustomerSizesDropdown();
-                    foundSpecificBag = true;
-                    break;
+                for(let sIdx = 0; sIdx < model.sizes.length; sIdx++) {
+                    let sizeObj = model.sizes[sIdx];
+                    let sizeNameLower = sizeObj.name.toLowerCase();
+                    let noteLower = (sizeObj.note || "").toLowerCase();
+
+                    let isModelMatch = queryWords.some(w => modelNameLower.includes(w) || w.includes("oval") || w.includes("hls") || w.includes("hlb") || w.includes("box") || w.includes("tas"));
+                    let isSizeMatch = queryText.includes(sizeNameLower) || queryWords.some(w => sizeNameLower.includes(w));
+                    let isKeywordMatch = queryWords.some(w => noteLower.includes(w) || w.includes("harga") || w.includes("beli") || w.includes("pesan") || w.includes("kegunaan") || w.includes("untuk"));
+
+                    if(isSizeMatch || (isModelMatch && isKeywordMatch) || queryText.includes(modelNameLower)) {
+                        finalAiResponse = `${userPrefixName}untuk model *${model.name}* ukuran *${sizeObj.name}*, harganya adalah *Rp ${sizeObj.price.toLocaleString('id-ID')}* per pcs. Catatan: ${sizeObj.note}. Siap diproses bosku!`;
+                        
+                        document.getElementById('bag-model-select').value = mIdx;
+                        if(typeof updateCustomerSizesDropdown === 'function') updateCustomerSizesDropdown();
+                        document.getElementById('bag-size-select').value = sizeObj.name;
+                        if(typeof updateSizeLabel === 'function') updateSizeLabel();
+                        
+                        foundSpecificBag = true;
+                        break;
+                    }
                 }
+                if(foundSpecificBag) break;
             }
         }
 
         if(!foundSpecificBag) {
-            if(queryText.includes("harga") || queryText.includes("list") || queryText.includes("katalog") || queryText.includes("menu")) {
-                let summaryCatalog = bagModels.map(m => `${m.name} (mulai Rp ${m.sizes[0]?.price.toLocaleString('id-ID')})`).join(', ');
-                finalAiResponse = `${userPrefixName}kami menyediakan berbagai model tas custom berkualitas tinggi: ${summaryCatalog}. Silakan pilih model dan ukurannya langsung di menu form pemesanan di atas ya!`;
-            } else if(queryText.includes("alamat") || queryText.includes("lokasi") || queryText.includes("toko") || queryText.includes("workshop")) {
-                finalAiResponse = `${userPrefixName}workshop pusat kami berlokasi di ${storeAddress}. Silakan mampir atau order langsung via online!`;
-            } else if(queryText.includes("kontak") || queryText.includes("owner") || queryText.includes("admin") || queryText.includes("wa")) {
-                finalAiResponse = `${userPrefixName}bisa langsung hubungi nomor WhatsApp resmi kami di ${storePhone} atau klik tombol kirim pesanan ke owner di bawah ya.`;
+            if(queryText.includes("harga") || queryText.includes("list") || queryText.includes("katalog")) {
+                finalAiResponse = `${userPrefixName}kami menyediakan berbagai model tas custom berkualitas tinggi. Silakan pilih model dan ukurannya langsung di menu form pemesanan di atas ya!`;
+            } else if(queryText.includes("alamat") || queryText.includes("lokasi") || queryText.includes("workshop")) {
+                finalAiResponse = `${userPrefixName}workshop pusat kami berlokasi di Taman Raya Rajeg Blok-K10 No.06, Tangerang-Banten.`;
             } else {
                 if(!unansweredLogs.includes(rawQuery)) {
                     unansweredLogs.push(rawQuery);
-                    saveToCloud();
+                    if(typeof saveToCloud === 'function') saveToCloud();
                 }
-                const generalPitches = [
-                    `Tentu ${userPrefixName}di ILHAM SPUNBOND semua pesanan custom tas bisa diatur mulai dari sablon manual 1-2 warna sampai DTF full color. Mau dibantu hitungkan estimasi harga untuk jumlah berapa pcs?`,
-                    `Siap ${userPrefixName}semua spesifikasi tas, ukuran, dan pilihan warna kain sudah lengkap di aplikasi ini. Ada model tas khusus yang sedang Kakak cari?`,
-                    `Baik ${userPrefixName}untuk hasil sablon dijamin rapi, kain tebal murni 75GSM, dan khusus Pulau Jawa gratis ongkir! Ada detail pesanan yang ingin kita diskusikan?`
-                ];
-                finalAiResponse = generalPitches[Math.floor(Math.random() * generalPitches.length)];
+                finalAiResponse = `Tentu ${userPrefixName}di ILHAM SPUNBOND semua pesanan custom tas bisa diatur mulai dari sablon manual sampai DTF full color. Mau dibantu hitungkan estimasi harga?`;
             }
         }
     }
@@ -253,20 +129,16 @@ function askAiRecommendation() {
     speakText(finalAiResponse);
 }
 
-
-// ==========================================
-// 5. FUNGSI VOICE INPUT (MICROPHONE)
-// ==========================================
+// 🎤 VOICE INPUT (MICROPHONE)
 function toggleVoiceInput() {
     if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
-        return alert("Browser Anda tidak mendukung fitur input suara. Silakan ketik manual.");
+        return alert("Browser Anda tidak mendukung fitur input suara.");
     }
     stopAiSpeech();
-
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     const recognition = new SpeechRecognition();
     recognition.lang = 'id-ID';
-    recognition.interimResults = true;
+    recognition.interimResults = false;
 
     const micBtn = document.getElementById('mic-btn');
     const queryInput = document.getElementById('ai-user-query');
@@ -275,141 +147,73 @@ function toggleVoiceInput() {
     micBtn.classList.replace('bg-amber-500', 'bg-rose-600');
 
     recognition.onresult = function(event) {
-        let interimTranscript = '';
-        let finalTranscript = '';
-        for (let i = event.resultIndex; i < event.results.length; ++i) {
-            if (event.results[i].isFinal) {
-                finalTranscript += event.results[i][0].transcript;
-            } else {
-                interimTranscript += event.results[i][0].transcript;
-            }
-        }
-        if (finalTranscript) {
-            const existingText = queryInput.value.trim();
-            queryInput.value = existingText ? existingText + " " + finalTranscript : finalTranscript;
-        } else if (interimTranscript) {
-            queryInput.placeholder = interimTranscript;
-        }
+        const transcript = event.results[0][0].transcript;
+        queryInput.value = queryInput.value ? queryInput.value + " " + transcript : transcript;
     };
-
-    recognition.onerror = () => { 
-        micBtn.textContent = "🎤"; 
-        micBtn.classList.replace('bg-rose-600', 'bg-amber-500'); 
-    };
-    recognition.onend = () => { 
-        micBtn.textContent = "🎤"; 
+    recognition.onerror = () => { micBtn.textContent = "🎤"; micBtn.classList.replace('bg-rose-600', 'bg-amber-500'); };
+    recognition.onend = () => {
+        micBtn.textContent = "🎤";
         micBtn.classList.replace('bg-rose-600', 'bg-amber-500');
-        if(queryInput.value.trim() !== "") {
-            askAiRecommendation();
-        }
+        if(queryInput.value.trim() !== "") askAiRecommendation();
     };
     recognition.start();
 }
 
-
-// ==========================================
-// 6. FUNGSI MANAJEMEN INGATAN AI (ADMIN)
-// ==========================================
+// ADMIN INGATAN AI
 async function addKnowledgeFaq() {
     const prefix = document.getElementById('new-faq-prefix').value.trim();
     const keyword = document.getElementById('new-faq-keyword').value.trim().toLowerCase();
     const suffix = document.getElementById('new-faq-suffix').value.trim();
     const repeatKeyword = document.getElementById('new-faq-repeat').value === "true";
 
-    if(!keyword || !suffix) return alert("Harap isi Kata Kunci dan Jawaban dengan lengkap!");
-
-    // Menambahkan data baru ke array secara dinamis
+    if(!keyword || !suffix) return alert("Harap isi Kata Kunci dan Jawaban!");
     knowledgeFaq.push({ prefix, keyword, suffix, repeatKeyword });
 
-    // Kosongkan form input admin
     document.getElementById('new-faq-prefix').value = "";
     document.getElementById('new-faq-keyword').value = "";
     document.getElementById('new-faq-suffix').value = "";
 
-    if (typeof renderAdminPanel === 'function') {
-        renderAdminPanel();
-    }
-
-    // Simpan permanen ke localStorage dan Cloud (agar tembus ke semua HP)
-    await saveToCloud();
-
-    alert(`Ingatan AI No. ${knowledgeFaq.length} berhasil disimpan permanen dan disinkronkan ke semua HP! 🚀`);
+    if (typeof renderAdminPanel === 'function') renderAdminPanel();
+    if (typeof saveToCloud === 'function') await saveToCloud();
+    alert("Ingatan AI berhasil disimpan permanen!");
 }
 
 function updateFaqField(idx, fieldName) {
-    if(fieldName === 'prefix') {
-        const val = document.getElementById(`edit-faq-prefix-${idx}`).value;
-        if(knowledgeFaq[idx]) knowledgeFaq[idx].prefix = val;
-    } else if(fieldName === 'keyword') {
-        const val = document.getElementById(`edit-faq-kw-${idx}`).value.trim().toLowerCase();
-        if(knowledgeFaq[idx]) knowledgeFaq[idx].keyword = val;
-    } else if(fieldName === 'suffix') {
-        const val = document.getElementById(`edit-faq-suffix-${idx}`).value;
-        if(knowledgeFaq[idx]) knowledgeFaq[idx].suffix = val;
-    }
-    saveToCloud();
+    if(fieldName === 'prefix') knowledgeFaq[idx].prefix = document.getElementById(`edit-faq-prefix-${idx}`).value;
+    if(fieldName === 'keyword') knowledgeFaq[idx].keyword = document.getElementById(`edit-faq-kw-${idx}`).value.trim().toLowerCase();
+    if(fieldName === 'suffix') knowledgeFaq[idx].suffix = document.getElementById(`edit-faq-suffix-${idx}`).value;
+    if(typeof saveToCloud === 'function') saveToCloud();
 }
 
 function updateFaqRepeat(idx) {
     const selectEl = document.getElementById(`edit-faq-repeat-${idx}`);
     if(selectEl && knowledgeFaq[idx]) {
         knowledgeFaq[idx].repeatKeyword = selectEl.value === "true";
-        saveToCloud();
+        if(typeof saveToCloud === 'function') saveToCloud();
     }
 }
 
 async function deleteKnowledgeFaq(idx) {
-    if(confirm("Yakin ingin menghapus ingatan AI ini?")) {
+    if(confirm("Hapus ingatan AI ini?")) {
         knowledgeFaq.splice(idx, 1);
-        if (typeof renderAdminPanel === 'function') {
-            renderAdminPanel();
-        }
-        await saveToCloud();
+        if (typeof renderAdminPanel === 'function') renderAdminPanel();
+        if (typeof saveToCloud === 'function') await saveToCloud();
     }
 }
 
 function addBlockedWord() {
     const word = document.getElementById('new-blocked-word').value.trim().toLowerCase();
-    if(!word) return alert("Masukkan kata terlarang terlebih dahulu!");
+    if(!word) return;
     if(!blockedWords.includes(word)) {
         blockedWords.push(word);
         document.getElementById('new-blocked-word').value = "";
-        saveToCloud();
+        if(typeof saveToCloud === 'function') saveToCloud();
         if (typeof renderAdminPanel === 'function') renderAdminPanel();
-        alert("Kata terlarang berhasil ditambahkan!");
-    } else {
-        alert("Kata tersebut sudah ada dalam daftar terlarang.");
     }
 }
 
 function deleteBlockedWord(idx) {
     blockedWords.splice(idx, 1);
-    saveToCloud();
+    if(typeof saveToCloud === 'function') saveToCloud();
     if (typeof renderAdminPanel === 'function') renderAdminPanel();
-}
-
-function promoteLogToFaq(logText, logIdx) {
-    const prefix = prompt(`Masukkan Kata Tambahan Awal untuk pertanyaan: "${logText}"`, "ngomongin soal");
-    const suffix = prompt(`Masukkan Kata Tambahan Akhir / Jawaban untuk pertanyaan: "${logText}"`);
-    if(prefix !== null && suffix) {
-        knowledgeFaq.push({ prefix: prefix.trim(), keyword: logText.toLowerCase().trim(), suffix: suffix.trim(), repeatKeyword: true });
-        unansweredLogs.splice(logIdx, 1);
-        saveToCloud();
-        if (typeof renderAdminPanel === 'function') renderAdminPanel();
-        alert("Pertanyaan berhasil dipromosikan jadi ingatan tetap AI!");
-    }
-}
-
-function deleteSingleUnansweredLog(idx) {
-    unansweredLogs.splice(idx, 1);
-    saveToCloud();
-    if (typeof renderAdminPanel === 'function') renderAdminPanel();
-}
-
-function clearAllUnansweredLogs() {
-    if(confirm("Bersihkan semua log pertanyaan belum terjawab?")) {
-        unansweredLogs = [];
-        saveToCloud();
-        if (typeof renderAdminPanel === 'function') renderAdminPanel();
-    }
 }
