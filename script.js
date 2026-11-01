@@ -1,5 +1,4 @@
 
-    <script>
         const cleanDefaultBagSvg = "data:application/octet-stream;base64,PHN2Zz48L3N2Zz4=";
 
         const defaultBagModels = [
@@ -1683,4 +1682,4 @@
                 window.open(`https://wa.me/${ownerWaNumber}?text=${encodeURIComponent(waMessage)}`);
             } catch(e) { alert("Gagal menyimpan pesanan ke cloud."); }
         }
-    </script>
+  
