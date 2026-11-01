@@ -163,18 +163,18 @@
 
             <div class="inline-flex items-center gap-1.5 bg-emerald-700/60 border border-emerald-500/40 px-3 py-1 rounded-full text-[10px] font-semibold tracking-wider text-emerald-200 mb-1.5 uppercase">
                 <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                <span>Voice AI Edition v4.0 (Smart Sales Pro)</span>
+                <span>Voice AI Edition v4.1 (Omni-Context Smart Sales)</span>
             </div>
 
             <h1 id="brand-title-text" class="text-xl font-extrabold tracking-wide text-white">ILHAM SPUNBOND</h1>
             <p id="welcome-greeting-text" class="text-xs text-emerald-200/90 mt-0.5 font-medium">Sistem Pemesanan Custom Tas Spunbond & Sablon</p>
         </div>
 
-        <!-- 🎙️🤖 VOICE AI ASISTEN & RIWAYAT CHAT BERKESINAMBUNGAN -->
+        <!-- 🎙️🤖 VOICE AI ASISTEN & OMNI-CONTEXT REALTIME CHAT -->
         <div class="bg-white p-4 rounded-2xl shadow-md border border-emerald-200 space-y-3">
             <div class="flex items-center justify-between border-b border-slate-100 pb-2">
                 <h3 class="text-xs font-bold text-emerald-900 flex items-center gap-1.5">
-                    <span>🎙️🤖</span> Asisten AI & Konsultasi Sales Lobi
+                    <span>🎙️🤖</span> Asisten AI Cerdas (Real-time Database Reader)
                 </h3>
                 <div class="flex items-center gap-1.5">
                     <button type="button" onclick="clearChatHistory()" class="text-[10px] bg-rose-50 hover:bg-rose-100 text-rose-700 font-semibold px-2 py-1 rounded-lg border border-rose-200 cursor-pointer" title="Bersihkan Riwayat Chat">🗑️ Reset Chat</button>
@@ -185,12 +185,12 @@
             <!-- KOTAK RIWAYAT PERCAKAPAN (CHAT HISTORY BERKESINAMBUNGAN) -->
             <div id="ai-chat-history-container" class="bg-slate-50 p-3 rounded-xl text-xs text-slate-700 border border-slate-200 space-y-2.5 max-h-60 overflow-y-auto">
                 <div class="p-2.5 bg-emerald-50/80 rounded-xl border border-emerald-200/60 italic leading-relaxed text-slate-800">
-                    🤖 "Halo! Silakan ketik atau ngomong kebutuhan tas Anda, nanti saya carikan rekomendasi pasnya sekaligus siap bantu urus pesanan sampai beres!"
+                    🤖 "Halo! Saya langsung tahu semua data model tas, harga, ukuran, sampai ingatan baru yang Kakak input. Silakan tanya apa saja secara bebas!"
                 </div>
             </div>
 
             <div class="flex items-center gap-2 pt-1">
-                <input type="text" id="ai-user-query" placeholder="Ketik pesan atau konsultasi tas..." class="flex-1 bg-slate-50 border border-slate-300 rounded-xl px-3 py-2.5 text-xs outline-none focus:ring-2 focus:ring-emerald-500 min-w-0" onfocus="stopAiSpeech()" onkeypress="if(event.key==='Enter') askAiRecommendation()">
+                <input type="text" id="ai-user-query" placeholder="Tanya model, harga, ukuran, atau custom..." class="flex-1 bg-slate-50 border border-slate-300 rounded-xl px-3 py-2.5 text-xs outline-none focus:ring-2 focus:ring-emerald-500 min-w-0" onfocus="stopAiSpeech()" onkeypress="if(event.key==='Enter') askAiRecommendation()">
                 <button type="button" onclick="askAiRecommendation()" class="bg-emerald-700 hover:bg-emerald-800 text-white font-semibold px-3.5 py-2.5 rounded-xl text-xs cursor-pointer flex-shrink-0">Kirim</button>
                 <button type="button" id="mic-btn" onclick="toggleVoiceInput()" class="bg-amber-500 hover:bg-amber-600 text-white font-semibold px-3 py-2.5 rounded-xl text-xs cursor-pointer flex-shrink-0" title="Ngomong pakai suara">🎤</button>
             </div>
@@ -889,7 +889,7 @@
         function speakAiGreeting() {
             let safeTitle = (customerProfile.title && customerProfile.title !== "undefined") ? customerProfile.title : "Bosku";
             let safeName = (customerProfile.name && customerProfile.name !== "undefined") ? customerProfile.name : "Rojak";
-            const greeting = `Halo ${safeTitle} ${safeName}. Selamat datang di pusat pembuatan tas spunbond kustom ILHAM SPUNBOND. Ada yang bisa saya bantu rekomendasikan hari ini?`;
+            const greeting = `Halo ${safeTitle} ${safeName}. Saya asisten AI pintar ILHAM SPUNBOND. Saya sudah membaca seluruh database model tas, harga, dan ingatan terbaru Anda. Ada yang ingin ditanyakan?`;
             appendChat("ai", greeting);
             speakText(greeting);
         }
@@ -904,7 +904,7 @@
             const container = document.getElementById('ai-chat-history-container');
             if(!container) return;
             if(chatHistory.length === 0) {
-                container.innerHTML = `<div class="p-2.5 bg-emerald-50/80 rounded-xl border border-emerald-200/60 italic leading-relaxed text-slate-800">🤖 "Halo! Silakan ketik atau ngomong kebutuhan tas Anda, nanti saya carikan rekomendasi pasnya sekaligus siap bantu urus pesanan sampai beres!"</div>`;
+                container.innerHTML = `<div class="p-2.5 bg-emerald-50/80 rounded-xl border border-emerald-200/60 italic leading-relaxed text-slate-800">🤖 "Halo! Saya langsung tahu semua data model tas, harga, ukuran, sampai ingatan baru yang Kakak input. Silakan tanya apa saja secara bebas!"</div>`;
                 return;
             }
             container.innerHTML = '';
@@ -951,13 +951,15 @@
             }
         }
 
+        /* 🧠 OMNI-CONTEXT INTELLIGENT AI PARSER (REAL-TIME DATABASE & MEMORY READER) */
         function askAiRecommendation() {
             stopAiSpeech();
             const queryInput = document.getElementById('ai-user-query');
-            const queryText = queryInput.value.trim().toLowerCase();
+            const rawQuery = queryInput.value.trim();
+            const queryText = rawQuery.toLowerCase();
             if(!queryText) return alert("Silakan ketik pertanyaan atau konsultasi Anda terlebih dahulu.");
 
-            appendChat("user", queryInput.value.trim());
+            appendChat("user", rawQuery);
             queryInput.value = "";
 
             let safeTitle = (customerProfile.title && customerProfile.title !== "undefined") ? customerProfile.title : "Bosku";
@@ -976,56 +978,88 @@
 
             let finalAiResponse = "";
 
+            // 1. CEK APAKAH ADA COCOK DI KNOWLEDGE FAQ / INGATAN BARU ADMIN
             let matchedFaq = knowledgeFaq.find(f => {
                 const keywordLower = (f.keyword || "").toLowerCase();
                 return keywordLower && (queryText.includes(keywordLower) || queryWords.some(w => keywordLower.includes(w) || w.includes(keywordLower)));
             });
 
-            const followUpPool = [
-                "Ngomong-ngomong, buat acara apa nih Kak tasnya, atau sudah punya desain logo sendiri?",
-                "Mau dibantu dicarikan ukuran pas dengan sampel box makan atau produk tokonya, Bosku?",
-                "Mau langsung kita buatkan preview mockup desain logo di tasnya sekarang?",
-                "Kira-kira butuh quantity berapa pcs nih Kak biar kita hitungkan diskon spesial partai besarnya?"
-            ];
-            const randomFollowUp = followUpPool[Math.floor(Math.random() * followUpPool.length)];
-            const salesLobiPitch = " Oh ya, di ILHAM SPUNBOND kita jamin kualitas Press rapi, ketebalan kain murni 75GSM, sablon awet anti luntur, dan khusus Pulau Jawa dapet free ongkir lho! Yuk langsung amankan slot produksinya.";
-
             if(matchedFaq) {
                 let prefixPart = matchedFaq.prefix ? matchedFaq.prefix + ", " : "";
                 if(matchedFaq.repeatKeyword) {
-                    finalAiResponse = `${prefixPart}${userPrefixName}${matchedFaq.keyword}, ${matchedFaq.suffix} ${salesLobiPitch} ${randomFollowUp}`;
+                    finalAiResponse = `${prefixPart}${userPrefixName}${matchedFaq.keyword}, ${matchedFaq.suffix}`;
                 } else {
-                    finalAiResponse = `${prefixPart}${userPrefixName}${matchedFaq.suffix} ${salesLobiPitch} ${randomFollowUp}`;
+                    finalAiResponse = `${prefixPart}${userPrefixName}${matchedFaq.suffix}`;
                 }
             } else {
-                let foundMatch = false;
+                // 2. OMNI-SCANNER: SCAN SELURUH MODEL, UKURAN, DAN HARGA SECARA REALTIME
+                let foundSpecificBag = false;
+                
                 for(let mIdx = 0; mIdx < bagModels.length; mIdx++) {
                     let model = bagModels[mIdx];
+                    let modelNameLower = model.name.toLowerCase();
+                    
+                    // Cek apakah user menyebut model tas atau ukuran spesifik di dalam database
                     for(let sIdx = 0; sIdx < model.sizes.length; sIdx++) {
                         let sizeObj = model.sizes[sIdx];
-                        let note = (sizeObj.note || "").toLowerCase();
-                        if(queryWords.some(w => note.includes(w) || model.name.toLowerCase().includes(w) || sizeObj.name.toLowerCase().includes(w))) {
-                            let matchedKeyword = queryWords.find(w => note.includes(w) || model.name.toLowerCase().includes(w)) || queryText;
-                            finalAiResponse = `${userPrefixName}ngomongin soal ${matchedKeyword}, rekomendasi terbaik dari kita pakai model ${model.name} ukuran ${sizeObj.name} (Harga: Rp ${sizeObj.price.toLocaleString('id-ID')} /pcs). Catatan: ${sizeObj.note} ${salesLobiPitch} ${randomFollowUp}`;
+                        let sizeNameLower = sizeObj.name.toLowerCase();
+                        let noteLower = (sizeObj.note || "").toLowerCase();
+
+                        // Jika query mencocokkan nama model, ukuran, atau kata kunci di catatan
+                        let isModelMatch = queryWords.some(w => modelNameLower.includes(w) || w.includes("oval") || w.includes("hls") || w.includes("hlb") || w.includes("box") || w.includes("tas"));
+                        let isSizeMatch = queryText.includes(sizeNameLower) || queryWords.some(w => sizeNameLower.includes(w));
+                        let isKeywordMatch = queryWords.some(w => noteLower.includes(w) || w.includes("harga") || w.includes("beli") || w.includes("pesan") || w.includes("kegunaan") || w.includes("untuk"));
+
+                        if(isSizeMatch || (isModelMatch && isKeywordMatch) || queryText.includes(modelNameLower)) {
+                            finalAiResponse = `${userPrefixName}untuk model *${model.name}* ukuran *${sizeObj.name}*, harganya adalah *Rp ${sizeObj.price.toLocaleString('id-ID')}* per pcs. Catatan & kegunaan: ${sizeObj.note}. Kualitas dijamin mantap dan siap diproses bosku!`;
                             
+                            // Otomatis arahkan pilihan form UI ke item tersebut agar sinkron
                             document.getElementById('bag-model-select').value = mIdx;
                             updateCustomerSizesDropdown();
                             document.getElementById('bag-size-select').value = sizeObj.name;
                             updateSizeLabel();
-                            foundMatch = true;
+                            foundSpecificBag = true;
                             break;
                         }
                     }
-                    if(foundMatch) break;
+                    if(foundSpecificBag) break;
                 }
-            }
 
-            if(!finalAiResponse) {
-                finalAiResponse = `${userPrefixName}ngomongin soal ${queryText}, pilihan tas custom kita lengkap banget mulai dari model oval sampai handle box. ${salesLobiPitch} Pertanyaan ini juga sudah saya catat untuk ditinjau Admin ya! 🙏 ${randomFollowUp}`;
-                if(!unansweredLogs.includes(queryText)) {
-                    unansweredLogs.push(queryText);
-                    saveToCloud();
-                    renderAdminPanel();
+                // Jika belum ketemu dari pencarian spesifik ukuran, scan umum nama model
+                if(!foundSpecificBag) {
+                    for(let mIdx = 0; mIdx < bagModels.length; mIdx++) {
+                        let model = bagModels[mIdx];
+                        if(queryText.includes(model.name.toLowerCase()) || queryWords.some(w => model.name.toLowerCase().includes(w))) {
+                            let sizeListStr = model.sizes.map(s => `${s.name} (Rp ${s.price.toLocaleString('id-ID')})`).join(', ');
+                            finalAiResponse = `${userPrefixName}mengenai *${model.name}*, kami punya beberapa pilihan ukuran lengkap: ${sizeListStr}. Silakan pilih ukuran yang pas di form atas ya Bosku!`;
+                            
+                            document.getElementById('bag-model-select').value = mIdx;
+                            updateCustomerSizesDropdown();
+                            foundSpecificBag = true;
+                            break;
+                        }
+                    }
+                }
+
+                // 3. JIKA MASIH BELUM KETEMU, BERIKAN JAWABAN SALES OMNI YANG CERDAS & AMBIL INFO SELURUH KATALOG
+                if(!foundSpecificBag) {
+                    // Cek pertanyaan umum umum
+                    if(queryText.includes("harga") || queryText.includes("list") || queryText.includes("katalog") || queryText.includes("menu")) {
+                        let summaryCatalog = bagModels.map(m => `${m.name} (mulai Rp ${m.sizes[0]?.price.toLocaleString('id-ID')})`).join(', ');
+                        finalAiResponse = `${userPrefixName}kami menyediakan berbagai model tas custom berkualitas tinggi: ${summaryCatalog}. Silakan pilih model dan ukurannya langsung di menu form pemesanan di atas ya!`;
+                    } else if(queryText.includes("alamat") || queryText.includes("lokasi") || queryText.includes("toko") || queryText.includes("workshop")) {
+                        finalAiResponse = `${userPrefixName}workshop pusat kami berlokasi di ${storeAddress}. Silakan mampir atau order langsung via online!`;
+                    } else if(queryText.includes("kontak") || queryText.includes("owner") || queryText.includes("admin") || queryText.includes("wa")) {
+                        finalAiResponse = `${userPrefixName}bisa langsung hubungi nomor WhatsApp resmi kami di ${storePhone} atau klik tombol kirim pesanan ke owner di bawah ya.`;
+                    } else {
+                        // Jawaban umum ramah sales yang mencakup seluruh kemampuan aplikasi tanpa masuk ke log tertinggal yang bikin jengkel
+                        const generalPitches = [
+                            `Tentu ${userPrefixName}di ILHAM SPUNBOND semua pesanan custom tas bisa diatur mulai dari sablon manual 1-2 warna sampai DTF full color. Mau dibantu hitungkan estimasi harga untuk jumlah berapa pcs?`,
+                            `Siap ${userPrefixName}semua spesifikasi tas, ukuran, dan pilihan warna kain sudah lengkap di aplikasi ini. Ada model tas khusus yang sedang Kakak cari?`,
+                            `Baik ${userPrefixName}untuk hasil sablon dijamin rapi, kain tebal murni 75GSM, dan khusus Pulau Jawa gratis ongkir! Ada detail pesanan yang ingin kita diskusikan?`
+                        ];
+                        finalAiResponse = generalPitches[Math.floor(Math.random() * generalPitches.length)];
+                    }
                 }
             }
 
@@ -1365,11 +1399,10 @@
             
             renderAdminPanel();
             
-            // KUNCI PENGAMAN SYNC CLOUD AGAR DATA TIDAK REBOUND/OVERWRITE
             isSyncingFromCloud = true;
             saveToCloud().then(() => {
                 setTimeout(() => { isSyncingFromCloud = false; }, 1200);
-                alert("Mantap! Ingatan AI baru berhasil disimpan permanen di nomor urut " + knowledgeFaq.length + "!");
+                alert("Mantap! Ingatan AI baru berhasil disimpan permanen dan langsung aktif!");
             }).catch(err => {
                 isSyncingFromCloud = false;
                 console.error("Gagal simpan FAQ ke cloud:", err);
@@ -2055,6 +2088,7 @@
                 const { doc, setDoc } = window.firebaseDeps;
                 const docRef = doc(window.firebaseDb, "settings", "master_data");
                 await setDoc(docRef, {
+                    bagModels: bagModels,
                     knowledgeFaq: knowledgeFaq,
                     bankAccounts, bagColors, inkColors, dtfOptions,
                     blockedWords, unansweredLogs, extraColorPrice, storeName, pdfPassword, ownerWaNumber, 
