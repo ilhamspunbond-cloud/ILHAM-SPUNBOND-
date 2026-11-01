@@ -1,39 +1,25 @@
 // ==========================================
 // 1. DATA ARRAY INGATAN AI & FILTER KATA
 // ==========================================
-let knowledgeFaq = [
+let defaultKnowledgeFaq = [
     { prefix: "Waalaikumussalam", keyword: "assalamualaikum", suffix: "Massyaallah bagaimana kabarnya? Ada yg bisa saya bantu untuk cara pemesanan atau rekomendasi tas spunbond yg sesuai kebutuhan?", repeatKeyword: false },
     { prefix: "terkait", keyword: "minimal order", suffix: "untuk pemesanan custom tas spunbond minimal order sangat terjangkau bosku, siap kami layani!", repeatKeyword: true },
     { prefix: "mengenai", keyword: "alamat", suffix: "lokasi workshop kami ada di Taman Raya Rajeg Blok-K10 No.06, Tangerang-Banten.", repeatKeyword: true },
     { prefix: "perihal", keyword: "ongkir", suffix: "soal pengiriman, kabar baiknya untuk ke seluruh wilayah Pulau Jawa free ongkir!", repeatKeyword: true },
-    { prefix: "Pilihan jumlah pesanan yang sangat pas untuk kebutuhan acara,", keyword: "500", suffix: "Untuk cetak sablon dengan jumlah 500 pcs, estimasi waktu proses pengerjaannya adalah 3 hari terhitung dari turun PO sampai siap dikirim. Namun jika memilih cetak DTF dengan jumlah tersebut, disarankan untuk koordinasi dan chat langsung dengan owner Ilham Spunbond terlebih dahulu supaya jadwalnya bisa disesuaikan dengan baik dan tidak terkejar deadline waktu. Mau langsung dibantu lanjut ke proses desainnya, Bosku?", repeatKeyword: true },
-    { prefix: "", keyword: "", suffix: "", repeatKeyword: true },
-    { prefix: "", keyword: "", suffix: "", repeatKeyword: true },
-    { prefix: "", keyword: "", suffix: "", repeatKeyword: true },
-    { prefix: "", keyword: "", suffix: "", repeatKeyword: true },
-    { prefix: "", keyword: "", suffix: "", repeatKeyword: true },
-    { prefix: "", keyword: "", suffix: "", repeatKeyword: true },
-    { prefix: "", keyword: "", suffix: "", repeatKeyword: true },
-    { prefix: "", keyword: "", suffix: "", repeatKeyword: true },
-    { prefix: "", keyword: "", suffix: "", repeatKeyword: true },
-    { prefix: "", keyword: "", suffix: "", repeatKeyword: true },
-    { prefix: "", keyword: "", suffix: "", repeatKeyword: true },
-    { prefix: "", keyword: "", suffix: "", repeatKeyword: true },
-    { prefix: "", keyword: "", suffix: "", repeatKeyword: true },
-    { prefix: "", keyword: "", suffix: "", repeatKeyword: true },
-    { prefix: "", keyword: "", suffix: "", repeatKeyword: true },
-    { prefix: "", keyword: "", suffix: "", repeatKeyword: true },
-
-
-    
+    { prefix: "Pilihan jumlah pesanan yang sangat pas untuk kebutuhan acara,", keyword: "500", suffix: "Untuk cetak sablon dengan jumlah 500 pcs, estimasi waktu proses pengerjaannya adalah 3 hari terhitung dari turun PO sampai siap dikirim. Namun jika memilih cetak DTF dengan jumlah tersebut, disarankan untuk koordinasi dan chat langsung dengan owner Ilham Spunbond terlebih dahulu supaya jadwalnya bisa disesuaikan dengan baik dan tidak terkejar deadline waktu. Mau langsung dibantu lanjut ke proses desainnya, Bosku?", repeatKeyword: true }
 ];
+
+// Load dari localStorage jika sudah ada, jika belum pakai data default
+let knowledgeFaq = JSON.parse(localStorage.getItem("ilhamSpunbondKnowledge")) || defaultKnowledgeFaq;
 
 let blockedWords = ["anjing", "asu", "bangsat", "tolol", "goblok", "kampret", "keparat"];
 let unansweredLogs = [];
 
+
 // ==========================================
 // 2. FUNGSI SUARA & UCAPAN AI (SPEECH)
 // ==========================================
+
 function stopAiSpeech() {
     if('speechSynthesis' in window) {
         window.speechSynthesis.cancel();
@@ -58,7 +44,6 @@ function speakAiGreeting() {
     appendChat("ai", greeting);
     speakText(greeting);
 }
-
 // ==========================================
 // 3. FUNGSI UTAMA PENCARIAN & REKOMENDASI AI
 // ==========================================
@@ -88,10 +73,20 @@ function askAiRecommendation() {
 
     let finalAiResponse = "";
 
-    // Cek di Knowledge FAQ
+    // Cek di Knowledge FAQ (Diperbaiki agar angka/keyword spesifik tidak salah tangkap via includes parsial)
     let matchedFaq = knowledgeFaq.find(f => {
         const keywordLower = (f.keyword || "").toLowerCase().trim();
-        return keywordLower && (queryText === keywordLower || queryText.includes(keywordLower) || queryWords.includes(keywordLower));
+        if (!keywordLower) return false;
+
+        // Jika keyword berupa angka murni (seperti "50", "500"), wajib match secara exact (sama persis) 
+        // atau kata utuh dalam array queryWords agar "500" tidak dianggap mengandung "50".
+        const isNumericKeyword = /^\d+$/.test(keywordLower);
+        if (isNumericKeyword) {
+            return queryText === keywordLower || queryWords.includes(keywordLower);
+        }
+
+        // Untuk keyword kalimat/teks biasa, gunakan pengecekan standar
+        return queryText === keywordLower || queryText.includes(keywordLower) || queryWords.includes(keywordLower);
     });
 
     if(matchedFaq) {
@@ -233,7 +228,11 @@ async function addKnowledgeFaq() {
 
     if(!keyword || !suffix) return alert("Harap isi Kata Kunci dan Jawaban dengan lengkap!");
 
+    // Menambahkan data baru ke array
     knowledgeFaq.push({ prefix, keyword, suffix, repeatKeyword });
+
+    // Menyimpan secara permanen ke localStorage browser
+    localStorage.setItem("ilhamSpunbondKnowledge", JSON.stringify(knowledgeFaq));
 
     document.getElementById('new-faq-prefix').value = "";
     document.getElementById('new-faq-keyword').value = "";
@@ -259,6 +258,9 @@ function updateFaqField(idx, fieldName) {
         const val = document.getElementById(`edit-faq-suffix-${idx}`).value;
         if(knowledgeFaq[idx]) knowledgeFaq[idx].suffix = val;
     }
+    
+    // Update juga di localStorage saat diedit
+    localStorage.setItem("ilhamSpunbondKnowledge", JSON.stringify(knowledgeFaq));
     saveToCloud();
 }
 
@@ -266,12 +268,17 @@ function updateFaqRepeat(idx) {
     const selectEl = document.getElementById(`edit-faq-repeat-${idx}`);
     if(selectEl && knowledgeFaq[idx]) {
         knowledgeFaq[idx].repeatKeyword = selectEl.value === "true";
+        localStorage.setItem("ilhamSpunbondKnowledge", JSON.stringify(knowledgeFaq));
         saveToCloud();
     }
 }
 
 async function deleteKnowledgeFaq(idx) {
     knowledgeFaq.splice(idx, 1);
+    
+    // Perbarui localStorage saat ada yang dihapus
+    localStorage.setItem("ilhamSpunbondKnowledge", JSON.stringify(knowledgeFaq));
+
     isSyncingFromCloud = true;
     await saveToCloud();
     setTimeout(() => { isSyncingFromCloud = false; }, 1200);
@@ -303,6 +310,10 @@ function promoteLogToFaq(logText, logIdx) {
     const suffix = prompt(`Masukkan Kata Tambahan Akhir / Jawaban untuk pertanyaan: "${logText}"`);
     if(prefix !== null && suffix) {
         knowledgeFaq.push({ prefix: prefix.trim(), keyword: logText.toLowerCase().trim(), suffix: suffix.trim(), repeatKeyword: true });
+        
+        // Simpan permanen ke localStorage
+        localStorage.setItem("ilhamSpunbondKnowledge", JSON.stringify(knowledgeFaq));
+
         unansweredLogs.splice(logIdx, 1);
         isSyncingFromCloud = true;
         saveToCloud().then(() => {
