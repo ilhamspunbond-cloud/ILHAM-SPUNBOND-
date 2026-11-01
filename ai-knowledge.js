@@ -5,41 +5,41 @@
  * =========================================================================
  */
 
-// Global state default untuk AI & Knowledge Base (disamakan ke knowledgeFaq & blockedWords)
+// Global state default untuk AI & Knowledge Base (dengan pengaman try-catch anti-corrupt JSON)
 window.knowledgeFaq = [
     {
         id: "kb-1",
         prefix: "Waalaikumussalam",
         keyword: "alamat",
-        suffix: "Alamat workshop kami berada di Prm. taman raya No.06 blok k-10, Mekarsari, Kec. Rajeg, Kabupaten Tangerang, Banten 15540, Indonesia.",
+        suffix: "Alamat workshop kami berada di Prm. taman raya No.06 blok k-10, Mekarsari, Kec. Rajeg, Kabupaten Tangerang, Banten 15540, Indonesia",
         repeatKeyword: false
     },
     {
         id: "kb-2",
         prefix: "Baik",
         keyword: "min order",
-        suffix: "Minimal order untuk custom sablon tas spunbond adalah 50 pcs, Bosku. Semakin banyak jumlahnya, harga satuan makin murah dan otomatis dapat diskon 10% untuk pesanan di atas 1.000 pcs!",
+        suffix: "Minimal order untuk custom sablon tas spunbond adalah 50 pcs, Bosku. Semakin banyak jumlahnya, harga satuan makin murah dan otomatis dapat diskon 10% untuk pesanan di atas 1.000 pcs",
         repeatKeyword: false
     },
     {
         id: "kb-3",
         prefix: "Halo",
         keyword: "harga",
-        suffix: "Harga tas spunbond bervariasi tergantung model, ukuran, dan metode cetaknya (sablon manual atau DTF full color). Silakan pilih model dan ukuran di aplikasi, harganya langsung otomatis terhitung real-time!",
+        suffix: "Harga tas spunbond bervariasi tergantung model, ukuran, dan metode cetaknya (sablon manual atau DTF full color). Silakan pilih model dan ukuran di aplikasi, harganya langsung otomatis terhitung real-time",
         repeatKeyword: false
     },
     {
         id: "kb-4",
         prefix: "Tentu",
         keyword: "sablon",
-        suffix: "Kami menyediakan sablon manual pasta tinta berkualitas tinggi (bisa 1 atau 2 warna) serta cetak DTF full color yang tajam dan awet.",
+        suffix: "Kami menyediakan sablon manual pasta tinta berkualitas tinggi (bisa 1 atau 2 warna) serta cetak DTF full color yang tajam dan awet",
         repeatKeyword: false
     },
     {
         id: "kb-5",
         prefix: "Baik",
         keyword: "pengiriman",
-        suffix: "Kami melayani pengiriman ke seluruh wilayah Jabodetabek (bisa COD / bayar di tempat) maupun ke seluruh Indonesia menggunakan ekspedisi terpercaya.",
+        suffix: "Kami melayani pengiriman ke seluruh wilayah Jabodetabek (bisa COD / bayar di tempat) maupun ke seluruh Indonesia menggunakan ekspedisi terpercaya",
         repeatKeyword: false
     }
 ];
@@ -47,10 +47,14 @@ window.knowledgeFaq = [
 window.blockedWords = ["anjing", "asu", "bangsat", "kampret", "kontol", "memek", "goblok", "tolol"];
 window.unansweredLogs = [];
 
-// Load dari localStorage jika ada penyimpanan kustom dari admin
+// Load dari localStorage dengan Pengaman Anti-Crash / Anti-Corrupt JSON
 try {
-    if(localStorage.getItem('ilham_knowledgeFaq')) {
-        window.knowledgeFaq = JSON.parse(localStorage.getItem('ilham_knowledgeFaq'));
+    const savedFaq = localStorage.getItem('ilham_knowledgeFaq');
+    if (savedFaq) {
+        const parsedData = JSON.parse(savedFaq);
+        if (Array.isArray(parsedData) && parsedData.length > 0) {
+            window.knowledgeFaq = parsedData;
+        }
     }
     if(localStorage.getItem('ilham_blockedWords')) {
         window.blockedWords = JSON.parse(localStorage.getItem('ilham_blockedWords'));
@@ -59,12 +63,22 @@ try {
         window.unansweredLogs = JSON.parse(localStorage.getItem('ilham_unansweredLogs'));
     }
 } catch(e) {
-    console.error("Storage error:", e);
+    console.warn("⚠️ Terdeteksi data korup di localStorage, membersihkan string berbahaya...", e);
+    localStorage.removeItem('ilham_knowledgeFaq');
+}
+
+// Fungsi Pembersih Koma / Spasi Nyasar di Ujung Kalimat
+function cleanTrailingComma(str) {
+    if (!str) return "";
+    let cleaned = str.trim();
+    if (cleaned.endsWith(',')) {
+        cleaned = cleaned.slice(0, -1).trim();
+    }
+    return cleaned;
 }
 
 // Fungsi Sapaan Awal AI (Otomatis Menarik Nama Customer yang Aktif)
 function speakAiGreeting() {
-    // Ambil data profil customer terbaru dari localStorage
     let activeCustomer = {};
     try {
         activeCustomer = JSON.parse(localStorage.getItem('ilham_customerProfile') || '{}');
@@ -114,7 +128,8 @@ function clearChatHistory() {
         `;
     }
 }
-// Mesin Pencari & Penjawab AI (Sesuai Urutan Baru)
+
+// Mesin Pencari & Penjawab AI
 function askAiRecommendation() {
     const inputEl = document.getElementById('ai-user-query');
     if (!inputEl) return;
@@ -141,7 +156,7 @@ function askAiRecommendation() {
     try { activeCustomer = JSON.parse(localStorage.getItem('ilham_customerProfile') || '{}'); } catch(e) {}
     const title = activeCustomer.title || localStorage.getItem('ilham_customer_title') || 'Bosku';
     const name = activeCustomer.name || localStorage.getItem('ilham_customer_name') || 'Pelanggan';
-    const customerFullName = `${title} ${name}`; // Contoh: "Bosku Rojak" atau "Kak Budi"
+    const customerFullName = `${title} ${name}`;
 
     // 2. Cari di Knowledge Base (knowledgeFaq)
     let matchedKb = null;
@@ -154,25 +169,17 @@ function askAiRecommendation() {
 
     let responseText = "";
     if (matchedKb) {
-        // URUTAN SESUAI PERMINTAAN: Kata Awal + Nama Customer + Kata Akhir (Suffix)
         let prefix = matchedKb.prefix || "Baik";
-        
-        // Cek apakah user/admin mengaktifkan pengulangan keyword
         let keywordPart = "";
         if (matchedKb.repeatKeyword === true) {
             keywordPart = ` mengenai ${matchedKb.keyword}`;
         }
-
-        // Susun kalimat sesuai urutan: [Prefix] + [Nama Customer] + [Keyword Optional] + [Suffix]
-        responseText = `${prefix}, ${customerFullName}${keywordPart}. ${matchedKb.suffix}`;
-        
+        responseText = `${prefix}, ${customerFullName}${keywordPart}. ${matchedKb.suffix}.`;
     } else {
-        // Log pertanyaan tidak terjawab ke panel admin
         window.unansweredLogs.push(query);
         try { localStorage.setItem('ilham_unansweredLogs', JSON.stringify(window.unansweredLogs)); } catch(e) {}
         if (typeof renderAdminPanel === 'function') renderAdminPanel();
 
-        // Susun sapaan jika pertanyaan belum ada di knowledge base
         responseText = `Wah, pertanyaan menarik nih, ${customerFullName}! Terkait "${query}", tim admin kami akan segera catat. Untuk info cepat seputar tas spunbond, ukuran, atau sablon, Kakak bisa langsung pilih di menu form ya!`;
     }
 
@@ -180,61 +187,157 @@ function askAiRecommendation() {
     speakText(responseText);
 }
 
-// Fungsi Update Field FAQ (Edit Kata Kunci / Prefix / Suffix) dengan Auto-Save Permanen
-function updateFaqField(fIdx, field) {
+// =========================================================================
+// PANEL ADMIN: RENDER FAQ DENGAN KUNCI OTOMATIS & TOMBOL SIMPAN EDIT AMAN
+// =========================================================================
+function renderKnowledgeFaqAdmin() {
+    const faqAdminContainer = document.getElementById('faq-admin-container');
+    if (!faqAdminContainer || typeof knowledgeFaq === 'undefined') return;
+    
+    faqAdminContainer.innerHTML = '';
+    knowledgeFaq.forEach((faq, fIdx) => {
+        const isRepeat = faq.repeatKeyword !== false;
+        
+        faqAdminContainer.innerHTML += `
+            <div id="faq-card-${fIdx}" class="bg-slate-900 p-3.5 rounded-xl border border-slate-700 text-xs space-y-2.5 shadow-md transition">
+                <div class="flex justify-between items-center border-b border-slate-800 pb-1.5">
+                    <span class="font-bold text-amber-300 flex items-center gap-1.5">
+                        <span>🔒</span> # Ingatan AI No. ${fIdx + 1}
+                    </span>
+                    <div class="flex items-center gap-1.5">
+                        <button type="button" onclick="toggleEditFaqCard(${fIdx})" id="btn-lock-${fIdx}" class="bg-slate-800 hover:bg-slate-700 text-amber-300 font-semibold px-2.5 py-1 rounded-lg text-[10px] cursor-pointer border border-slate-600">
+                            🔓 Buka Edit
+                        </button>
+                        <button type="button" onclick="deleteKnowledgeFaq(${fIdx})" class="text-rose-400 hover:text-rose-300 font-bold px-2 py-1 rounded-lg bg-rose-950/40 border border-rose-900/50 cursor-pointer text-[10px]">
+                            🗑️ Hapus
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Form Terkunci Default -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 opacity-75" id="form-body-${fIdx}">
+                    <div>
+                        <label class="block text-[10px] text-slate-400 mb-0.5">Kata Tambahan Awal:</label>
+                        <input type="text" id="edit-faq-prefix-${fIdx}" value="${faq.prefix || ''}" disabled class="w-full bg-slate-950 border border-slate-800 rounded px-2.5 py-1.5 text-slate-300 outline-none cursor-not-allowed">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] text-slate-400 mb-0.5">Kata Kunci:</label>
+                        <input type="text" id="edit-faq-kw-${fIdx}" value="${faq.keyword || ''}" disabled class="w-full bg-slate-950 border border-slate-800 rounded px-2.5 py-1.5 text-amber-200/80 font-bold outline-none cursor-not-allowed">
+                    </div>
+                    <div class="sm:col-span-2">
+                        <label class="block text-[10px] text-slate-400 mb-0.5">Kata Tambahan Akhir / Jawaban:</label>
+                        <textarea id="edit-faq-suffix-${fIdx}" rows="2" disabled class="w-full bg-slate-950 border border-slate-800 rounded p-2 text-slate-300 outline-none text-xs cursor-not-allowed">${faq.suffix || ''}</textarea>
+                    </div>
+                    <div class="sm:col-span-2 flex items-center justify-between bg-slate-950 p-2 rounded-lg border border-slate-800">
+                        <span class="text-[11px] text-slate-400">Ulangi Kata Kunci di Jawaban?</span>
+                        <select id="edit-faq-repeat-${fIdx}" disabled class="bg-slate-900 border border-slate-800 rounded px-2 py-1 text-[11px] text-slate-400 font-semibold outline-none cursor-not-allowed">
+                            <option value="false" ${!isRepeat ? 'selected' : ''}>Tidak (Natural)</option>
+                            <option value="true" ${isRepeat ? 'selected' : ''}>Ya (Diulang)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Tombol Simpan Manual (Muncul pas Buka Edit diklik) -->
+                <div id="save-btn-box-${fIdx}" class="hidden pt-1">
+                    <button type="button" onclick="saveEditedFaq(${fIdx})" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 rounded-lg text-xs cursor-pointer shadow transition active:scale-95 flex items-center justify-center gap-1.5">
+                        <span>💾</span> Simpan & Kunci Kembali No. ${fIdx + 1}
+                    </button>
+                </div>
+            </div>`;
+    });
+}
+
+// Toggle Buka/Kunci Kartu Edit
+function toggleEditFaqCard(fIdx) {
+    const formBody = document.getElementById(`form-body-${fIdx}`);
+    const saveBox = document.getElementById(`save-btn-box-${fIdx}`);
+    const btnLock = document.getElementById(`btn-lock-${fIdx}`);
+    const card = document.getElementById(`faq-card-${fIdx}`);
+
+    const isLocked = formBody.classList.contains('opacity-75');
+
+    const prefixInput = document.getElementById(`edit-faq-prefix-${fIdx}`);
+    const kwInput = document.getElementById(`edit-faq-kw-${fIdx}`);
+    const suffixInput = document.getElementById(`edit-faq-suffix-${fIdx}`);
+    const repeatSelect = document.getElementById(`edit-faq-repeat-${fIdx}`);
+
+    if (isLocked) {
+        formBody.classList.remove('opacity-75', 'cursor-not-allowed');
+        saveBox.classList.remove('hidden');
+        btnLock.innerHTML = "🔒 Tutup / Kunci";
+        btnLock.className = "bg-amber-600 hover:bg-amber-700 text-white font-semibold px-2.5 py-1 rounded-lg text-[10px] cursor-pointer border border-amber-500 shadow";
+        card.classList.add('border-emerald-500/60', 'bg-slate-950/80');
+
+        prefixInput.disabled = false;
+        kwInput.disabled = false;
+        suffixInput.disabled = false;
+        repeatSelect.disabled = false;
+
+        prefixInput.classList.remove('cursor-not-allowed', 'bg-slate-950', 'text-slate-300');
+        kwInput.classList.remove('cursor-not-allowed', 'bg-slate-950');
+        suffixInput.classList.remove('cursor-not-allowed', 'bg-slate-950', 'text-slate-300');
+        repeatSelect.classList.remove('cursor-not-allowed', 'bg-slate-900', 'text-slate-400');
+        
+        prefixInput.classList.add('bg-slate-900', 'text-white');
+        kwInput.classList.add('bg-slate-900', 'text-amber-300');
+        suffixInput.classList.add('bg-slate-900', 'text-white');
+        repeatSelect.classList.add('bg-slate-900', 'text-amber-400');
+    } else {
+        renderKnowledgeFaqAdmin();
+    }
+}
+
+// Simpan Perubahan Editan (Hanya saat Tombol Simpan diklik)
+function saveEditedFaq(fIdx) {
     if (!window.knowledgeFaq || !window.knowledgeFaq[fIdx]) return;
-    
-    // Ambil nilai terbaru dari inputan form edit di panel admin
-    const prefixVal = document.getElementById(`edit-faq-prefix-${fIdx}`)?.value || "";
-    const kwVal = document.getElementById(`edit-faq-kw-${fIdx}`)?.value || "";
-    const suffixVal = document.getElementById(`edit-faq-suffix-${fIdx}`)?.value || "";
-    
-    // Perbarui data di array global
+
+    const rawPrefix = document.getElementById(`edit-faq-prefix-${fIdx}`).value;
+    const rawKw = document.getElementById(`edit-faq-kw-${fIdx}`).value;
+    const rawSuffix = document.getElementById(`edit-faq-suffix-${fIdx}`).value;
+    const repeatVal = document.getElementById(`edit-faq-repeat-${fIdx}`).value === 'true';
+
+    const kwVal = cleanTrailingComma(rawKw);
+    const suffixVal = cleanTrailingComma(rawSuffix);
+    const prefixVal = cleanTrailingComma(rawPrefix);
+
+    if (!kwVal || !suffixVal) {
+        alert("Kata Kunci dan Jawaban tidak boleh kosong, Bosku!");
+        return;
+    }
+
     window.knowledgeFaq[fIdx].prefix = prefixVal;
     window.knowledgeFaq[fIdx].keyword = kwVal;
     window.knowledgeFaq[fIdx].suffix = suffixVal;
-    
-    // 1. Simpan otomatis ke LocalStorage seketika
-    try {
-        localStorage.setItem('ilham_knowledgeFaq', JSON.stringify(window.knowledgeFaq));
-    } catch(e) {}
-    
-    // 2. Aktifkan penanda manual update supaya tidak bentrok dengan onSnapshot
-    window.isManualUpdating = true;
-    
-    // 3. Kirim dan simpan permanen ke Firebase Cloud secara otomatis
-    if (typeof saveToCloud === 'function') {
-        saveToCloud().then(() => {
-            setTimeout(() => { window.isManualUpdating = false; }, 1000);
-        });
-    }
-}
+    window.knowledgeFaq[fIdx].repeatKeyword = repeatVal;
 
-// Fungsi Update Opsi Pengulangan Kata Kunci dengan Auto-Save
-function updateFaqRepeat(fIdx) {
-    if (!window.knowledgeFaq || !window.knowledgeFaq[fIdx]) return;
-    const val = document.getElementById(`edit-faq-repeat-${fIdx}`).value === 'true';
-    window.knowledgeFaq[fIdx].repeatKeyword = val;
-    
-    // Simpan otomatis ke LocalStorage & Cloud
     try {
         localStorage.setItem('ilham_knowledgeFaq', JSON.stringify(window.knowledgeFaq));
-    } catch(e) {}
-    
+    } catch(e) {
+        alert("Gagal simpan! Periksa karakter tulisan.");
+        return;
+    }
+
     window.isManualUpdating = true;
     if (typeof saveToCloud === 'function') {
         saveToCloud().then(() => {
             setTimeout(() => { window.isManualUpdating = false; }, 1000);
         });
     }
+
+    alert(`✅ Ingatan No. ${fIdx + 1} berhasil disimpan permanen!`);
+    renderKnowledgeFaqAdmin();
 }
 
-// Fungsi Tambah Ingatan AI yang Aman dari Bentrok Cloud
+// Fungsi Tambah Ingatan AI Baru
 function addKnowledgeFaq() {
-    const prefix = document.getElementById('new-faq-prefix')?.value.trim() || "Baik";
-    const keyword = document.getElementById('new-faq-keyword')?.value.trim();
-    const suffix = document.getElementById('new-faq-suffix')?.value.trim();
+    const rawPrefix = document.getElementById('new-faq-prefix')?.value || "Baik";
+    const rawKeyword = document.getElementById('new-faq-keyword')?.value;
+    const rawSuffix = document.getElementById('new-faq-suffix')?.value;
     
+    const keyword = cleanTrailingComma(rawKeyword);
+    const suffix = cleanTrailingComma(rawSuffix);
+    const prefix = cleanTrailingComma(rawPrefix);
+
     if(!keyword || !suffix) {
         alert("Keyword dan Jawaban wajib diisi, Bosku!");
         return;
@@ -242,7 +345,6 @@ function addKnowledgeFaq() {
     
     if (!window.knowledgeFaq) window.knowledgeFaq = [];
     
-    // Tambah ingatan baru dengan ID super unik
     window.knowledgeFaq.push({
         id: "kb-" + Date.now() + "-" + Math.floor(Math.random() * 10000),
         prefix: prefix,
@@ -251,24 +353,17 @@ function addKnowledgeFaq() {
         repeatKeyword: false
     });
     
-    // Simpan ke localStorage terlebih dahulu sebagai master lokal
     try {
         localStorage.setItem('ilham_knowledgeFaq', JSON.stringify(window.knowledgeFaq));
-    } catch(e) {
-        console.error("Gagal simpan localStorage:", e);
-    }
+    } catch(e) {}
     
-    // Set flag supaya cloud tahu kita sedang update manual (mencegah bentrok onSnapshot)
     window.isManualUpdating = true;
-    
-    // Simpan ke Firebase Cloud
     if (typeof saveToCloud === 'function') {
         saveToCloud().then(() => {
             setTimeout(() => { window.isManualUpdating = false; }, 1000);
         });
     }
     
-    // Kosongkan form input
     document.getElementById('new-faq-prefix').value = '';
     document.getElementById('new-faq-keyword').value = '';
     document.getElementById('new-faq-suffix').value = '';
@@ -276,25 +371,21 @@ function addKnowledgeFaq() {
     if (typeof renderAdminPanel === 'function') {
         renderAdminPanel();
     }
+    alert("Ingatan AI baru berhasil disimpan permanen & terkunci rapi! 🚀");
 }
 
-// Fungsi Hapus Ingatan AI yang Aman
+// Fungsi Hapus Ingatan AI
 function deleteKnowledgeFaq(fIdx) {
     if (confirm("Yakin ingin menghapus ingatan AI ini?")) {
         if (!window.knowledgeFaq) return;
         
-        // Hapus array berdasarkan indeks
         window.knowledgeFaq.splice(fIdx, 1);
         
-        // Simpan ke localStorage
         try {
             localStorage.setItem('ilham_knowledgeFaq', JSON.stringify(window.knowledgeFaq));
         } catch(e) {}
         
-        // Set flag penanda update manual
         window.isManualUpdating = true;
-        
-        // Sinkronkan ke Firebase Cloud
         if (typeof saveToCloud === 'function') {
             saveToCloud().then(() => {
                 setTimeout(() => { window.isManualUpdating = false; }, 1000);
@@ -311,8 +402,8 @@ function promoteLogToFaq(queryText, lIdx) {
     window.knowledgeFaq.push({
         id: "kb-" + Date.now(),
         prefix: "Baik, mengenai",
-        keyword: queryText,
-        suffix: `Informasi terkait "${queryText}" akan segera kami layani dengan maksimal di workshop ILHAM SPUNBOND.`,
+        keyword: cleanTrailingComma(queryText),
+        suffix: `Informasi terkait "${queryText}" akan segera kami layani dengan maksimal di workshop ILHAM SPUNBOND`,
         repeatKeyword: true
     });
     deleteSingleUnansweredLog(lIdx);
@@ -391,4 +482,4 @@ function escapeHtml(text) {
                .replace(/'/g, "&#039;");
 }
 
-console.log("✅ ai-knowledge.js berhasil diselaraskan dan dimuat sepenuhnya.");
+console.log("✅ ai-knowledge.js lengkap dengan sistem kunci otomatis & auto-save aman dimuat.");
