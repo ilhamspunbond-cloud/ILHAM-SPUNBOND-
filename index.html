@@ -1361,18 +1361,19 @@
             
             if(!keyword || !suffix) return alert("Harap isi Kata Kunci dan Jawaban/Kata Akhir dengan lengkap!");
             
-            knowledgeFaq.unshift({ prefix, keyword, suffix, repeatKeyword });
+            // Perbaikan agar state ter-trigger penuh dan bablas nembus angka 28, 29, 30, dst.
+            knowledgeFaq = [{ prefix, keyword, suffix, repeatKeyword }, ...knowledgeFaq];
             
             document.getElementById('new-faq-prefix').value = "";
             document.getElementById('new-faq-keyword').value = "";
             document.getElementById('new-faq-suffix').value = "";
             
+            renderAdminPanel();
+            
             saveToCloud().then(() => {
-                renderAdminPanel();
-                alert("Ingatan AI nomor " + knowledgeFaq.length + " berhasil disimpan permanen!");
+                alert("Ingatan AI baru berhasil disimpan permanen (Total: " + knowledgeFaq.length + " ingatan)!");
             }).catch(err => {
-                console.error("Gagal simpan FAQ:", err);
-                renderAdminPanel();
+                console.error("Gagal simpan FAQ ke cloud:", err);
                 alert("Ingatan AI tersimpan secara lokal!");
             });
         }
