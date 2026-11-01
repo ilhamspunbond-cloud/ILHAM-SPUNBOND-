@@ -508,7 +508,7 @@
                 
                 <div class="space-y-2 pt-2 border-t border-slate-700">
                     <input type="text" id="new-faq-prefix" placeholder="Kata Tambahan Awal (Cth: Waalaikumussalam)" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white outline-none">
-                    <input type="text" id="new-faq-keyword" placeholder="Kata Kunci (Cth: assalamualaikum)" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white outline-none">
+                    <input type="text" id="new-faq-keyword" placeholder="Kata Kunci (Cth: alhamdulillah)" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white outline-none">
                     <textarea id="new-faq-suffix" rows="2" placeholder="Kata Tambahan Akhir / Jawaban (Cth: Massyaallah bagaimana kabarnya?)" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white outline-none"></textarea>
                     
                     <div class="flex items-center justify-between bg-slate-900 p-2.5 rounded-xl border border-slate-700 text-xs">
@@ -759,7 +759,6 @@
         let cartItems = [];
         let chatHistory = [];
 
-        // AMAN DARI UNDEFINED: Fallback aman jika data profil kosong
         let customerProfile = { title: "Bosku", name: "Rojak", wa: "", address: "" };
 
         function safeLocalStorageSet(key, val) {
@@ -964,12 +963,10 @@
             appendChat("user", queryInput.value.trim());
             queryInput.value = "";
 
-            // AMAN DARI UNDEFINED: Pastikan variabel gelar dan nama tidak undefined
             let safeTitle = (customerProfile.title && customerProfile.title !== "undefined") ? customerProfile.title : "Bosku";
             let safeName = (customerProfile.name && customerProfile.name !== "undefined") ? customerProfile.name : "Rojak";
             let userPrefixName = `${safeTitle} ${safeName}, `;
 
-            // 1. CEK KATA TERLARANG (BLOCKED WORDS)
             const queryWords = queryText.split(/\s+/);
             const hasForbiddenWord = blockedWords.some(bw => queryText.includes(bw.toLowerCase()) || queryWords.includes(bw.toLowerCase()));
 
@@ -982,7 +979,6 @@
 
             let finalAiResponse = "";
 
-            // 2. CEK INGATAN KUSTOM (FAQ) DENGAN FOLLOW-UP QUESTION & LOBI SALES
             let matchedFaq = knowledgeFaq.find(f => {
                 const keywordLower = (f.keyword || "").toLowerCase();
                 return keywordLower && (queryText.includes(keywordLower) || queryWords.some(w => keywordLower.includes(w) || w.includes(keywordLower)));
@@ -995,13 +991,10 @@
                 "Kira-kira butuh quantity berapa pcs nih Kak biar kita hitungkan diskon spesial partai besarnya?"
             ];
             const randomFollowUp = followUpPool[Math.floor(Math.random() * followUpPool.length)];
-
-            // Mode Lobi Sales Tambahan
             const salesLobiPitch = " Oh ya, di ILHAM SPUNBOND kita jamin kualitas Press rapi, ketebalan kain murni 75GSM, sablon awet anti luntur, dan khusus Pulau Jawa dapet free ongkir lho! Yuk langsung amankan slot produksinya.";
 
             if(matchedFaq) {
                 let prefixPart = matchedFaq.prefix ? matchedFaq.prefix + ", " : "";
-                
                 if(matchedFaq.repeatKeyword) {
                     finalAiResponse = `${prefixPart}${userPrefixName}${matchedFaq.keyword}, ${matchedFaq.suffix} ${salesLobiPitch} ${randomFollowUp}`;
                 } else {
@@ -1015,9 +1008,7 @@
                         let sizeObj = model.sizes[sIdx];
                         let note = (sizeObj.note || "").toLowerCase();
                         if(queryWords.some(w => note.includes(w) || model.name.toLowerCase().includes(w) || sizeObj.name.toLowerCase().includes(w))) {
-                            
                             let matchedKeyword = queryWords.find(w => note.includes(w) || model.name.toLowerCase().includes(w)) || queryText;
-
                             finalAiResponse = `${userPrefixName}ngomongin soal ${matchedKeyword}, rekomendasi terbaik dari kita pakai model ${model.name} ukuran ${sizeObj.name} (Harga: Rp ${sizeObj.price.toLocaleString('id-ID')} /pcs). Catatan: ${sizeObj.note} ${salesLobiPitch} ${randomFollowUp}`;
                             
                             document.getElementById('bag-model-select').value = mIdx;
@@ -1049,7 +1040,6 @@
             if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
                 return alert("Browser Anda tidak mendukung fitur input suara. Silakan ketik manual.");
             }
-            
             stopAiSpeech();
 
             const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -1066,7 +1056,6 @@
             recognition.onresult = function(event) {
                 let interimTranscript = '';
                 let finalTranscript = '';
-
                 for (let i = event.resultIndex; i < event.results.length; ++i) {
                     if (event.results[i].isFinal) {
                         finalTranscript += event.results[i][0].transcript;
@@ -1074,7 +1063,6 @@
                         interimTranscript += event.results[i][0].transcript;
                     }
                 }
-
                 if (finalTranscript) {
                     const existingText = queryInput.value.trim();
                     queryInput.value = existingText ? existingText + " " + finalTranscript : finalTranscript;
@@ -1087,7 +1075,6 @@
                 micBtn.textContent = "🎤"; 
                 micBtn.classList.replace('bg-rose-600', 'bg-amber-500'); 
             };
-            
             recognition.onend = () => { 
                 micBtn.textContent = "🎤"; 
                 micBtn.classList.replace('bg-rose-600', 'bg-amber-500');
@@ -1095,7 +1082,6 @@
                     askAiRecommendation();
                 }
             };
-            
             recognition.start();
         }
 
@@ -1366,6 +1352,7 @@
             }
         }
 
+        // --- DIPERBAIKI: FUNGSI TAMBAH INGATAN AI AGAR LANGSUNG MASUK & TERSIMPAN AMAN ---
         function addKnowledgeFaq() {
             const prefix = document.getElementById('new-faq-prefix').value.trim();
             const keyword = document.getElementById('new-faq-keyword').value.trim().toLowerCase();
@@ -1373,14 +1360,22 @@
             const repeatKeyword = document.getElementById('new-faq-repeat').value === "true";
             
             if(!keyword || !suffix) return alert("Harap isi Kata Kunci dan Jawaban/Kata Akhir dengan lengkap!");
-            knowledgeFaq.push({ prefix, keyword, suffix, repeatKeyword });
+            
+            // Masukkan ke urutan paling atas array agar langsung terlihat di list teratas
+            knowledgeFaq.unshift({ prefix, keyword, suffix, repeatKeyword });
             
             document.getElementById('new-faq-prefix').value = "";
             document.getElementById('new-faq-keyword').value = "";
             document.getElementById('new-faq-suffix').value = "";
-            saveToCloud();
-            renderAdminPanel();
-            alert("Ingatan AI baru berhasil ditambahkan!");
+            
+            saveToCloud().then(() => {
+                renderAdminPanel();
+                alert("Ingatan AI baru berhasil ditambahkan dan disimpan!");
+            }).catch(err => {
+                console.error("Gagal simpan FAQ:", err);
+                renderAdminPanel();
+                alert("Ingatan AI ditambahkan secara lokal!");
+            });
         }
 
         function updateFaqField(idx, fieldName) {
@@ -1435,7 +1430,7 @@
             const prefix = prompt(`Masukkan Kata Tambahan Awal untuk pertanyaan: "${logText}"`, "ngomongin soal");
             const suffix = prompt(`Masukkan Kata Tambahan Akhir / Jawaban untuk pertanyaan: "${logText}"`);
             if(prefix !== null && suffix) {
-                knowledgeFaq.push({ prefix: prefix.trim(), keyword: logText.toLowerCase().trim(), suffix: suffix.trim(), repeatKeyword: true });
+                knowledgeFaq.unshift({ prefix: prefix.trim(), keyword: logText.toLowerCase().trim(), suffix: suffix.trim(), repeatKeyword: true });
                 unansweredLogs.splice(logIdx, 1);
                 saveToCloud();
                 renderAdminPanel();
