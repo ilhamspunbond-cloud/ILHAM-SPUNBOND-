@@ -114,8 +114,7 @@ function clearChatHistory() {
         `;
     }
 }
-
-// Mesin Pencari & Penjawab AI (Membaca Knowledge Base & Konteks)
+// Mesin Pencari & Penjawab AI (Sesuai Urutan Baru)
 function askAiRecommendation() {
     const inputEl = document.getElementById('ai-user-query');
     if (!inputEl) return;
@@ -137,6 +136,13 @@ function askAiRecommendation() {
         }
     }
 
+    // Ambil Nama & Panggilan Customer yang Sedang Aktif
+    let activeCustomer = {};
+    try { activeCustomer = JSON.parse(localStorage.getItem('ilham_customerProfile') || '{}'); } catch(e) {}
+    const title = activeCustomer.title || localStorage.getItem('ilham_customer_title') || 'Bosku';
+    const name = activeCustomer.name || localStorage.getItem('ilham_customer_name') || 'Pelanggan';
+    const customerFullName = `${title} ${name}`; // Contoh: "Bosku Rojak" atau "Kak Budi"
+
     // 2. Cari di Knowledge Base (knowledgeFaq)
     let matchedKb = null;
     for (let kb of window.knowledgeFaq) {
@@ -148,16 +154,26 @@ function askAiRecommendation() {
 
     let responseText = "";
     if (matchedKb) {
+        // URUTAN SESUAI PERMINTAAN: Kata Awal + Nama Customer + Kata Akhir (Suffix)
         let prefix = matchedKb.prefix || "Baik";
-        let keywordPart = (matchedKb.repeatKeyword !== false) ? `tentang ${matchedKb.keyword}` : "";
-        responseText = `${prefix}, ${keywordPart} ${matchedKb.suffix}`;
+        
+        // Cek apakah user/admin mengaktifkan pengulangan keyword
+        let keywordPart = "";
+        if (matchedKb.repeatKeyword === true) {
+            keywordPart = ` mengenai ${matchedKb.keyword}`;
+        }
+
+        // Susun kalimat sesuai urutan: [Prefix] + [Nama Customer] + [Keyword Optional] + [Suffix]
+        responseText = `${prefix}, ${customerFullName}${keywordPart}. ${matchedKb.suffix}`;
+        
     } else {
         // Log pertanyaan tidak terjawab ke panel admin
         window.unansweredLogs.push(query);
         try { localStorage.setItem('ilham_unansweredLogs', JSON.stringify(window.unansweredLogs)); } catch(e) {}
         if (typeof renderAdminPanel === 'function') renderAdminPanel();
 
-        responseText = `Wah, pertanyaan menarik nih, Bosku! Terkait "${query}", tim admin kami akan segera catat. Untuk info cepat seputar tas spunbond, ukuran, atau sablon, Kakak bisa langsung pilih di menu form atau tanyakan detail modelnya ya!`;
+        // Susun sapaan jika pertanyaan belum ada di knowledge base
+        responseText = `Wah, pertanyaan menarik nih, ${customerFullName}! Terkait "${query}", tim admin kami akan segera catat. Untuk info cepat seputar tas spunbond, ukuran, atau sablon, Kakak bisa langsung pilih di menu form ya!`;
     }
 
     appendChatBubble('ai', responseText);
