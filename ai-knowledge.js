@@ -5,7 +5,27 @@ let knowledgeFaq = [
     { prefix: "Waalaikumussalam", keyword: "assalamualaikum", suffix: "Massyaallah bagaimana kabarnya? Ada yg bisa saya bantu untuk cara pemesanan atau rekomendasi tas spunbond yg sesuai kebutuhan?", repeatKeyword: false },
     { prefix: "terkait", keyword: "minimal order", suffix: "untuk pemesanan custom tas spunbond minimal order sangat terjangkau bosku, siap kami layani!", repeatKeyword: true },
     { prefix: "mengenai", keyword: "alamat", suffix: "lokasi workshop kami ada di Taman Raya Rajeg Blok-K10 No.06, Tangerang-Banten.", repeatKeyword: true },
-    { prefix: "perihal", keyword: "ongkir", suffix: "soal pengiriman, kabar baiknya untuk ke seluruh wilayah Pulau Jawa free ongkir!", repeatKeyword: true }
+    { prefix: "perihal", keyword: "ongkir", suffix: "soal pengiriman, kabar baiknya untuk ke seluruh wilayah Pulau Jawa free ongkir!", repeatKeyword: true },
+    { prefix: "Pilihan jumlah pesanan yang sangat pas untuk kebutuhan acara,", keyword: "500", suffix: "Untuk cetak sablon dengan jumlah 500 pcs, estimasi waktu proses pengerjaannya adalah 3 hari terhitung dari turun PO sampai siap dikirim. Namun jika memilih cetak DTF dengan jumlah tersebut, disarankan untuk koordinasi dan chat langsung dengan owner Ilham Spunbond terlebih dahulu supaya jadwalnya bisa disesuaikan dengan baik dan tidak terkejar deadline waktu. Mau langsung dibantu lanjut ke proses desainnya, Bosku?", repeatKeyword: true },
+    { prefix: "", keyword: "", suffix: "", repeatKeyword: true },
+    { prefix: "", keyword: "", suffix: "", repeatKeyword: true },
+    { prefix: "", keyword: "", suffix: "", repeatKeyword: true },
+    { prefix: "", keyword: "", suffix: "", repeatKeyword: true },
+    { prefix: "", keyword: "", suffix: "", repeatKeyword: true },
+    { prefix: "", keyword: "", suffix: "", repeatKeyword: true },
+    { prefix: "", keyword: "", suffix: "", repeatKeyword: true },
+    { prefix: "", keyword: "", suffix: "", repeatKeyword: true },
+    { prefix: "", keyword: "", suffix: "", repeatKeyword: true },
+    { prefix: "", keyword: "", suffix: "", repeatKeyword: true },
+    { prefix: "", keyword: "", suffix: "", repeatKeyword: true },
+    { prefix: "", keyword: "", suffix: "", repeatKeyword: true },
+    { prefix: "", keyword: "", suffix: "", repeatKeyword: true },
+    { prefix: "", keyword: "", suffix: "", repeatKeyword: true },
+    { prefix: "", keyword: "", suffix: "", repeatKeyword: true },
+    { prefix: "", keyword: "", suffix: "", repeatKeyword: true },
+
+
+    
 ];
 
 let blockedWords = ["anjing", "asu", "bangsat", "tolol", "goblok", "kampret", "keparat"];
