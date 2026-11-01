@@ -953,30 +953,57 @@
 
         /* 🧠 OMNI-CONTEXT INTELLIGENT AI PARSER (REAL-TIME DATABASE & MEMORY READER) */
         function askAiRecommendation() {
-            stopAiSpeech();
-            const queryInput = document.getElementById('ai-user-query');
-            const rawQuery = queryInput.value.trim();
-            const queryText = rawQuery.toLowerCase();
-            if(!queryText) return alert("Silakan ketik pertanyaan atau konsultasi Anda terlebih dahulu.");
+    stopAiSpeech();
+    const queryInput = document.getElementById('ai-user-query');
+    const rawQuery = queryInput.value.trim();
+    const queryText = rawQuery.toLowerCase();
+    if(!queryText) return alert("Silakan ketik pertanyaan atau konsultasi Anda terlebih dahulu.");
 
-            appendChat("user", rawQuery);
-            queryInput.value = "";
+    appendChat("user", rawQuery);
+    queryInput.value = "";
 
-            let safeTitle = (customerProfile.title && customerProfile.title !== "undefined") ? customerProfile.title : "Bosku";
-            let safeName = (customerProfile.name && customerProfile.name !== "undefined") ? customerProfile.name : "Rojak";
-            let userPrefixName = `${safeTitle} ${safeName}, `;
+    let safeTitle = (customerProfile.title && customerProfile.title !== "undefined") ? customerProfile.title : "Bosku";
+    let safeName = (customerProfile.name && customerProfile.name !== "undefined") ? customerProfile.name : "Rojak";
+    let userPrefixName = `${safeTitle} ${safeName}, `;
 
-            const queryWords = queryText.split(/\s+/);
-            const hasForbiddenWord = blockedWords.some(bw => queryText.includes(bw.toLowerCase()) || queryWords.includes(bw.toLowerCase()));
+    const queryWords = queryText.split(/\s+/);
+    let finalAiResponse = "";
 
-            if(hasForbiddenWord) {
-                const politeResponse = `Mohon maaf, ${userPrefixName}mari kita berbincang dengan lebih santun dan damai ya. Ada hal seputar pemesanan tas spunbond yang bisa saya bantu dengan senang hati?`;
-                appendChat("ai", politeResponse);
-                speakText(politeResponse);
-                return;
+    // CEK INGATAN BARU / KNOWLEDGE FAQ
+    let matchedFaq = knowledgeFaq.find(f => {
+        const keywordLower = (f.keyword || "").toLowerCase().trim();
+        return keywordLower && (queryText === keywordLower || queryWords.includes(keywordLower) || queryText.includes(keywordLower));
+    });
+
+    if(matchedFaq) {
+        let prefixPart = matchedFaq.prefix ? matchedFaq.prefix + " " : "";
+        let repeatKwd = matchedFaq.repeatKeyword === true ? `${matchedFaq.keyword} ` : "";
+        // URUTAN UTAMA: Kata Tambahan Awal -> Nama Panggilan -> Kata Kunci -> Jawaban
+        finalAiResponse = `${prefixPart}${userPrefixName}${repeatKwd}${matchedFaq.suffix}`;
+    } else {
+        // Fallback pencarian model/harga standar Kakak
+        let foundSpecificBag = false;
+        for(let mIdx = 0; mIdx < bagModels.length; mIdx++) {
+            let model = bagModels[mIdx];
+            for(let sIdx = 0; sIdx < model.sizes.length; sIdx++) {
+                let sizeObj = model.sizes[sIdx];
+                if(queryText.includes(sizeObj.name.toLowerCase()) || queryText.includes(model.name.toLowerCase())) {
+                    finalAiResponse = `${userPrefixName}untuk model *${model.name}* ukuran *${sizeObj.name}*, harganya *Rp ${sizeObj.price.toLocaleString('id-ID')}* per pcs.`;
+                    foundSpecificBag = true;
+                    break;
+                }
             }
+            if(foundSpecificBag) break;
+        }
+        if(!foundSpecificBag) {
+            if(!unansweredLogs.includes(rawQuery)) { unansweredLogs.push(rawQuery); saveToCloud(); }
+            finalAiResponse = `${userPrefixName}terima kasih pertanyaannya. Ada hal seputar tas spunbond ILHAM SPUNBOND yang bisa saya bantu?`;
+        }
+    }
 
-            let finalAiResponse = "";
+    appendChat("ai", finalAiResponse);
+    speakText(finalAiResponse);
+}
 
             // 1. PRIORITAS UTAMA: CEK KATA KUNCI DI KNOWLEDGE FAQ / INGATAN BARU ADMIN
             let matchedFaq = knowledgeFaq.find(f => {
@@ -1379,30 +1406,27 @@
         }
 
         function addKnowledgeFaq() {
-            const prefix = document.getElementById('new-faq-prefix').value.trim();
-            const keyword = document.getElementById('new-faq-keyword').value.trim().toLowerCase();
-            const suffix = document.getElementById('new-faq-suffix').value.trim();
-            const repeatKeyword = document.getElementById('new-faq-repeat').value === "true";
-            
-            if(!keyword || !suffix) return alert("Harap isi Kata Kunci dan Jawaban/Kata Akhir dengan lengkap!");
-            
-            knowledgeFaq.push({ prefix, keyword, suffix, repeatKeyword });
-            
-            document.getElementById('new-faq-prefix').value = "";
-            document.getElementById('new-faq-keyword').value = "";
-            document.getElementById('new-faq-suffix').value = "";
-            
-            renderAdminPanel();
-            
-            isSyncingFromCloud = true;
-            saveToCloud().then(() => {
-                setTimeout(() => { isSyncingFromCloud = false; }, 1000);
-                alert("Ingatan AI baru berhasil disimpan permanen ke database & cloud!");
-            }).catch(err => {
-                isSyncingFromCloud = false;
-                console.error("Gagal simpan FAQ ke cloud:", err);
-            });
-        }
+    const prefix = document.getElementById('new-faq-prefix').value.trim();
+    const keyword = document.getElementById('new-faq-keyword').value.trim().toLowerCase();
+    const suffix = document.getElementById('new-faq-suffix').value.trim();
+    const repeatKeyword = document.getElementById('new-faq-repeat').value === "true";
+    
+    if(!keyword || !suffix) return alert("Harap isi Kata Kunci dan Jawaban dengan lengkap!");
+    
+    knowledgeFaq.push({ prefix, keyword, suffix, repeatKeyword });
+    
+    document.getElementById('new-faq-prefix').value = "";
+    document.getElementById('new-faq-keyword').value = "";
+    document.getElementById('new-faq-suffix').value = "";
+    
+    renderAdminPanel();
+    
+    isSyncingFromCloud = true;
+    saveToCloud().then(() => {
+        setTimeout(() => { isSyncingFromCloud = false; }, 1000);
+        alert("Ingatan AI baru berhasil disimpan permanen!");
+    });
+}
 
         function updateFaqField(idx, fieldName) {
             if(fieldName === 'prefix') {
