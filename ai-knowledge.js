@@ -180,20 +180,45 @@ function updateFaqRepeat(fIdx) {
     if(typeof saveToCloud === 'function') saveToCloud();
 }
 
+// Fungsi Hapus Ingatan AI yang Langsung Paksa Simpan ke Cloud & LocalStorage
 function deleteKnowledgeFaq(fIdx) {
-    if(confirm("Hapus ingatan AI ini?")) {
+    if (confirm("Yakin ingin menghapus ingatan AI ini?")) {
+        // Hapus dari array global knowledgeFaq
         window.knowledgeFaq.splice(fIdx, 1);
-        if(typeof saveToCloud === 'function') saveToCloud();
-        if(typeof renderAdminPanel === 'function') renderAdminPanel();
+        
+        // Simpan paksa ke LocalStorage detik itu juga
+        try {
+            localStorage.setItem('ilham_knowledgeFaq', JSON.stringify(window.knowledgeFaq));
+        } catch(e) {
+            console.error("Gagal simpan localStorage:", e);
+        }
+        
+        // Paksa sinkronisasi langsung ke Firebase Cloud agar data yang lama tertimpa permanen
+        if (typeof saveToCloud === 'function') {
+            saveToCloud().then(() => {
+                console.log("✅ Data berhasil dihapus dan disinkronkan ke Cloud.");
+            });
+        }
+        
+        // Refresh panel admin agar nomor urut ter-update bersih
+        if (typeof renderAdminPanel === 'function') {
+            renderAdminPanel();
+        }
     }
 }
 
+// Fungsi Tambah Ingatan AI Baru yang Aman
 function addKnowledgeFaq() {
     const prefix = document.getElementById('new-faq-prefix')?.value.trim() || "Baik";
     const keyword = document.getElementById('new-faq-keyword')?.value.trim();
     const suffix = document.getElementById('new-faq-suffix')?.value.trim();
-    if(!keyword || !suffix) return alert("Keyword dan Jawaban wajib diisi!");
     
+    if(!keyword || !suffix) {
+        alert("Keyword dan Jawaban wajib diisi, Bosku!");
+        return;
+    }
+    
+    // Tambah ke array
     window.knowledgeFaq.push({
         id: "kb-" + Date.now(),
         prefix: prefix,
@@ -201,15 +226,26 @@ function addKnowledgeFaq() {
         suffix: suffix,
         repeatKeyword: false
     });
-    if(typeof saveToCloud === 'function') saveToCloud();
-    if(typeof renderAdminPanel === 'function') renderAdminPanel();
-    alert("Ingatan AI baru berhasil ditambahkan!");
-}
-
-function deleteBlockedWord(bwIdx) {
-    window.blockedWords.splice(bwIdx, 1);
-    if(typeof saveToCloud === 'function') saveToCloud();
-    if(typeof renderAdminPanel === 'function') renderAdminPanel();
+    
+    // Simpan permanen ke LocalStorage & Cloud
+    try {
+        localStorage.setItem('ilham_knowledgeFaq', JSON.stringify(window.knowledgeFaq));
+    } catch(e) {}
+    
+    if (typeof saveToCloud === 'function') {
+        saveToCloud();
+    }
+    
+    // Kosongkan input form tambah
+    document.getElementById('new-faq-prefix').value = '';
+    document.getElementById('new-faq-keyword').value = '';
+    document.getElementById('new-faq-suffix').value = '';
+    
+    if (typeof renderAdminPanel === 'function') {
+        renderAdminPanel();
+    }
+    
+    alert("Ingatan AI baru berhasil disimpan permanen! 🚀");
 }
 
 function addBlockedWord() {
