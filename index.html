@@ -1357,7 +1357,7 @@
             
             if(!keyword || !suffix) return alert("Harap isi Kata Kunci dan Jawaban/Kata Akhir dengan lengkap!");
             
-            // PERBAIKAN UTAMA: Menggunakan .push() agar ingatan bertambah ke bawah tanpa batas nomor
+            // Masukkan ke array lokal
             knowledgeFaq.push({ prefix, keyword, suffix, repeatKeyword });
             
             document.getElementById('new-faq-prefix').value = "";
@@ -1366,9 +1366,13 @@
             
             renderAdminPanel();
             
+            // Kunci sinkronisasi agar tidak bentrok saat update cloud
+            isSyncingFromCloud = true;
             saveToCloud().then(() => {
-                alert("Ingatan AI baru berhasil disimpan permanen di nomor urut " + knowledgeFaq.length + "!");
+                setTimeout(() => { isSyncingFromCloud = false; }, 800);
+                alert("Mantap! Ingatan AI baru berhasil disimpan permanen di nomor urut " + knowledgeFaq.length + "!");
             }).catch(err => {
+                isSyncingFromCloud = false;
                 console.error("Gagal simpan FAQ ke cloud:", err);
                 alert("Ingatan AI tersimpan secara lokal!");
             });
@@ -1398,7 +1402,10 @@
 
         function deleteKnowledgeFaq(idx) {
             knowledgeFaq.splice(idx, 1);
-            saveToCloud();
+            isSyncingFromCloud = true;
+            saveToCloud().then(() => {
+                setTimeout(() => { isSyncingFromCloud = false; }, 800);
+            });
             renderAdminPanel();
         }
 
@@ -1428,7 +1435,10 @@
             if(prefix !== null && suffix) {
                 knowledgeFaq.push({ prefix: prefix.trim(), keyword: logText.toLowerCase().trim(), suffix: suffix.trim(), repeatKeyword: true });
                 unansweredLogs.splice(logIdx, 1);
-                saveToCloud();
+                isSyncingFromCloud = true;
+                saveToCloud().then(() => {
+                    setTimeout(() => { isSyncingFromCloud = false; }, 800);
+                });
                 renderAdminPanel();
                 alert("Pertanyaan berhasil dipromosikan jadi ingatan tetap AI!");
             }
