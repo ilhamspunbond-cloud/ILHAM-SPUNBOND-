@@ -161,31 +161,40 @@ function toggleVoiceInput() {
 
 // ADMIN INGATAN AI (BERTAMBAH OTOMATIS & PERMANEN REAL-TIME)
 async function addKnowledgeFaq() {
-    const prefix = document.getElementById('new-faq-prefix').value.trim();
-    const keyword = document.getElementById('new-faq-keyword').value.trim().toLowerCase();
-    const suffix = document.getElementById('new-faq-suffix').value.trim();
-    const repeatKeyword = document.getElementById('new-faq-repeat').value === "true";
+    const prefixInput = document.getElementById('new-faq-prefix');
+    const keywordInput = document.getElementById('new-faq-keyword');
+    const suffixInput = document.getElementById('new-faq-suffix');
+    const repeatSelect = document.getElementById('new-faq-repeat');
 
-    if(!keyword || !suffix) return alert("Harap isi Kata Kunci dan Jawaban!");
+    if(!keywordInput || !suffixInput) return alert("Form input tidak ditemukan!");
+
+    const prefix = prefixInput.value.trim();
+    const keyword = keywordInput.value.trim().toLowerCase();
+    const suffix = suffixInput.value.trim();
+    const repeatKeyword = repeatSelect ? repeatSelect.value === "true" : false;
+
+    if(!keyword || !suffix) return alert("Harap isi Kata Kunci dan Jawaban/Suffix terlebih dahulu!");
     
-    // Tambahkan data baru ke array knowledgeFaq
+    // 1. Dorong data baru ke array knowledgeFaq
     knowledgeFaq.push({ prefix, keyword, suffix, repeatKeyword });
 
-    // Kosongkan input form tambah baru
-    document.getElementById('new-faq-prefix').value = "";
-    document.getElementById('new-faq-keyword').value = "";
-    document.getElementById('new-faq-suffix').value = "";
+    // 2. Kosongkan form input
+    prefixInput.value = "";
+    keywordInput.value = "";
+    suffixInput.value = "";
+    if(repeatSelect) repeatSelect.value = "false";
 
-    // Simpan ke Cloud Firebase & LocalStorage secara serentak
+    // 3. Paksa render ulang panel admin seketika agar nomor & kotaknya langsung muncul
+    if (typeof renderAdminPanel === 'function') {
+        renderAdminPanel();
+    }
+
+    // 4. Simpan ke Cloud Firebase & LocalStorage di background
     if (typeof saveToCloud === 'function') {
         await saveToCloud();
     }
     
-    if (typeof renderAdminPanel === 'function') {
-        renderAdminPanel();
-    }
-    
-    alert("Ingatan AI baru berhasil ditambahkan dan disinkronkan ke semua HP secara real-time!");
+    alert("Ingatan AI baru berhasil ditambahkan!");
 }
 
 function updateFaqField(idx, fieldName) {
