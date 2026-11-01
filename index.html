@@ -2025,15 +2025,13 @@
             else if(pwd !== null) alert("Password Admin Salah!");
         }
 
-        
-                 async function saveToCloud() {
-            // Pastikan knowledgeFaq disimpan dengan aman ke localStorage dulu
+        async function saveToCloud() {
             safeLocalStorageSet('ilham_bagModels', JSON.stringify(bagModels));
             safeLocalStorageSet('ilham_bankAccounts', JSON.stringify(bankAccounts));
             safeLocalStorageSet('ilham_bagColors', JSON.stringify(bagColors));
             safeLocalStorageSet('ilham_inkColors', JSON.stringify(inkColors));
             safeLocalStorageSet('ilham_dtfOptions', JSON.stringify(dtfOptions));
-            safeLocalStorageSet('ilham_knowledgeFaq', JSON.stringify(knowledgeFaq)); // Data ingatan AI terbaru
+            safeLocalStorageSet('ilham_knowledgeFaq', JSON.stringify(knowledgeFaq));
             safeLocalStorageSet('ilham_blockedWords', JSON.stringify(blockedWords));
             safeLocalStorageSet('ilham_unansweredLogs', JSON.stringify(unansweredLogs));
             safeLocalStorageSet('ilham_extraColorPrice', extraColorPrice);
@@ -2052,16 +2050,13 @@
             try {
                 const { doc, setDoc } = window.firebaseDeps;
                 const docRef = doc(window.firebaseDb, "settings", "master_data");
-                
-                // Kirim data lengkap ke Firebase Cloud tanpa batasan
                 await setDoc(docRef, {
-                    knowledgeFaq: knowledgeFaq, // Paksa sinkronisasi array ingatan terbaru
+                    knowledgeFaq: knowledgeFaq,
                     bankAccounts, bagColors, inkColors, dtfOptions,
                     blockedWords, unansweredLogs, extraColorPrice, storeName, pdfPassword, ownerWaNumber, 
                     brandLogoUrl: brandLogoUrl || "", customStampUrl: customStampUrl || "", 
                     adminSignatureUrl: adminSignatureUrl || "", storeAddress, storePhone, storeEmail
                 }, { merge: true });
-                console.log("Cloud sync berhasil, total ingatan:", knowledgeFaq.length);
             } catch(e) { console.error("Cloud save error:", e); }
         }
 
