@@ -9,7 +9,7 @@ const defaultBagModels = [
         image: "https://via.placeholder.com/400x500/ffffff/334155?text=Tas+Oval", 
         sizes: [
             { name: "20 x 30 cm", price: 1400, note: "Pas untuk brosur, dokumen, souvenir kecil, dan aksesoris ringan." }, 
-            { name: "25 x 35 cm", price: 1700, note: "Ideal untuk dus nasi ukuran sedang atau baju kaos distro." }, 
+            { name: "25 x 35 cm", price: 1550, note: "Ideal untuk dus nasi ukuran sedang atau baju kaos distro." }, 
             { name: "30 x 40 cm", price: 2300, note: "Cocok untuk tas belanja toko baju, map besar, dan pameran." }
         ] 
     },
