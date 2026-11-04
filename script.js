@@ -30,7 +30,7 @@ const defaultBagModels = [
             { name: "30 x 30 x 12 cm", price: 3400, note: "Pas untuk kotak catering besar atau kue tart hajatan." }
         ] 
     },
-  { 
+    { 
         name: "Tas HLB Kotak", 
         image: "https://via.placeholder.com/400x500/ffffff/334155?text=Tas+HLB+Kotak", 
         sizes: [
@@ -130,9 +130,16 @@ window.onload = function() {
     renderAdminPanel();
     renderChatHistory();
     checkCustomerOnboarding();
-    updateLivePricePreview(); // <--- PASTIKAN INI ADA
+    updateLivePricePreview();
+    
+    const qtyInput = document.getElementById('item-qty');
+    if(qtyInput) {
+        qtyInput.addEventListener('input', updateLivePricePreview);
+    }
+
     if(window.initCloudSync) { window.initCloudSync(); }
 };
+
 function updateDynamicManifest() {
     const manifestLink = document.getElementById('dynamic-manifest');
     if(!manifestLink) return;
@@ -268,7 +275,7 @@ function toggleLockPosition() {
 
 
 // ==========================================
-// BLOK LENGKAP RENDER ADMIN PANEL YANG AMAN
+// 3. ADMIN PANEL & RENDERING
 // ==========================================
 function renderAdminPanel() {
     const modelAdminContainer = document.getElementById('model-admin-container');
@@ -278,68 +285,72 @@ function renderAdminPanel() {
     const blockedWordsContainer = document.getElementById('blocked-words-container');
     const missingLogContainer = document.getElementById('missing-log-container');
     const modelSelect = document.getElementById('bag-model-select');
+    const bankDisplay = document.getElementById('bank-accounts-display');
+    const stampPreview = document.getElementById('stamp-preview-container');
+    const sigPreview = document.getElementById('sig-preview-container');
+    const brandStatus = document.getElementById('brand-upload-status');
+    const dtfSelect = document.getElementById('dtf-size-select');
     
-    if(!modelSelect) return;
-    const prevVal = modelSelect.value || 0;
-    if(modelAdminContainer) modelAdminContainer.innerHTML = '';
-    modelSelect.innerHTML = '';
+    if(modelSelect) {
+        const prevVal = modelSelect.value || 0;
+        if(modelAdminContainer) modelAdminContainer.innerHTML = '';
+        modelSelect.innerHTML = '';
 
-    bagModels.forEach((item, mIndex) => {
-        const opt = document.createElement('option');
-        opt.value = mIndex;
-        opt.textContent = item.name;
-        modelSelect.appendChild(opt);
+        bagModels.forEach((item, mIndex) => {
+            const opt = document.createElement('option');
+            opt.value = mIndex;
+            opt.textContent = item.name;
+            modelSelect.appendChild(opt);
 
-        if(modelAdminContainer) {
-            const card = document.createElement('div');
-            card.className = "bg-slate-900 p-3 rounded-xl border border-slate-700 flex flex-col gap-2 text-xs";
-            let sizeRows = '';
-            if(item.sizes) {
-                item.sizes.forEach((s, sIndex) => {
-                    sizeRows += `
-                        <div class="bg-slate-800 p-2.5 rounded-lg space-y-1 text-[11px]">
-                            <div class="flex items-center justify-between gap-1">
-                                <input type="text" id="edit-sname-${mIndex}-${sIndex}" value="${s.name}" oninput="updateSizeDetail(${mIndex}, ${sIndex})" class="w-28 bg-slate-900 border border-slate-700 rounded px-2 py-1 text-white font-bold outline-none" placeholder="Ukuran">
-                                <input type="number" id="edit-sprice-${mIndex}-${sIndex}" value="${s.price}" oninput="updateSizeDetail(${mIndex}, ${sIndex})" class="w-24 bg-slate-900 border border-slate-700 rounded px-2 py-1 text-emerald-400 font-bold outline-none" placeholder="Harga">
-                                <button type="button" onclick="deleteSizeFromModel(${mIndex}, ${sIndex})" class="text-rose-400 font-bold px-2 py-0.5 cursor-pointer">Hapus</button>
-                            </div>
-                            <div>
-                                <input type="text" id="note-m${mIndex}-s${sIndex}" value="${s.note || ''}" placeholder="Catatan/Rekomendasi kegunaan..." oninput="updateSizeNote(${mIndex}, ${sIndex})" class="w-full bg-slate-900 border border-slate-700 rounded px-2 py-1 text-[10px] text-amber-300 outline-none">
-                            </div>
-                        </div>`;
-                });
-            }
-            
-            const isCustomImg = item.image && !item.image.includes('placeholder.com');
-            card.innerHTML = `
-                <div class="flex items-center justify-between border-b border-slate-800 pb-1.5 gap-2">
-                    <input type="text" id="edit-model-name-${mIndex}" value="${item.name}" oninput="updateModelName(${mIndex})" class="flex-1 bg-slate-800 border border-slate-700 rounded px-2 py-1 text-amber-300 font-bold text-sm outline-none" placeholder="Nama Model Tas">
-                    <button type="button" onclick="deleteBagModel(${mIndex})" class="text-rose-400 font-bold text-[11px] px-2 py-1 bg-slate-800 rounded cursor-pointer">Hapus Model</button>
-                </div>
-                <div>
-                    <label class="block text-[10px] text-slate-400 mb-1">Upload/Ganti Foto Tas (Transparan):</label>
-                    <input type="file" accept="image/*" onchange="uploadModelSample(event, ${mIndex})" class="w-full text-[10px] text-slate-400 file:mr-2 file:py-1 file:px-2 file:rounded-lg file:border-0 file:bg-amber-500 file:text-slate-950 cursor-pointer">
-                </div>
-                <div class="text-[10px] ${isCustomImg ? 'text-emerald-400 font-semibold' : 'text-slate-400'} italic">
-                    ${isCustomImg ? '✅ Foto Kustom Aktif' : 'ℹ️ Menggunakan foto default'}
-                </div>
-                <div class="space-y-2 mt-1">
-                    <div class="text-[11px] font-semibold text-slate-300">Daftar Ukuran & Harga:</div>
-                    ${sizeRows}
-                    <div class="flex gap-1.5 mt-2">
-                        <input type="text" id="new-s-name-${mIndex}" placeholder="Ukuran Baru" class="flex-1 bg-slate-800 rounded-lg px-2 py-2 text-[11px] text-white outline-none">
-                        <input type="number" id="new-s-price-${mIndex}" placeholder="Harga" class="w-20 bg-slate-800 rounded-lg px-2 py-2 text-[11px] text-white outline-none">
-                        <button type="button" onclick="addSizeToModel(${mIndex})" class="bg-amber-500 text-slate-950 px-3 py-2 rounded-lg text-[11px] font-semibold cursor-pointer">Tambah Ukuran</button>
+            if(modelAdminContainer) {
+                const card = document.createElement('div');
+                card.className = "bg-slate-900 p-3 rounded-xl border border-slate-700 flex flex-col gap-2 text-xs";
+                let sizeRows = '';
+                if(item.sizes) {
+                    item.sizes.forEach((s, sIndex) => {
+                        sizeRows += `
+                            <div class="bg-slate-800 p-2.5 rounded-lg space-y-1 text-[11px]">
+                                <div class="flex items-center justify-between gap-1">
+                                    <input type="text" id="edit-sname-${mIndex}-${sIndex}" value="${s.name}" oninput="updateSizeDetail(${mIndex}, ${sIndex})" class="w-28 bg-slate-900 border border-slate-700 rounded px-2 py-1 text-white font-bold outline-none" placeholder="Ukuran">
+                                    <input type="number" id="edit-sprice-${mIndex}-${sIndex}" value="${s.price}" oninput="updateSizeDetail(${mIndex}, ${sIndex})" class="w-24 bg-slate-900 border border-slate-700 rounded px-2 py-1 text-emerald-400 font-bold outline-none" placeholder="Harga">
+                                    <button type="button" onclick="deleteSizeFromModel(${mIndex}, ${sIndex})" class="text-rose-400 font-bold px-2 py-0.5 cursor-pointer">Hapus</button>
+                                </div>
+                                <div>
+                                    <input type="text" id="note-m${mIndex}-s${sIndex}" value="${s.note || ''}" placeholder="Catatan/Rekomendasi kegunaan..." oninput="updateSizeNote(${mIndex}, ${sIndex})" class="w-full bg-slate-900 border border-slate-700 rounded px-2 py-1 text-[10px] text-amber-300 outline-none">
+                                </div>
+                            </div>`;
+                    });
+                }
+                
+                const isCustomImg = item.image && !item.image.includes('placeholder.com');
+                card.innerHTML = `
+                    <div class="flex items-center justify-between border-b border-slate-800 pb-1.5 gap-2">
+                        <input type="text" id="edit-model-name-${mIndex}" value="${item.name}" oninput="updateModelName(${mIndex})" class="flex-1 bg-slate-800 border border-slate-700 rounded px-2 py-1 text-amber-300 font-bold text-sm outline-none" placeholder="Nama Model Tas">
+                        <button type="button" onclick="deleteBagModel(${mIndex})" class="text-rose-400 font-bold text-[11px] px-2 py-1 bg-slate-800 rounded cursor-pointer">Hapus Model</button>
                     </div>
-                </div>
-            `;
-            modelAdminContainer.appendChild(card);
-        }
-    });
-}
-    if(modelSelect.options.length > prevVal) modelSelect.value = prevVal;
+                    <div>
+                        <label class="block text-[10px] text-slate-400 mb-1">Upload/Ganti Foto Tas (Transparan):</label>
+                        <input type="file" accept="image/*" onchange="uploadModelSample(event, ${mIndex})" class="w-full text-[10px] text-slate-400 file:mr-2 file:py-1 file:px-2 file:rounded-lg file:border-0 file:bg-amber-500 file:text-slate-950 cursor-pointer">
+                    </div>
+                    <div class="text-[10px] ${isCustomImg ? 'text-emerald-400 font-semibold' : 'text-slate-400'} italic">
+                        ${isCustomImg ? '✅ Foto Kustom Aktif' : 'ℹ️ Menggunakan foto default'}
+                    </div>
+                    <div class="space-y-2 mt-1">
+                        <div class="text-[11px] font-semibold text-slate-300">Daftar Ukuran & Harga:</div>
+                        ${sizeRows}
+                        <div class="flex gap-1.5 mt-2">
+                            <input type="text" id="new-s-name-${mIndex}" placeholder="Ukuran Baru" class="flex-1 bg-slate-800 rounded-lg px-2 py-2 text-[11px] text-white outline-none">
+                            <input type="number" id="new-s-price-${mIndex}" placeholder="Harga" class="w-20 bg-slate-800 rounded-lg px-2 py-2 text-[11px] text-white outline-none">
+                            <button type="button" onclick="addSizeToModel(${mIndex})" class="bg-amber-500 text-slate-950 px-3 py-2 rounded-lg text-[11px] font-semibold cursor-pointer">Tambah Ukuran</button>
+                        </div>
+                    </div>
+                `;
+                modelAdminContainer.appendChild(card);
+            }
+        });
+        if(modelSelect.options.length > prevVal) modelSelect.value = prevVal;
+    }
 
-    // Render FAQ Knowledge jika ada variabel dari ai-knowledge.js
     if(faqAdminContainer && typeof knowledgeFaq !== 'undefined') {
         faqAdminContainer.innerHTML = '';
         knowledgeFaq.forEach((faq, fIdx) => {
@@ -373,6 +384,10 @@ function renderAdminPanel() {
                     </div>
                 </div>`;
         });
+    }
+
+    if (typeof renderKnowledgeFaqAdmin === 'function') {
+        renderKnowledgeFaqAdmin();
     }
 
     if(blockedWordsContainer && typeof blockedWords !== 'undefined') {
@@ -481,7 +496,7 @@ function renderAdminPanel() {
     updateCustomerSizesDropdown();
     updateBagCanvas();
     renderCartItems();
-}    
+}
 
 function updateModelName(mIndex) {
     const input = document.getElementById(`edit-model-name-${mIndex}`);
@@ -509,7 +524,6 @@ function addNewBagModel() {
     });
     saveToCloud();
     renderAdminPanel();
-}
 }
 
 function deleteBagModel(mIndex) {
@@ -606,7 +620,7 @@ function addSizeToModel(mIndex) {
         bagModels[mIndex].sizes.push({ name, price, note: "Ukuran kustom baru." });
         saveToCloud(); 
         renderAdminPanel();
-        updateCustomerSizesDropdown(); // <--- TAMBAHAN INI AGAR DROPDOWN LANGSUNG UPDATE
+        updateCustomerSizesDropdown();
     } else { alert("Harap isi nama ukuran dan harga dengan benar!"); }
 }
 
@@ -931,13 +945,24 @@ function onCustomerSizeSelect() {
     updateLivePricePreview(); 
 }
 
-// Fungsi baru untuk menampilkan preview harga secara real-time
 function updateLivePricePreview() {
     const unitPrice = calculateItemPrice();
-    const qty = parseInt(document.getElementById('item-qty').value) || 1;
+    const qtyInput = document.getElementById('item-qty');
+    const qty = qtyInput ? (parseInt(qtyInput.value) || 1) : 1;
     const subtotal = unitPrice * qty;
     
-    const priceLabel = document.getElementById('live-unit-price-label');
+    let priceLabel = document.getElementById('live-unit-price-label');
+    if (!priceLabel) {
+        const qtyContainer = document.getElementById('item-qty')?.closest('div')?.parentElement;
+        if (qtyContainer) {
+            const priceBox = document.createElement('div');
+            priceBox.className = "bg-emerald-50 border border-emerald-200 p-3 rounded-xl flex items-center justify-between text-xs font-semibold text-slate-800 my-2";
+            priceBox.innerHTML = `<span>Estimasi Harga Satuan:</span> <span id="live-unit-price-label" class="text-emerald-700 font-extrabold text-sm">Rp 0 /pcs</span>`;
+            qtyContainer.parentNode.insertBefore(priceBox, qtyContainer);
+            priceLabel = document.getElementById('live-unit-price-label');
+        }
+    }
+    
     if(priceLabel) {
         priceLabel.textContent = `Rp ${unitPrice.toLocaleString('id-ID')} /pcs (Total: Rp ${subtotal.toLocaleString('id-ID')})`;
     }
@@ -1125,10 +1150,10 @@ function updateCartTotals() {
 }
 
 function toggleAdminPanel() { document.getElementById('admin-view').classList.toggle('hidden'); }
+
 function requestAdminLogin() {
     let pass = prompt("Masukkan Password Admin:");
-    // Ganti 'ilham123' sesuai password yang Kakak inginkan
-    if (pass === "ilham123") {
+    if (pass === pdfPassword) {
         const adminView = document.getElementById('admin-view');
         if (adminView) {
             adminView.classList.remove('hidden');
@@ -1141,6 +1166,7 @@ function requestAdminLogin() {
         alert("Password salah, Bosku!");
     }
 }
+
 
 // ==========================================
 // 4. CLOUD SYNC & LOCALSTORAGE
@@ -1207,7 +1233,6 @@ window.initCloudSync = function() {
 };
 
 function applyCloudData(data) {
-    // 🔥 TAMBAHAN ANTI-BENTROK: Jika sedang update manual, abaikan timpaan dari cloud
     if (window.isManualUpdating) return;
 
     isSyncingFromCloud = true;
@@ -1252,6 +1277,7 @@ function applyCloudData(data) {
     updateBagCanvas();
     setTimeout(() => { isSyncingFromCloud = false; }, 1000);
 }
+
 
 // ==========================================
 // 5. PDF & ORDER MANAGEMENT
@@ -1735,53 +1761,3 @@ async function saveOrderAndSendWhatsApp() {
         window.open(`https://wa.me/${ownerWaNumber}?text=${encodeURIComponent(waMessage)}`);
     } catch(e) { alert("Gagal menyimpan pesanan ke cloud."); }
 }
-
-function updateLivePricePreview() {
-    const unitPrice = calculateItemPrice();
-    const qtyInput = document.getElementById('item-qty');
-    const qty = qtyInput ? (parseInt(qtyInput.value) || 1) : 1;
-    const subtotal = unitPrice * qty;
-    
-    // Membuat atau memperbarui label live price secara otomatis di atas tombol keranjang
-    let priceLabel = document.getElementById('live-unit-price-label');
-    if (!priceLabel) {
-        const qtyContainer = document.getElementById('item-qty')?.closest('div')?.parentElement;
-        if (qtyContainer) {
-            const priceBox = document.createElement('div');
-            priceBox.className = "bg-emerald-50 border border-emerald-200 p-3 rounded-xl flex items-center justify-between text-xs font-semibold text-slate-800 my-2";
-            priceBox.innerHTML = `<span>Estimasi Harga Satuan:</span> <span id="live-unit-price-label" class="text-emerald-700 font-extrabold text-sm">Rp 0 /pcs</span>`;
-            qtyContainer.parentNode.insertBefore(priceBox, qtyContainer);
-            priceLabel = document.getElementById('live-unit-price-label');
-        }
-    }
-    
-    if(priceLabel) {
-        priceLabel.textContent = `Rp ${unitPrice.toLocaleString('id-ID')} /pcs (Total: Rp ${subtotal.toLocaleString('id-ID')})`;
-    }
-}
-
-// Event listener untuk input quantity
-document.addEventListener("DOMContentLoaded", () => {
-    const qtyInput = document.getElementById('item-qty');
-    if(qtyInput) {
-        qtyInput.addEventListener('input', updateLivePricePreview);
-    }
-    updateLivePricePreview();
-
-    function renderAdminPanel() {
-    // ... (kode rendering model tas, bank, dtf yang sudah ada)
-
-    // 🔥 TAMBAHKAN BARIS INI DI DALAM renderAdminPanel() AGAR FAQ MUNCUL:
-    if (typeof renderKnowledgeFaqAdmin === 'function') {
-        renderKnowledgeFaqAdmin();
-    }
-
-    updateCustomerSizesDropdown();
-    updateBagCanvas();
-    renderCartItems();
-}
-
-});
-
-
-
