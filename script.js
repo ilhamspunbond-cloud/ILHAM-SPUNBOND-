@@ -1306,11 +1306,21 @@ function updateCartTotals() {
 
 function toggleAdminPanel() { document.getElementById('admin-view').classList.toggle('hidden'); }
 function requestAdminLogin() {
-    const pwd = prompt("Masukkan Password Admin / Panel Kontrol:");
-    if(pwd === pdfPassword) toggleAdminPanel();
-    else if(pwd !== null) alert("Password Admin Salah!");
+    let pass = prompt("Masukkan Password Admin:");
+    // Ganti 'ilham123' sesuai password yang Kakak inginkan
+    if (pass === "ilham123") {
+        const adminView = document.getElementById('admin-view');
+        if (adminView) {
+            adminView.classList.remove('hidden');
+            adminView.scrollIntoView({ behavior: 'smooth' });
+            if (typeof renderAdminPanel === 'function') {
+                renderAdminPanel();
+            }
+        }
+    } else if (pass !== null) {
+        alert("Password salah, Bosku!");
+    }
 }
-
 
 // ==========================================
 // 4. CLOUD SYNC & LOCALSTORAGE
