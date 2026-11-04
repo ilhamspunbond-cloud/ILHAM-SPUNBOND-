@@ -315,6 +315,28 @@ function renderAdminPanel() {
                 });
             }
 
+    // ... (kode di atasnya biarkan tetap seperti semula)
+
+    const extraInput = document.getElementById('admin-extra-color-price');
+    if(extraInput) extraInput.value = extraColorPrice;
+
+    const appLauncherLogo = document.getElementById('app-launcher-logo');
+    if(appLauncherLogo && brandLogoUrl) {
+        appLauncherLogo.src = brandLogoUrl;
+        appLauncherLogo.className = "max-h-14 w-auto object-contain filter drop-shadow";
+    }
+
+    // 🔥 TAMBAHKAN BARIS INI AGAR INGATAN AI IKUT TER-RENDER DI PANEL ADMIN:
+    if (typeof renderKnowledgeFaqAdmin === 'function') {
+        renderKnowledgeFaqAdmin();
+    }
+
+    updateCustomerSizesDropdown();
+    updateBagCanvas();
+    renderCartItems();
+} 
+
+            
             const isCustomImg = item.image && !item.image.includes('placeholder.com');
             card.innerHTML = `
                 <div class="flex items-center justify-between border-b border-slate-800 pb-1.5 gap-2">
