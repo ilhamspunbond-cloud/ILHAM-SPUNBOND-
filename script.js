@@ -510,6 +510,7 @@ function addNewBagModel() {
     saveToCloud();
     renderAdminPanel();
 }
+}
 
 function deleteBagModel(mIndex) {
     if(bagModels.length <= 1) return alert("Minimal harus ada 1 model tas!");
