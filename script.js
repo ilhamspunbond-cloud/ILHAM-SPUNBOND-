@@ -30,12 +30,19 @@ const defaultBagModels = [
             { name: "30 x 30 x 12 cm", price: 3400, note: "Pas untuk kotak catering besar atau kue tart hajatan." }
         ] 
     },
-    { 
+  { 
         name: "Tas HLB Kotak", 
         image: "https://via.placeholder.com/400x500/ffffff/334155?text=Tas+HLB+Kotak", 
         sizes: [
             { name: "20 x 20 x 15 cm", price: 2500, note: "Cocok untuk tas kotak bekal makanan atau wadah hampers kecil." }, 
             { name: "30 x 20 x 20 cm", price: 3200, note: "Ideal untuk tas kardus besar, galon mini, atau dus tebal." }
+        ] 
+    },
+    { 
+        name: "KARTU NAMA CUSTOM", 
+        image: "https://via.placeholder.com/400x500/ffffff/334155?text=Kartu+Nama", 
+        sizes: [
+            { name: "KARTU NAMA CUSTOM 4BOX", price: 100000, note: "UNTUK MENAMBAH BRANDING USAHAMU." }
         ] 
     }
 ];
