@@ -130,9 +130,9 @@ window.onload = function() {
     renderAdminPanel();
     renderChatHistory();
     checkCustomerOnboarding();
+    updateLivePricePreview(); // <--- PASTIKAN INI ADA
     if(window.initCloudSync) { window.initCloudSync(); }
 };
-
 function updateDynamicManifest() {
     const manifestLink = document.getElementById('dynamic-manifest');
     if(!manifestLink) return;
@@ -607,7 +607,9 @@ function addSizeToModel(mIndex) {
     if(name && !isNaN(price)) {
         if(!bagModels[mIndex].sizes) bagModels[mIndex].sizes = [];
         bagModels[mIndex].sizes.push({ name, price, note: "Ukuran kustom baru." });
-        saveToCloud(); renderAdminPanel();
+        saveToCloud(); 
+        renderAdminPanel();
+        updateCustomerSizesDropdown(); // <--- TAMBAHAN INI AGAR DROPDOWN LANGSUNG UPDATE
     } else { alert("Harap isi nama ukuran dan harga dengan benar!"); }
 }
 
@@ -920,8 +922,29 @@ function renderOwnerHdProductionBox(method, isTwoColors) {
     }
 }
 
-function onCustomerModelChange() { updateCustomerSizesDropdown(); updateBagCanvas(); updateProcessedLogos(); }
-function onCustomerSizeSelect() { updateSizeLabel(); }
+function onCustomerModelChange() { 
+    updateCustomerSizesDropdown(); 
+    updateBagCanvas(); 
+    updateProcessedLogos(); 
+    updateLivePricePreview(); 
+}
+
+function onCustomerSizeSelect() { 
+    updateSizeLabel(); 
+    updateLivePricePreview(); 
+}
+
+// Fungsi baru untuk menampilkan preview harga secara real-time
+function updateLivePricePreview() {
+    const unitPrice = calculateItemPrice();
+    const qty = parseInt(document.getElementById('item-qty').value) || 1;
+    const subtotal = unitPrice * qty;
+    
+    const priceLabel = document.getElementById('live-unit-price-label');
+    if(priceLabel) {
+        priceLabel.textContent = `Rp ${unitPrice.toLocaleString('id-ID')} /pcs (Total: Rp ${subtotal.toLocaleString('id-ID')})`;
+    }
+}
 
 function updateBagCanvas() {
     const mIndex = document.getElementById('bag-model-select').value || 0;
@@ -1705,3 +1728,45 @@ async function saveOrderAndSendWhatsApp() {
         window.open(`https://wa.me/${ownerWaNumber}?text=${encodeURIComponent(waMessage)}`);
     } catch(e) { alert("Gagal menyimpan pesanan ke cloud."); }
 }
+
+function updateLivePricePreview() {
+    const unitPrice = calculateItemPrice();
+    const qtyInput = document.getElementById('item-qty');
+    const qty = qtyInput ? (parseInt(qtyInput.value) || 1) : 1;
+    const subtotal = unitPrice * qty;
+    
+    // Membuat atau memperbarui label live price secara otomatis di atas tombol keranjang
+    let priceLabel = document.getElementById('live-unit-price-label');
+    if (!priceLabel) {
+        const qtyContainer = document.getElementById('item-qty')?.closest('div')?.parentElement;
+        if (qtyContainer) {
+            const priceBox = document.createElement('div');
+            priceBox.className = "bg-emerald-50 border border-emerald-200 p-3 rounded-xl flex items-center justify-between text-xs font-semibold text-slate-800 my-2";
+            priceBox.innerHTML = `<span>Estimasi Harga Satuan:</span> <span id="live-unit-price-label" class="text-emerald-700 font-extrabold text-sm">Rp 0 /pcs</span>`;
+            qtyContainer.parentNode.insertBefore(priceBox, qtyContainer);
+            priceLabel = document.getElementById('live-unit-price-label');
+        }
+    }
+    
+    if(priceLabel) {
+        priceLabel.textContent = `Rp ${unitPrice.toLocaleString('id-ID')} /pcs (Total: Rp ${subtotal.toLocaleString('id-ID')})`;
+    }
+}
+
+// Event listener untuk input quantity
+document.addEventListener("DOMContentLoaded", () => {
+    const qtyInput = document.getElementById('item-qty');
+    if(qtyInput) {
+        qtyInput.addEventListener('input', updateLivePricePreview);
+    }
+    updateLivePricePreview();
+});
+
+document.addEventListener("DOMContentLoaded", () => {
+    const qtyInput = document.getElementById('item-qty');
+    if(qtyInput) {
+        qtyInput.addEventListener('input', updateLivePricePreview);
+    }
+    updateLivePricePreview();
+});
+
