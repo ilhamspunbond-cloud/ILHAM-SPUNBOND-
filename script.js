@@ -314,8 +314,164 @@ function renderAdminPanel() {
                         </div>`;
                 });
             }
+            
+            const isCustomImg = item.image && !item.image.includes('placeholder.com');
+            card.innerHTML = `
+                <div class="flex items-center justify-between border-b border-slate-800 pb-1.5 gap-2">
+                    <input type="text" id="edit-model-name-${mIndex}" value="${item.name}" oninput="updateModelName(${mIndex})" class="flex-1 bg-slate-800 border border-slate-700 rounded px-2 py-1 text-amber-300 font-bold text-sm outline-none" placeholder="Nama Model Tas">
+                    <button type="button" onclick="deleteBagModel(${mIndex})" class="text-rose-400 font-bold text-[11px] px-2 py-1 bg-slate-800 rounded cursor-pointer">Hapus Model</button>
+                </div>
+                <div>
+                    <label class="block text-[10px] text-slate-400 mb-1">Upload/Ganti Foto Tas (Transparan):</label>
+                    <input type="file" accept="image/*" onchange="uploadModelSample(event, ${mIndex})" class="w-full text-[10px] text-slate-400 file:mr-2 file:py-1 file:px-2 file:rounded-lg file:border-0 file:bg-amber-500 file:text-slate-950 cursor-pointer">
+                </div>
+                <div class="text-[10px] ${isCustomImg ? 'text-emerald-400 font-semibold' : 'text-slate-400'} italic">
+                    ${isCustomImg ? '✅ Foto Kustom Aktif' : 'ℹ️ Menggunakan foto default'}
+                </div>
+                <div class="space-y-2 mt-1">
+                    <div class="text-[11px] font-semibold text-slate-300">Daftar Ukuran & Harga:</div>
+                    ${sizeRows}
+                    <div class="flex gap-1.5 mt-2">
+                        <input type="text" id="new-s-name-${mIndex}" placeholder="Ukuran Baru" class="flex-1 bg-slate-800 rounded-lg px-2 py-2 text-[11px] text-white outline-none">
+                        <input type="number" id="new-s-price-${mIndex}" placeholder="Harga" class="w-20 bg-slate-800 rounded-lg px-2 py-2 text-[11px] text-white outline-none">
+                        <button type="button" onclick="addSizeToModel(${mIndex})" class="bg-amber-500 text-slate-950 px-3 py-2 rounded-lg text-[11px] font-semibold cursor-pointer">Tambah Ukuran</button>
+                    </div>
+                </div>`;
+            modelAdminContainer.appendChild(card);
+        }
+    });
 
-    // ... (kode di atasnya biarkan tetap seperti semula)
+    if(modelSelect.options.length > prevVal) modelSelect.value = prevVal;
+
+    // Render FAQ Knowledge jika ada variabel dari ai-knowledge.js
+    if(faqAdminContainer && typeof knowledgeFaq !== 'undefined') {
+        faqAdminContainer.innerHTML = '';
+        knowledgeFaq.forEach((faq, fIdx) => {
+            const isRepeat = faq.repeatKeyword !== false;
+            faqAdminContainer.innerHTML += `
+                <div class="bg-slate-900 p-3 rounded-xl border border-slate-700 text-xs space-y-2">
+                    <div class="flex justify-between items-center">
+                        <span class="font-bold text-amber-300"># Ingatan AI No. ${fIdx + 1}</span>
+                        <button type="button" onclick="deleteKnowledgeFaq(${fIdx})" class="text-rose-400 font-bold px-2 py-0.5 cursor-pointer">Hapus</button>
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                        <div>
+                            <label class="block text-[10px] text-slate-400 mb-0.5">Kata Tambahan Awal:</label>
+                            <input type="text" id="edit-faq-prefix-${fIdx}" value="${faq.prefix || ''}" oninput="updateFaqField(${fIdx}, 'prefix')" class="w-full bg-slate-800 border border-slate-700 rounded px-2.5 py-1.5 text-white outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] text-slate-400 mb-0.5">Kata Kunci:</label>
+                            <input type="text" id="edit-faq-kw-${fIdx}" value="${faq.keyword || ''}" oninput="updateFaqField(${fIdx}, 'keyword')" class="w-full bg-slate-800 border border-slate-700 rounded px-2.5 py-1.5 text-amber-300 font-bold outline-none">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-[10px] text-slate-400 mb-0.5">Kata Tambahan Akhir / Jawaban:</label>
+                        <textarea id="edit-faq-suffix-${fIdx}" rows="2" oninput="updateFaqField(${fIdx}, 'suffix')" class="w-full bg-slate-800 border border-slate-700 rounded p-2 text-slate-200 outline-none text-xs">${faq.suffix || ''}</textarea>
+                    </div>
+                    <div class="flex items-center justify-between bg-slate-800 p-2 rounded-lg border border-slate-700">
+                        <span class="text-[11px] text-slate-300">Ulangi Kata Kunci di Jawaban?</span>
+                        <select id="edit-faq-repeat-${fIdx}" onchange="updateFaqRepeat(${fIdx})" class="bg-slate-900 border border-slate-700 rounded px-2 py-1 text-[11px] text-amber-400 font-semibold outline-none">
+                            <option value="false" ${!isRepeat ? 'selected' : ''}>Tidak (Natural)</option>
+                            <option value="true" ${isRepeat ? 'selected' : ''}>Ya (Diulang)</option>
+                        </select>
+                    </div>
+                </div>`;
+        });
+    }
+
+    if(blockedWordsContainer && typeof blockedWords !== 'undefined') {
+        blockedWordsContainer.innerHTML = '';
+        blockedWords.forEach((bw, bwIdx) => {
+            blockedWordsContainer.innerHTML += `
+                <div class="bg-rose-950/80 border border-rose-500/40 text-rose-200 px-2.5 py-1 rounded-lg text-xs flex items-center gap-1.5">
+                    <span>🚫 ${bw}</span>
+                    <button type="button" onclick="deleteBlockedWord(${bwIdx})" class="text-rose-400 hover:text-white font-bold ml-1 cursor-pointer">×</button>
+                </div>`;
+        });
+    }
+
+    if(missingLogContainer && typeof unansweredLogs !== 'undefined') {
+        missingLogContainer.innerHTML = '';
+        if(unansweredLogs.length === 0) {
+            missingLogContainer.innerHTML = '<p class="text-[10px] text-slate-500 italic">Belum ada pertanyaan tertinggal.</p>';
+        } else {
+            unansweredLogs.forEach((log, lIdx) => {
+                missingLogContainer.innerHTML += `
+                    <div class="bg-slate-900 p-2 rounded-lg border border-rose-500/30 flex items-center justify-between text-[11px] gap-2">
+                        <span class="text-rose-200 truncate flex-1">❓ "${log}"</span>
+                        <div class="flex items-center gap-1 flex-shrink-0">
+                            <button type="button" onclick="promoteLogToFaq('${log.replace(/'/g, "\\'")}', ${lIdx})" class="bg-emerald-600 hover:bg-emerald-700 text-white px-2 py-1 rounded text-[10px] font-semibold cursor-pointer">➕ Jadikan Ingatan</button>
+                            <button type="button" onclick="deleteSingleUnansweredLog(${lIdx})" class="text-rose-400 hover:text-rose-300 font-bold px-1.5 py-1 text-[11px] cursor-pointer" title="Hapus log ini">🗑️</button>
+                        </div>
+                    </div>`;
+            });
+        }
+    }
+
+    if(brandStatus) {
+        brandStatus.textContent = brandLogoUrl ? "✅ Logo Brand Permanen Aktif" : "ℹ️ Belum ada logo (menggunakan teks)";
+        brandStatus.className = brandLogoUrl ? "text-[10px] text-emerald-400 font-semibold italic" : "text-[10px] text-slate-400 italic";
+    }
+
+    if(bankAdminContainer && bankDisplay) {
+        bankAdminContainer.innerHTML = ''; bankDisplay.innerHTML = '';
+        bankAccounts.forEach((b, bIdx) => {
+            bankAdminContainer.innerHTML += `<div class="flex items-center justify-between bg-slate-900 p-2 rounded-lg text-[11px]"><span><b>${b.bank}</b>: ${b.acc} (${b.owner})</span><button type="button" onclick="deleteBank(${bIdx})" class="text-rose-400 font-bold px-2 py-1 cursor-pointer">Hapus</button></div>`;
+            bankDisplay.innerHTML += `<div class="flex justify-between"><span><b>${b.bank}</b>: ${b.acc}</span><span class="text-slate-500">a.n ${b.owner}</span></div>`;
+        });
+    }
+
+    if(dtfAdminContainer && dtfSelect) {
+        dtfAdminContainer.innerHTML = ''; dtfSelect.innerHTML = '';
+        dtfOptions.forEach((d, dIdx) => {
+            dtfAdminContainer.innerHTML += `<div class="flex items-center justify-between bg-slate-900 p-2 rounded-lg text-[11px]"><span><b>${d.name}</b> (+Rp ${d.price.toLocaleString('id-ID')})</span><button type="button" onclick="deleteDtfOption(${dIdx})" class="text-rose-400 font-bold px-2 py-1 cursor-pointer">Hapus</button></div>`;
+            dtfSelect.innerHTML += `<option value="${d.price}">${d.name} (+Rp ${d.price.toLocaleString('id-ID')})</option>`;
+        });
+    }
+
+    if(stampPreview) {
+        stampPreview.innerHTML = customStampUrl ? `<div class="flex items-center justify-center gap-2 bg-slate-900 p-2 rounded-xl border border-slate-700"><img src="${customStampUrl}" class="h-10 object-contain"><span class="text-[10px] text-emerald-400 font-semibold">✅ Stempel Lunas Aktif</span><button type="button" onclick="removeStampImage()" class="text-xs text-rose-400 font-semibold underline cursor-pointer">Hapus</button></div>` : `<span class="text-[10px] text-slate-400 italic">Belum ada stempel lunas diupload.</span>`;
+    }
+
+    if(sigPreview) {
+        sigPreview.innerHTML = adminSignatureUrl ? `<div class="flex items-center justify-center gap-2 bg-slate-900 p-2 rounded-xl border border-slate-700"><img src="${adminSignatureUrl}" class="h-10 object-contain"><span class="text-[10px] text-emerald-400 font-semibold">✅ Tanda Tangan Owner Aktif</span><button type="button" onclick="removeAdminSignature()" class="text-xs text-rose-400 font-semibold underline cursor-pointer">Hapus</button></div>` : `<span class="text-[10px] text-slate-400 italic">Belum ada tanda tangan owner diupload.</span>`;
+    }
+
+    const inkContainer = document.getElementById('ink-list-container');
+    const inkSelect1 = document.getElementById('ink-color-select-1');
+    const inkSelect2 = document.getElementById('ink-color-select-2');
+    
+    if(inkContainer && inkSelect1 && inkSelect2) {
+        inkContainer.innerHTML = ''; inkSelect1.innerHTML = ''; inkSelect2.innerHTML = '';
+        inkColors.forEach((ink, idx) => {
+            inkContainer.innerHTML += `<div class="flex items-center justify-between bg-slate-800 px-3 py-2 rounded-lg text-xs"><div class="flex items-center gap-2"><span class="w-3.5 h-3.5 rounded-full inline-block border border-white" style="background:${ink.hex}"></span><span>${ink.name}</span></div><button type="button" onclick="deleteInkColor(${idx})" class="text-rose-400 font-bold px-2 py-1 cursor-pointer">Hapus</button></div>`;
+            inkSelect1.innerHTML += `<option value="${ink.hex}">${ink.name}</option>`;
+            inkSelect2.innerHTML += `<option value="${ink.hex}" ${idx === 1 ? 'selected' : ''}>${ink.name}</option>`;
+        });
+    }
+
+    const colorContainer = document.getElementById('color-list-container');
+    const colorButtons = document.getElementById('bag-color-buttons');
+    if(colorContainer && colorButtons) {
+        colorContainer.innerHTML = ''; colorButtons.innerHTML = '';
+        bagColors.forEach((item, index) => {
+            colorContainer.innerHTML += `<div class="flex items-center justify-between bg-slate-800 px-3 py-2 rounded-lg text-xs"><div class="flex items-center gap-2"><span class="w-3.5 h-3.5 rounded-full inline-block border border-white" style="background:${item.hex}"></span><span>${item.name}</span></div><button type="button" onclick="deleteBagColor(${index})" class="text-rose-400 font-bold px-2 py-1 cursor-pointer">Hapus</button></div>`;
+            
+            const btn = document.createElement('button');
+            btn.type = "button";
+            btn.className = "px-3.5 py-2.5 rounded-xl text-xs font-semibold shadow transition border border-slate-300 flex items-center gap-2 cursor-pointer active:scale-95";
+            btn.style.backgroundColor = item.hex;
+            btn.style.color = (item.hex === '#ffffff' || item.hex === '#eab308') ? '#0f172a' : '#ffffff';
+            btn.innerHTML = `<span>${item.name}</span>`;
+            btn.onclick = () => {
+                activeBagTint = item.hex;
+                activeColorName = item.name;
+                document.getElementById('active-color-label').textContent = item.name;
+                updateBagCanvas();
+            };
+            colorButtons.appendChild(btn);
+        });
+    }
 
     const extraInput = document.getElementById('admin-extra-color-price');
     if(extraInput) extraInput.value = extraColorPrice;
@@ -326,7 +482,7 @@ function renderAdminPanel() {
         appLauncherLogo.className = "max-h-14 w-auto object-contain filter drop-shadow";
     }
 
-    // 🔥 TAMBAHKAN BARIS INI AGAR INGATAN AI IKUT TER-RENDER DI PANEL ADMIN:
+    // 🔥 Pastikan pemanggil FAQ admin aman di sini:
     if (typeof renderKnowledgeFaqAdmin === 'function') {
         renderKnowledgeFaqAdmin();
     }
@@ -334,8 +490,7 @@ function renderAdminPanel() {
     updateCustomerSizesDropdown();
     updateBagCanvas();
     renderCartItems();
-} 
-
+}
             
             const isCustomImg = item.image && !item.image.includes('placeholder.com');
             card.innerHTML = `
@@ -1782,13 +1937,21 @@ document.addEventListener("DOMContentLoaded", () => {
         qtyInput.addEventListener('input', updateLivePricePreview);
     }
     updateLivePricePreview();
+
+    function renderAdminPanel() {
+    // ... (kode rendering model tas, bank, dtf yang sudah ada)
+
+    // 🔥 TAMBAHKAN BARIS INI DI DALAM renderAdminPanel() AGAR FAQ MUNCUL:
+    if (typeof renderKnowledgeFaqAdmin === 'function') {
+        renderKnowledgeFaqAdmin();
+    }
+
+    updateCustomerSizesDropdown();
+    updateBagCanvas();
+    renderCartItems();
+}
+
 });
 
-document.addEventListener("DOMContentLoaded", () => {
-    const qtyInput = document.getElementById('item-qty');
-    if(qtyInput) {
-        qtyInput.addEventListener('input', updateLivePricePreview);
-    }
-    updateLivePricePreview();
-});
+
 
