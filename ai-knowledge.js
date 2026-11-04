@@ -346,7 +346,7 @@ function addKnowledgeFaq() {
     if (!window.knowledgeFaq) window.knowledgeFaq = [];
     
     window.knowledgeFaq.push({
-        id: "kb-" + Date.now() + "-" + Math.floor(Math.random() * 10000),
+        id: "kb-" + Date.now(),
         prefix: prefix,
         keyword: keyword,
         suffix: suffix,
@@ -364,6 +364,7 @@ function addKnowledgeFaq() {
         });
     }
     
+    // Reset input form
     document.getElementById('new-faq-prefix').value = '';
     document.getElementById('new-faq-keyword').value = '';
     document.getElementById('new-faq-suffix').value = '';
@@ -371,7 +372,7 @@ function addKnowledgeFaq() {
     if (typeof renderAdminPanel === 'function') {
         renderAdminPanel();
     }
-    alert("Ingatan AI baru berhasil disimpan permanen & terkunci rapi! 🚀");
+    alert("Ingatan AI baru berhasil disimpan permanen! 🚀");
 }
 
 // Fungsi Hapus Ingatan AI
