@@ -1209,30 +1209,57 @@ function updateCartTotals() {
     let totalQty = 0, grandSubtotal = 0;
     cartItems.forEach(item => { totalQty += item.qty; grandSubtotal += item.subtotal; });
     let discountVal = totalQty >= 1000 ? grandSubtotal * 0.10 : 0;
+  // ==========================================
+// 3. FUNGSI UPDATE KERANJANG & HITUNG TOTAL (DENGAN RAJAONGKIR)
+// ==========================================
+// (Pastikan fungsi ini menyambung dengan fungsi hitung subtotal di atasnya)
+function updateCartTotals() {
+    let totalQty = 0, grandSubtotal = 0;
+    if (typeof cartItems !== 'undefined') {
+        cartItems.forEach(item => { totalQty += item.qty; grandSubtotal += item.subtotal; });
+    }
+    
+    let discountVal = totalQty >= 1000 ? grandSubtotal * 0.10 : 0;
     
     // Perhitungan ongkir jika sudah dipilih dari RajaOngkir
     let shippingCost = window.selectedShippingCost || 0;
     let grandTotal = (grandSubtotal - discountVal) + shippingCost;
     
-    const region = document.getElementById('shipping-region').value;
+    const regionEl = document.getElementById('shipping-region');
+    const region = regionEl ? regionEl.value : 'jabodetabek';
     const dpVal = region === 'luar' ? grandTotal * 0.50 : 0;
 
-    document.getElementById('display-total-qty').textContent = totalQty.toLocaleString('id-ID') + " Pcs";
+    const totalQtyEl = document.getElementById('display-total-qty');
+    if (totalQtyEl) totalQtyEl.textContent = totalQty.toLocaleString('id-ID') + " Pcs";
     
+    const discountRow = document.getElementById('discount-row');
+    const displayDiscountVal = document.getElementById('display-discount-val');
     if(discountVal > 0) {
-        document.getElementById('discount-row').classList.remove('hidden');
-        document.getElementById('display-discount-val').textContent = "- Rp " + Math.round(discountVal).toLocaleString('id-ID');
-    } else { document.getElementById('discount-row').classList.add('hidden'); }
+        if(discountRow) discountRow.classList.remove('hidden');
+        if(displayDiscountVal) displayDiscountVal.textContent = "- Rp " + Math.round(discountVal).toLocaleString('id-ID');
+    } else { 
+        if(discountRow) discountRow.classList.add('hidden'); 
+    }
 
+    const dpRow = document.getElementById('dp-row');
+    const displayDpVal = document.getElementById('display-dp-val');
     if(region === 'luar') {
-        document.getElementById('dp-row').classList.remove('hidden');
-        document.getElementById('display-dp-val').textContent = "Rp " + Math.round(dpVal).toLocaleString('id-ID') + " (50%)";
-    } else { document.getElementById('dp-row').classList.add('hidden'); }
+        if(dpRow) dpRow.classList.remove('hidden');
+        if(displayDpVal) displayDpVal.textContent = "Rp " + Math.round(dpVal).toLocaleString('id-ID') + " (50%)";
+    } else { 
+        if(dpRow) dpRow.classList.add('hidden'); 
+    }
 
-    document.getElementById('display-total-price').textContent = "Rp " + Math.round(grandTotal).toLocaleString('id-ID') + (shippingCost > 0 ? ` (Termasuk Ongkir ${window.selectedCourierName})` : '');
+    const displayTotalPrice = document.getElementById('display-total-price');
+    if (displayTotalPrice) {
+        displayTotalPrice.textContent = "Rp " + Math.round(grandTotal).toLocaleString('id-ID') + (shippingCost > 0 ? ` (Termasuk Ongkir ${window.selectedCourierName})` : '');
+    }
 }
 
-function toggleAdminPanel() { document.getElementById('admin-view').classList.toggle('hidden'); }
+function toggleAdminPanel() { 
+    const adminView = document.getElementById('admin-view');
+    if(adminView) adminView.classList.toggle('hidden'); 
+}
 
 function requestAdminLogin() {
     let pass = prompt("Masukkan Password Admin:");
@@ -1857,18 +1884,20 @@ async function checkShippingCost() {
     const totalWeight = totalQty * 35; // Asumsi berat rata-rata 1 pcs tas = 35 gram
 
     if(!destinationCityId) {
-        return alert("Silakan pilih kota tujuan pengiriman terlebih dahulu!");
+        return alert("Silakan pilih kota tujuan pengiriman terlebih dahulu, Bosku!");
     }
 
     const shippingResultContainer = document.getElementById('shipping-cost-results');
-    shippingResultContainer.innerHTML = "⏳ Menghitung tarif ongkir resmi...";
+    if (shippingResultContainer) {
+        shippingResultContainer.innerHTML = "⏳ Menghitung tarif ongkir resmi dari RajaOngkir...";
+    }
 
     try {
         const response = await fetch('https://api.rajaongkir.com/starter/cost', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                // 'key': 'API_KEY_RAJAONGKIR_KAKAK'
+                'key': 'hoNQDKZPebfe35ddf393f5dbZu7xVaWZ' // API Key RajaOngkir Aktif Kakak
             },
             body: JSON.stringify({
                 origin: "153", // ID Kota Asal (Tangerang)
@@ -1878,20 +1907,38 @@ async function checkShippingCost() {
             })
         });
         
-        shippingResultContainer.innerHTML = `
-            <div class="space-y-2 mt-2">
-                <div class="flex justify-between items-center bg-slate-800 p-2 rounded-lg text-xs text-white">
-                    <span>JNE REG (1-2 hari) - Rp 14.000</span>
-                    <button type="button" onclick="selectShippingCost('JNE REG', 14000)" class="bg-emerald-600 px-2 py-1 rounded text-[10px] font-semibold cursor-pointer">Pilih</button>
-                </div>
-                <div class="flex justify-between items-center bg-slate-800 p-2 rounded-lg text-xs text-white">
-                    <span>J&T Express (1-2 hari) - Rp 15.000</span>
-                    <button type="button" onclick="selectShippingCost('J&T', 15000)" class="bg-emerald-600 px-2 py-1 rounded text-[10px] font-semibold cursor-pointer">Pilih</button>
-                </div>
-            </div>
-        `;
+        const data = await response.json();
+        const results = data.rajaongkir?.results;
+
+        if (results && results.length > 0) {
+            let htmlContent = '<div class="space-y-2 mt-2">';
+            results.forEach(courier => {
+                courier.costs.forEach(costDetail => {
+                    const serviceName = `${courier.name.toUpperCase()} (${costDetail.service})`;
+                    const costAmount = costDetail.cost[0].value;
+                    const etd = costDetail.cost[0].etd ? `${costDetail.cost[0].etd} hari` : '1-3 hari';
+                    
+                    htmlContent += `
+                        <div class="flex justify-between items-center bg-slate-800 p-2.5 rounded-lg text-xs text-white">
+                            <div>
+                                <span class="font-bold text-amber-300">${serviceName}</span>
+                                <div class="text-[10px] text-slate-400">Estimasi: ${etd} | Rp ${costAmount.toLocaleString('id-ID')}</div>
+                            </div>
+                            <button type="button" onclick="selectShippingCost('${serviceName}', ${costAmount})" class="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded-lg text-[10px] font-semibold cursor-pointer">Pilih</button>
+                        </div>
+                    `;
+                });
+            });
+            htmlContent += '</div>';
+            if (shippingResultContainer) shippingResultContainer.innerHTML = htmlContent;
+        } else {
+            if (shippingResultContainer) shippingResultContainer.innerHTML = '<span class="text-rose-400 text-xs">Kurir tidak tersedia untuk rute kota ini.</span>';
+        }
     } catch(err) {
-        shippingResultContainer.innerHTML = `<span class="text-rose-400 text-xs">Gagal memuat tarif ongkir. Periksa koneksi/API key.</span>`;
+        console.error("RajaOngkir Error:", err);
+        if (shippingResultContainer) {
+            shippingResultContainer.innerHTML = `<span class="text-rose-400 text-xs">Gagal memuat tarif ongkir. Periksa koneksi internet / batasan API Starter.</span>`;
+        }
     }
 }
 
