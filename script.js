@@ -98,7 +98,6 @@ function safeLocalStorageSet(key, val) {
     try { localStorage.setItem(key, val); } catch(e) { console.error("Storage error:", e); }
 }
 
-// Load dari localStorage jika tersedia
 try {
     if(localStorage.getItem('ilham_bagModels')) bagModels = JSON.parse(localStorage.getItem('ilham_bagModels'));
     if(localStorage.getItem('ilham_bankAccounts')) bankAccounts = JSON.parse(localStorage.getItem('ilham_bankAccounts'));
@@ -496,12 +495,9 @@ function renderAdminPanel() {
     updateCustomerSizesDropdown();
     updateBagCanvas();
     renderCartItems();
-    renderProductAdminList(); // Render daftar produk di admin
+    renderProductAdminList();
 }
 
-// ==========================================
-// FUNGSI MANAJEMEN PRODUK ADMIN (TERPISAH & AMAN)
-// ==========================================
 function renderProductAdminList() {
     const container = document.getElementById('product-admin-list-container');
     if(!container) return;
@@ -1205,14 +1201,10 @@ function renderCartItems() {
 function removeCartItem(index) { cartItems.splice(index, 1); saveToCloud(); renderCartItems(); }
 function clearCart() { if(confirm("Kosongkan keranjang pesanan?")) { cartItems = []; saveToCloud(); renderCartItems(); } }
 
-function updateCartTotals() {
-    let totalQty = 0, grandSubtotal = 0;
-    cartItems.forEach(item => { totalQty += item.qty; grandSubtotal += item.subtotal; });
-    let discountVal = totalQty >= 1000 ? grandSubtotal * 0.10 : 0;
-  // ==========================================
+
+// ==========================================
 // 3. FUNGSI UPDATE KERANJANG & HITUNG TOTAL (DENGAN RAJAONGKIR)
 // ==========================================
-// (Pastikan fungsi ini menyambung dengan fungsi hitung subtotal di atasnya)
 function updateCartTotals() {
     let totalQty = 0, grandSubtotal = 0;
     if (typeof cartItems !== 'undefined') {
@@ -1220,8 +1212,6 @@ function updateCartTotals() {
     }
     
     let discountVal = totalQty >= 1000 ? grandSubtotal * 0.10 : 0;
-    
-    // Perhitungan ongkir jika sudah dipilih dari RajaOngkir
     let shippingCost = window.selectedShippingCost || 0;
     let grandTotal = (grandSubtotal - discountVal) + shippingCost;
     
@@ -1881,7 +1871,7 @@ async function saveOrderAndSendWhatsApp() {
 async function checkShippingCost() {
     const destinationCityId = document.getElementById('shipping-city-destination').value;
     const totalQty = cartItems.reduce((sum, item) => sum + item.qty, 0);
-    const totalWeight = totalQty * 35; // Asumsi berat rata-rata 1 pcs tas = 35 gram
+    const totalWeight = totalQty * 35;
 
     if(!destinationCityId) {
         return alert("Silakan pilih kota tujuan pengiriman terlebih dahulu, Bosku!");
@@ -1897,12 +1887,12 @@ async function checkShippingCost() {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'key': 'hoNQDKZPebfe35ddf393f5dbZu7xVaWZ' // API Key RajaOngkir Aktif Kakak
+                'key': 'hoNQDKZPebfe35ddf393f5dbZu7xVaWZ'
             },
             body: JSON.stringify({
-                origin: "153", // ID Kota Asal (Tangerang)
+                origin: "153",
                 destination: destinationCityId,
-                weight: totalWeight < 1000 ? 1000 : totalWeight, // Minimal 1kg
+                weight: totalWeight < 1000 ? 1000 : totalWeight,
                 courier: "jne:sicepat:jnt"
             })
         });
@@ -1934,7 +1924,7 @@ async function checkShippingCost() {
         } else {
             if (shippingResultContainer) shippingResultContainer.innerHTML = '<span class="text-rose-400 text-xs">Kurir tidak tersedia untuk rute kota ini.</span>';
         }
-} catch(err) {
+    } catch(err) {
         console.error("RajaOngkir Error:", err);
         if (shippingResultContainer) {
             shippingResultContainer.innerHTML = `<span class="text-rose-400 text-xs">Gagal memuat tarif ongkir. Periksa koneksi internet / batasan API Starter.</span>`;
@@ -1946,5 +1936,5 @@ function selectShippingCost(courierName, cost) {
     window.selectedShippingCost = cost;
     window.selectedCourierName = courierName;
     alert(`Kurir terpilih: ${courierName} dengan biaya Rp ${cost.toLocaleString('id-ID')}`);
-    updateCartTotals(); // Update total belanja beserta ongkir secara otomatis
+    updateCartTotals();
 }
