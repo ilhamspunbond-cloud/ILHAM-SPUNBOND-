@@ -1934,7 +1934,7 @@ async function checkShippingCost() {
         } else {
             if (shippingResultContainer) shippingResultContainer.innerHTML = '<span class="text-rose-400 text-xs">Kurir tidak tersedia untuk rute kota ini.</span>';
         }
-    } catch(err) {
+} catch(err) {
         console.error("RajaOngkir Error:", err);
         if (shippingResultContainer) {
             shippingResultContainer.innerHTML = `<span class="text-rose-400 text-xs">Gagal memuat tarif ongkir. Periksa koneksi internet / batasan API Starter.</span>`;
