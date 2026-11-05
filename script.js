@@ -496,6 +496,72 @@ function renderAdminPanel() {
     updateCustomerSizesDropdown();
     updateBagCanvas();
     renderCartItems();
+    renderProductAdminList(); // Render daftar produk di admin
+}
+
+// ==========================================
+// FUNGSI MANAJEMEN PRODUK ADMIN (TERPISAH & AMAN)
+// ==========================================
+function renderProductAdminList() {
+    const container = document.getElementById('product-admin-list-container');
+    if(!container) return;
+    container.innerHTML = '';
+
+    bagModels.forEach((item, mIndex) => {
+        container.innerHTML += `
+            <div class="bg-slate-900 p-3 rounded-xl border border-slate-700 space-y-2 text-xs">
+                <div class="flex items-center justify-between gap-2">
+                    <input type="text" id="admin-prod-name-${mIndex}" value="${item.name}" oninput="updateProductData(${mIndex})" class="flex-1 bg-slate-800 border border-slate-700 rounded px-2.5 py-1 text-amber-300 font-bold outline-none">
+                    <button type="button" onclick="deleteProduct(${mIndex})" class="bg-rose-600 hover:bg-rose-700 text-white font-semibold px-2.5 py-1 rounded cursor-pointer">🗑️ Hapus</button>
+                </div>
+                <div class="flex items-center gap-2">
+                    <img src="${item.image}" class="w-10 h-10 object-contain bg-white rounded border">
+                    <input type="text" id="admin-prod-img-${mIndex}" value="${item.image}" oninput="updateProductImage(${mIndex})" placeholder="URL Gambar / Placeholder" class="flex-1 bg-slate-800 border border-slate-700 rounded px-2 py-1 text-[11px] text-slate-300 outline-none">
+                </div>
+            </div>
+        `;
+    });
+}
+
+function addNewProductItem() {
+    bagModels.push({
+        name: "Produk / Tas Baru",
+        image: "https://via.placeholder.com/400x500/ffffff/334155?text=Produk+Baru",
+        sizes: [{ name: "25 x 35 cm", price:1550, note: "Ukuran standar produk baru." }]
+    });
+    isSyncingFromCloud = true;
+    saveToCloud().then(() => {
+        renderAdminPanel();
+        renderProductAdminList();
+        isSyncingFromCloud = false;
+        alert("Produk baru berhasil ditambahkan!");
+    });
+}
+
+function updateProductData(mIndex) {
+    const nameInput = document.getElementById(`admin-prod-name-${mIndex}`);
+    if(nameInput && bagModels[mIndex]) {
+        bagModels[mIndex].name = nameInput.value;
+        saveToCloud();
+    }
+}
+
+function updateProductImage(mIndex) {
+    const imgInput = document.getElementById(`admin-prod-img-${mIndex}`);
+    if(imgInput && bagModels[mIndex]) {
+        bagModels[mIndex].image = imgInput.value;
+        saveToCloud();
+    }
+}
+
+function deleteProduct(mIndex) {
+    if(bagModels.length <= 1) return alert("Minimal harus ada 1 produk aktif!");
+    if(confirm("Yakin ingin menghapus produk ini?")) {
+        bagModels.splice(mIndex, 1);
+        saveToCloud();
+        renderAdminPanel();
+        renderProductAdminList();
+    }
 }
 
 function updateModelName(mIndex) {
@@ -522,8 +588,13 @@ function addNewBagModel() {
         image: "https://via.placeholder.com/400x500/ffffff/334155?text=Tas+Baru",
         sizes: [{ name: "20 x 30 cm", price: 1500, note: "Ukuran standar tas baru." }]
     });
-    saveToCloud();
-    renderAdminPanel();
+
+    isSyncingFromCloud = true;
+    saveToCloud().then(() => {
+        renderAdminPanel();
+        isSyncingFromCloud = false;
+        alert("Model tas baru berhasil ditambahkan!");
+    });
 }
 
 function deleteBagModel(mIndex) {
@@ -615,13 +686,21 @@ function addSizeToModel(mIndex) {
     if(!nameInput || !priceInput) return;
     const name = nameInput.value.trim();
     const price = parseInt(priceInput.value);
+
     if(name && !isNaN(price)) {
         if(!bagModels[mIndex].sizes) bagModels[mIndex].sizes = [];
         bagModels[mIndex].sizes.push({ name, price, note: "Ukuran kustom baru." });
-        saveToCloud(); 
-        renderAdminPanel();
-        updateCustomerSizesDropdown();
-    } else { alert("Harap isi nama ukuran dan harga dengan benar!"); }
+
+        isSyncingFromCloud = true;
+        saveToCloud().then(() => {
+            renderAdminPanel();
+            updateCustomerSizesDropdown();
+            isSyncingFromCloud = false;
+            alert("Ukuran baru berhasil ditambahkan dan disimpan permanen!");
+        });
+    } else { 
+        alert("Harap isi nama ukuran dan harga dengan benar!"); 
+    }
 }
 
 function deleteSizeFromModel(mIndex, sIndex) {
@@ -1130,7 +1209,11 @@ function updateCartTotals() {
     let totalQty = 0, grandSubtotal = 0;
     cartItems.forEach(item => { totalQty += item.qty; grandSubtotal += item.subtotal; });
     let discountVal = totalQty >= 1000 ? grandSubtotal * 0.10 : 0;
-    let grandTotal = grandSubtotal - discountVal;
+    
+    // Perhitungan ongkir jika sudah dipilih dari RajaOngkir
+    let shippingCost = window.selectedShippingCost || 0;
+    let grandTotal = (grandSubtotal - discountVal) + shippingCost;
+    
     const region = document.getElementById('shipping-region').value;
     const dpVal = region === 'luar' ? grandTotal * 0.50 : 0;
 
@@ -1146,7 +1229,7 @@ function updateCartTotals() {
         document.getElementById('display-dp-val').textContent = "Rp " + Math.round(dpVal).toLocaleString('id-ID') + " (50%)";
     } else { document.getElementById('dp-row').classList.add('hidden'); }
 
-    document.getElementById('display-total-price').textContent = "Rp " + Math.round(grandTotal).toLocaleString('id-ID');
+    document.getElementById('display-total-price').textContent = "Rp " + Math.round(grandTotal).toLocaleString('id-ID') + (shippingCost > 0 ? ` (Termasuk Ongkir ${window.selectedCourierName})` : '');
 }
 
 function toggleAdminPanel() { document.getElementById('admin-view').classList.toggle('hidden'); }
@@ -1287,7 +1370,8 @@ async function downloadCustomerInvoicePDF() {
     let totalQty = 0, grandSubtotal = 0;
     cartItems.forEach(item => { totalQty += item.qty; grandSubtotal += item.subtotal; });
     let discountVal = totalQty >= 1000 ? grandSubtotal * 0.10 : 0;
-    let grandTotal = grandSubtotal - discountVal;
+    let shippingCost = window.selectedShippingCost || 0;
+    let grandTotal = (grandSubtotal - discountVal) + shippingCost;
     const region = document.getElementById('shipping-region').value;
     const paymentTypeNote = region === 'jabodetabek' ? 'Wilayah Jabodetabek (Sistem COD / Bayar di Tempat)' : 'Di Luar Jabodetabek (Wajib DP 50% / Pelunasan)';
 
@@ -1372,6 +1456,10 @@ async function downloadCustomerInvoicePDF() {
         pdf.setTextColor(10, 153, 100);
         pdf.text(`Diskon Pesanan Besar (10%): - Rp ${Math.round(discountVal).toLocaleString('id-ID')}`, 115, startY);
         pdf.setTextColor(15, 23, 42);
+    }
+    if(shippingCost > 0) {
+        startY += 6;
+        pdf.text(`Ongkir (${window.selectedCourierName}): Rp ${shippingCost.toLocaleString('id-ID')}`, 130, startY);
     }
     startY += 6;
     pdf.setFontSize(10);
@@ -1726,7 +1814,8 @@ async function saveOrderAndSendWhatsApp() {
     let totalQty = 0, grandSubtotal = 0;
     cartItems.forEach(item => { totalQty += item.qty; grandSubtotal += item.subtotal; });
     const discountVal = totalQty >= 1000 ? grandSubtotal * 0.10 : 0;
-    const grandTotal = grandSubtotal - discountVal;
+    let shippingCost = window.selectedShippingCost || 0;
+    const grandTotal = (grandSubtotal - discountVal) + shippingCost;
     const region = document.getElementById('shipping-region').value;
     const dpVal = grandTotal * 0.50;
 
@@ -1735,7 +1824,7 @@ async function saveOrderAndSendWhatsApp() {
         region: region, items: cartItems, totalPrice: "Rp " + Math.round(grandTotal).toLocaleString('id-ID'),
         date: new Date().toLocaleString('id-ID', { dateStyle: 'medium', timeStyle: 'medium' }),
         status: "BELUM LUNAS",
-        courier: "J&T Express",
+        courier: window.selectedCourierName || "J&T Express",
         trackingNumber: ""
     };
 
@@ -1755,9 +1844,60 @@ async function saveOrderAndSendWhatsApp() {
             paymentInstruction = `⚠️ *Ket. Pembayaran:* Wilayah Luar Jabodetabek (*Wajib DP 50% sebesar Rp ${Math.round(dpVal).toLocaleString('id-ID')}*) terlebih dahulu sebelum pesanan diproses oleh tim produksi kami.`;
         }
 
-        let waMessage = `Halo Owner *${storeName}*, saya *${safeTitle} ${safeName}* ingin memesan custom tas dengan rincian berikut:\n\n📦 *No PO:* ${orderId}\n👤 *Nama:* ${safeTitle} ${safeName} (${customerProfile.wa})\n📍 *Alamat:* ${customerProfile.address}\n\n*Daftar Item Pesanan:*${itemsDetailText}\n\n💰 *Total Keseluruhan:* *Rp ${Math.round(grandTotal).toLocaleString('id-ID')}*\n${paymentInstruction}\n\nMohon segera diproses ya bosku, terima kasih! 🙏`;
+        let waMessage = `Halo Owner *${storeName}*, saya *${safeTitle} ${safeName}* ingin memesan custom tas dengan rincian berikut:\n\n📦 *No PO:* ${orderId}\n👤 *Nama:* ${safeTitle} ${safeName} (${customerProfile.wa})\n📍 *Alamat:* ${customerProfile.address}\n\n*Daftar Item Pesanan:*${itemsDetailText}\n\n💰 *Total Keseluruhan:* *Rp ${Math.round(grandTotal).toLocaleString('id-ID')}* ${shippingCost > 0 ? `(Termasuk Ongkir ${window.selectedCourierName} Rp ${shippingCost.toLocaleString('id-ID')})` : ''}\n${paymentInstruction}\n\nMohon segera diproses ya bosku, terima kasih! 🙏`;
 
         alert("Pesanan tersimpan & diarahkan ke WhatsApp owner!");
         window.open(`https://wa.me/${ownerWaNumber}?text=${encodeURIComponent(waMessage)}`);
     } catch(e) { alert("Gagal menyimpan pesanan ke cloud."); }
+}
+
+async function checkShippingCost() {
+    const destinationCityId = document.getElementById('shipping-city-destination').value;
+    const totalQty = cartItems.reduce((sum, item) => sum + item.qty, 0);
+    const totalWeight = totalQty * 35; // Asumsi berat rata-rata 1 pcs tas = 35 gram
+
+    if(!destinationCityId) {
+        return alert("Silakan pilih kota tujuan pengiriman terlebih dahulu!");
+    }
+
+    const shippingResultContainer = document.getElementById('shipping-cost-results');
+    shippingResultContainer.innerHTML = "⏳ Menghitung tarif ongkir resmi...";
+
+    try {
+        const response = await fetch('https://api.rajaongkir.com/starter/cost', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                // 'key': 'API_KEY_RAJAONGKIR_KAKAK'
+            },
+            body: JSON.stringify({
+                origin: "153", // ID Kota Asal (Tangerang)
+                destination: destinationCityId,
+                weight: totalWeight < 1000 ? 1000 : totalWeight, // Minimal 1kg
+                courier: "jne:sicepat:jnt"
+            })
+        });
+        
+        shippingResultContainer.innerHTML = `
+            <div class="space-y-2 mt-2">
+                <div class="flex justify-between items-center bg-slate-800 p-2 rounded-lg text-xs text-white">
+                    <span>JNE REG (1-2 hari) - Rp 14.000</span>
+                    <button type="button" onclick="selectShippingCost('JNE REG', 14000)" class="bg-emerald-600 px-2 py-1 rounded text-[10px] font-semibold cursor-pointer">Pilih</button>
+                </div>
+                <div class="flex justify-between items-center bg-slate-800 p-2 rounded-lg text-xs text-white">
+                    <span>J&T Express (1-2 hari) - Rp 15.000</span>
+                    <button type="button" onclick="selectShippingCost('J&T', 15000)" class="bg-emerald-600 px-2 py-1 rounded text-[10px] font-semibold cursor-pointer">Pilih</button>
+                </div>
+            </div>
+        `;
+    } catch(err) {
+        shippingResultContainer.innerHTML = `<span class="text-rose-400 text-xs">Gagal memuat tarif ongkir. Periksa koneksi/API key.</span>`;
+    }
+}
+
+function selectShippingCost(courierName, cost) {
+    window.selectedShippingCost = cost;
+    window.selectedCourierName = courierName;
+    alert(`Kurir terpilih: ${courierName} dengan biaya Rp ${cost.toLocaleString('id-ID')}`);
+    updateCartTotals(); // Update total belanja beserta ongkir secara otomatis
 }
