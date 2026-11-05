@@ -405,12 +405,36 @@
                     <span>📋</span> Formulir Pesanan & Pembayaran
                 </h3>
                 
-                <div>
+              <div>
                     <label class="block text-[11px] font-semibold text-slate-500 mb-1">Wilayah Tujuan Pengiriman</label>
                     <select id="shipping-region" onchange="updateCartTotals();" class="w-full bg-slate-50 border border-slate-300 rounded-xl p-3 text-sm font-medium focus:ring-2 focus:ring-emerald-500 outline-none">
                         <option value="jabodetabek">Wilayah Jabodetabek (Bisa COD)</option>
                         <option value="luar">Di Luar Jabodetabek (Wajib DP 50% / Pelunasan)</option>
                     </select>
+                </div>
+
+                <!-- TAMBAHAN: Input Kota Tujuan & Tombol Cek Ongkir RajaOngkir -->
+                <div class="space-y-2 pt-1">
+                    <label class="block text-[11px] font-semibold text-slate-500">Pilih Kota / Kabupaten Tujuan Pengiriman</label>
+                    <div class="flex gap-2">
+                        <!-- ID Kota Tujuan (Contoh: 151=Jakarta, 501=Yogyakarta, 23=Bandung, dll atau pakai Select Option RajaOngkir) -->
+                        <select id="shipping-city-destination" class="flex-1 bg-slate-50 border border-slate-300 rounded-xl p-3 text-xs font-medium outline-none">
+                            <option value="">-- Pilih Kota Tujuan --</option>
+                            <option value="151">Jakarta Pusat</option>
+                            <option value="152">Jakarta Selatan</option>
+                            <option value="23">Bandung</option>
+                            <option value="444">Surabaya</option>
+                            <option value="501">Yogyakarta</option>
+                            <option value="114">Denpasar</option>
+                            <option value="133">Medan</option>
+                            <!-- Kakak bisa tambahkan daftar ID Kota RajaOngkir lainnya sesuai kebutuhan -->
+                        </select>
+                        <button type="button" onclick="checkShippingCost()" class="bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold px-4 rounded-xl text-xs cursor-pointer shadow">
+                            🔍 Cek Ongkir
+                        </button>
+                    </div>
+                    <!-- Container Hasil Pilihan Kurir & Ongkir -->
+                    <div id="shipping-cost-results" class="space-y-1"></div>
                 </div>
 
                 <div class="text-[11px] text-emerald-700 font-medium bg-emerald-50/80 px-3 py-2 rounded-lg border border-emerald-200/60 flex items-center gap-1.5">
