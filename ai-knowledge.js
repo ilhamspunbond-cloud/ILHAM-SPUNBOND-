@@ -329,6 +329,9 @@ function saveEditedFaq(fIdx) {
 }
 
 // Fungsi Tambah Ingatan AI Baru
+// ==========================================
+// PERBAIKAN: FUNGSI TAMBAH INGATAN AI BARU
+// ==========================================
 function addKnowledgeFaq() {
     const rawPrefix = document.getElementById('new-faq-prefix')?.value || "Baik";
     const rawKeyword = document.getElementById('new-faq-keyword')?.value;
@@ -345,6 +348,7 @@ function addKnowledgeFaq() {
     
     if (!window.knowledgeFaq) window.knowledgeFaq = [];
     
+    // Tambah data baru ke memori global
     window.knowledgeFaq.push({
         id: "kb-" + Date.now(),
         prefix: prefix,
@@ -353,10 +357,14 @@ function addKnowledgeFaq() {
         repeatKeyword: false
     });
     
+    // Simpan ke localStorage
     try {
         localStorage.setItem('ilham_knowledgeFaq', JSON.stringify(window.knowledgeFaq));
-    } catch(e) {}
+    } catch(e) {
+        console.error("Gagal simpan ke localStorage:", e);
+    }
     
+    // Sinkronisasi ke Cloud Firebase (jika aktif)
     window.isManualUpdating = true;
     if (typeof saveToCloud === 'function') {
         saveToCloud().then(() => {
@@ -364,39 +372,59 @@ function addKnowledgeFaq() {
         });
     }
     
-    // Reset input form
-    document.getElementById('new-faq-prefix').value = '';
-    document.getElementById('new-faq-keyword').value = '';
-    document.getElementById('new-faq-suffix').value = '';
+    // Reset input form tambah FAQ dengan aman
+    if(document.getElementById('new-faq-prefix')) document.getElementById('new-faq-prefix').value = '';
+    if(document.getElementById('new-faq-keyword')) document.getElementById('new-faq-keyword').value = '';
+    if(document.getElementById('new-faq-suffix')) document.getElementById('new-faq-suffix').value = '';
     
+    // REFRESH TAMPILAN ADMIN SECARA INSTAN
+    if (typeof renderKnowledgeFaqAdmin === 'function') {
+        renderKnowledgeFaqAdmin();
+    }
     if (typeof renderAdminPanel === 'function') {
         renderAdminPanel();
     }
+    
     alert("Ingatan AI baru berhasil disimpan permanen! 🚀");
 }
 
-// Fungsi Hapus Ingatan AI
-function deleteKnowledgeFaq(fIdx) {
-    if (confirm("Yakin ingin menghapus ingatan AI ini?")) {
-        if (!window.knowledgeFaq) return;
-        
-        window.knowledgeFaq.splice(fIdx, 1);
-        
-        try {
-            localStorage.setItem('ilham_knowledgeFaq', JSON.stringify(window.knowledgeFaq));
-        } catch(e) {}
-        
-        window.isManualUpdating = true;
-        if (typeof saveToCloud === 'function') {
-            saveToCloud().then(() => {
-                setTimeout(() => { window.isManualUpdating = false; }, 1000);
-            });
-        }
-        
-        if (typeof renderAdminPanel === 'function') {
-            renderAdminPanel();
-        }
+// ==========================================
+// PERBAIKAN: FUNGSI PROMOTE LOG KE FAQ
+// ==========================================
+function promoteLogToFaq(queryText, lIdx) {
+    if (!window.knowledgeFaq) window.knowledgeFaq = [];
+    
+    window.knowledgeFaq.push({
+        id: "kb-" + Date.now(),
+        prefix: "Baik, mengenai",
+        keyword: cleanTrailingComma(queryText),
+        suffix: `Informasi terkait "${queryText}" akan segera kami layani dengan maksimal di workshop ILHAM SPUNBOND`,
+        repeatKeyword: true
+    });
+
+    // Simpan perubahan ke storage & cloud
+    try {
+        localStorage.setItem('ilham_knowledgeFaq', JSON.stringify(window.knowledgeFaq));
+    } catch(e) {}
+
+    window.isManualUpdating = true;
+    if (typeof saveToCloud === 'function') {
+        saveToCloud().then(() => {
+            setTimeout(() => { window.isManualUpdating = false; }, 1000);
+        });
     }
+
+    deleteSingleUnansweredLog(lIdx);
+
+    // Refresh tampilan admin seketika
+    if (typeof renderKnowledgeFaqAdmin === 'function') {
+        renderKnowledgeFaqAdmin();
+    }
+    if (typeof renderAdminPanel === 'function') {
+        renderAdminPanel();
+    }
+
+    alert(`Pertanyaan "${queryText}" berhasil dipromosikan menjadi Ingatan AI permanen! ✨`);
 }
 
 function promoteLogToFaq(queryText, lIdx) {
