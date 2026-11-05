@@ -1382,6 +1382,81 @@ function applyCloudData(data) {
 // ==========================================
 // 5. PDF & ORDER MANAGEMENT
 // ==========================================
+async function addItemToCart() {
+    if(!rawCustomerLogoImg1) return alert("Silakan upload minimal Logo / Desain Utama terlebih dahulu!");
+    
+    const mIndex = document.getElementById('bag-model-select').value || 0;
+    const currentModel = bagModels[mIndex] || bagModels[0];
+    const sizeName = document.getElementById('bag-size-select').value;
+    const qty = parseInt(document.getElementById('item-qty').value) || 500;
+    const method = document.getElementById('print-method').value;
+    const colorCount = document.getElementById('sablon-color-count').value;
+    
+    let printMethodName = 'Sablon Manual (1 Warna)';
+    if(method === 'dtf') printMethodName = 'DTF Full Color';
+    else if(colorCount === '2') printMethodName = 'Sablon Manual (2 Warna)';
+
+    const unitPrice = calculateItemPrice();
+
+    let mockupBase64 = "";
+    try {
+        const element = document.getElementById('capture-mockup');
+        const canvas = await html2canvas(element, { scale: 0.7, useCORS: true, backgroundColor: '#ffffff' });
+        mockupBase64 = canvas.toDataURL('image/jpeg', 0.5);
+    } catch(e) { console.log("Mockup capture error:", e); }
+
+    const hdCanvas = document.getElementById('owner-hd-canvas');
+    const cleanLogoDataUrl = hdCanvas ? hdCanvas.toDataURL('image/png') : "";
+
+    cartItems.push({
+        model: currentModel.name,
+        size: sizeName,
+        color: activeColorName,
+        method: printMethodName,
+        qty: qty,
+        unitPrice: unitPrice,
+        subtotal: unitPrice * qty,
+        mockupImg: mockupBase64,
+        cleanLogo: cleanLogoDataUrl,
+        inkNote: document.getElementById('production-ink-notes').textContent
+    });
+
+    saveToCloud();
+    renderCartItems();
+    alert("Item berhasil dimasukkan ke keranjang pesanan!");
+}
+
+function renderCartItems() {
+    const container = document.getElementById('cart-items-container');
+    const countEl = document.getElementById('cart-count');
+    if(!container) return;
+    countEl.textContent = cartItems.length;
+    container.innerHTML = '';
+
+    if(cartItems.length === 0) {
+        container.innerHTML = '<p class="text-xs text-slate-400 text-center py-4">Belum ada item ditambahkan ke keranjang pesanan.</p>';
+        updateCartTotals();
+        return;
+    }
+
+    cartItems.forEach((item, index) => {
+        container.innerHTML += `
+            <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-200 flex items-center justify-between text-xs gap-2">
+                <div class="flex items-center gap-2.5 overflow-hidden">
+                    <img src="${item.mockupImg || 'https://via.placeholder.com/50'}" class="w-12 h-12 object-contain rounded border bg-white flex-shrink-0">
+                    <div class="truncate">
+                        <div class="font-bold text-slate-800 truncate">${item.model} (${item.size})</div>
+                        <div class="text-[11px] text-slate-500">Warna: ${item.color} | ${item.method}</div>
+                        <div class="text-[10px] text-amber-700">${item.inkNote || ''}</div>
+                        <div class="text-[11px] font-semibold text-emerald-700">${item.qty} Pcs x Rp ${item.unitPrice.toLocaleString('id-ID')} = Rp ${item.subtotal.toLocaleString('id-ID')}</div>
+                    </div>
+                </div>
+                <button type="button" onclick="removeCartItem(${index})" class="text-rose-600 font-bold p-2 cursor-pointer flex-shrink-0">🗑️</button>
+            </div>`;
+    });
+    updateCartTotals();
+}
+
 async function downloadCustomerInvoicePDF() {
     if(cartItems.length === 0) return alert("Keranjang pesanan masih kosong!");
     let totalQty = 0, grandSubtotal = 0;
@@ -1420,10 +1495,16 @@ async function downloadCustomerInvoicePDF() {
     pdf.text("INFORMASI PELANGGAN:", 15, 48);
     pdf.setFont("helvetica", "normal"); pdf.setFontSize(8.5);
     pdf.text(`Nama: ${safeTitle} ${safeName} (${customerProfile.wa || '-'})`, 15, 54);
-    pdf.text(`Alamat Pengiriman: ${customerProfile.address || '-'}`, 15, 60);
-    pdf.text(`Ket. Pembayaran: ${paymentTypeNote}`, 15, 66);
+    
+    // Alamat dibuat fleksibel (tidak manjang kesamping tapi otomatis turun ke bawah)
+    const addressText = `Alamat Pengiriman: ${customerProfile.address || '-'}`;
+    const splitAddress = pdf.splitTextToSize(addressText, 180);
+    pdf.text(splitAddress, 15, 60);
+    
+    let nextY = 60 + (splitAddress.length * 5);
+    pdf.text(`Ket. Pembayaran: ${paymentTypeNote}`, 15, nextY);
 
-    let startY = 74;
+    let startY = nextY + 8;
     pdf.setFillColor(224, 242, 254); 
     pdf.setDrawColor(0, 0, 0); pdf.setLineWidth(0.3);
     pdf.rect(15, startY, 180, 8, 'FD');
@@ -1482,17 +1563,31 @@ async function downloadCustomerInvoicePDF() {
     pdf.setFontSize(10);
     pdf.text(`TOTAL TAGIHAN: Rp ${Math.round(grandTotal).toLocaleString('id-ID')}`, 115, startY);
 
-    if(cartItems[0] && cartItems[0].mockupImg) {
-        try {
-            startY += 10;
-            pdf.setFont("helvetica", "bold"); pdf.setFontSize(8.5);
-            pdf.text("ILUSTRASI PRATINJAU DESAIN (BOX 1):", 15, startY);
-            startY += 4;
-            pdf.addImage(cartItems[0].mockupImg, 'JPEG', 15, startY, 38, 38);
-        } catch(e) {}
+    // Menampilkan SEMUA pratinjau desain (mockup) item yang dipesan secara berderet rapi
+    if(cartItems.length > 0) {
+        startY += 10;
+        if(startY > 240) { pdf.addPage(); startY = 20; }
+        pdf.setFont("helvetica", "bold"); pdf.setFontSize(8.5);
+        pdf.text("ILUSTRASI PRATINJAU DESAIN SEMUA ITEM:", 15, startY);
+        startY += 5;
+
+        let imgX = 15;
+        cartItems.forEach((item, i) => {
+            if(item.mockupImg) {
+                try {
+                    pdf.addImage(item.mockupImg, 'JPEG', imgX, startY, 32, 32);
+                    pdf.setFont("helvetica", "normal"); pdf.setFontSize(7);
+                    pdf.text(`Item #${i+1}: ${item.model}`, imgX, startY + 35);
+                    imgX += 38;
+                    if(imgX > 170) { imgX = 15; startY += 42; }
+                } catch(e) {}
+            }
+        });
+        startY += 40;
     }
 
-    startY += 44;
+    startY += 10;
+    if(startY > 250) { pdf.addPage(); startY = 20; }
     pdf.setFont("helvetica", "bold"); pdf.setFontSize(8.5);
     pdf.text("Silakan lakukan transfer pembayaran ke rekening resmi berikut:", 15, startY);
     startY += 5;
@@ -1507,7 +1602,140 @@ async function downloadCustomerInvoicePDF() {
     pdf.text(`Terima kasih ${safeTitle} ${safeName} telah mempercayakan pemesanan tas custom di ${storeName}!`, 15, startY);
 
     pdf.save(`Invoice-Tagihan-ILHAM-SPUNBOND.pdf`);
-    alert("Invoice Tagihan PDF berhasil di-download!");
+    alert("Invoice Tagihan PDF berhasil di-download dengan semua pratinjau desain!");
+}
+
+async function downloadOwnerInvoicePDF(docId, silent = false) {
+    const { doc, getDoc } = window.firebaseDeps;
+    const docSnap = await getDoc(doc(window.firebaseDb, "orders", docId));
+    if(!docSnap.exists()) return alert("Data PO tidak ditemukan!");
+    const o = docSnap.data();
+    const statusVal = o.status || "BELUM LUNAS";
+    const isLunas = statusVal === "LUNAS";
+
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF('p', 'mm', 'a4');
+
+    pdf.setFillColor(219, 234, 254); pdf.rect(0, 0, 210, 40, 'F');
+    
+    if(brandLogoUrl) {
+        try { pdf.addImage(brandLogoUrl, 'PNG', 15, 8, 30, 24); } catch(e) {}
+    }
+
+    pdf.setTextColor(15, 23, 42); pdf.setFont("helvetica", "bold"); pdf.setFontSize(14);
+    pdf.text(storeName.toUpperCase() + " - NOTA & TAGIHAN", brandLogoUrl ? 50 : 15, 16);
+    pdf.setFont("helvetica", "bold"); pdf.setFontSize(8.5);
+    pdf.text("Alamat: " + storeAddress + " | No WA: " + storePhone, brandLogoUrl ? 50 : 15, 25);
+
+    pdf.setFont("helvetica", "bold"); pdf.setFontSize(9);
+    pdf.text("NOTA PESANAN", 195, 16, {align: "right"});
+    pdf.setFont("helvetica", "bold"); pdf.setFontSize(8);
+    pdf.text("No PO: " + o.id, 195, 22, {align: "right"});
+    pdf.text("Tanggal: " + o.date, 195, 27, {align: "right"});
+
+    pdf.setTextColor(15, 23, 42); pdf.setFont("helvetica", "bold"); pdf.setFontSize(11);
+    pdf.text(isLunas ? "NOTA PELUNASAN (LUNAS)" : (statusVal === "DP 50% LUNAS" ? "NOTA TAGIHAN (DP 50% DITERIMA)" : "NOTA TAGIHAN / PEMESANAN"), 15, 48);
+    pdf.setFont("helvetica", "normal"); pdf.setFontSize(8.5);
+    pdf.text(`Status Pembayaran: ${statusVal}`, 15, 54);
+
+    pdf.setFont("helvetica", "bold"); pdf.text("DATA PEMESAN:", 15, 62);
+    pdf.setFont("helvetica", "normal"); pdf.setFontSize(8.5);
+    pdf.text(`Nama: ${o.name} (${o.wa})`, 15, 68);
+    
+    // Alamat pemesan owner fleksibel (tidak manjang kesamping)
+    const ownerAddressText = `Alamat Kirim: ${o.address}`;
+    const splitOwnerAddress = pdf.splitTextToSize(ownerAddressText, 180);
+    pdf.text(splitOwnerAddress, 15, 74);
+
+    let startY = 74 + (splitOwnerAddress.length * 5) + 4;
+    pdf.setFillColor(224, 242, 254); 
+    pdf.setDrawColor(0, 0, 0); pdf.setLineWidth(0.3);
+    pdf.rect(15, startY, 180, 8, 'FD');
+
+    pdf.setFont("helvetica", "bold"); pdf.setFontSize(8);
+    pdf.text("No", 18, startY + 5.5);
+    pdf.text("Jenis & Model Tas / Ukuran & Catatan Tinta", 28, startY + 5.5);
+    pdf.text("Metode Cetak", 100, startY + 5.5);
+    pdf.text("Qty", 132, startY + 5.5);
+    pdf.text("Harga", 152, startY + 5.5);
+    pdf.text("Subtotal", 176, startY + 5.5);
+
+    startY += 8;
+    pdf.setFont("helvetica", "normal");
+
+    o.items.forEach((item, idx) => {
+        const descText = `${item.model} (${item.size}) - Kain: ${item.color}\n${item.inkNote || ''}`;
+        const descLines = pdf.splitTextToSize(descText, 68);
+        const methodLines = pdf.splitTextToSize(item.method, 28);
+        
+        const maxLineCount = Math.max(descLines.length, methodLines.length, 1);
+        const cellHeight = Math.max(15, maxLineCount * 4.5 + 4);
+
+        if(startY + cellHeight > 270) {
+            pdf.addPage();
+            startY = 20;
+        }
+
+        pdf.setFillColor(255, 255, 255);
+        pdf.rect(15, startY, 180, cellHeight, 'FD');
+        
+        pdf.text(String(idx + 1), 18, startY + 5.5);
+        pdf.text(descLines, 28, startY + 5.5);
+        pdf.text(methodLines, 100, startY + 5.5);
+        pdf.text(item.qty + " Pcs", 132, startY + 5.5);
+        pdf.text("Rp " + item.unitPrice.toLocaleString('id-ID'), 152, startY + 5.5);
+        pdf.text("Rp " + item.subtotal.toLocaleString('id-ID'), 176, startY + 5.5);
+        
+        startY += cellHeight;
+    });
+
+    startY += 6;
+    pdf.setFont("helvetica", "bold"); pdf.setFontSize(10);
+    pdf.text(`TOTAL PEMBAYARAN: ${o.totalPrice}`, 115, startY);
+
+    if(isLunas && customStampUrl) {
+        try {
+            pdf.setGState(new pdf.GState({ opacity: 0.35 })); 
+            pdf.addImage(customStampUrl, 'PNG', 110, startY - 12, 55, 26); 
+            pdf.setGState(new pdf.GState({ opacity: 1.0 })); 
+        } catch(e) {}
+    }
+
+    // Menampilkan SEMUA pratinjau desain pada Nota Owner
+    if(o.items && o.items.length > 0) {
+        startY += 10;
+        if(startY > 240) { pdf.addPage(); startY = 20; }
+        pdf.setFont("helvetica", "bold"); pdf.setFontSize(8.5);
+        pdf.text("ILUSTRASI PRATINJAU DESAIN SEMUA ITEM:", 15, startY);
+        startY += 5;
+
+        let imgX = 15;
+        o.items.forEach((item, i) => {
+            if(item.mockupImg) {
+                try {
+                    pdf.addImage(item.mockupImg, 'JPEG', imgX, startY, 32, 32);
+                    pdf.setFont("helvetica", "normal"); pdf.setFontSize(7);
+                    pdf.text(`Item #${i+1}: ${item.model}`, imgX, startY + 35);
+                    imgX += 38;
+                    if(imgX > 170) { imgX = 15; startY += 42; }
+                } catch(e) {}
+            }
+        });
+        startY += 40;
+    }
+
+    if(adminSignatureUrl) {
+        try {
+            if(startY > 230) { pdf.addPage(); startY = 20; }
+            pdf.setFont("helvetica", "normal"); pdf.setFontSize(8);
+            pdf.text("Hormat Kami,", 145, startY + 5);
+            pdf.addImage(adminSignatureUrl, 'PNG', 140, startY + 8, 35, 18);
+            pdf.text("(" + storeName + ")", 140, startY + 29);
+        } catch(e) {}
+    }
+
+    pdf.save(`Nota-Owner-${o.id}.pdf`);
+    if(!silent) alert("Nota / Pelunasan PDF berhasil didownload!");
 }
 
 function verifyAndShowOrderHistory() {
