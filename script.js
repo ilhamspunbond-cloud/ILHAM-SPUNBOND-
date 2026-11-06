@@ -35,9 +35,7 @@ console.log("✅ Firebase terhubung ke project ilham-spunbond!");
 let selectedInkColor1 = { name: "Hitam Pekat", hex: "#0f172a" };
 let selectedInkColor2 = { name: "Merah Menyala", hex: "#dc2626" };
 
-
-const 
-cleanDefaultBagSvg = "data:application/octet-stream;base64,PHN2Zz48L3N2Zz4=";
+const cleanDefaultBagSvg = "data:application/octet-stream;base64,PHN2Zz48L3N2Zz4=";
 
 const defaultBagModels = [
     { 
@@ -159,6 +157,7 @@ try {
 } catch(e) {
     console.error("Local storage error:", e);
 }
+
 window.onload = function() {
     updateDynamicManifest();
     renderAdminPanel();
@@ -166,7 +165,6 @@ window.onload = function() {
     checkCustomerOnboarding();
     updateLivePricePreview();
     
-    // Beri jeda sepersekian detik agar DOM HTML benar-benar siap
     setTimeout(() => {
         if (typeof renderCustomerInkChoices === 'function') {
             renderCustomerInkChoices();
@@ -181,6 +179,7 @@ window.onload = function() {
 
     if(window.initCloudSync) { window.initCloudSync(); }
 };
+
 function updateDynamicManifest() {
     const manifestLink = document.getElementById('dynamic-manifest');
     if(!manifestLink) return;
@@ -316,7 +315,7 @@ function toggleLockPosition() {
 
 
 // ==========================================
-// 3. ADMIN PANEL & RENDERING TERPADU (CROSS-PLATFORM & FULL EDIT)
+// 3. ADMIN PANEL & RENDERING TERPADU
 // ==========================================
 function renderAdminPanel() {
     const modelAdminContainer = document.getElementById('model-admin-container');
@@ -416,7 +415,6 @@ function renderAdminPanel() {
     if(faqAdminContainer && typeof knowledgeFaq !== 'undefined') {
         faqAdminContainer.innerHTML = '';
         knowledgeFaq.forEach((faq, fIdx) => {
-            const isRepeat = faq.repeatKeyword !== false;
             faqAdminContainer.innerHTML += `
                 <div class="bg-slate-900 p-3 rounded-xl border border-slate-700 text-xs space-y-2">
                     <div class="flex justify-between items-center">
@@ -501,8 +499,7 @@ function renderAdminPanel() {
         sigPreview.innerHTML = adminSignatureUrl ? `<div class="flex items-center justify-center gap-2 bg-slate-900 p-2 rounded-xl border border-slate-700"><img src="${adminSignatureUrl}" class="h-10 object-contain"><span class="text-[10px] text-emerald-400 font-semibold">✅ Tanda Tangan Owner Aktif</span><button type="button" onclick="removeAdminSignature()" class="text-xs text-rose-400 font-semibold underline cursor-pointer">Hapus</button></div>` : `<span class="text-[10px] text-slate-400 italic">Belum ada tanda tangan owner diupload.</span>`;
     }
 
- const inkContainer = document.getElementById('ink-list-container');
-    
+    const inkContainer = document.getElementById('ink-list-container');
     if(inkContainer) {
         inkContainer.innerHTML = '';
         inkColors.forEach((ink, idx) => {
@@ -519,7 +516,6 @@ function renderAdminPanel() {
         });
     }
 
-   // Panggil fungsi untuk merender tombol pilihan kaleng tinta di layar customer
     if (typeof renderCustomerInkChoices === 'function') {
         renderCustomerInkChoices();
     }
@@ -926,7 +922,6 @@ function updateProcessedLogos() {
     const colorCount = document.getElementById('sablon-color-count').value;
     const isTwoColors = (method === 'manual' && colorCount === '2');
 
-  // Mengambil data hex dan nama tinta dari pilihan tombol kaleng tinta customer
     const inkHex1 = selectedInkColor1.hex || '#0f172a';
     const inkHex2 = selectedInkColor2.hex || '#dc2626';
 
@@ -1219,8 +1214,9 @@ function renderCartItems() {
 function removeCartItem(index) { cartItems.splice(index, 1); saveToCloud(); renderCartItems(); }
 function clearCart() { if(confirm("Kosongkan keranjang pesanan?")) { cartItems = []; saveToCloud(); renderCartItems(); } }
 
+
 // ==========================================
-// 4. HITUNG TOTAL & RAJAONGKIR (BERAT & VOLUME OTOMATIS)
+// 4. HITUNG TOTAL & RAJAONGKIR
 // ==========================================
 function updateCartTotals() {
     let totalQty = 0, grandSubtotal = 0;
@@ -1270,7 +1266,6 @@ async function checkShippingCost() {
     const destinationSelect = document.getElementById('shipping-city-destination');
     let destinationCityId = destinationSelect ? destinationSelect.value : '';
 
-    // Jika belum dipilih dari dropdown, coba tarik otomatis dari profil customer yang tersimpan
     if (!destinationCityId) {
         try {
             const savedProfile = JSON.parse(localStorage.getItem('ilham_customerProfile') || '{}');
@@ -1290,13 +1285,11 @@ async function checkShippingCost() {
 
     if (typeof cartItems !== 'undefined' && cartItems.length > 0) {
         cartItems.forEach(item => {
-            // Ambil data ukuran dari item keranjang atau default aman
-            let itemWeight = item.weight || 35; // gram per pcs
-            let itemLength = item.length || 20; // cm
-            let itemWidth = item.width || 30;   // cm
-            let itemHeight = item.height || 1;  // cm
+            let itemWeight = item.weight || 35;
+            let itemLength = item.length || 20;
+            let itemWidth = item.width || 30;
+            let itemHeight = item.height || 1;
 
-            // Jika variabel global bagModels tersedia, cocokan ukurannya secara akurat
             if (typeof bagModels !== 'undefined' && bagModels.length > 0) {
                 const currentModel = bagModels.find(m => m.name === item.model) || bagModels[0];
                 const foundSize = currentModel?.sizes?.find(s => s.name === item.size);
@@ -1311,21 +1304,17 @@ async function checkShippingCost() {
             const w = Number(itemWeight) * Number(item.qty);
             totalWeight += w;
 
-            // Rumus perhitungan berat volume standar kurir (P x L x T / 6000) * 1000 gram
             const volWeight = Math.round((Number(itemLength) * Number(itemWidth) * Number(itemHeight) / 6000) * 1000) * Number(item.qty);
             totalVolumeWeight += volWeight;
         });
     }
 
-    // Ambil nilai terbesar antara berat timbangan asli dan berat volume, minimal 1000 gram (1 Kg)
     const finalWeight = Math.max(totalWeight, totalVolumeWeight, 1000);
-
     const shippingResultContainer = document.getElementById('shipping-cost-results');
     if (shippingResultContainer) {
         shippingResultContainer.innerHTML = `<div class="p-2.5 bg-slate-800 rounded-lg text-xs text-amber-300 italic">⏳ Menghitung tarif ongkir resmi (Total Berat: ${finalWeight} gram)...</div>`;
     }
 
-    // Daftar kurir yang didukung API starter (dipecah/dipilih aman untuk menghindari bad request)
     const couriers = ["jne", "sicepat", "jnt"];
     let allValidCosts = [];
 
@@ -1338,7 +1327,7 @@ async function checkShippingCost() {
                     'key': 'hoNQDKZPebfe35ddf393f5dbZu7xVaWZ'
                 },
                 body: JSON.stringify({
-                    origin: "153", // ID Kota Asal Pengirim (Admin / Tangerang)
+                    origin: "153",
                     destination: destinationCityId,
                     weight: finalWeight,
                     courier: courierCode
@@ -1392,18 +1381,11 @@ async function checkShippingCost() {
     }
 }
 
-// Fungsi pendukung untuk memilih ongkir
 function selectShippingCost(courierName, costValue) {
     window.selectedCourierName = courierName;
     window.selectedShippingCost = costValue;
     updateCartTotals();
     alert(`Kurir ${courierName} berhasil dipilih (Rp ${costValue.toLocaleString('id-ID')})! ✨`);
-}
-function selectShippingCost(courierName, cost) {
-    window.selectedShippingCost = cost;
-    window.selectedCourierName = courierName;
-    alert(`Kurir terpilih: ${courierName} dengan biaya Rp ${cost.toLocaleString('id-ID')}`);
-    updateCartTotals();
 }
 
 function toggleAdminPanel() { 
@@ -1538,7 +1520,7 @@ function applyCloudData(data) {
 
 
 // ==========================================
-// 6. PDF & ORDER MANAGEMENT (CLEAN NAMES)
+// 6. PDF & ORDER MANAGEMENT
 // ==========================================
 async function downloadCustomerInvoicePDF() {
     if(cartItems.length === 0) return alert("Keranjang pesanan masih kosong!");
@@ -1559,7 +1541,6 @@ async function downloadCustomerInvoicePDF() {
         try { pdf.addImage(brandLogoUrl, 'PNG', 15, 8, 30, 24); } catch(e) {}
     }
 
-    // Nama pemesan bersih tanpa sapaan abang/kakak/bosku untuk invoice
     let rawCustName = (customerProfile.name && customerProfile.name !== "undefined") ? customerProfile.name : "Rojak";
     let cleanCustName = rawCustName.replace(/^(Bosku|Kakak|Aa|Abang|Mbak|Bapak|Ibu|Tante|Bibi|Maman)\s*/i, "").trim();
     if(!cleanCustName) cleanCustName = rawCustName;
@@ -2072,7 +2053,6 @@ function renderCustomerInkChoices() {
     
     if (!container1 && !container2) return;
 
-    // Render pilihan kaleng tinta untuk Desain Sablon 1
     if (container1) {
         container1.innerHTML = '';
         inkColors.forEach((ink) => {
@@ -2093,7 +2073,6 @@ function renderCustomerInkChoices() {
         });
     }
 
-    // Render pilihan kaleng tinta untuk Desain Sablon 2 (Jika mode 2 warna aktif)
     if (container2) {
         container2.innerHTML = '';
         inkColors.forEach((ink) => {
