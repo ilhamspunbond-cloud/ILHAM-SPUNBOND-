@@ -2027,3 +2027,56 @@ async function saveOrderAndSendWhatsApp() {
         window.open(`https://wa.me/${ownerWaNumber}?text=${encodeURIComponent(waMessage)}`);
     } catch(e) { alert("Gagal menyimpan pesanan ke cloud."); }
 }
+
+
+// ==========================================
+// RENDER PILIHAN KALENG TINTA SABLON (CUSTOMER)
+// ==========================================
+function renderCustomerInkChoices() {
+    const container1 = document.getElementById('ink-color-buttons-1');
+    const container2 = document.getElementById('ink-color-buttons-2');
+    
+    if (!container1 && !container2) return;
+
+    // Render pilihan kaleng tinta untuk Desain Sablon 1
+    if (container1) {
+        container1.innerHTML = '';
+        inkColors.forEach((ink) => {
+            const isSelected = selectedInkColor1.name === ink.name;
+            const btn = document.createElement('button');
+            btn.type = "button";
+            btn.className = `px-3 py-2 rounded-xl text-xs font-semibold shadow transition border flex items-center gap-2 cursor-pointer active:scale-95 ${isSelected ? 'border-emerald-600 bg-emerald-50 text-emerald-900 ring-2 ring-emerald-500' : 'border-slate-300 bg-white text-slate-700 hover:bg-slate-50'}`;
+            btn.innerHTML = `
+                <div class="w-4 h-5 rounded shadow-sm border border-slate-400" style="background:${ink.hex};"></div>
+                <span>${ink.name}</span>
+            `;
+            btn.onclick = () => {
+                selectedInkColor1 = ink;
+                renderCustomerInkChoices();
+                updateProcessedLogos();
+            };
+            container1.appendChild(btn);
+        });
+    }
+
+    // Render pilihan kaleng tinta untuk Desain Sablon 2 (Jika mode 2 warna aktif)
+    if (container2) {
+        container2.innerHTML = '';
+        inkColors.forEach((ink) => {
+            const isSelected = selectedInkColor2.name === ink.name;
+            const btn = document.createElement('button');
+            btn.type = "button";
+            btn.className = `px-3 py-2 rounded-xl text-xs font-semibold shadow transition border flex items-center gap-2 cursor-pointer active:scale-95 ${isSelected ? 'border-emerald-600 bg-emerald-50 text-emerald-900 ring-2 ring-emerald-500' : 'border-slate-300 bg-white text-slate-700 hover:bg-slate-50'}`;
+            btn.innerHTML = `
+                <div class="w-4 h-5 rounded shadow-sm border border-slate-400" style="background:${ink.hex};"></div>
+                <span>${ink.name}</span>
+            `;
+            btn.onclick = () => {
+                selectedInkColor2 = ink;
+                renderCustomerInkChoices();
+                updateProcessedLogos();
+            };
+            container2.appendChild(btn);
+        });
+    }
+}
