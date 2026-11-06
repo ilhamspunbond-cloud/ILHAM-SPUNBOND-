@@ -1,6 +1,6 @@
 /**
  * =========================================================================
- * ILHAM SPUNBOND - AI KNOWLEDGE & VOICE ENGINE v4.1
+ * ILHAM SPUNBOND - AI KNOWLEDGE & VOICE ENGINE v4.1 (FIXED)
  * Mengelola kecerdasan AI, Knowledge Base, Web Speech API, dan sinkronisasi
  * =========================================================================
  */
@@ -347,7 +347,6 @@ function addKnowledgeFaq() {
     
     if (!window.knowledgeFaq) window.knowledgeFaq = [];
     
-    // Tambah data baru ke memori global
     window.knowledgeFaq.push({
         id: "kb-" + Date.now(),
         prefix: prefix,
@@ -356,14 +355,12 @@ function addKnowledgeFaq() {
         repeatKeyword: false
     });
     
-    // Simpan ke localStorage
     try {
         localStorage.setItem('ilham_knowledgeFaq', JSON.stringify(window.knowledgeFaq));
     } catch(e) {
         console.error("Gagal simpan ke localStorage:", e);
     }
     
-    // Sinkronisasi Real-Time ke Cloud Firebase agar semua HP customer ikut terupdate
     window.isManualUpdating = true;
     if (typeof saveToCloud === 'function') {
         saveToCloud().then(() => {
@@ -371,12 +368,10 @@ function addKnowledgeFaq() {
         });
     }
     
-    // Reset input form tambah FAQ
     if(document.getElementById('new-faq-prefix')) document.getElementById('new-faq-prefix').value = '';
     if(document.getElementById('new-faq-keyword')) document.getElementById('new-faq-keyword').value = '';
     if(document.getElementById('new-faq-suffix')) document.getElementById('new-faq-suffix').value = '';
     
-    // Refresh tampilan admin
     if (typeof renderKnowledgeFaqAdmin === 'function') {
         renderKnowledgeFaqAdmin();
     }
@@ -385,6 +380,21 @@ function addKnowledgeFaq() {
     }
     
     alert("Ingatan AI baru berhasil disimpan dan disinkronkan ke semua perangkat secara real-time! 🚀");
+}
+
+// ==========================================
+// FUNGSI HAPUS SATU LOG PERTANYAAN TERTINGGAL
+// ==========================================
+function deleteSingleUnansweredLog(lIdx) {
+    if (window.unansweredLogs && window.unansweredLogs.length > lIdx) {
+        window.unansweredLogs.splice(lIdx, 1);
+        try {
+            localStorage.setItem('ilham_unansweredLogs', JSON.stringify(window.unansweredLogs));
+        } catch(e) {}
+        if (typeof renderAdminPanel === 'function') {
+            renderAdminPanel();
+        }
+    }
 }
 
 // ==========================================
@@ -401,12 +411,10 @@ function promoteLogToFaq(queryText, lIdx) {
         repeatKeyword: true
     });
 
-    // Simpan perubahan ke local storage
     try {
         localStorage.setItem('ilham_knowledgeFaq', JSON.stringify(window.knowledgeFaq));
     } catch(e) {}
 
-    // Sinkronisasi Real-Time ke Cloud Firebase
     window.isManualUpdating = true;
     if (typeof saveToCloud === 'function') {
         saveToCloud().then(() => {
@@ -416,7 +424,6 @@ function promoteLogToFaq(queryText, lIdx) {
 
     deleteSingleUnansweredLog(lIdx);
 
-    // Refresh tampilan admin
     if (typeof renderKnowledgeFaqAdmin === 'function') {
         renderKnowledgeFaqAdmin();
     }
@@ -425,16 +432,6 @@ function promoteLogToFaq(queryText, lIdx) {
     }
 
     alert(`Pertanyaan "${queryText}" berhasil dipromosikan menjadi Ingatan AI permanen & disinkronkan! ✨`);
-}
-function promoteLogToFaq(queryText, lIdx) {
-    window.knowledgeFaq.push({
-        id: "kb-" + Date.now(),
-        prefix: "Baik, mengenai",
-        keyword: cleanTrailingComma(queryText),
-        suffix: `Informasi terkait "${queryText}" akan segera kami layani dengan maksimal di workshop ILHAM SPUNBOND`,
-        repeatKeyword: true
-    });
-    deleteSingleUnansweredLog(lIdx);
 }
 
 function speakText(text) {
