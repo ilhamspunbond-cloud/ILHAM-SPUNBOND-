@@ -1177,14 +1177,16 @@ function renderCartItems() {
 function removeCartItem(index) { cartItems.splice(index, 1); saveToCloud(); renderCartItems(); }
 function clearCart() { if(confirm("Kosongkan keranjang pesanan?")) { cartItems = []; saveToCloud(); renderCartItems(); } }
 
-
 // ==========================================
 // 4. HITUNG TOTAL & RAJAONGKIR (BERAT & VOLUME OTOMATIS)
 // ==========================================
 function updateCartTotals() {
     let totalQty = 0, grandSubtotal = 0;
     if (typeof cartItems !== 'undefined') {
-        cartItems.forEach(item => { totalQty += item.qty; grandSubtotal += item.subtotal; });
+        cartItems.forEach(item => { 
+            totalQty += Number(item.qty || 0); 
+            grandSubtotal += Number(item.subtotal || 0); 
+        });
     }
     
     let discountVal = totalQty >= 1000 ? grandSubtotal * 0.10 : 0;
@@ -1218,89 +1220,143 @@ function updateCartTotals() {
 
     const displayTotalPrice = document.getElementById('display-total-price');
     if (displayTotalPrice) {
-        displayTotalPrice.textContent = "Rp " + Math.round(grandTotal).toLocaleString('id-ID') + (shippingCost > 0 ? ` (Termasuk Ongkir ${window.selectedCourierName})` : '');
+        displayTotalPrice.textContent = "Rp " + Math.round(grandTotal).toLocaleString('id-ID') + (shippingCost > 0 ? ` (Termasuk Ongkir ${window.selectedCourierName || ''})` : '');
     }
 }
 
 async function checkShippingCost() {
-    const destinationCityId = document.getElementById('shipping-city-destination').value;
-    if(!destinationCityId) return alert("Silakan pilih kota tujuan pengiriman terlebih dahulu, Bosku!");
+    const destinationSelect = document.getElementById('shipping-city-destination');
+    let destinationCityId = destinationSelect ? destinationSelect.value : '';
+
+    // Jika belum dipilih dari dropdown, coba tarik otomatis dari profil customer yang tersimpan
+    if (!destinationCityId) {
+        try {
+            const savedProfile = JSON.parse(localStorage.getItem('ilham_customerProfile') || '{}');
+            if (savedProfile.cityId) {
+                destinationCityId = savedProfile.cityId;
+                if (destinationSelect) destinationSelect.value = destinationCityId;
+            }
+        } catch(e) {}
+    }
+
+    if(!destinationCityId) {
+        return alert("Silakan pilih atau lengkapi kota tujuan pengiriman terlebih dahulu, Bosku!");
+    }
 
     let totalWeight = 0;
     let totalVolumeWeight = 0;
 
-    cartItems.forEach(item => {
-        const mIndex = document.getElementById('bag-model-select').value || 0;
-        const currentModel = bagModels[mIndex] || bagModels[0];
-        const foundSize = currentModel?.sizes?.find(s => s.name === item.size);
-        
-        const w = (foundSize?.weight || 35) * item.qty;
-        totalWeight += w;
+    if (typeof cartItems !== 'undefined' && cartItems.length > 0) {
+        cartItems.forEach(item => {
+            // Ambil data ukuran dari item keranjang atau default aman
+            let itemWeight = item.weight || 35; // gram per pcs
+            let itemLength = item.length || 20; // cm
+            let itemWidth = item.width || 30;   // cm
+            let itemHeight = item.height || 1;  // cm
 
-        const l = foundSize?.length || 20;
-        const wid = foundSize?.width || 30;
-        const h = foundSize?.height || 1;
-        const volWeight = Math.round((l * wid * h / 6000) * 1000) * item.qty;
-        totalVolumeWeight += volWeight;
-    });
+            // Jika variabel global bagModels tersedia, cocokan ukurannya secara akurat
+            if (typeof bagModels !== 'undefined' && bagModels.length > 0) {
+                const currentModel = bagModels.find(m => m.name === item.model) || bagModels[0];
+                const foundSize = currentModel?.sizes?.find(s => s.name === item.size);
+                if (foundSize) {
+                    itemWeight = foundSize.weight || itemWeight;
+                    itemLength = foundSize.length || itemLength;
+                    itemWidth = foundSize.width || itemWidth;
+                    itemHeight = foundSize.height || itemHeight;
+                }
+            }
 
+            const w = Number(itemWeight) * Number(item.qty);
+            totalWeight += w;
+
+            // Rumus perhitungan berat volume standar kurir (P x L x T / 6000) * 1000 gram
+            const volWeight = Math.round((Number(itemLength) * Number(itemWidth) * Number(itemHeight) / 6000) * 1000) * Number(item.qty);
+            totalVolumeWeight += volWeight;
+        });
+    }
+
+    // Ambil nilai terbesar antara berat timbangan asli dan berat volume, minimal 1000 gram (1 Kg)
     const finalWeight = Math.max(totalWeight, totalVolumeWeight, 1000);
 
     const shippingResultContainer = document.getElementById('shipping-cost-results');
     if (shippingResultContainer) {
-        shippingResultContainer.innerHTML = "⏳ Menghitung tarif ongkir resmi dari RajaOngkir...";
+        shippingResultContainer.innerHTML = `<div class="p-2.5 bg-slate-800 rounded-lg text-xs text-amber-300 italic">⏳ Menghitung tarif ongkir resmi (Total Berat: ${finalWeight} gram)...</div>`;
     }
 
-    try {
-        const response = await fetch('https://api.rajaongkir.com/starter/cost', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'key': 'hoNQDKZPebfe35ddf393f5dbZu7xVaWZ'
-            },
-            body: JSON.stringify({
-                origin: "153",
-                destination: destinationCityId,
-                weight: finalWeight,
-                courier: "jne:sicepat:jnt"
-            })
-        });
-        
-        const data = await response.json();
-        const results = data.rajaongkir?.results;
+    // Daftar kurir yang didukung API starter (dipecah/dipilih aman untuk menghindari bad request)
+    const couriers = ["jne", "sicepat", "jnt"];
+    let allValidCosts = [];
 
-        if (results && results.length > 0) {
-            let htmlContent = '<div class="space-y-2 mt-2">';
-            results.forEach(courier => {
-                courier.costs.forEach(costDetail => {
-                    const serviceName = `${courier.name.toUpperCase()} (${costDetail.service})`;
-                    const costAmount = costDetail.cost[0].value;
-                    const etd = costDetail.cost[0].etd ? `${costDetail.cost[0].etd} hari` : '1-3 hari';
-                    
-                    htmlContent += `
-                        <div class="flex justify-between items-center bg-slate-800 p-2.5 rounded-lg text-xs text-white">
-                            <div>
-                                <span class="font-bold text-amber-300">${serviceName}</span>
-                                <div class="text-[10px] text-slate-400">Estimasi: ${etd} | Rp ${costAmount.toLocaleString('id-ID')}</div>
-                            </div>
-                            <button type="button" onclick="selectShippingCost('${serviceName}', ${costAmount})" class="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded-lg text-[10px] font-semibold cursor-pointer">Pilih</button>
-                        </div>
-                    `;
+    try {
+        for (let courierCode of couriers) {
+            const response = await fetch('https://api.rajaongkir.com/starter/cost', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'key': 'hoNQDKZPebfe35ddf393f5dbZu7xVaWZ'
+                },
+                body: JSON.stringify({
+                    origin: "153", // ID Kota Asal Pengirim (Admin / Tangerang)
+                    destination: destinationCityId,
+                    weight: finalWeight,
+                    courier: courierCode
+                })
+            });
+            
+            const data = await response.json();
+            const results = data.rajaongkir?.results;
+
+            if (results && results.length > 0) {
+                results.forEach(courier => {
+                    if (courier.costs && courier.costs.length > 0) {
+                        courier.costs.forEach(costDetail => {
+                            allValidCosts.push({
+                                courierName: courier.name.toUpperCase(),
+                                service: costDetail.service,
+                                description: costDetail.description,
+                                cost: costDetail.cost[0].value,
+                                etd: costDetail.cost[0].etd ? `${costDetail.cost[0].etd} hari` : '1-3 hari'
+                            });
+                        });
+                    }
                 });
+            }
+        }
+
+        if (allValidCosts.length > 0) {
+            let htmlContent = '<div class="space-y-2 mt-2 max-h-48 overflow-y-auto pr-1">';
+            allValidCosts.forEach(item => {
+                const serviceName = `${item.courierName} (${item.service})`;
+                htmlContent += `
+                    <div class="flex justify-between items-center bg-slate-800 p-2.5 rounded-lg text-xs text-white border border-slate-700">
+                        <div>
+                            <span class="font-bold text-amber-300">${serviceName}</span>
+                            <div class="text-[10px] text-slate-400">Estimasi: ${item.etd} | Rp ${item.cost.toLocaleString('id-ID')}</div>
+                        </div>
+                        <button type="button" onclick="selectShippingCost('${serviceName}', ${item.cost})" class="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded-lg text-[10px] font-semibold cursor-pointer shadow">Pilih</button>
+                    </div>
+                `;
             });
             htmlContent += '</div>';
             if (shippingResultContainer) shippingResultContainer.innerHTML = htmlContent;
         } else {
-            if (shippingResultContainer) shippingResultContainer.innerHTML = '<span class="text-rose-400 text-xs">Kurir tidak tersedia untuk rute kota ini.</span>';
+            if (shippingResultContainer) shippingResultContainer.innerHTML = '<span class="text-rose-400 text-xs">Kurir tidak tersedia untuk rute kota tujuan ini.</span>';
         }
     } catch(err) {
         console.error("RajaOngkir Error:", err);
         if (shippingResultContainer) {
-            shippingResultContainer.innerHTML = `<span class="text-rose-400 text-xs">Gagal memuat tarif ongkir. Periksa koneksi internet.</span>`;
+            shippingResultContainer.innerHTML = `<span class="text-rose-400 text-xs">Gagal memuat tarif ongkir. Periksa koneksi internet Anda.</span>`;
         }
     }
 }
 
+// Fungsi pendukung untuk memilih ongkir
+function selectShippingCost(courierName, costValue) {
+    window.selectedCourierName = courierName;
+    window.selectedShippingCost = costValue;
+    updateCartTotals();
+    alert(`Kurir ${courierName} berhasil dipilih (Rp ${costValue.toLocaleString('id-ID')})! ✨`);
+}
 function selectShippingCost(courierName, cost) {
     window.selectedShippingCost = cost;
     window.selectedCourierName = courierName;
