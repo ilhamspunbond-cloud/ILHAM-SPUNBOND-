@@ -287,7 +287,7 @@ function toggleEditFaqCard(fIdx) {
     }
 }
 
-// Simpan Perubahan Editan (Hanya saat Tombol Simpan diklik)
+// Simpan Perubahan Editan (Dengan Pengaman Anti-Stuck Cloud)
 function saveEditedFaq(fIdx) {
     if (!window.knowledgeFaq || !window.knowledgeFaq[fIdx]) return;
 
@@ -313,24 +313,27 @@ function saveEditedFaq(fIdx) {
     try {
         localStorage.setItem('ilham_knowledgeFaq', JSON.stringify(window.knowledgeFaq));
     } catch(e) {
-        alert("Gagal simpan! Periksa karakter tulisan.");
+        alert("Gagal simpan ke penyimpanan lokal!");
         return;
     }
 
-    window.isManualUpdating = true;
-    if (typeof saveToCloud === 'function') {
-        saveToCloud().then(() => {
-            setTimeout(() => { window.isManualUpdating = false; }, 1000);
-        });
+    // Amankan pemanggilan Cloud agar tidak bikin crash kalau fungsi cloud bermasalah
+    try {
+        window.isManualUpdating = true;
+        if (typeof saveToCloud === 'function') {
+            saveToCloud().catch(err => console.log("Info Cloud Sync:", err)).finally(() => {
+                setTimeout(() => { window.isManualUpdating = false; }, 1000);
+            });
+        }
+    } catch (err) {
+        window.isManualUpdating = false;
     }
 
     alert(`✅ Ingatan No. ${fIdx + 1} berhasil disimpan permanen!`);
     renderKnowledgeFaqAdmin();
 }
 
-// ==========================================
-// FUNGSI TAMBAH INGATAN AI BARU
-// ==========================================
+// Tambah Ingatan AI Baru (Dengan Pengaman Anti-Stuck Cloud)
 function addKnowledgeFaq() {
     const rawPrefix = document.getElementById('new-faq-prefix')?.value || "Baik";
     const rawKeyword = document.getElementById('new-faq-keyword')?.value;
@@ -361,45 +364,29 @@ function addKnowledgeFaq() {
         console.error("Gagal simpan ke localStorage:", e);
     }
     
-    window.isManualUpdating = true;
-    if (typeof saveToCloud === 'function') {
-        saveToCloud().then(() => {
-            setTimeout(() => { window.isManualUpdating = false; }, 1000);
-        });
+    // Amankan sinkronisasi Cloud
+    try {
+        window.isManualUpdating = true;
+        if (typeof saveToCloud === 'function') {
+            saveToCloud().catch(err => console.log("Info Cloud Sync:", err)).finally(() => {
+                setTimeout(() => { window.isManualUpdating = false; }, 1000);
+            });
+        }
+    } catch (err) {
+        window.isManualUpdating = false;
     }
     
     if(document.getElementById('new-faq-prefix')) document.getElementById('new-faq-prefix').value = '';
     if(document.getElementById('new-faq-keyword')) document.getElementById('new-faq-keyword').value = '';
     if(document.getElementById('new-faq-suffix')) document.getElementById('new-faq-suffix').value = '';
     
-    if (typeof renderKnowledgeFaqAdmin === 'function') {
-        renderKnowledgeFaqAdmin();
-    }
-    if (typeof renderAdminPanel === 'function') {
-        renderAdminPanel();
-    }
+    if (typeof renderKnowledgeFaqAdmin === 'function') renderKnowledgeFaqAdmin();
+    if (typeof renderAdminPanel === 'function') renderAdminPanel();
     
-    alert("Ingatan AI baru berhasil disimpan dan disinkronkan ke semua perangkat secara real-time! 🚀");
+    alert("Ingatan AI baru berhasil disimpan! 🚀");
 }
 
-// ==========================================
-// FUNGSI HAPUS SATU LOG PERTANYAAN TERTINGGAL
-// ==========================================
-function deleteSingleUnansweredLog(lIdx) {
-    if (window.unansweredLogs && window.unansweredLogs.length > lIdx) {
-        window.unansweredLogs.splice(lIdx, 1);
-        try {
-            localStorage.setItem('ilham_unansweredLogs', JSON.stringify(window.unansweredLogs));
-        } catch(e) {}
-        if (typeof renderAdminPanel === 'function') {
-            renderAdminPanel();
-        }
-    }
-}
-
-// ==========================================
-// FUNGSI PROMOTE LOG KE FAQ (BERSIH & TUNGGAL)
-// ==========================================
+// Promote Log ke FAQ (Dengan Pengaman Anti-Stuck Cloud)
 function promoteLogToFaq(queryText, lIdx) {
     if (!window.knowledgeFaq) window.knowledgeFaq = [];
     
@@ -415,23 +402,23 @@ function promoteLogToFaq(queryText, lIdx) {
         localStorage.setItem('ilham_knowledgeFaq', JSON.stringify(window.knowledgeFaq));
     } catch(e) {}
 
-    window.isManualUpdating = true;
-    if (typeof saveToCloud === 'function') {
-        saveToCloud().then(() => {
-            setTimeout(() => { window.isManualUpdating = false; }, 1000);
-        });
+    try {
+        window.isManualUpdating = true;
+        if (typeof saveToCloud === 'function') {
+            saveToCloud().catch(err => console.log("Info Cloud Sync:", err)).finally(() => {
+                setTimeout(() => { window.isManualUpdating = false; }, 1000);
+            });
+        }
+    } catch (err) {
+        window.isManualUpdating = false;
     }
 
     deleteSingleUnansweredLog(lIdx);
 
-    if (typeof renderKnowledgeFaqAdmin === 'function') {
-        renderKnowledgeFaqAdmin();
-    }
-    if (typeof renderAdminPanel === 'function') {
-        renderAdminPanel();
-    }
+    if (typeof renderKnowledgeFaqAdmin === 'function') renderKnowledgeFaqAdmin();
+    if (typeof renderAdminPanel === 'function') renderAdminPanel();
 
-    alert(`Pertanyaan "${queryText}" berhasil dipromosikan menjadi Ingatan AI permanen & disinkronkan! ✨`);
+    alert(`Pertanyaan "${queryText}" berhasil dipromosikan menjadi Ingatan AI! ✨`);
 }
 
 function speakText(text) {
