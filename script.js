@@ -1,7 +1,12 @@
 // ==========================================
 // 1. DATA DEFAULT GLOBAL & INISIALISASI
 // ==========================================
-const cleanDefaultBagSvg = "data:application/octet-stream;base64,PHN2Zz48L3N2Zz4=";
+let selectedInkColor1 = { name: "Hitam Pekat", hex: "#0f172a" };
+let selectedInkColor2 = { name: "Merah Menyala", hex: "#dc2626" };
+
+
+const 
+cleanDefaultBagSvg = "data:application/octet-stream;base64,PHN2Zz48L3N2Zz4=";
 
 const defaultBagModels = [
     { 
@@ -459,12 +464,10 @@ function renderAdminPanel() {
         sigPreview.innerHTML = adminSignatureUrl ? `<div class="flex items-center justify-center gap-2 bg-slate-900 p-2 rounded-xl border border-slate-700"><img src="${adminSignatureUrl}" class="h-10 object-contain"><span class="text-[10px] text-emerald-400 font-semibold">✅ Tanda Tangan Owner Aktif</span><button type="button" onclick="removeAdminSignature()" class="text-xs text-rose-400 font-semibold underline cursor-pointer">Hapus</button></div>` : `<span class="text-[10px] text-slate-400 italic">Belum ada tanda tangan owner diupload.</span>`;
     }
 
-    const inkContainer = document.getElementById('ink-list-container');
-    const inkSelect1 = document.getElementById('ink-color-select-1');
-    const inkSelect2 = document.getElementById('ink-color-select-2');
+ const inkContainer = document.getElementById('ink-list-container');
     
-    if(inkContainer && inkSelect1 && inkSelect2) {
-        inkContainer.innerHTML = ''; inkSelect1.innerHTML = ''; inkSelect2.innerHTML = '';
+    if(inkContainer) {
+        inkContainer.innerHTML = '';
         inkColors.forEach((ink, idx) => {
             inkContainer.innerHTML += `
                 <div class="flex items-center justify-between bg-slate-800 px-3 py-2 rounded-xl text-xs border border-slate-700">
@@ -476,9 +479,12 @@ function renderAdminPanel() {
                     </div>
                     <button type="button" onclick="deleteInkColor(${idx})" class="text-rose-400 font-bold px-2 py-1 cursor-pointer">Hapus</button>
                 </div>`;
-            inkSelect1.innerHTML += `<option value="${ink.hex}">${ink.name}</option>`;
-            inkSelect2.innerHTML += `<option value="${ink.hex}" ${idx === 1 ? 'selected' : ''}>${ink.name}</option>`;
         });
+    }
+
+   // Panggil fungsi untuk merender tombol pilihan kaleng tinta di layar customer
+    if (typeof renderCustomerInkChoices === 'function') {
+        renderCustomerInkChoices();
     }
 
     const colorContainer = document.getElementById('color-list-container');
