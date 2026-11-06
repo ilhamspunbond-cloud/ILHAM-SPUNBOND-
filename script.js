@@ -1,3 +1,34 @@
+// Import Firebase SDK dari CDN resmi
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getFirestore, doc, setDoc, getDoc, onSnapshot, collection, query, orderBy, getDocs, deleteDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+// Konfigurasi Firebase dari project ilham-spunbond Kakak
+const firebaseConfig = {
+    apiKey: "AIzaSyCb7WE1y5x6mLYYy507Um-2uAPiSsZveYo",
+    authDomain: "ilham-spunbond.firebaseapp.com",
+    projectId: "ilham-spunbond",
+    storageBucket: "ilham-spunbond.firebasestorage.app",
+    messagingSenderId: "796529958955",
+    appId: "1:796529958955:web:45c9d0fafe89d5e2fa4a6e",
+    measurementId: "G-48V3KQGPBN"
+};
+
+// Inisialisasi Firebase & Firestore
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+// Simpan ke window agar bisa diakses global oleh fungsi lain di script.js
+window.firebaseDb = db;
+window.firebaseDeps = {
+    doc, setDoc, getDoc, onSnapshot, collection, query, orderBy, getDocs, deleteDoc
+};
+
+console.log("✅ Firebase terhubung ke project ilham-spunbond!");
+
+
+
+
+
 // ==========================================
 // 1. DATA DEFAULT GLOBAL & INISIALISASI
 // ==========================================
