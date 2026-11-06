@@ -1,7 +1,6 @@
 // Import Firebase SDK dari CDN resmi
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-import { getFirestore, doc, setDoc, getDoc, onSnapshot, collection, query, orderBy, getDocs, deleteDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-
+import { getFirestore, doc, setDoc, getDoc, onSnapshot, collection, query, orderBy, getDocs, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 // Konfigurasi Firebase dari project ilham-spunbond Kakak
 const firebaseConfig = {
     apiKey: "AIzaSyCb7WE1y5x6mLYYy507Um-2uAPiSsZveYo",
