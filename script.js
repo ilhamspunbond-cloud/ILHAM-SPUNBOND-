@@ -8,41 +8,41 @@ const defaultBagModels = [
         name: "Tas Spunbond Oval", 
         image: "https://via.placeholder.com/400x500/ffffff/334155?text=Tas+Oval", 
         sizes: [
-            { name: "20 x 30 cm", price: 1400, note: "Pas untuk brosur, dokumen, souvenir kecil, dan aksesoris ringan." }, 
-            { name: "25 x 35 cm", price: 1550, note: "Ideal untuk dus nasi ukuran sedang atau baju kaos distro." }, 
-            { name: "30 x 40 cm", price: 2300, note: "Cocok untuk tas belanja toko baju, map besar, dan pameran." }
+            { name: "20 x 30 cm", price: 1400, weight: 25, length: 20, width: 30, height: 1, note: "Pas untuk brosur, dokumen, souvenir kecil, dan aksesoris ringan." }, 
+            { name: "25 x 35 cm", price: 1550, weight: 35, length: 25, width: 35, height: 1, note: "Ideal untuk dus nasi ukuran sedang atau baju kaos distro." }, 
+            { name: "30 x 40 cm", price: 2300, weight: 45, length: 30, width: 40, height: 1, note: "Cocok untuk tas belanja toko baju, map besar, dan pameran." }
         ] 
     },
     { 
         name: "Tas HLS (Handle Lipat Samping)", 
         image: "https://via.placeholder.com/400x500/ffffff/334155?text=Tas+HLS", 
         sizes: [
-            { name: "20 x 30 x 8 cm", price: 2000, note: "Sangat pas untuk kemasan box HP, kosmetik, atau souvenir kotak." }, 
-            { name: "25 x 35 x 10 cm", price: 2500, note: "Cocok untuk tas catering box nasi kuah atau tas toko sepatu anak." },
-            { name: "30 x 40 x 10 cm", price: 3000, note: "Ideal untuk tas butik pakaian tebal dan bingkisan sembako." }
+            { name: "20 x 30 x 8 cm", price: 2000, weight: 35, length: 20, width: 30, height: 8, note: "Sangat pas untuk kemasan box HP, kosmetik, atau souvenir kotak." }, 
+            { name: "25 x 35 x 10 cm", price: 2500, weight: 45, length: 25, width: 35, height: 10, note: "Cocok untuk tas catering box nasi kuah atau tas toko sepatu anak." },
+            { name: "30 x 40 x 10 cm", price: 3000, weight: 60, length: 30, width: 40, height: 10, note: "Ideal untuk tas butik pakaian tebal dan bingkisan sembako." }
         ] 
     },
     { 
         name: "Tas HLB Box (Handle Kotak)", 
         image: "https://via.placeholder.com/400x500/ffffff/334155?text=Tas+HLB+Box", 
         sizes: [
-            { name: "25 x 25 x 10 cm", price: 2800, note: "Rekomendasi terbaik untuk dus kue kotak atau box nasi ukuran 20x20 cm." }, 
-            { name: "30 x 30 x 12 cm", price: 3400, note: "Pas untuk kotak catering besar atau kue tart hajatan." }
+            { name: "25 x 25 x 10 cm", price: 2800, weight: 45, length: 25, width: 25, height: 10, note: "Rekomendasi terbaik untuk dus kue kotak atau box nasi ukuran 20x20 cm." }, 
+            { name: "30 x 30 x 12 cm", price: 3400, weight: 65, length: 30, width: 30, height: 12, note: "Pas untuk kotak catering besar atau kue tart hajatan." }
         ] 
     },
     { 
         name: "Tas HLB Kotak", 
         image: "https://via.placeholder.com/400x500/ffffff/334155?text=Tas+HLB+Kotak", 
         sizes: [
-            { name: "20 x 20 x 15 cm", price: 2500, note: "Cocok untuk tas kotak bekal makanan atau wadah hampers kecil." }, 
-            { name: "30 x 20 x 20 cm", price: 3200, note: "Ideal untuk tas kardus besar, galon mini, atau dus tebal." }
+            { name: "20 x 20 x 15 cm", price: 2500, weight: 40, length: 20, width: 20, height: 15, note: "Cocok untuk tas kotak bekal makanan atau wadah hampers kecil." }, 
+            { name: "30 x 20 x 20 cm", price: 3200, weight: 70, length: 30, width: 20, height: 20, note: "Ideal untuk tas kardus besar, galon mini, atau dus tebal." }
         ] 
     },
     { 
         name: "KARTU NAMA CUSTOM", 
         image: "https://via.placeholder.com/400x500/ffffff/334155?text=Kartu+Nama", 
         sizes: [
-            { name: "KARTU NAMA CUSTOM 4BOX", price: 100000, note: "UNTUK MENAMBAH BRANDING USAHAMU." }
+            { name: "KARTU NAMA CUSTOM 4BOX", price: 100000, weight: 200, length: 9, width: 6, height: 5, note: "UNTUK MENAMBAH BRANDING USAHAMU." }
         ] 
     }
 ];
@@ -274,25 +274,25 @@ function toggleLockPosition() {
 
 
 // ==========================================
-// 3. ADMIN PANEL & RENDERING
+// 3. ADMIN PANEL & RENDERING TERPADU (CROSS-PLATFORM & FULL EDIT)
 // ==========================================
 function renderAdminPanel() {
     const modelAdminContainer = document.getElementById('model-admin-container');
+    const modelSelect = document.getElementById('bag-model-select');
     const bankAdminContainer = document.getElementById('bank-admin-container');
     const dtfAdminContainer = document.getElementById('dtf-admin-container');
     const faqAdminContainer = document.getElementById('faq-admin-container');
     const blockedWordsContainer = document.getElementById('blocked-words-container');
     const missingLogContainer = document.getElementById('missing-log-container');
-    const modelSelect = document.getElementById('bag-model-select');
     const bankDisplay = document.getElementById('bank-accounts-display');
     const stampPreview = document.getElementById('stamp-preview-container');
     const sigPreview = document.getElementById('sig-preview-container');
     const brandStatus = document.getElementById('brand-upload-status');
     const dtfSelect = document.getElementById('dtf-size-select');
     
-    if(modelSelect) {
+    if(modelSelect && modelAdminContainer) {
         const prevVal = modelSelect.value || 0;
-        if(modelAdminContainer) modelAdminContainer.innerHTML = '';
+        modelAdminContainer.innerHTML = '';
         modelSelect.innerHTML = '';
 
         bagModels.forEach((item, mIndex) => {
@@ -301,51 +301,72 @@ function renderAdminPanel() {
             opt.textContent = item.name;
             modelSelect.appendChild(opt);
 
-            if(modelAdminContainer) {
-                const card = document.createElement('div');
-                card.className = "bg-slate-900 p-3 rounded-xl border border-slate-700 flex flex-col gap-2 text-xs";
-                let sizeRows = '';
-                if(item.sizes) {
-                    item.sizes.forEach((s, sIndex) => {
-                        sizeRows += `
-                            <div class="bg-slate-800 p-2.5 rounded-lg space-y-1 text-[11px]">
-                                <div class="flex items-center justify-between gap-1">
-                                    <input type="text" id="edit-sname-${mIndex}-${sIndex}" value="${s.name}" oninput="updateSizeDetail(${mIndex}, ${sIndex})" class="w-28 bg-slate-900 border border-slate-700 rounded px-2 py-1 text-white font-bold outline-none" placeholder="Ukuran">
-                                    <input type="number" id="edit-sprice-${mIndex}-${sIndex}" value="${s.price}" oninput="updateSizeDetail(${mIndex}, ${sIndex})" class="w-24 bg-slate-900 border border-slate-700 rounded px-2 py-1 text-emerald-400 font-bold outline-none" placeholder="Harga">
-                                    <button type="button" onclick="deleteSizeFromModel(${mIndex}, ${sIndex})" class="text-rose-400 font-bold px-2 py-0.5 cursor-pointer">Hapus</button>
+            const card = document.createElement('div');
+            card.className = "bg-slate-950 p-3.5 rounded-xl border border-slate-700 flex flex-col gap-2.5 text-xs text-white";
+            
+            let sizeRows = '';
+            if(item.sizes) {
+                item.sizes.forEach((s, sIndex) => {
+                    sizeRows += `
+                        <div class="bg-slate-900 p-3 rounded-lg space-y-2 text-[11px] border border-slate-800">
+                            <div class="flex items-center justify-between gap-2">
+                                <input type="text" id="edit-sname-${mIndex}-${sIndex}" value="${s.name}" oninput="updateSizeDetail(${mIndex}, ${sIndex})" class="flex-1 bg-slate-950 border border-slate-700 rounded px-2.5 py-1 text-white font-bold outline-none" placeholder="Ukuran (Cth: 25 x 35 cm)">
+                                <input type="number" id="edit-sprice-${mIndex}-${sIndex}" value="${s.price}" oninput="updateSizeDetail(${mIndex}, ${sIndex})" class="w-24 bg-slate-950 border border-slate-700 rounded px-2.5 py-1 text-emerald-400 font-bold outline-none" placeholder="Harga">
+                                <button type="button" onclick="deleteSizeFromModel(${mIndex}, ${sIndex})" class="text-rose-400 font-bold px-2 py-1 bg-rose-950/40 rounded cursor-pointer">Hapus</button>
+                            </div>
+                            <div class="grid grid-cols-4 gap-1.5">
+                                <div>
+                                    <label class="block text-[9px] text-slate-400">Berat (g)</label>
+                                    <input type="number" id="edit-sweight-${mIndex}-${sIndex}" value="${s.weight || 35}" oninput="updateSizeDetail(${mIndex}, ${sIndex})" class="w-full bg-slate-950 border border-slate-700 rounded px-2 py-1 text-amber-300 font-semibold outline-none">
                                 </div>
                                 <div>
-                                    <input type="text" id="note-m${mIndex}-s${sIndex}" value="${s.note || ''}" placeholder="Catatan/Rekomendasi kegunaan..." oninput="updateSizeNote(${mIndex}, ${sIndex})" class="w-full bg-slate-900 border border-slate-700 rounded px-2 py-1 text-[10px] text-amber-300 outline-none">
+                                    <label class="block text-[9px] text-slate-400">Panjang (cm)</label>
+                                    <input type="number" id="edit-slen-${mIndex}-${sIndex}" value="${s.length || 20}" oninput="updateSizeDetail(${mIndex}, ${sIndex})" class="w-full bg-slate-950 border border-slate-700 rounded px-2 py-1 text-white outline-none">
                                 </div>
-                            </div>`;
-                    });
-                }
-                
-                const isCustomImg = item.image && !item.image.includes('placeholder.com');
-                card.innerHTML = `
-                    <div class="flex items-center justify-between border-b border-slate-800 pb-1.5 gap-2">
-                        <input type="text" id="edit-model-name-${mIndex}" value="${item.name}" oninput="updateModelName(${mIndex})" class="flex-1 bg-slate-800 border border-slate-700 rounded px-2 py-1 text-amber-300 font-bold text-sm outline-none" placeholder="Nama Model Tas">
-                        <button type="button" onclick="deleteBagModel(${mIndex})" class="text-rose-400 font-bold text-[11px] px-2 py-1 bg-slate-800 rounded cursor-pointer">Hapus Model</button>
-                    </div>
-                    <div>
-                        <label class="block text-[10px] text-slate-400 mb-1">Upload/Ganti Foto Tas (Transparan):</label>
-                        <input type="file" accept="image/*" onchange="uploadModelSample(event, ${mIndex})" class="w-full text-[10px] text-slate-400 file:mr-2 file:py-1 file:px-2 file:rounded-lg file:border-0 file:bg-amber-500 file:text-slate-950 cursor-pointer">
-                    </div>
-                    <div class="text-[10px] ${isCustomImg ? 'text-emerald-400 font-semibold' : 'text-slate-400'} italic">
-                        ${isCustomImg ? '✅ Foto Kustom Aktif' : 'ℹ️ Menggunakan foto default'}
-                    </div>
-                    <div class="space-y-2 mt-1">
-                        <div class="text-[11px] font-semibold text-slate-300">Daftar Ukuran & Harga:</div>
-                        ${sizeRows}
-                        <div class="flex gap-1.5 mt-2">
-                            <input type="text" id="new-s-name-${mIndex}" placeholder="Ukuran Baru" class="flex-1 bg-slate-800 rounded-lg px-2 py-2 text-[11px] text-white outline-none">
-                            <input type="number" id="new-s-price-${mIndex}" placeholder="Harga" class="w-20 bg-slate-800 rounded-lg px-2 py-2 text-[11px] text-white outline-none">
-                            <button type="button" onclick="addSizeToModel(${mIndex})" class="bg-amber-500 text-slate-950 px-3 py-2 rounded-lg text-[11px] font-semibold cursor-pointer">Tambah Ukuran</button>
-                        </div>
-                    </div>
-                `;
-                modelAdminContainer.appendChild(card);
+                                <div>
+                                    <label class="block text-[9px] text-slate-400">Lebar (cm)</label>
+                                    <input type="number" id="edit-swid-${mIndex}-${sIndex}" value="${s.width || 30}" oninput="updateSizeDetail(${mIndex}, ${sIndex})" class="w-full bg-slate-950 border border-slate-700 rounded px-2 py-1 text-white outline-none">
+                                </div>
+                                <div>
+                                    <label class="block text-[9px] text-slate-400">Tinggi (cm)</label>
+                                    <input type="number" id="edit-shei-${mIndex}-${sIndex}" value="${s.height || 1}" oninput="updateSizeDetail(${mIndex}, ${sIndex})" class="w-full bg-slate-950 border border-slate-700 rounded px-2 py-1 text-white outline-none">
+                                </div>
+                            </div>
+                            <div>
+                                <input type="text" id="note-m${mIndex}-s${sIndex}" value="${s.note || ''}" placeholder="Catatan/Rekomendasi kegunaan..." oninput="updateSizeNote(${mIndex}, ${sIndex})" class="w-full bg-slate-950 border border-slate-700 rounded px-2.5 py-1 text-[11px] text-amber-300 outline-none">
+                            </div>
+                        </div>`;
+                });
             }
+
+            const isCustomImg = item.image && !item.image.includes('placeholder.com');
+            card.innerHTML = `
+                <div class="flex items-center justify-between border-b border-slate-800 pb-2 gap-2">
+                    <input type="text" id="edit-model-name-${mIndex}" value="${item.name}" oninput="updateModelName(${mIndex})" class="flex-1 bg-slate-900 border border-slate-700 rounded px-3 py-1.5 text-amber-300 font-bold text-sm outline-none" placeholder="Nama Model Tas">
+                    <button type="button" onclick="deleteBagModel(${mIndex})" class="text-rose-400 font-bold text-xs px-2.5 py-1.5 bg-rose-950/40 rounded cursor-pointer">Hapus Model</button>
+                </div>
+                <div class="flex items-center gap-2">
+                    <img src="${item.image}" class="w-12 h-12 object-contain bg-white rounded border flex-shrink-0">
+                    <div class="flex-1 space-y-1">
+                        <label class="block text-[10px] text-slate-400">Ganti Foto Produk (URL atau Upload):</label>
+                        <input type="text" id="admin-prod-img-${mIndex}" value="${item.image}" oninput="updateProductImage(${mIndex})" class="w-full bg-slate-900 border border-slate-700 rounded px-2 py-1 text-[11px] text-slate-300 outline-none" placeholder="URL Gambar">
+                        <input type="file" accept="image/*" onchange="uploadModelSample(event, ${mIndex})" class="w-full text-[10px] text-slate-400 file:mr-2 file:py-1 file:px-2 file:rounded file:border-0 file:bg-amber-500 file:text-slate-950 cursor-pointer">
+                    </div>
+                </div>
+                <div class="text-[10px] ${isCustomImg ? 'text-emerald-400 font-semibold' : 'text-slate-400'} italic">
+                    ${isCustomImg ? '✅ Foto Kustom Aktif' : 'ℹ️ Menggunakan foto default'}
+                </div>
+                <div class="space-y-2 mt-1">
+                    <div class="text-[11px] font-semibold text-slate-300">Daftar Ukuran, Berat & Volume (RajaOngkir):</div>
+                    ${sizeRows}
+                    <div class="flex gap-1.5 mt-2">
+                        <input type="text" id="new-s-name-${mIndex}" placeholder="Ukuran Baru" class="flex-1 bg-slate-900 rounded-lg px-2.5 py-2 text-[11px] text-white outline-none">
+                        <input type="number" id="new-s-price-${mIndex}" placeholder="Harga" class="w-24 bg-slate-900 rounded-lg px-2.5 py-2 text-[11px] text-white outline-none">
+                        <button type="button" onclick="addSizeToModel(${mIndex})" class="bg-amber-500 text-slate-950 px-3 py-2 rounded-lg text-[11px] font-semibold cursor-pointer">Tambah Ukuran</button>
+                    </div>
+                </div>
+            `;
+            modelAdminContainer.appendChild(card);
         });
         if(modelSelect.options.length > prevVal) modelSelect.value = prevVal;
     }
@@ -374,20 +395,11 @@ function renderAdminPanel() {
                         <label class="block text-[10px] text-slate-400 mb-0.5">Kata Tambahan Akhir / Jawaban:</label>
                         <textarea id="edit-faq-suffix-${fIdx}" rows="2" oninput="updateFaqField(${fIdx}, 'suffix')" class="w-full bg-slate-800 border border-slate-700 rounded p-2 text-slate-200 outline-none text-xs">${faq.suffix || ''}</textarea>
                     </div>
-                    <div class="flex items-center justify-between bg-slate-800 p-2 rounded-lg border border-slate-700">
-                        <span class="text-[11px] text-slate-300">Ulangi Kata Kunci di Jawaban?</span>
-                        <select id="edit-faq-repeat-${fIdx}" onchange="updateFaqRepeat(${fIdx})" class="bg-slate-900 border border-slate-700 rounded px-2 py-1 text-[11px] text-amber-400 font-semibold outline-none">
-                            <option value="false" ${!isRepeat ? 'selected' : ''}>Tidak (Natural)</option>
-                            <option value="true" ${isRepeat ? 'selected' : ''}>Ya (Diulang)</option>
-                        </select>
-                    </div>
                 </div>`;
         });
     }
 
-    if (typeof renderKnowledgeFaqAdmin === 'function') {
-        renderKnowledgeFaqAdmin();
-    }
+    if (typeof renderKnowledgeFaqAdmin === 'function') renderKnowledgeFaqAdmin();
 
     if(blockedWordsContainer && typeof blockedWords !== 'undefined') {
         blockedWordsContainer.innerHTML = '';
@@ -411,7 +423,7 @@ function renderAdminPanel() {
                         <span class="text-rose-200 truncate flex-1">❓ "${log}"</span>
                         <div class="flex items-center gap-1 flex-shrink-0">
                             <button type="button" onclick="promoteLogToFaq('${log.replace(/'/g, "\\'")}', ${lIdx})" class="bg-emerald-600 hover:bg-emerald-700 text-white px-2 py-1 rounded text-[10px] font-semibold cursor-pointer">➕ Jadikan Ingatan</button>
-                            <button type="button" onclick="deleteSingleUnansweredLog(${lIdx})" class="text-rose-400 hover:text-rose-300 font-bold px-1.5 py-1 text-[11px] cursor-pointer" title="Hapus log ini">🗑️</button>
+                            <button type="button" onclick="deleteSingleUnansweredLog(${lIdx})" class="text-rose-400 hover:text-rose-300 font-bold px-1.5 py-1 text-[11px] cursor-pointer">🗑️</button>
                         </div>
                     </div>`;
             });
@@ -454,7 +466,16 @@ function renderAdminPanel() {
     if(inkContainer && inkSelect1 && inkSelect2) {
         inkContainer.innerHTML = ''; inkSelect1.innerHTML = ''; inkSelect2.innerHTML = '';
         inkColors.forEach((ink, idx) => {
-            inkContainer.innerHTML += `<div class="flex items-center justify-between bg-slate-800 px-3 py-2 rounded-lg text-xs"><div class="flex items-center gap-2"><span class="w-3.5 h-3.5 rounded-full inline-block border border-white" style="background:${ink.hex}"></span><span>${ink.name}</span></div><button type="button" onclick="deleteInkColor(${idx})" class="text-rose-400 font-bold px-2 py-1 cursor-pointer">Hapus</button></div>`;
+            inkContainer.innerHTML += `
+                <div class="flex items-center justify-between bg-slate-800 px-3 py-2 rounded-xl text-xs border border-slate-700">
+                    <div class="flex items-center gap-3">
+                        <div class="w-6 h-7 rounded-md shadow flex items-center justify-center border border-white/40 relative" style="background:${ink.hex};">
+                            <div class="absolute -top-1 w-3.5 h-1 bg-slate-400 rounded-sm"></div>
+                        </div>
+                        <span class="font-bold text-white">${ink.name}</span>
+                    </div>
+                    <button type="button" onclick="deleteInkColor(${idx})" class="text-rose-400 font-bold px-2 py-1 cursor-pointer">Hapus</button>
+                </div>`;
             inkSelect1.innerHTML += `<option value="${ink.hex}">${ink.name}</option>`;
             inkSelect2.innerHTML += `<option value="${ink.hex}" ${idx === 1 ? 'selected' : ''}>${ink.name}</option>`;
         });
@@ -495,94 +516,13 @@ function renderAdminPanel() {
     updateCustomerSizesDropdown();
     updateBagCanvas();
     renderCartItems();
-    renderProductAdminList();
-}
-
-function renderProductAdminList() {
-    const container = document.getElementById('product-admin-list-container');
-    if(!container) return;
-    container.innerHTML = '';
-
-    bagModels.forEach((item, mIndex) => {
-        container.innerHTML += `
-            <div class="bg-slate-900 p-3 rounded-xl border border-slate-700 space-y-2 text-xs">
-                <div class="flex items-center justify-between gap-2">
-                    <input type="text" id="admin-prod-name-${mIndex}" value="${item.name}" oninput="updateProductData(${mIndex})" class="flex-1 bg-slate-800 border border-slate-700 rounded px-2.5 py-1 text-amber-300 font-bold outline-none">
-                    <button type="button" onclick="deleteProduct(${mIndex})" class="bg-rose-600 hover:bg-rose-700 text-white font-semibold px-2.5 py-1 rounded cursor-pointer">🗑️ Hapus</button>
-                </div>
-                <div class="flex items-center gap-2">
-                    <img src="${item.image}" class="w-10 h-10 object-contain bg-white rounded border">
-                    <input type="text" id="admin-prod-img-${mIndex}" value="${item.image}" oninput="updateProductImage(${mIndex})" placeholder="URL Gambar / Placeholder" class="flex-1 bg-slate-800 border border-slate-700 rounded px-2 py-1 text-[11px] text-slate-300 outline-none">
-                </div>
-            </div>
-        `;
-    });
-}
-
-function addNewProductItem() {
-    bagModels.push({
-        name: "Produk / Tas Baru",
-        image: "https://via.placeholder.com/400x500/ffffff/334155?text=Produk+Baru",
-        sizes: [{ name: "25 x 35 cm", price:1550, note: "Ukuran standar produk baru." }]
-    });
-    isSyncingFromCloud = true;
-    saveToCloud().then(() => {
-        renderAdminPanel();
-        renderProductAdminList();
-        isSyncingFromCloud = false;
-        alert("Produk baru berhasil ditambahkan!");
-    });
-}
-
-function updateProductData(mIndex) {
-    const nameInput = document.getElementById(`admin-prod-name-${mIndex}`);
-    if(nameInput && bagModels[mIndex]) {
-        bagModels[mIndex].name = nameInput.value;
-        saveToCloud();
-    }
-}
-
-function updateProductImage(mIndex) {
-    const imgInput = document.getElementById(`admin-prod-img-${mIndex}`);
-    if(imgInput && bagModels[mIndex]) {
-        bagModels[mIndex].image = imgInput.value;
-        saveToCloud();
-    }
-}
-
-function deleteProduct(mIndex) {
-    if(bagModels.length <= 1) return alert("Minimal harus ada 1 produk aktif!");
-    if(confirm("Yakin ingin menghapus produk ini?")) {
-        bagModels.splice(mIndex, 1);
-        saveToCloud();
-        renderAdminPanel();
-        renderProductAdminList();
-    }
-}
-
-function updateModelName(mIndex) {
-    const input = document.getElementById(`edit-model-name-${mIndex}`);
-    if(input && bagModels[mIndex]) {
-        bagModels[mIndex].name = input.value;
-        saveToCloud();
-    }
-}
-
-function updateSizeDetail(mIndex, sIndex) {
-    const nameInput = document.getElementById(`edit-sname-${mIndex}-${sIndex}`);
-    const priceInput = document.getElementById(`edit-sprice-${mIndex}-${sIndex}`);
-    if(nameInput && priceInput && bagModels[mIndex].sizes[sIndex]) {
-        bagModels[mIndex].sizes[sIndex].name = nameInput.value;
-        bagModels[mIndex].sizes[sIndex].price = parseInt(priceInput.value) || 0;
-        saveToCloud();
-    }
 }
 
 function addNewBagModel() {
     bagModels.push({
         name: "Tas Model Baru",
         image: "https://via.placeholder.com/400x500/ffffff/334155?text=Tas+Baru",
-        sizes: [{ name: "20 x 30 cm", price: 1500, note: "Ukuran standar tas baru." }]
+        sizes: [{ name: "20 x 30 cm", price: 1500, weight: 30, length: 20, width: 30, height: 1, note: "Ukuran standar tas baru." }]
     });
 
     isSyncingFromCloud = true;
@@ -602,12 +542,77 @@ function deleteBagModel(mIndex) {
     }
 }
 
+function updateModelName(mIndex) {
+    const input = document.getElementById(`edit-model-name-${mIndex}`);
+    if(input && bagModels[mIndex]) {
+        bagModels[mIndex].name = input.value;
+        saveToCloud();
+    }
+}
+
+function updateProductImage(mIndex) {
+    const imgInput = document.getElementById(`admin-prod-img-${mIndex}`);
+    if(imgInput && bagModels[mIndex]) {
+        bagModels[mIndex].image = imgInput.value;
+        saveToCloud();
+        updateBagCanvas();
+    }
+}
+
+function updateSizeDetail(mIndex, sIndex) {
+    const nameInput = document.getElementById(`edit-sname-${mIndex}-${sIndex}`);
+    const priceInput = document.getElementById(`edit-sprice-${mIndex}-${sIndex}`);
+    const weightInput = document.getElementById(`edit-sweight-${mIndex}-${sIndex}`);
+    const lenInput = document.getElementById(`edit-slen-${mIndex}-${sIndex}`);
+    const widInput = document.getElementById(`edit-swid-${mIndex}-${sIndex}`);
+    const heiInput = document.getElementById(`edit-shei-${mIndex}-${sIndex}`);
+
+    if(nameInput && priceInput && bagModels[mIndex].sizes[sIndex]) {
+        bagModels[mIndex].sizes[sIndex].name = nameInput.value;
+        bagModels[mIndex].sizes[sIndex].price = parseInt(priceInput.value) || 0;
+        if(weightInput) bagModels[mIndex].sizes[sIndex].weight = parseInt(weightInput.value) || 35;
+        if(lenInput) bagModels[mIndex].sizes[sIndex].length = parseInt(lenInput.value) || 20;
+        if(widInput) bagModels[mIndex].sizes[sIndex].width = parseInt(widInput.value) || 30;
+        if(heiInput) bagModels[mIndex].sizes[sIndex].height = parseInt(heiInput.value) || 1;
+        saveToCloud();
+    }
+}
+
 function updateSizeNote(mIndex, sIndex) {
     const input = document.getElementById(`note-m${mIndex}-s${sIndex}`);
     if(input && bagModels[mIndex].sizes[sIndex]) {
         bagModels[mIndex].sizes[sIndex].note = input.value;
         saveToCloud();
     }
+}
+
+function addSizeToModel(mIndex) {
+    const nameInput = document.getElementById(`new-s-name-${mIndex}`);
+    const priceInput = document.getElementById(`new-s-price-${mIndex}`);
+    if(!nameInput || !priceInput) return;
+    const name = nameInput.value.trim();
+    const price = parseInt(priceInput.value);
+
+    if(name && !isNaN(price)) {
+        if(!bagModels[mIndex].sizes) bagModels[mIndex].sizes = [];
+        bagModels[mIndex].sizes.push({ name, price, weight: 35, length: 20, width: 30, height: 1, note: "Ukuran kustom baru." });
+
+        isSyncingFromCloud = true;
+        saveToCloud().then(() => {
+            renderAdminPanel();
+            updateCustomerSizesDropdown();
+            isSyncingFromCloud = false;
+            alert("Ukuran baru berhasil ditambahkan dan disimpan permanen!");
+        });
+    } else { 
+        alert("Harap isi nama ukuran dan harga dengan benar!"); 
+    }
+}
+
+function deleteSizeFromModel(mIndex, sIndex) {
+    if(bagModels[mIndex].sizes.length <= 1) return alert("Minimal harus ada 1 ukuran dalam model ini!");
+    bagModels[mIndex].sizes.splice(sIndex, 1);
+    saveToCloud(); renderAdminPanel();
 }
 
 function updateCustomerSizesDropdown() {
@@ -675,35 +680,6 @@ function addDtfOption() {
     if(name && !isNaN(price)) { dtfOptions.push({ name, price }); saveToCloud(); renderAdminPanel(); }
 }
 function deleteDtfOption(index) { dtfOptions.splice(index, 1); saveToCloud(); renderAdminPanel(); }
-
-function addSizeToModel(mIndex) {
-    const nameInput = document.getElementById(`new-s-name-${mIndex}`);
-    const priceInput = document.getElementById(`new-s-price-${mIndex}`);
-    if(!nameInput || !priceInput) return;
-    const name = nameInput.value.trim();
-    const price = parseInt(priceInput.value);
-
-    if(name && !isNaN(price)) {
-        if(!bagModels[mIndex].sizes) bagModels[mIndex].sizes = [];
-        bagModels[mIndex].sizes.push({ name, price, note: "Ukuran kustom baru." });
-
-        isSyncingFromCloud = true;
-        saveToCloud().then(() => {
-            renderAdminPanel();
-            updateCustomerSizesDropdown();
-            isSyncingFromCloud = false;
-            alert("Ukuran baru berhasil ditambahkan dan disimpan permanen!");
-        });
-    } else { 
-        alert("Harap isi nama ukuran dan harga dengan benar!"); 
-    }
-}
-
-function deleteSizeFromModel(mIndex, sIndex) {
-    if(bagModels[mIndex].sizes.length <= 1) return alert("Minimal harus ada 1 ukuran dalam model ini!");
-    bagModels[mIndex].sizes.splice(sIndex, 1);
-    saveToCloud(); renderAdminPanel();
-}
 
 function addBagColor() {
     const name = document.getElementById('new-color-name').value.trim();
@@ -1203,7 +1179,7 @@ function clearCart() { if(confirm("Kosongkan keranjang pesanan?")) { cartItems =
 
 
 // ==========================================
-// 3. FUNGSI UPDATE KERANJANG & HITUNG TOTAL (DENGAN RAJAONGKIR)
+// 4. HITUNG TOTAL & RAJAONGKIR (BERAT & VOLUME OTOMATIS)
 // ==========================================
 function updateCartTotals() {
     let totalQty = 0, grandSubtotal = 0;
@@ -1246,6 +1222,92 @@ function updateCartTotals() {
     }
 }
 
+async function checkShippingCost() {
+    const destinationCityId = document.getElementById('shipping-city-destination').value;
+    if(!destinationCityId) return alert("Silakan pilih kota tujuan pengiriman terlebih dahulu, Bosku!");
+
+    let totalWeight = 0;
+    let totalVolumeWeight = 0;
+
+    cartItems.forEach(item => {
+        const mIndex = document.getElementById('bag-model-select').value || 0;
+        const currentModel = bagModels[mIndex] || bagModels[0];
+        const foundSize = currentModel?.sizes?.find(s => s.name === item.size);
+        
+        const w = (foundSize?.weight || 35) * item.qty;
+        totalWeight += w;
+
+        const l = foundSize?.length || 20;
+        const wid = foundSize?.width || 30;
+        const h = foundSize?.height || 1;
+        const volWeight = Math.round((l * wid * h / 6000) * 1000) * item.qty;
+        totalVolumeWeight += volWeight;
+    });
+
+    const finalWeight = Math.max(totalWeight, totalVolumeWeight, 1000);
+
+    const shippingResultContainer = document.getElementById('shipping-cost-results');
+    if (shippingResultContainer) {
+        shippingResultContainer.innerHTML = "⏳ Menghitung tarif ongkir resmi dari RajaOngkir...";
+    }
+
+    try {
+        const response = await fetch('https://api.rajaongkir.com/starter/cost', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'key': 'hoNQDKZPebfe35ddf393f5dbZu7xVaWZ'
+            },
+            body: JSON.stringify({
+                origin: "153",
+                destination: destinationCityId,
+                weight: finalWeight,
+                courier: "jne:sicepat:jnt"
+            })
+        });
+        
+        const data = await response.json();
+        const results = data.rajaongkir?.results;
+
+        if (results && results.length > 0) {
+            let htmlContent = '<div class="space-y-2 mt-2">';
+            results.forEach(courier => {
+                courier.costs.forEach(costDetail => {
+                    const serviceName = `${courier.name.toUpperCase()} (${costDetail.service})`;
+                    const costAmount = costDetail.cost[0].value;
+                    const etd = costDetail.cost[0].etd ? `${costDetail.cost[0].etd} hari` : '1-3 hari';
+                    
+                    htmlContent += `
+                        <div class="flex justify-between items-center bg-slate-800 p-2.5 rounded-lg text-xs text-white">
+                            <div>
+                                <span class="font-bold text-amber-300">${serviceName}</span>
+                                <div class="text-[10px] text-slate-400">Estimasi: ${etd} | Rp ${costAmount.toLocaleString('id-ID')}</div>
+                            </div>
+                            <button type="button" onclick="selectShippingCost('${serviceName}', ${costAmount})" class="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded-lg text-[10px] font-semibold cursor-pointer">Pilih</button>
+                        </div>
+                    `;
+                });
+            });
+            htmlContent += '</div>';
+            if (shippingResultContainer) shippingResultContainer.innerHTML = htmlContent;
+        } else {
+            if (shippingResultContainer) shippingResultContainer.innerHTML = '<span class="text-rose-400 text-xs">Kurir tidak tersedia untuk rute kota ini.</span>';
+        }
+    } catch(err) {
+        console.error("RajaOngkir Error:", err);
+        if (shippingResultContainer) {
+            shippingResultContainer.innerHTML = `<span class="text-rose-400 text-xs">Gagal memuat tarif ongkir. Periksa koneksi internet.</span>`;
+        }
+    }
+}
+
+function selectShippingCost(courierName, cost) {
+    window.selectedShippingCost = cost;
+    window.selectedCourierName = courierName;
+    alert(`Kurir terpilih: ${courierName} dengan biaya Rp ${cost.toLocaleString('id-ID')}`);
+    updateCartTotals();
+}
+
 function toggleAdminPanel() { 
     const adminView = document.getElementById('admin-view');
     if(adminView) adminView.classList.toggle('hidden'); 
@@ -1258,9 +1320,7 @@ function requestAdminLogin() {
         if (adminView) {
             adminView.classList.remove('hidden');
             adminView.scrollIntoView({ behavior: 'smooth' });
-            if (typeof renderAdminPanel === 'function') {
-                renderAdminPanel();
-            }
+            if (typeof renderAdminPanel === 'function') renderAdminPanel();
         }
     } else if (pass !== null) {
         alert("Password salah, Bosku!");
@@ -1269,7 +1329,7 @@ function requestAdminLogin() {
 
 
 // ==========================================
-// 4. CLOUD SYNC & LOCALSTORAGE
+// 5. CLOUD SYNC & LOCALSTORAGE
 // ==========================================
 async function saveToCloud() {
     safeLocalStorageSet('ilham_bagModels', JSON.stringify(bagModels));
@@ -1380,83 +1440,8 @@ function applyCloudData(data) {
 
 
 // ==========================================
-// 5. PDF & ORDER MANAGEMENT
+// 6. PDF & ORDER MANAGEMENT (CLEAN NAMES)
 // ==========================================
-async function addItemToCart() {
-    if(!rawCustomerLogoImg1) return alert("Silakan upload minimal Logo / Desain Utama terlebih dahulu!");
-    
-    const mIndex = document.getElementById('bag-model-select').value || 0;
-    const currentModel = bagModels[mIndex] || bagModels[0];
-    const sizeName = document.getElementById('bag-size-select').value;
-    const qty = parseInt(document.getElementById('item-qty').value) || 500;
-    const method = document.getElementById('print-method').value;
-    const colorCount = document.getElementById('sablon-color-count').value;
-    
-    let printMethodName = 'Sablon Manual (1 Warna)';
-    if(method === 'dtf') printMethodName = 'DTF Full Color';
-    else if(colorCount === '2') printMethodName = 'Sablon Manual (2 Warna)';
-
-    const unitPrice = calculateItemPrice();
-
-    let mockupBase64 = "";
-    try {
-        const element = document.getElementById('capture-mockup');
-        const canvas = await html2canvas(element, { scale: 0.7, useCORS: true, backgroundColor: '#ffffff' });
-        mockupBase64 = canvas.toDataURL('image/jpeg', 0.5);
-    } catch(e) { console.log("Mockup capture error:", e); }
-
-    const hdCanvas = document.getElementById('owner-hd-canvas');
-    const cleanLogoDataUrl = hdCanvas ? hdCanvas.toDataURL('image/png') : "";
-
-    cartItems.push({
-        model: currentModel.name,
-        size: sizeName,
-        color: activeColorName,
-        method: printMethodName,
-        qty: qty,
-        unitPrice: unitPrice,
-        subtotal: unitPrice * qty,
-        mockupImg: mockupBase64,
-        cleanLogo: cleanLogoDataUrl,
-        inkNote: document.getElementById('production-ink-notes').textContent
-    });
-
-    saveToCloud();
-    renderCartItems();
-    alert("Item berhasil dimasukkan ke keranjang pesanan!");
-}
-
-function renderCartItems() {
-    const container = document.getElementById('cart-items-container');
-    const countEl = document.getElementById('cart-count');
-    if(!container) return;
-    countEl.textContent = cartItems.length;
-    container.innerHTML = '';
-
-    if(cartItems.length === 0) {
-        container.innerHTML = '<p class="text-xs text-slate-400 text-center py-4">Belum ada item ditambahkan ke keranjang pesanan.</p>';
-        updateCartTotals();
-        return;
-    }
-
-    cartItems.forEach((item, index) => {
-        container.innerHTML += `
-            <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-200 flex items-center justify-between text-xs gap-2">
-                <div class="flex items-center gap-2.5 overflow-hidden">
-                    <img src="${item.mockupImg || 'https://via.placeholder.com/50'}" class="w-12 h-12 object-contain rounded border bg-white flex-shrink-0">
-                    <div class="truncate">
-                        <div class="font-bold text-slate-800 truncate">${item.model} (${item.size})</div>
-                        <div class="text-[11px] text-slate-500">Warna: ${item.color} | ${item.method}</div>
-                        <div class="text-[10px] text-amber-700">${item.inkNote || ''}</div>
-                        <div class="text-[11px] font-semibold text-emerald-700">${item.qty} Pcs x Rp ${item.unitPrice.toLocaleString('id-ID')} = Rp ${item.subtotal.toLocaleString('id-ID')}</div>
-                    </div>
-                </div>
-                <button type="button" onclick="removeCartItem(${index})" class="text-rose-600 font-bold p-2 cursor-pointer flex-shrink-0">🗑️</button>
-            </div>`;
-    });
-    updateCartTotals();
-}
-
 async function downloadCustomerInvoicePDF() {
     if(cartItems.length === 0) return alert("Keranjang pesanan masih kosong!");
     let totalQty = 0, grandSubtotal = 0;
@@ -1476,8 +1461,10 @@ async function downloadCustomerInvoicePDF() {
         try { pdf.addImage(brandLogoUrl, 'PNG', 15, 8, 30, 24); } catch(e) {}
     }
 
-    let safeTitle = (customerProfile.title && customerProfile.title !== "undefined") ? customerProfile.title : "Bosku";
-    let safeName = (customerProfile.name && customerProfile.name !== "undefined") ? customerProfile.name : "Rojak";
+    // Nama pemesan bersih tanpa sapaan abang/kakak/bosku untuk invoice
+    let rawCustName = (customerProfile.name && customerProfile.name !== "undefined") ? customerProfile.name : "Rojak";
+    let cleanCustName = rawCustName.replace(/^(Bosku|Kakak|Aa|Abang|Mbak|Bapak|Ibu|Tante|Bibi|Maman)\s*/i, "").trim();
+    if(!cleanCustName) cleanCustName = rawCustName;
 
     pdf.setTextColor(15, 23, 42); pdf.setFont("helvetica", "bold"); pdf.setFontSize(14);
     pdf.text(storeName.toUpperCase(), brandLogoUrl ? 50 : 15, 16);
@@ -1494,9 +1481,8 @@ async function downloadCustomerInvoicePDF() {
     pdf.setTextColor(15, 23, 42); pdf.setFont("helvetica", "bold"); pdf.setFontSize(10);
     pdf.text("INFORMASI PELANGGAN:", 15, 48);
     pdf.setFont("helvetica", "normal"); pdf.setFontSize(8.5);
-    pdf.text(`Nama: ${safeTitle} ${safeName} (${customerProfile.wa || '-'})`, 15, 54);
+    pdf.text(`Nama: ${cleanCustName} (${customerProfile.wa || '-'})`, 15, 54);
     
-    // Alamat dibuat fleksibel (tidak manjang kesamping tapi otomatis turun ke bawah)
     const addressText = `Alamat Pengiriman: ${customerProfile.address || '-'}`;
     const splitAddress = pdf.splitTextToSize(addressText, 180);
     pdf.text(splitAddress, 15, 60);
@@ -1563,7 +1549,6 @@ async function downloadCustomerInvoicePDF() {
     pdf.setFontSize(10);
     pdf.text(`TOTAL TAGIHAN: Rp ${Math.round(grandTotal).toLocaleString('id-ID')}`, 115, startY);
 
-    // Menampilkan SEMUA pratinjau desain (mockup) item yang dipesan secara berderet rapi
     if(cartItems.length > 0) {
         startY += 10;
         if(startY > 240) { pdf.addPage(); startY = 20; }
@@ -1599,7 +1584,7 @@ async function downloadCustomerInvoicePDF() {
 
     startY += 6;
     pdf.setFont("helvetica", "bold"); pdf.setTextColor(6, 95, 70);
-    pdf.text(`Terima kasih ${safeTitle} ${safeName} telah mempercayakan pemesanan tas custom di ${storeName}!`, 15, startY);
+    pdf.text(`Terima kasih ${cleanCustName} telah mempercayakan pemesanan tas custom di ${storeName}!`, 15, startY);
 
     pdf.save(`Invoice-Tagihan-ILHAM-SPUNBOND.pdf`);
     alert("Invoice Tagihan PDF berhasil di-download dengan semua pratinjau desain!");
@@ -1642,7 +1627,6 @@ async function downloadOwnerInvoicePDF(docId, silent = false) {
     pdf.setFont("helvetica", "normal"); pdf.setFontSize(8.5);
     pdf.text(`Nama: ${o.name} (${o.wa})`, 15, 68);
     
-    // Alamat pemesan owner fleksibel (tidak manjang kesamping)
     const ownerAddressText = `Alamat Kirim: ${o.address}`;
     const splitOwnerAddress = pdf.splitTextToSize(ownerAddressText, 180);
     pdf.text(splitOwnerAddress, 15, 74);
@@ -1701,7 +1685,6 @@ async function downloadOwnerInvoicePDF(docId, silent = false) {
         } catch(e) {}
     }
 
-    // Menampilkan SEMUA pratinjau desain pada Nota Owner
     if(o.items && o.items.length > 0) {
         startY += 10;
         if(startY > 240) { pdf.addPage(); startY = 20; }
@@ -1825,7 +1808,7 @@ function showOrderHistory() {
                         <button type="button" onclick="downloadOwnerPoHD('${docSnap.id}')" class="bg-indigo-600 hover:bg-indigo-700 text-white px-2.5 py-1.5 rounded-lg text-[10px] font-semibold cursor-pointer">📥 Download Desain HD</button>
                         <button type="button" onclick="downloadOwnerInvoicePDF('${docSnap.id}')" class="bg-blue-600 hover:bg-blue-700 text-white px-2.5 py-1.5 rounded-lg text-[10px] font-semibold cursor-pointer">📄 Nota / Pelunasan (PDF)</button>
                         <button type="button" onclick="toggleOrderStatus('${docSnap.id}', '${statusVal}')" class="bg-emerald-600 hover:bg-emerald-700 text-white px-2.5 py-1.5 rounded-lg text-[10px] font-semibold cursor-pointer">🔄 Ubah Status Lunas</button>
-                        <button type="button" onclick="sendShippingWhatsAppMessage('${docSnap.id}')" class="bg-purple-600 hover:bg-purple-700 text-white px-2.5 py-1.5 rounded-lg text-[10px] font-semibold cursor-pointer">🚚 Barang Dalam Pengiriman</button>
+                        <button type="button" onclick="sendShippingWhatsAppMessage('${docSnap.id}')" class="bg-purple-600 hover:bg-purple-700 text-white px-2.5 py-1.5 rounded-lg text-[10px] cursor-pointer">🚚 Barang Dalam Pengiriman</button>
                         ${dpButtonHtml}
                         <button type="button" onclick="deletePoOrder('${docSnap.id}')" class="bg-rose-600 hover:bg-rose-700 text-white px-2.5 py-1.5 rounded-lg text-[10px] cursor-pointer">🗑️ Hapus</button>
                     </div>
@@ -1933,121 +1916,6 @@ async function downloadOwnerPoHD(docId) {
     alert("File desain HD bersih tanpa tanda air berhasil di-download!");
 }
 
-async function downloadOwnerInvoicePDF(docId, silent = false) {
-    const { doc, getDoc } = window.firebaseDeps;
-    const docSnap = await getDoc(doc(window.firebaseDb, "orders", docId));
-    if(!docSnap.exists()) return alert("Data PO tidak ditemukan!");
-    const o = docSnap.data();
-    const statusVal = o.status || "BELUM LUNAS";
-    const isLunas = statusVal === "LUNAS";
-
-    const { jsPDF } = window.jspdf;
-    const pdf = new jsPDF('p', 'mm', 'a4');
-
-    pdf.setFillColor(219, 234, 254); pdf.rect(0, 0, 210, 40, 'F');
-    
-    if(brandLogoUrl) {
-        try { pdf.addImage(brandLogoUrl, 'PNG', 15, 8, 30, 24); } catch(e) {}
-    }
-
-    pdf.setTextColor(15, 23, 42); pdf.setFont("helvetica", "bold"); pdf.setFontSize(14);
-    pdf.text(storeName.toUpperCase() + " - NOTA & TAGIHAN", brandLogoUrl ? 50 : 15, 16);
-    pdf.setFont("helvetica", "bold"); pdf.setFontSize(8.5);
-    pdf.text("Alamat: " + storeAddress + " | No WA: " + storePhone, brandLogoUrl ? 50 : 15, 25);
-
-    pdf.setFont("helvetica", "bold"); pdf.setFontSize(9);
-    pdf.text("NOTA PESANAN", 195, 16, {align: "right"});
-    pdf.setFont("helvetica", "bold"); pdf.setFontSize(8);
-    pdf.text("No PO: " + o.id, 195, 22, {align: "right"});
-    pdf.text("Tanggal: " + o.date, 195, 27, {align: "right"});
-
-    pdf.setTextColor(15, 23, 42); pdf.setFont("helvetica", "bold"); pdf.setFontSize(11);
-    pdf.text(isLunas ? "NOTA PELUNASAN (LUNAS)" : (statusVal === "DP 50% LUNAS" ? "NOTA TAGIHAN (DP 50% DITERIMA)" : "NOTA TAGIHAN / PEMESANAN"), 15, 48);
-    pdf.setFont("helvetica", "normal"); pdf.setFontSize(8.5);
-    pdf.text(`Status Pembayaran: ${statusVal}`, 15, 54);
-
-    pdf.setFont("helvetica", "bold"); pdf.text("DATA PEMESAN:", 15, 62);
-    pdf.setFont("helvetica", "normal"); pdf.setFontSize(8.5);
-    pdf.text(`Nama: ${o.name} (${o.wa})`, 15, 68);
-    pdf.text(`Alamat Kirim: ${o.address}`, 15, 74);
-
-    let startY = 80;
-    pdf.setFillColor(224, 242, 254); 
-    pdf.setDrawColor(0, 0, 0); pdf.setLineWidth(0.3);
-    pdf.rect(15, startY, 180, 8, 'FD');
-
-    pdf.setFont("helvetica", "bold"); pdf.setFontSize(8);
-    pdf.text("No", 18, startY + 5.5);
-    pdf.text("Jenis & Model Tas / Ukuran & Catatan Tinta", 28, startY + 5.5);
-    pdf.text("Metode Cetak", 100, startY + 5.5);
-    pdf.text("Qty", 132, startY + 5.5);
-    pdf.text("Harga", 152, startY + 5.5);
-    pdf.text("Subtotal", 176, startY + 5.5);
-
-    startY += 8;
-    pdf.setFont("helvetica", "normal");
-
-    o.items.forEach((item, idx) => {
-        const descText = `${item.model} (${item.size}) - Kain: ${item.color}\n${item.inkNote || ''}`;
-        const descLines = pdf.splitTextToSize(descText, 68);
-        const methodLines = pdf.splitTextToSize(item.method, 28);
-        
-        const maxLineCount = Math.max(descLines.length, methodLines.length, 1);
-        const cellHeight = Math.max(15, maxLineCount * 4.5 + 4);
-
-        if(startY + cellHeight > 270) {
-            pdf.addPage();
-            startY = 20;
-        }
-
-        pdf.setFillColor(255, 255, 255);
-        pdf.rect(15, startY, 180, cellHeight, 'FD');
-        
-        pdf.text(String(idx + 1), 18, startY + 5.5);
-        pdf.text(descLines, 28, startY + 5.5);
-        pdf.text(methodLines, 100, startY + 5.5);
-        pdf.text(item.qty + " Pcs", 132, startY + 5.5);
-        pdf.text("Rp " + item.unitPrice.toLocaleString('id-ID'), 152, startY + 5.5);
-        pdf.text("Rp " + item.subtotal.toLocaleString('id-ID'), 176, startY + 5.5);
-        
-        startY += cellHeight;
-    });
-
-    startY += 6;
-    pdf.setFont("helvetica", "bold"); pdf.setFontSize(10);
-    pdf.text(`TOTAL PEMBAYARAN: ${o.totalPrice}`, 115, startY);
-
-    if(isLunas && customStampUrl) {
-        try {
-            pdf.setGState(new pdf.GState({ opacity: 0.35 })); 
-            pdf.addImage(customStampUrl, 'PNG', 110, startY - 12, 55, 26); 
-            pdf.setGState(new pdf.GState({ opacity: 1.0 })); 
-        } catch(e) {}
-    }
-
-    if(o.items[0] && o.items[0].mockupImg) {
-        try {
-            startY += 10;
-            pdf.setFont("helvetica", "bold"); pdf.setFontSize(8.5);
-            pdf.text("ILUSTRASI PRATINJAU DESAIN (BOX 1):", 15, startY);
-            startY += 4;
-            pdf.addImage(o.items[0].mockupImg, 'JPEG', 15, startY, 38, 38);
-        } catch(e) {}
-    }
-
-    if(adminSignatureUrl) {
-        try {
-            pdf.setFont("helvetica", "normal"); pdf.setFontSize(8);
-            pdf.text("Hormat Kami,", 145, startY + 5);
-            pdf.addImage(adminSignatureUrl, 'PNG', 140, startY + 8, 35, 18);
-            pdf.text("(" + storeName + ")", 140, startY + 29);
-        } catch(e) {}
-    }
-
-    pdf.save(`Nota-Owner-${o.id}.pdf`);
-    if(!silent) alert("Nota / Pelunasan PDF berhasil didownload!");
-}
-
 async function saveOrderAndSendWhatsApp() {
     if(!customerProfile.name || !customerProfile.wa || !customerProfile.address) return alert("Profil pemesan belum lengkap!");
     if(cartItems.length === 0) return alert("Keranjang pesanan masih kosong!");
@@ -2094,75 +1962,4 @@ async function saveOrderAndSendWhatsApp() {
         alert("Pesanan tersimpan & diarahkan ke WhatsApp owner!");
         window.open(`https://wa.me/${ownerWaNumber}?text=${encodeURIComponent(waMessage)}`);
     } catch(e) { alert("Gagal menyimpan pesanan ke cloud."); }
-}
-
-async function checkShippingCost() {
-    const destinationCityId = document.getElementById('shipping-city-destination').value;
-    const totalQty = cartItems.reduce((sum, item) => sum + item.qty, 0);
-    const totalWeight = totalQty * 35;
-
-    if(!destinationCityId) {
-        return alert("Silakan pilih kota tujuan pengiriman terlebih dahulu, Bosku!");
-    }
-
-    const shippingResultContainer = document.getElementById('shipping-cost-results');
-    if (shippingResultContainer) {
-        shippingResultContainer.innerHTML = "⏳ Menghitung tarif ongkir resmi dari RajaOngkir...";
-    }
-
-    try {
-        const response = await fetch('https://api.rajaongkir.com/starter/cost', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'key': 'hoNQDKZPebfe35ddf393f5dbZu7xVaWZ'
-            },
-            body: JSON.stringify({
-                origin: "153",
-                destination: destinationCityId,
-                weight: totalWeight < 1000 ? 1000 : totalWeight,
-                courier: "jne:sicepat:jnt"
-            })
-        });
-        
-        const data = await response.json();
-        const results = data.rajaongkir?.results;
-
-        if (results && results.length > 0) {
-            let htmlContent = '<div class="space-y-2 mt-2">';
-            results.forEach(courier => {
-                courier.costs.forEach(costDetail => {
-                    const serviceName = `${courier.name.toUpperCase()} (${costDetail.service})`;
-                    const costAmount = costDetail.cost[0].value;
-                    const etd = costDetail.cost[0].etd ? `${costDetail.cost[0].etd} hari` : '1-3 hari';
-                    
-                    htmlContent += `
-                        <div class="flex justify-between items-center bg-slate-800 p-2.5 rounded-lg text-xs text-white">
-                            <div>
-                                <span class="font-bold text-amber-300">${serviceName}</span>
-                                <div class="text-[10px] text-slate-400">Estimasi: ${etd} | Rp ${costAmount.toLocaleString('id-ID')}</div>
-                            </div>
-                            <button type="button" onclick="selectShippingCost('${serviceName}', ${costAmount})" class="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded-lg text-[10px] font-semibold cursor-pointer">Pilih</button>
-                        </div>
-                    `;
-                });
-            });
-            htmlContent += '</div>';
-            if (shippingResultContainer) shippingResultContainer.innerHTML = htmlContent;
-        } else {
-            if (shippingResultContainer) shippingResultContainer.innerHTML = '<span class="text-rose-400 text-xs">Kurir tidak tersedia untuk rute kota ini.</span>';
-        }
-    } catch(err) {
-        console.error("RajaOngkir Error:", err);
-        if (shippingResultContainer) {
-            shippingResultContainer.innerHTML = `<span class="text-rose-400 text-xs">Gagal memuat tarif ongkir. Periksa koneksi internet / batasan API Starter.</span>`;
-        }
-    }
-}
-
-function selectShippingCost(courierName, cost) {
-    window.selectedShippingCost = cost;
-    window.selectedCourierName = courierName;
-    alert(`Kurir terpilih: ${courierName} dengan biaya Rp ${cost.toLocaleString('id-ID')}`);
-    updateCartTotals();
 }
