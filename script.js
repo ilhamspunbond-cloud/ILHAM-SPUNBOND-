@@ -889,13 +889,12 @@ function updateProcessedLogos() {
     const colorCount = document.getElementById('sablon-color-count').value;
     const isTwoColors = (method === 'manual' && colorCount === '2');
 
-    const inkHex1 = document.getElementById('ink-color-select-1').value || '#0f172a';
-    const inkHex2 = document.getElementById('ink-color-select-2').value || '#dc2626';
+  // Mengambil data hex dan nama tinta dari pilihan tombol kaleng tinta customer
+    const inkHex1 = selectedInkColor1.hex || '#0f172a';
+    const inkHex2 = selectedInkColor2.hex || '#dc2626';
 
-    const select1 = document.getElementById('ink-color-select-1');
-    const select2 = document.getElementById('ink-color-select-2');
-    const name1 = select1.options[select1.selectedIndex]?.text || 'Hitam';
-    const name2 = select2.options[select2.selectedIndex]?.text || 'Merah';
+    const name1 = selectedInkColor1.name || 'Hitam Pekat';
+    const name2 = selectedInkColor2.name || 'Merah Menyala';
 
     const mSelect = document.getElementById('bag-model-select');
     const modelNameText = (mSelect && mSelect.value !== "" && bagModels[mSelect.value]) ? bagModels[mSelect.value].name : bagModels[0].name;
