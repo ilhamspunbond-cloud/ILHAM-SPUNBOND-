@@ -135,10 +135,13 @@ window.onload = function() {
     checkCustomerOnboarding();
     updateLivePricePreview();
     
-    // Tambahkan baris ini agar tombol kaleng tinta langsung dirender saat halaman dimuat
-    if (typeof renderCustomerInkChoices === 'function') {
-        renderCustomerInkChoices();
-    }
+    // Beri jeda sepersekian detik agar DOM HTML benar-benar siap
+    setTimeout(() => {
+        if (typeof renderCustomerInkChoices === 'function') {
+            renderCustomerInkChoices();
+            console.log("Tombol cat sablon berhasil dipanggil!");
+        }
+    }, 100);
     
     const qtyInput = document.getElementById('item-qty');
     if(qtyInput) {
