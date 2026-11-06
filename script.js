@@ -128,13 +128,17 @@ try {
 } catch(e) {
     console.error("Local storage error:", e);
 }
-
 window.onload = function() {
     updateDynamicManifest();
     renderAdminPanel();
     renderChatHistory();
     checkCustomerOnboarding();
     updateLivePricePreview();
+    
+    // Tambahkan baris ini agar tombol kaleng tinta langsung dirender saat halaman dimuat
+    if (typeof renderCustomerInkChoices === 'function') {
+        renderCustomerInkChoices();
+    }
     
     const qtyInput = document.getElementById('item-qty');
     if(qtyInput) {
@@ -143,7 +147,6 @@ window.onload = function() {
 
     if(window.initCloudSync) { window.initCloudSync(); }
 };
-
 function updateDynamicManifest() {
     const manifestLink = document.getElementById('dynamic-manifest');
     if(!manifestLink) return;
