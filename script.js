@@ -2164,3 +2164,41 @@ window.toggleOrderStatus = toggleOrderStatus;
 window.toggleDpStatus = toggleDpStatus;
 window.deletePoOrder = deletePoOrder;
 window.downloadOwnerPoHD = downloadOwnerPoHD;
+
+// =========================================================================
+// JEMBATAN GLOBAL FIRESTORE (SOLUSI ANTI-MENTAL)
+// =========================================================================
+window.saveToCloud = async function() {
+    if (!window.firebaseDb || !window.firebaseDeps) {
+        console.error("Firebase belum terhubung sempurna!");
+        return;
+    }
+    const { doc, setDoc } = window.firebaseDeps;
+    
+    const dataToSave = {
+        bagModels: window.bagModels || [],
+        bankAccounts: window.bankAccounts || [],
+        bagColors: window.bagColors || [],
+        inkColors: window.inkColors || [],
+        knowledgeFaq: window.knowledgeFaq || []
+    };
+    
+    try {
+        await setDoc(doc(window.firebaseDb, "config", "global"), dataToSave);
+        console.log("🚀 [Firebase Cloud] Data sukses dikunci secara permanen!");
+        
+        const syncStatusEl = document.getElementById("sync-status");
+        if (syncStatusEl) {
+            syncStatusEl.textContent = "☁ Firebase Cloud Connected";
+            syncStatusEl.className = "text-[11px] bg-emerald-200 text-emerald-800 px-3.5 py-1.5 rounded-full font-medium inline-block shadow-sm";
+        }
+    } catch (error) {
+        console.error("Gagal mengunci data ke cloud:", error);
+    }
+};
+
+if (typeof initCloudSync === "function") {
+    window.initCloudSync = initCloudSync;
+}
+
+
