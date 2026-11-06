@@ -1,5 +1,5 @@
 // Import Firebase SDK dari CDN resmi
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
 import { getFirestore, doc, setDoc, getDoc, onSnapshot, collection, query, orderBy, getDocs, deleteDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 // Konfigurasi Firebase dari project ilham-spunbond Kakak
@@ -2093,3 +2093,75 @@ function renderCustomerInkChoices() {
         });
     }
 }
+// ==========================================
+// EXPORT GLOBAL WINDOW FUNCTIONS (PENTING AGAR TOMBOL HTML BISA DIPENCET)
+// ==========================================
+window.requestAdminLogin = requestAdminLogin;
+window.toggleAdminPanel = toggleAdminPanel;
+window.submitOnboarding = submitOnboarding;
+window.openProfileModal = openProfileModal;
+window.closeProfileModal = closeProfileModal;
+window.saveCustomerProfile = saveCustomerProfile;
+window.clearChatHistory = clearChatHistory;
+window.speakAiGreeting = typeof speakAiGreeting === 'function' ? speakAiGreeting : function(){};
+window.askAiRecommendation = typeof askAiRecommendation === 'function' ? askAiRecommendation : function(){};
+window.toggleVoiceInput = typeof toggleVoiceInput === 'function' ? toggleVoiceInput : function(){};
+window.onCustomerModelChange = onCustomerModelChange;
+window.onCustomerSizeSelect = onCustomerSizeSelect;
+window.togglePrintMethod = togglePrintMethod;
+window.toggleSablonColorCount = toggleSablonColorCount;
+window.loadCustomerLogo1 = loadCustomerLogo1;
+window.loadCustomerLogo2 = loadCustomerLogo2;
+window.calculateItemPrice = calculateItemPrice;
+window.toggleLockPosition = toggleLockPosition;
+window.adjustLogoTransform = adjustLogoTransform;
+window.addItemToCart = addItemToCart;
+window.removeCartItem = removeCartItem;
+window.clearCart = clearCart;
+window.checkShippingCost = checkShippingCost;
+window.selectShippingCost = selectShippingCost;
+window.saveOrderAndSendWhatsApp = saveOrderAndSendWhatsApp;
+window.downloadCustomerInvoicePDF = downloadCustomerInvoicePDF;
+window.downloadOwnerInvoicePDF = downloadOwnerInvoicePDF;
+window.verifyAndShowOrderHistory = verifyAndShowOrderHistory;
+window.closeOrderHistoryModal = closeOrderHistoryModal;
+window.clearAllOrders = clearAllOrders;
+window.addKnowledgeFaq = typeof addKnowledgeFaq === 'function' ? addKnowledgeFaq : function(){};
+window.deleteKnowledgeFaq = typeof deleteKnowledgeFaq === 'function' ? deleteKnowledgeFaq : function(){};
+window.updateFaqField = typeof updateFaqField === 'function' ? updateFaqField : function(){};
+window.addBlockedWord = typeof addBlockedWord === 'function' ? addBlockedWord : function(){};
+window.deleteBlockedWord = typeof deleteBlockedWord === 'function' ? deleteBlockedWord : function(){};
+window.clearAllUnansweredLogs = typeof clearAllUnansweredLogs === 'function' ? clearAllUnansweredLogs : function(){};
+window.promoteLogToFaq = typeof promoteLogToFaq === 'function' ? promoteLogToFaq : function(){};
+window.deleteSingleUnansweredLog = typeof deleteSingleUnansweredLog === 'function' ? deleteSingleUnansweredLog : function(){};
+window.uploadBrandLogo = uploadBrandLogo;
+window.resetBrandLogo = resetBrandLogo;
+window.saveGlobalConfig = saveGlobalConfig;
+window.uploadStampImage = uploadStampImage;
+window.removeStampImage = removeStampImage;
+window.uploadAdminSignature = uploadAdminSignature;
+window.removeAdminSignature = removeAdminSignature;
+window.addBank = addBank;
+window.deleteBank = deleteBank;
+window.addNewBagModel = addNewBagModel;
+window.deleteBagModel = deleteBagModel;
+window.updateModelName = updateModelName;
+window.updateProductImage = updateProductImage;
+window.uploadModelSample = uploadModelSample;
+window.updateSizeDetail = updateSizeDetail;
+window.updateSizeNote = updateSizeNote;
+window.addSizeToModel = addSizeToModel;
+window.deleteSizeFromModel = deleteSizeFromModel;
+window.addDtfOption = addDtfOption;
+window.deleteDtfOption = deleteDtfOption;
+window.addInkColor = addInkColor;
+window.deleteInkColor = deleteInkColor;
+window.addBagColor = addBagColor;
+window.deleteBagColor = deleteBagColor;
+window.saveShippingInfo = saveShippingInfo;
+window.sendWhatsAppStatusMessage = sendWhatsAppStatusMessage;
+window.sendShippingWhatsAppMessage = sendShippingWhatsAppMessage;
+window.toggleOrderStatus = toggleOrderStatus;
+window.toggleDpStatus = toggleDpStatus;
+window.deletePoOrder = deletePoOrder;
+window.downloadOwnerPoHD = downloadOwnerPoHD;
