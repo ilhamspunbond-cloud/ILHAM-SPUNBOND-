@@ -1,6 +1,8 @@
 // ==========================================
 // 1. DATA DEFAULT GLOBAL & INISIALISASI (API CONFIG)
 // ==========================================
+
+
 let rajaOngkirApiKey = "hoNQDKZPebfe35ddf393f5dbZu7xVaWZ";
 let paymentApiKey = "bZHmdIPnebfe35ddf393f5dbXpvCtSa8";
 let qrislyApiKey = "bZHmdIPnebfe35ddf393f5dbXpvCtSa8";
@@ -1542,6 +1544,44 @@ async function downloadCustomerInvoicePDF() {
         } catch(e) {}
     }
 
+
+    // ==========================================
+// INTEGRASI RAJA ONGKR REALTIME API
+// ==========================================
+async function checkRealtimeShippingCost(destinationCityId, courierCode = "jne") {
+    const totalWeight = calculateTotalCartWeight(); // Mengambil total berat gram dari keranjang
+    if (totalWeight <= 0) return 0;
+
+    try {
+        const response = await fetch('https://api.rajaongkir.com/starter/cost', {
+            method: 'POST',
+            headers: {
+                'key': rajaOngkirApiKey,
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: new URLSearchParams({
+                origin: originCityId,          // ID Kota Asal (Default Tangerang: 444)
+                destination: destinationCityId, // ID Kota Tujuan dari input/pilihan customer
+                weight: totalWeight,            // Berat total dalam gram
+                courier: courierCode            // Kurir (jne, jnt, sicepat, dll)
+            })
+        });
+
+        const result = await response.json();
+        if (result && result.rajaongkir && result.rajaongkir.results && result.rajaongkir.results.length > 0) {
+            // Ambil harga layanan reguler/pertama dari ekspedisi yang dipilih
+            const costs = result.rajaongkir.results[0].costs;
+            if (costs && costs.length > 0) {
+                return costs[0].cost[0].value; // Mengembalikan nilai ongkir dalam Rupiah
+            }
+        }
+    } catch (e) {
+        console.error("Gagal mengambil data ongkir Raja Ongkir:", e);
+    }
+    return 0; // Default 0 jika gagal / offline
+} 
+
+    
     if(startY > 240) { pdf.addPage(); startY = 20; }
 
     startY += 4;
