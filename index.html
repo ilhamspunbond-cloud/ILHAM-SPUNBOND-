@@ -405,15 +405,15 @@
                     <span>📋</span> Formulir Pesanan & Pembayaran
                 </h3>
                 
-<!-- KODE BARU (OTOMATIS DARI PROFIL CUSTOMER) -->
-<div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 space-y-2">
-    <label class="block text-xs font-semibold text-slate-600 mb-1">📍 Alamat & Kota Tujuan Pengiriman (Dari Profil Customer)</label>
-    <div class="relative">
-        <input type="text" id="destination-city-input" readonly placeholder="Memuat alamat dari profil customer..." class="w-full bg-slate-100 border border-slate-300 rounded-xl p-3 text-xs outline-none font-medium text-slate-700 cursor-not-allowed">
-        <input type="hidden" id="destination-city-id" value="">
-    </div>
-    <p class="text-[10px] text-slate-400 italic">💡 Ingin ubah alamat pengiriman? Silakan klik tombol <b>Profil</b> di bagian atas aplikasi.</p>
-</div>
+                <!-- Alamat & Kota Tujuan Pengiriman -->
+                <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 space-y-2">
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">📍 Alamat & Kota Tujuan Pengiriman (Dari Profil Customer)</label>
+                    <div class="relative">
+                        <input type="text" id="destination-city-input" readonly placeholder="Memuat alamat dari profil customer..." class="w-full bg-slate-100 border border-slate-300 rounded-xl p-3 text-xs outline-none font-medium text-slate-700 cursor-not-allowed">
+                        <input type="hidden" id="destination-city-id" value="">
+                    </div>
+                    <p class="text-[10px] text-slate-400 italic">💡 Ingin ubah alamat pengiriman? Silakan klik tombol <b>Profil</b> di bagian atas aplikasi.</p>
+                </div>
 
                 <div class="text-[11px] text-emerald-700 font-medium bg-emerald-50/80 px-3 py-2 rounded-lg border border-emerald-200/60 flex items-center gap-1.5">
                     <span>🔥</span> <span>Info Diskon: Total pesanan **1.000 pcs ke atas** otomatis mendapatkan **Diskon 10%**!</span>
@@ -501,14 +501,23 @@
                 <button type="button" onclick="toggleAdminPanel()" class="text-xs text-slate-400 hover:text-white font-bold px-2 py-1 bg-slate-800 rounded">Tutup [X]</button>
             </div>
 
-<div class="bg-slate-800 p-3 rounded-xl border border-amber-500/30 space-y-2">
-    <label class="block text-xs font-semibold text-amber-300">📍 Titik Asal Pengiriman (Raja Ongkir)</label>
-    <div>
-        <label class="block text-[10px] text-slate-400 mb-1">ID Kota/Kabupaten Asal (RajaOngkir City ID):</label>
-        <input type="text" id="admin-origin-city-id" value="444" placeholder="Cth: 444 (Kab. Tangerang)" oninput="saveGlobalConfig()" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white outline-none">
-        <span class="text-[9px] text-slate-500">Default Kab. Tangerang: 444. Bisa diubah sewaktu-waktu.</span>
-    </div>
-</div>
+            <div class="bg-slate-800 p-3 rounded-xl border border-amber-500/30 space-y-2">
+                <label class="block text-xs font-semibold text-amber-300">📍 Titik Asal Pengiriman (Raja Ongkir)</label>
+                <div>
+                    <label class="block text-[10px] text-slate-400 mb-1">ID Kota/Kabupaten Asal (RajaOngkir City ID):</label>
+                    <input type="text" id="admin-origin-city-id" value="444" placeholder="Cth: 444 (Kab. Tangerang)" oninput="saveGlobalConfig()" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white outline-none">
+                    <span class="text-[9px] text-slate-500">Default Kab. Tangerang: 444. Bisa diubah sewaktu-waktu.</span>
+                </div>
+            </div>
+
+            <!-- PENGATURAN DISKON EVENT SPESIAL (PINDAH KE DALAM PANEL ADMIN) -->
+            <div class="bg-slate-800 p-3 rounded-xl border border-amber-500/30 space-y-2">
+                <label class="block text-xs font-semibold text-amber-300">🎉 Pengaturan Diskon Event Spesial (Potongan Harga Rp)</label>
+                <div class="flex gap-2">
+                    <input type="number" id="admin-event-discount-input" value="0" oninput="updateAdminEventDiscount(this.value)" class="flex-1 bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white outline-none" placeholder="Cth: 50000">
+                    <span class="text-xs text-slate-300 self-center">Rupiah (Potongan Total)</span>
+                </div>
+            </div>
             
             <!-- KNOWLEDGE BASE & AI MEMORY TRAINING -->
             <div class="bg-slate-800 p-3 rounded-xl border border-amber-500/30 space-y-3">
@@ -517,9 +526,9 @@
                 
                 <div id="faq-admin-container" class="space-y-3 max-h-[500px] overflow-y-auto pr-1"></div>
                 
-                <div class="space-y-2 pt-2 border-t border-slate-700">   
+                <div class="space-y-2 pt-2 border-t border-slate-700">    
                     <input type="text" id="new-faq-keyword" placeholder="Kata Kunci (Cth: assalamualaikum)" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white outline-none">
-                     <input type="text" id="new-faq-prefix" placeholder="Kata Tambahan Awal (Cth: Waalaikumussalam)" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white outline-none">
+                    <input type="text" id="new-faq-prefix" placeholder="Kata Tambahan Awal (Cth: Waalaikumussalam)" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white outline-none">
                     <textarea id="new-faq-suffix" rows="2" placeholder="Kata Tambahan Akhir / Jawaban (Cth: Massyaallah bagaimana kabarnya?)" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white outline-none"></textarea>
                     
                     <div class="flex items-center justify-between bg-slate-900 p-2.5 rounded-xl border border-slate-700 text-xs">
@@ -546,10 +555,10 @@
 
             <!-- LOG PERTANYAAN BELUM TERJAWAB -->
             <div class="bg-slate-800 p-3 rounded-xl border border-rose-500/30 space-y-2">
-               <div class="flex justify-between items-center pt-2">
-    <span class="text-[11px] text-slate-400 font-semibold">Daftar Pertanyaan Customer Belum Terjawab:</span>
-    <button type="button" onclick="clearAllUnansweredLogs()" class="text-rose-400 hover:text-rose-300 text-[10px] font-bold underline cursor-pointer">🗑️ Bersihkan Semua Log</button>
-</div>
+                <div class="flex justify-between items-center pt-2">
+                    <span class="text-[11px] text-slate-400 font-semibold">Daftar Pertanyaan Customer Belum Terjawab:</span>
+                    <button type="button" onclick="clearAllUnansweredLogs()" class="text-rose-400 hover:text-rose-300 text-[10px] font-bold underline cursor-pointer">🗑️ Bersihkan Semua Log</button>
+                </div>
                 <div id="missing-log-container" class="space-y-1.5 max-h-32 overflow-y-auto pr-1">
                     <p class="text-[10px] text-slate-500 italic">Belum ada pertanyaan tertinggal.</p>
                 </div>
@@ -563,8 +572,6 @@
                 </div>
                 <div id="brand-upload-status" class="text-[10px] text-slate-400 italic"></div>
             </div>
-
-           
 
             <!-- BIAYA TAMBAHAN SABLON 2 WARNA -->
             <div class="bg-slate-800 p-3 rounded-xl border border-amber-500/30 space-y-2">
@@ -673,17 +680,8 @@
         </div>
     </div>
 
-    <!-- Tambahkan di dalam Panel Admin di index.html -->
-<div class="bg-slate-800 p-3 rounded-xl border border-amber-500/30 space-y-2">
-    <label class="block text-xs font-semibold text-amber-300">🎉 Pengaturan Diskon Event Spesial (Potongan Harga Rp)</label>
-    <div class="flex gap-2">
-        <input type="number" id="admin-event-discount-input" value="0" oninput="updateAdminEventDiscount(this.value)" class="flex-1 bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white outline-none" placeholder="Cth: 50000">
-        <span class="text-xs text-slate-300 self-center">Rupiah (Potongan Total)</span>
-    </div>
-</div>
-
     <!-- Memanggil file script.js terpisah -->
-   <script src="ai-knowledge.js"></script>
+    <script src="ai-knowledge.js"></script>
     <script src="script.js"></script>
    
 </body>
