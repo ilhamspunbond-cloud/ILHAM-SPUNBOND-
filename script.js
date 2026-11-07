@@ -1259,45 +1259,71 @@ function updateAdminEventDiscount(val) {
     saveToCloud();
 }
 
-function updateCartTotals() {
-    let totalQty = 0, grandSubtotal = 0;
-    cartItems.forEach(item => { totalQty += item.qty; grandSubtotal += item.subtotal; });
-    
-    // Diskon otomatis 10% jika pesanan >= 1.000 pcs
-    let autoDiscountVal = totalQty >= 1000 ? grandSubtotal * 0.10 : 0;
-    
-    // Diskon Event Tambahan dari Admin
-    let adminDiscountVal = window.currentAdminEventDiscount || 0;
-    let totalDiscount = autoDiscountVal + adminDiscountVal;
+// Variabel global untuk menyimpan data ongkir aktif
+let selectedShippingCost = 0;
+let selectedCourierName = "J&T Express";
 
-    let subtotalAfterDiscount = grandSubtotal - totalDiscount;
-    if(subtotalAfterDiscount < 0) subtotalAfterDiscount = 0;
+async function updateCartTotals() {
+    let totalQty = 0, grandSubtotal = 0, totalWeightGrams = 0;
     
-    // ... (lanjutan kode updateCartTotals yang lain)
+    cartItems.forEach(item => { 
+        totalQty += item.qty; 
+        grandSubtotal += item.subtotal; 
+        
+        // Hitung total berat berdasarkan gramasi ukuran tas (default 40g jika belum diset)
+        const modelObj = bagModels.find(m => m.name === item.model);
+        const sizeObj = modelObj?.sizes?.find(s => s.name === item.size);
+        const gramPerPcs = sizeObj?.weight || 40;
+        totalWeightGrams += (gramPerPcs * item.qty);
+    });
+
+    let discountVal = totalQty >= 1000 ? grandSubtotal * 0.10 : 0;
+    let grandSubtotalAfterDisc = grandSubtotal - discountVal;
+    
+    const region = document.getElementById('shipping-region')?.value || 'jabodetabek';
+    
+    // Jika wilayah luar Jabodetabek atau menggunakan ekspedisi, hitung total akhir termasuk ongkir
+    let grandTotal = grandSubtotalAfterDisc + selectedShippingCost;
+    let dpVal = region === 'luar' ? grandTotal * 0.50 : 0;
+
+    // Update Label UI
+    const totalQtyEl = document.getElementById('display-total-qty');
+    if(totalQtyEl) totalQtyEl.textContent = totalQty.toLocaleString('id-ID') + " Pcs (" + totalWeightGrams + " gram)";
+    
+    if(discountVal > 0) {
+        document.getElementById('discount-row')?.classList.remove('hidden');
+        const discValEl = document.getElementById('display-discount-val');
+        if(discValEl) discValEl.textContent = "- Rp " + Math.round(discountVal).toLocaleString('id-ID');
+    } else { 
+        document.getElementById('discount-row')?.classList.add('hidden'); 
+    }
+
+    // Tampilkan baris ongkir di ringkasan jika ada
+    let ongkirRow = document.getElementById('cart-ongkir-row');
+    if(!ongkirRow) {
+        const totalRow = document.getElementById('display-total-price')?.closest('div')?.parentElement;
+        if(totalRow) {
+            const div = document.createElement('div');
+            div.id = 'cart-ongkir-row';
+            div.className = "flex justify-between text-xs text-slate-600 my-1";
+            div.innerHTML = `<span>Ongkos Kirim (${selectedCourierName}):</span> <span id="display-ongkir-val" class="font-bold text-slate-800">Rp ${selectedShippingCost.toLocaleString('id-ID')}</span>`;
+            totalRow.insertBefore(div, totalRow.firstChild);
+        }
+    } else {
+        document.getElementById('display-ongkir-val').textContent = `Rp ${selectedShippingCost.toLocaleString('id-ID')}`;
+    }
+
+    if(region === 'luar') {
+        document.getElementById('dp-row')?.classList.remove('hidden');
+        const dpValEl = document.getElementById('display-dp-val');
+        if(dpValEl) dpValEl.textContent = "Rp " + Math.round(dpVal).toLocaleString('id-ID') + " (50%)";
+    } else { 
+        document.getElementById('dp-row')?.classList.add('hidden'); 
+    }
+
+    const totalPriceEl = document.getElementById('display-total-price');
+    if(totalPriceEl) totalPriceEl.textContent = "Rp " + Math.round(grandTotal).toLocaleString('id-ID');
 }
-function updateCartTotals() {
-    let totalQty = 0, grandSubtotal = 0;
-    cartItems.forEach(item => { totalQty += item.qty; grandSubtotal += item.subtotal; });
-    
-    // Diskon otomatis 10% jika pesanan >= 1.000 pcs
-    let autoDiscountVal = totalQty >= 1000 ? grandSubtotal * 0.10 : 0;
-    
-    // Diskon Event Tambahan dari Admin
-    let adminDiscountVal = window.currentAdminEventDiscount || 0;
-    let totalDiscount = autoDiscountVal + adminDiscountVal;
-
-    let subtotalAfterDiscount = grandSubtotal - totalDiscount;
-    if(subtotalAfterDiscount < 0) subtotalAfterDiscount = 0;
-
-    // Ongkir realtime (ambil dari dropdown pilihan kota tujuan atau estimasi ekspedisi)
-    let shippingCost = parseInt(document.getElementById('shipping-cost-input')?.value) || 0;
-    
-    let grandTotal = subtotalAfterDiscount + shippingCost;
-    const region = document.getElementById('shipping-region').value;
-    const dpVal = region === 'luar' ? grandTotal * 0.50 : 0;
-
-    document.getElementById('display-total-qty').textContent = totalQty.toLocaleString('id-ID') + " Pcs";
-    
     // Tampilkan baris diskon otomatis / event
     if(totalDiscount > 0) {
         document.getElementById('discount-row').classList.remove('hidden');
@@ -1961,8 +1987,11 @@ async function generateQrisPayment(orderId, totalAmount) {
     return null;
 }
 
+// Saat form pesanan dikonfirmasi / dikirim ke WhatsApp / Cloud
 async function saveOrderAndSendWhatsApp() {
-    if(!customerProfile.name || !customerProfile.wa || !customerProfile.address) return alert("Profil pemesan belum lengkap!");
+    if(!customerProfile.name || !customerProfile.wa || !customerProfile.address) {
+        return alert("Profil pemesan dan alamat tujuan belum lengkap! Harap perbarui profil Anda.");
+    }
     if(cartItems.length === 0) return alert("Keranjang pesanan masih kosong!");
 
     let safeTitle = (customerProfile.title && customerProfile.title !== "undefined") ? customerProfile.title : "Bosku";
@@ -1972,24 +2001,25 @@ async function saveOrderAndSendWhatsApp() {
     let totalQty = 0, grandSubtotal = 0;
     cartItems.forEach(item => { totalQty += item.qty; grandSubtotal += item.subtotal; });
     const discountVal = totalQty >= 1000 ? grandSubtotal * 0.10 : 0;
-    const grandTotal = grandSubtotal - discountVal;
-    const region = document.getElementById('shipping-region').value;
+    const grandSubtotalAfterDisc = grandSubtotal - discountVal;
+    const grandTotal = grandSubtotalAfterDisc + selectedShippingCost;
+    
+    const region = document.getElementById('shipping-region')?.value || 'jabodetabek';
     const dpVal = grandTotal * 0.50;
 
-    const qrisData = await generateQrisPayment(orderId, Math.round(grandTotal));
-    let qrisInfoText = "";
-    if(qrisData) {
-        qrisInfoText = `\n💳 *Link QRIS Pembayaran:* ${qrisData.qrImageUrl}`;
-    }
-
     const newOrder = {
-        id: orderId, name: `${safeTitle} ${safeName}`, wa: customerProfile.wa, address: customerProfile.address,
-        region: region, items: cartItems, totalPrice: "Rp " + Math.round(grandTotal).toLocaleString('id-ID'),
+        id: orderId, 
+        name: `${safeTitle} ${safeName}`, 
+        wa: customerProfile.wa, 
+        address: customerProfile.address, // <-- Otomatis menggunakan alamat profil customer yang tersimpan
+        region: region, 
+        items: cartItems, 
+        totalPrice: "Rp " + Math.round(grandTotal).toLocaleString('id-ID'),
+        shippingCost: selectedShippingCost,
+        courier: selectedCourierName,
         date: new Date().toLocaleString('id-ID', { dateStyle: 'medium', timeStyle: 'medium' }),
         status: "BELUM LUNAS",
-        courier: "J&T Express",
-        trackingNumber: "",
-        qrisUrl: qrisData ? qrisData.qrImageUrl : ""
+        trackingNumber: ""
     };
 
     try {
@@ -2001,14 +2031,11 @@ async function saveOrderAndSendWhatsApp() {
             itemsDetailText += `\n${idx + 1}. *${it.model} (${it.size})*\n   - Warna: ${it.color}\n   - Cetak: ${it.method}\n   - Qty: ${it.qty} Pcs @Rp ${it.unitPrice.toLocaleString('id-ID')} = *Rp ${it.subtotal.toLocaleString('id-ID')}*`;
         });
 
-        let paymentInstruction = "";
-        if(region === 'jabodetabek') {
-            paymentInstruction = `🚚 *Ket. Pembayaran:* Wilayah Jabodetabek (*Sistem COD / Bayar di Tempat*). Pesanan Anda dengan rincian di atas sedang diproses oleh tim kami.`;
-        } else {
-            paymentInstruction = `⚠️ *Ket. Pembayaran:* Wilayah Luar Jabodetabek (*Wajib DP 50% sebesar Rp ${Math.round(dpVal).toLocaleString('id-ID')}*) terlebih dahulu sebelum pesanan diproses oleh tim produksi kami.`;
-        }
+        let paymentInstruction = region === 'jabodetabek' 
+            ? `🚚 *Ket. Pembayaran:* Wilayah Jabodetabek (*Sistem COD / Bayar di Tempat*).` 
+            : `⚠️ *Ket. Pembayaran:* Wilayah Luar Jabodetabek (*Wajib DP 50% sebesar Rp ${Math.round(dpVal).toLocaleString('id-ID')}*).`;
 
-        let waMessage = `Halo Owner *${storeName}*, saya *${safeTitle} ${safeName}* ingin memesan custom tas dengan rincian berikut:\n\n📦 *No PO:* ${orderId}\n👤 *Nama:* ${safeTitle} ${safeName} (${customerProfile.wa})\n📍 *Alamat:* ${customerProfile.address}\n\n*Daftar Item Pesanan:*${itemsDetailText}\n\n💰 *Total Keseluruhan:* *Rp ${Math.round(grandTotal).toLocaleString('id-ID')}*\n${paymentInstruction}${qrisInfoText}\n\nMohon segera diproses ya bosku, terima kasih! 🙏`;
+        let waMessage = `Halo Owner *${storeName}*, saya *${safeTitle} ${safeName}* ingin memesan custom tas dengan rincian berikut:\n\n📦 *No PO:* ${orderId}\n👤 *Nama:* ${safeTitle} ${safeName} (${customerProfile.wa})\n📍 *Alamat Tujuan:* ${customerProfile.address}\n\n*Daftar Item Pesanan:*${itemsDetailText}\n\n📦 *Kurir (${selectedCourierName}):* Rp ${selectedShippingCost.toLocaleString('id-ID')}\n💰 *Total Keseluruhan (＋Ongkir):* *Rp ${Math.round(grandTotal).toLocaleString('id-ID')}*\n${paymentInstruction}\n\nMohon segera diproses ya bosku, terima kasih! 🙏`;
 
         alert("Pesanan tersimpan & diarahkan ke WhatsApp owner!");
         window.open(`https://wa.me/${ownerWaNumber}?text=${encodeURIComponent(waMessage)}`);
