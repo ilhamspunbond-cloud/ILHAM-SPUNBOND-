@@ -405,13 +405,13 @@
                     <span>📋</span> Formulir Pesanan & Pembayaran
                 </h3>
                 
-                <div>
-                    <label class="block text-[11px] font-semibold text-slate-500 mb-1">Wilayah Tujuan Pengiriman</label>
-                    <select id="shipping-region" onchange="updateCartTotals();" class="w-full bg-slate-50 border border-slate-300 rounded-xl p-3 text-sm font-medium focus:ring-2 focus:ring-emerald-500 outline-none">
-                        <option value="jabodetabek">Wilayah Jabodetabek (Bisa COD)</option>
-                        <option value="luar">Di Luar Jabodetabek (Wajib DP 50% / Pelunasan)</option>
-                    </select>
-                </div>
+               <div>
+    <label class="block text-[11px] font-semibold text-slate-500 mb-1">Kota / Kabupaten Tujuan Pengiriman (Raja Ongkir)</label>
+    <input type="text" id="destination-city-input" placeholder="Cth: Bandung, Surabaya, Jakarta Selatan" oninput="searchDestinationCity(this.value)" class="w-full bg-slate-50 border border-slate-300 rounded-xl p-3 text-sm font-medium focus:ring-2 focus:ring-emerald-500 outline-none">
+    <input type="hidden" id="destination-city-id" value="">
+    <!-- Dropdown hasil pencarian kota -->
+    <div id="city-search-results" class="bg-white border border-slate-200 rounded-xl mt-1 max-h-40 overflow-y-auto hidden shadow-lg z-30 relative"></div>
+</div>
 
                 <div class="text-[11px] text-emerald-700 font-medium bg-emerald-50/80 px-3 py-2 rounded-lg border border-emerald-200/60 flex items-center gap-1.5">
                     <span>🔥</span> <span>Info Diskon: Total pesanan **1.000 pcs ke atas** otomatis mendapatkan **Diskon 10%**!</span>
