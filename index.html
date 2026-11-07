@@ -671,6 +671,15 @@
         </div>
     </div>
 
+    <!-- Tambahkan di dalam Panel Admin di index.html -->
+<div class="bg-slate-800 p-3 rounded-xl border border-amber-500/30 space-y-2">
+    <label class="block text-xs font-semibold text-amber-300">🎉 Pengaturan Diskon Event Spesial (Potongan Harga Rp)</label>
+    <div class="flex gap-2">
+        <input type="number" id="admin-event-discount-input" value="0" oninput="updateAdminEventDiscount(this.value)" class="flex-1 bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white outline-none" placeholder="Cth: 50000">
+        <span class="text-xs text-slate-300 self-center">Rupiah (Potongan Total)</span>
+    </div>
+</div>
+
     <!-- Memanggil file script.js terpisah -->
    <script src="ai-knowledge.js"></script>
     <script src="script.js"></script>
