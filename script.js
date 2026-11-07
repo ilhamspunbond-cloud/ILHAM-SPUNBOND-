@@ -1221,25 +1221,90 @@ function renderCartItems() {
 function removeCartItem(index) { cartItems.splice(index, 1); renderCartItems(); }
 function clearCart() { if(confirm("Kosongkan keranjang pesanan?")) { cartItems = []; renderCartItems(); } }
 
+// ==========================================
+// UPDATE: KALKULASI TOTAL, ONGKIR REALTIME & DISKON EVENT ADMIN
+// ==========================================
+
+// Tambahkan variabel diskon event admin (bisa disimpan di cloud/localStorage)
+// ==========================================
+// PENGATURAN DISKON EVENT ADMIN
+// ==========================================
+function updateAdminEventDiscount(val) {
+    window.currentAdminEventDiscount = parseInt(val) || 0;
+    safeLocalStorageSet('ilham_adminEventDiscount', window.currentAdminEventDiscount);
+    updateCartTotals();
+    saveToCloud();
+}
+
 function updateCartTotals() {
     let totalQty = 0, grandSubtotal = 0;
     cartItems.forEach(item => { totalQty += item.qty; grandSubtotal += item.subtotal; });
-    let discountVal = totalQty >= 1000 ? grandSubtotal * 0.10 : 0;
-    let grandTotal = grandSubtotal - discountVal;
+    
+    // Diskon otomatis 10% jika pesanan >= 1.000 pcs
+    let autoDiscountVal = totalQty >= 1000 ? grandSubtotal * 0.10 : 0;
+    
+    // Diskon Event Tambahan dari Admin
+    let adminDiscountVal = window.currentAdminEventDiscount || 0;
+    let totalDiscount = autoDiscountVal + adminDiscountVal;
+
+    let subtotalAfterDiscount = grandSubtotal - totalDiscount;
+    if(subtotalAfterDiscount < 0) subtotalAfterDiscount = 0;
+    
+    // ... (lanjutan kode updateCartTotals yang lain)
+}
+function updateCartTotals() {
+    let totalQty = 0, grandSubtotal = 0;
+    cartItems.forEach(item => { totalQty += item.qty; grandSubtotal += item.subtotal; });
+    
+    // Diskon otomatis 10% jika pesanan >= 1.000 pcs
+    let autoDiscountVal = totalQty >= 1000 ? grandSubtotal * 0.10 : 0;
+    
+    // Diskon Event Tambahan dari Admin
+    let adminDiscountVal = window.currentAdminEventDiscount || 0;
+    let totalDiscount = autoDiscountVal + adminDiscountVal;
+
+    let subtotalAfterDiscount = grandSubtotal - totalDiscount;
+    if(subtotalAfterDiscount < 0) subtotalAfterDiscount = 0;
+
+    // Ongkir realtime (ambil dari dropdown pilihan kota tujuan atau estimasi ekspedisi)
+    let shippingCost = parseInt(document.getElementById('shipping-cost-input')?.value) || 0;
+    
+    let grandTotal = subtotalAfterDiscount + shippingCost;
     const region = document.getElementById('shipping-region').value;
     const dpVal = region === 'luar' ? grandTotal * 0.50 : 0;
 
     document.getElementById('display-total-qty').textContent = totalQty.toLocaleString('id-ID') + " Pcs";
     
-    if(discountVal > 0) {
+    // Tampilkan baris diskon otomatis / event
+    if(totalDiscount > 0) {
         document.getElementById('discount-row').classList.remove('hidden');
-        document.getElementById('display-discount-val').textContent = "- Rp " + Math.round(discountVal).toLocaleString('id-ID');
-    } else { document.getElementById('discount-row').classList.add('hidden'); }
+        document.getElementById('display-discount-val').textContent = "- Rp " + Math.round(totalDiscount).toLocaleString('id-ID');
+    } else { 
+        document.getElementById('discount-row').classList.add('hidden'); 
+    }
+
+    // Tampilkan ongkir realtime di ringkasan jika ada
+    let shippingRow = document.getElementById('shipping-cost-row');
+    if(!shippingRow) {
+        // Buat elemen baris ongkir jika belum ada di HTML
+        const totalContainer = document.getElementById('display-total-price').closest('.bg-emerald-50');
+        if(totalContainer) {
+            const div = document.createElement('div');
+            div.id = 'shipping-cost-row';
+            div.className = "flex justify-between items-center text-xs text-slate-700 font-medium border-b border-emerald-200/60 pb-2";
+            div.innerHTML = `<span>Estimasi Ongkos Kirim (Realtime):</span> <span id="display-shipping-val" class="font-bold text-slate-900">Rp ${shippingCost.toLocaleString('id-ID')}</span>`;
+            totalContainer.insertBefore(div, totalContainer.querySelector('.pt-1'));
+        }
+    } else {
+        document.getElementById('display-shipping-val').textContent = "Rp " + shippingCost.toLocaleString('id-ID');
+    }
 
     if(region === 'luar') {
         document.getElementById('dp-row').classList.remove('hidden');
-        document.getElementById('display-dp-val').textContent = "Rp " + Math.round(dpVal).toLocaleString('id-ID') + " (50%)";
-    } else { document.getElementById('dp-row').classList.add('hidden'); }
+        document.getElementById('display-dp-val').textContent = "Rp " + Math.round(dpVal).toLocaleString('id-ID') + " (50% DP)";
+    } else { 
+        document.getElementById('dp-row').classList.add('hidden'); 
+    }
 
     document.getElementById('display-total-price').textContent = "Rp " + Math.round(grandTotal).toLocaleString('id-ID');
 }
