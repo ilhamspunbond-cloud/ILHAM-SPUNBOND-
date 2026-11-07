@@ -2,7 +2,6 @@
 // 1. DATA DEFAULT GLOBAL & INISIALISASI (API CONFIG)
 // ==========================================
 
-
 let rajaOngkirApiKey = "hoNQDKZPebfe35ddf393f5dbZu7xVaWZ";
 let paymentApiKey = "bZHmdIPnebfe35ddf393f5dbXpvCtSa8";
 let qrislyApiKey = "bZHmdIPnebfe35ddf393f5dbXpvCtSa8";
@@ -28,6 +27,7 @@ let storeEmail = "ilhamspunbond@gmail.com";
 let pdfPassword = "ilham123";
 let ownerWaNumber = "6289630539563";
 let extraColorPrice = 400;
+let currentAdminEventDiscount = 0;
 
 let brandLogoUrl = "";
 let customStampUrl = "";
@@ -125,6 +125,7 @@ try {
     if(localStorage.getItem('ilham_inkColors')) inkColors = JSON.parse(localStorage.getItem('ilham_inkColors'));
     if(localStorage.getItem('ilham_dtfOptions')) dtfOptions = JSON.parse(localStorage.getItem('ilham_dtfOptions'));
     if(localStorage.getItem('ilham_extraColorPrice')) extraColorPrice = parseInt(localStorage.getItem('ilham_extraColorPrice')) || 400;
+    if(localStorage.getItem('ilham_adminEventDiscount')) currentAdminEventDiscount = parseInt(localStorage.getItem('ilham_adminEventDiscount')) || 0;
     if(localStorage.getItem('ilham_originCityId')) originCityId = localStorage.getItem('ilham_originCityId');
     if(localStorage.getItem('ilham_storeName')) storeName = localStorage.getItem('ilham_storeName');
     if(localStorage.getItem('ilham_storeAddress')) storeAddress = localStorage.getItem('ilham_storeAddress');
@@ -155,7 +156,7 @@ async function saveToCloud() {
             const { doc, setDoc } = window.firebaseDeps;
             await setDoc(doc(window.firebaseDb, "config", "master"), {
                 bagModels, bankAccounts, bagColors, inkColors, dtfOptions,
-                extraColorPrice, originCityId, storeName, storeAddress,
+                extraColorPrice, currentAdminEventDiscount, originCityId, storeName, storeAddress,
                 storePhone, storeEmail, pdfPassword, ownerWaNumber,
                 brandLogoUrl, customStampUrl, adminSignatureUrl,
                 knowledgeFaq: typeof knowledgeFaq !== 'undefined' ? knowledgeFaq : [],
@@ -1044,24 +1045,49 @@ function onCustomerSizeSelect() {
 }
 
 // ==========================================
-// FUNGSI HITUNG TOTAL BERAT PESANAN (UNTUK RAJA ONGKR)
+// FUNGSI HITUNG TOTAL BERAT PESANAN & RAJA ONGKIR
 // ==========================================
 function calculateTotalCartWeight() {
     let totalWeightGrams = 0;
-
     cartItems.forEach(item => {
-        // Cari model dan ukuran tas yang sesuai di data bagModels
         let foundModel = bagModels.find(m => m.name === item.model);
         let foundSize = foundModel ? foundModel.sizes.find(s => s.name === item.size) : null;
-        
-        // Ambil berat per pcs (default 40 gram jika belum diset)
         let weightPerPcs = foundSize && foundSize.weight ? foundSize.weight : 40;
-        
-        // Total berat = berat per pcs * quantity item tersebut
         totalWeightGrams += (weightPerPcs * item.qty);
     });
+    return totalWeightGrams;
+}
 
-    return totalWeightGrams; // Hasil dalam gram (bisa dikonversi ke kg untuk Raja Ongkir)
+async function checkRealtimeShippingCost(destinationCityId, courierCode = "jne") {
+    const totalWeight = calculateTotalCartWeight();
+    if (totalWeight <= 0) return 0;
+
+    try {
+        const response = await fetch('https://api.rajaongkir.com/starter/cost', {
+            method: 'POST',
+            headers: {
+                'key': rajaOngkirApiKey,
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: new URLSearchParams({
+                origin: originCityId,          // Kota asal dinamis dari admin
+                destination: destinationCityId, // Kota tujuan pelanggan
+                weight: totalWeight,            // Berat total gram dari keranjang
+                courier: courierCode            // jne, jnt, sicepat, dll
+            })
+        });
+
+        const result = await response.json();
+        if (result && result.rajaongkir && result.rajaongkir.results && result.rajaongkir.results.length > 0) {
+            const costs = result.rajaongkir.results[0].costs;
+            if (costs && costs.length > 0) {
+                return costs[0].cost[0].value;
+            }
+        }
+    } catch (e) {
+        console.error("Gagal mengambil data ongkir Raja Ongkir:", e);
+    }
+    return 0;
 }
 
 function updateLivePricePreview() {
@@ -1245,12 +1271,7 @@ function removeCartItem(index) { cartItems.splice(index, 1); renderCartItems(); 
 function clearCart() { if(confirm("Kosongkan keranjang pesanan?")) { cartItems = []; renderCartItems(); } }
 
 // ==========================================
-// UPDATE: KALKULASI TOTAL, ONGKIR REALTIME & DISKON EVENT ADMIN
-// ==========================================
-
-// Tambahkan variabel diskon event admin (bisa disimpan di cloud/localStorage)
-// ==========================================
-// PENGATURAN DISKON EVENT ADMIN
+// PENGATURAN DISKON EVENT ADMIN & KELOLA TOTAL
 // ==========================================
 function updateAdminEventDiscount(val) {
     window.currentAdminEventDiscount = parseInt(val) || 0;
@@ -1259,7 +1280,6 @@ function updateAdminEventDiscount(val) {
     saveToCloud();
 }
 
-// Variabel global untuk menyimpan data ongkir aktif
 let selectedShippingCost = 0;
 let selectedCourierName = "J&T Express";
 
@@ -1270,35 +1290,33 @@ async function updateCartTotals() {
         totalQty += item.qty; 
         grandSubtotal += item.subtotal; 
         
-        // Hitung total berat berdasarkan gramasi ukuran tas (default 40g jika belum diset)
         const modelObj = bagModels.find(m => m.name === item.model);
         const sizeObj = modelObj?.sizes?.find(s => s.name === item.size);
         const gramPerPcs = sizeObj?.weight || 40;
         totalWeightGrams += (gramPerPcs * item.qty);
     });
 
-    let discountVal = totalQty >= 1000 ? grandSubtotal * 0.10 : 0;
-    let grandSubtotalAfterDisc = grandSubtotal - discountVal;
+    let qtyDiscount = totalQty >= 1000 ? grandSubtotal * 0.10 : 0;
+    let eventDiscount = window.currentAdminEventDiscount || 0;
+    let totalDiscount = qtyDiscount + eventDiscount;
+    let grandSubtotalAfterDisc = grandSubtotal - totalDiscount;
     
     const region = document.getElementById('shipping-region')?.value || 'jabodetabek';
     
-    // Jika wilayah luar Jabodetabek atau menggunakan ekspedisi, hitung total akhir termasuk ongkir
     let grandTotal = grandSubtotalAfterDisc + selectedShippingCost;
     let dpVal = region === 'luar' ? grandTotal * 0.50 : 0;
 
-    // Update Label UI
     const totalQtyEl = document.getElementById('display-total-qty');
     if(totalQtyEl) totalQtyEl.textContent = totalQty.toLocaleString('id-ID') + " Pcs (" + totalWeightGrams + " gram)";
     
-    if(discountVal > 0) {
+    if(totalDiscount > 0) {
         document.getElementById('discount-row')?.classList.remove('hidden');
         const discValEl = document.getElementById('display-discount-val');
-        if(discValEl) discValEl.textContent = "- Rp " + Math.round(discountVal).toLocaleString('id-ID');
+        if(discValEl) discValEl.textContent = "- Rp " + Math.round(totalDiscount).toLocaleString('id-ID');
     } else { 
         document.getElementById('discount-row')?.classList.add('hidden'); 
     }
 
-    // Tampilkan baris ongkir di ringkasan jika ada
     let ongkirRow = document.getElementById('cart-ongkir-row');
     if(!ongkirRow) {
         const totalRow = document.getElementById('display-total-price')?.closest('div')?.parentElement;
@@ -1310,7 +1328,8 @@ async function updateCartTotals() {
             totalRow.insertBefore(div, totalRow.firstChild);
         }
     } else {
-        document.getElementById('display-ongkir-val').textContent = `Rp ${selectedShippingCost.toLocaleString('id-ID')}`;
+        const ongkirValEl = document.getElementById('display-ongkir-val');
+        if(ongkirValEl) ongkirValEl.textContent = `Rp ${selectedShippingCost.toLocaleString('id-ID')}`;
     }
 
     if(region === 'luar') {
@@ -1323,39 +1342,6 @@ async function updateCartTotals() {
 
     const totalPriceEl = document.getElementById('display-total-price');
     if(totalPriceEl) totalPriceEl.textContent = "Rp " + Math.round(grandTotal).toLocaleString('id-ID');
-}
-    // Tampilkan baris diskon otomatis / event
-    if(totalDiscount > 0) {
-        document.getElementById('discount-row').classList.remove('hidden');
-        document.getElementById('display-discount-val').textContent = "- Rp " + Math.round(totalDiscount).toLocaleString('id-ID');
-    } else { 
-        document.getElementById('discount-row').classList.add('hidden'); 
-    }
-
-    // Tampilkan ongkir realtime di ringkasan jika ada
-    let shippingRow = document.getElementById('shipping-cost-row');
-    if(!shippingRow) {
-        // Buat elemen baris ongkir jika belum ada di HTML
-        const totalContainer = document.getElementById('display-total-price').closest('.bg-emerald-50');
-        if(totalContainer) {
-            const div = document.createElement('div');
-            div.id = 'shipping-cost-row';
-            div.className = "flex justify-between items-center text-xs text-slate-700 font-medium border-b border-emerald-200/60 pb-2";
-            div.innerHTML = `<span>Estimasi Ongkos Kirim (Realtime):</span> <span id="display-shipping-val" class="font-bold text-slate-900">Rp ${shippingCost.toLocaleString('id-ID')}</span>`;
-            totalContainer.insertBefore(div, totalContainer.querySelector('.pt-1'));
-        }
-    } else {
-        document.getElementById('display-shipping-val').textContent = "Rp " + shippingCost.toLocaleString('id-ID');
-    }
-
-    if(region === 'luar') {
-        document.getElementById('dp-row').classList.remove('hidden');
-        document.getElementById('display-dp-val').textContent = "Rp " + Math.round(dpVal).toLocaleString('id-ID') + " (50% DP)";
-    } else { 
-        document.getElementById('dp-row').classList.add('hidden'); 
-    }
-
-    document.getElementById('display-total-price').textContent = "Rp " + Math.round(grandTotal).toLocaleString('id-ID');
 }
 
 function toggleAdminPanel() { 
@@ -1417,6 +1403,10 @@ function applyCloudData(data) {
         extraColorPrice = data.extraColorPrice;
         safeLocalStorageSet('ilham_extraColorPrice', extraColorPrice);
     }
+    if(data.currentAdminEventDiscount !== undefined) {
+        currentAdminEventDiscount = data.currentAdminEventDiscount;
+        safeLocalStorageSet('ilham_adminEventDiscount', currentAdminEventDiscount);
+    }
 
     if(data.originCityId !== undefined) {
         originCityId = data.originCityId;
@@ -1449,8 +1439,9 @@ async function downloadCustomerInvoicePDF() {
     if(cartItems.length === 0) return alert("Keranjang pesanan masih kosong!");
     let totalQty = 0, grandSubtotal = 0;
     cartItems.forEach(item => { totalQty += item.qty; grandSubtotal += item.subtotal; });
-    let discountVal = totalQty >= 1000 ? grandSubtotal * 0.10 : 0;
-    let grandTotal = grandSubtotal - discountVal;
+    let qtyDiscount = totalQty >= 1000 ? grandSubtotal * 0.10 : 0;
+    let totalDiscount = qtyDiscount + (window.currentAdminEventDiscount || 0);
+    let grandTotal = grandSubtotal - totalDiscount;
     const region = document.getElementById('shipping-region').value;
     const paymentTypeNote = region === 'jabodetabek' ? 'Wilayah Jabodetabek (Sistem COD / Bayar di Tempat)' : 'Di Luar Jabodetabek (Wajib DP 50% / Pelunasan)';
 
@@ -1534,10 +1525,10 @@ async function downloadCustomerInvoicePDF() {
     startY += 6;
     pdf.setFont("helvetica", "bold"); pdf.setFontSize(8.5);
     pdf.text(`Subtotal Keseluruhan: Rp ${grandSubtotal.toLocaleString('id-ID')}`, 130, startY);
-    if(discountVal > 0) {
+    if(totalDiscount > 0) {
         startY += 6;
         pdf.setTextColor(10, 153, 100);
-        pdf.text(`Diskon Pesanan Besar (10%): - Rp ${Math.round(discountVal).toLocaleString('id-ID')}`, 115, startY);
+        pdf.text(`Total Diskon: - Rp ${Math.round(totalDiscount).toLocaleString('id-ID')}`, 130, startY);
         pdf.setTextColor(15, 23, 42);
     }
     startY += 6;
@@ -1570,44 +1561,6 @@ async function downloadCustomerInvoicePDF() {
         } catch(e) {}
     }
 
-
-    // ==========================================
-// INTEGRASI RAJA ONGKR REALTIME API
-// ==========================================
-async function checkRealtimeShippingCost(destinationCityId, courierCode = "jne") {
-    const totalWeight = calculateTotalCartWeight(); // Mengambil total berat gram dari keranjang
-    if (totalWeight <= 0) return 0;
-
-    try {
-        const response = await fetch('https://api.rajaongkir.com/starter/cost', {
-            method: 'POST',
-            headers: {
-                'key': rajaOngkirApiKey,
-                'Content-Type': 'application/x-www-form-urlencoded'
-            },
-            body: new URLSearchParams({
-                origin: originCityId,          // ID Kota Asal (Default Tangerang: 444)
-                destination: destinationCityId, // ID Kota Tujuan dari input/pilihan customer
-                weight: totalWeight,            // Berat total dalam gram
-                courier: courierCode            // Kurir (jne, jnt, sicepat, dll)
-            })
-        });
-
-        const result = await response.json();
-        if (result && result.rajaongkir && result.rajaongkir.results && result.rajaongkir.results.length > 0) {
-            // Ambil harga layanan reguler/pertama dari ekspedisi yang dipilih
-            const costs = result.rajaongkir.results[0].costs;
-            if (costs && costs.length > 0) {
-                return costs[0].cost[0].value; // Mengembalikan nilai ongkir dalam Rupiah
-            }
-        }
-    } catch (e) {
-        console.error("Gagal mengambil data ongkir Raja Ongkir:", e);
-    }
-    return 0; // Default 0 jika gagal / offline
-} 
-
-    
     if(startY > 240) { pdf.addPage(); startY = 20; }
 
     startY += 4;
@@ -2000,8 +1953,9 @@ async function saveOrderAndSendWhatsApp() {
     const orderId = "PO-" + Math.floor(1000 + Math.random() * 9000);
     let totalQty = 0, grandSubtotal = 0;
     cartItems.forEach(item => { totalQty += item.qty; grandSubtotal += item.subtotal; });
-    const discountVal = totalQty >= 1000 ? grandSubtotal * 0.10 : 0;
-    const grandSubtotalAfterDisc = grandSubtotal - discountVal;
+    const qtyDiscount = totalQty >= 1000 ? grandSubtotal * 0.10 : 0;
+    const totalDiscount = qtyDiscount + (window.currentAdminEventDiscount || 0);
+    const grandSubtotalAfterDisc = grandSubtotal - totalDiscount;
     const grandTotal = grandSubtotalAfterDisc + selectedShippingCost;
     
     const region = document.getElementById('shipping-region')?.value || 'jabodetabek';
@@ -2011,7 +1965,7 @@ async function saveOrderAndSendWhatsApp() {
         id: orderId, 
         name: `${safeTitle} ${safeName}`, 
         wa: customerProfile.wa, 
-        address: customerProfile.address, // <-- Otomatis menggunakan alamat profil customer yang tersimpan
+        address: customerProfile.address, // <-- Otomatis menggunakan alamat profil customer
         region: region, 
         items: cartItems, 
         totalPrice: "Rp " + Math.round(grandTotal).toLocaleString('id-ID'),
