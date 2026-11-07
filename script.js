@@ -1167,11 +1167,8 @@ function requestAdminLogin() {
     }
 }
 
-
-// ==========================================
-// 4. CLOUD SYNC & LOCALSTORAGE
-// ==========================================
 async function saveToCloud() {
+    // 1. Amankan ke localStorage terlebih dahulu
     safeLocalStorageSet('ilham_bagModels', JSON.stringify(bagModels));
     safeLocalStorageSet('ilham_bankAccounts', JSON.stringify(bankAccounts));
     safeLocalStorageSet('ilham_bagColors', JSON.stringify(bagColors));
@@ -1187,51 +1184,56 @@ async function saveToCloud() {
     safeLocalStorageSet('ilham_storeEmail', storeEmail);
     safeLocalStorageSet('ilham_pdfPassword', pdfPassword);
     safeLocalStorageSet('ilham_ownerWaNumber', ownerWaNumber);
-    safeLocalStorageSet('ilham_brandLogoUrl', brandLogoUrl);
-    safeLocalStorageSet('ilham_customStampUrl', customStampUrl);
-    safeLocalStorageSet('ilham_adminSignatureUrl', adminSignatureUrl);
+    safeLocalStorageSet('ilham_brandLogoUrl', brandLogoUrl || "");
+    safeLocalStorageSet('ilham_customStampUrl', customStampUrl || "");
+    safeLocalStorageSet('ilham_adminSignatureUrl', adminSignatureUrl || "");
     safeLocalStorageSet('ilham_customerProfile', JSON.stringify(customerProfile));
     
-    if(!window.firebaseDb) return;
+    // 2. Cegah loop sinkronisasi saat admin sedang mengetik/input data baru
+    window.isManualUpdating = true;
+
+    // 3. Sinkronisasi ke Cloud Firestore
+    if(!window.firebaseDb || !window.firebaseDeps) {
+        console.warn("Firebase belum siap, data tersimpan secara lokal.");
+        window.isManualUpdating = false;
+        return;
+    }
+
     try {
         const { doc, setDoc } = window.firebaseDeps;
         const docRef = doc(window.firebaseDb, "settings", "master_data");
+        
         await setDoc(docRef, {
-            bagModels: bagModels,
+            bagModels: bagModels || [],
             knowledgeFaq: (typeof knowledgeFaq !== 'undefined') ? knowledgeFaq : [],
-            bankAccounts, bagColors, inkColors, dtfOptions,
+            bankAccounts: bankAccounts || [],
+            bagColors: bagColors || [],
+            inkColors: inkColors || [],
+            dtfOptions: dtfOptions || [],
             blockedWords: (typeof blockedWords !== 'undefined') ? blockedWords : [],
             unansweredLogs: (typeof unansweredLogs !== 'undefined') ? unansweredLogs : [],
-            extraColorPrice, storeName, pdfPassword, ownerWaNumber, 
-            brandLogoUrl: brandLogoUrl || "", customStampUrl: customStampUrl || "", 
-            adminSignatureUrl: adminSignatureUrl || "", storeAddress, storePhone, storeEmail
+            extraColorPrice: extraColorPrice || 400,
+            storeName: storeName || "ILHAM SPUNBOND",
+            pdfPassword: pdfPassword || "ilham123",
+            ownerWaNumber: ownerWaNumber || "6289630539563",
+            brandLogoUrl: brandLogoUrl || "",
+            customStampUrl: customStampUrl || "",
+            adminSignatureUrl: adminSignatureUrl || "",
+            storeAddress: storeAddress || "",
+            storePhone: storePhone || "",
+            storeEmail: storeEmail || ""
         }, { merge: true });
-    } catch(e) { console.error("Cloud save error:", e); }
+
+        console.log("Data master admin sukses dikunci dan disimpan ke Cloud Firestore!");
+    } catch(e) { 
+        console.error("Gagal sinkronisasi Cloud Firestore:", e); 
+    } finally {
+        // Buka kembali kunci manual update setelah jeda singkat
+        setTimeout(() => {
+            window.isManualUpdating = false;
+        }, 800);
+    }
 }
-
-window.initCloudSync = function() {
-    if(!window.firebaseDb) return;
-    const db = window.firebaseDb;
-    const { doc, getDoc, onSnapshot } = window.firebaseDeps;
-    const docRef = doc(db, "settings", "master_data");
-    
-    getDoc(docRef).then((docSnap) => {
-        if (docSnap.exists()) applyCloudData(docSnap.data());
-        else saveToCloud();
-    }).catch(err => console.log(err));
-
-    onSnapshot(docRef, (docSnap) => {
-        if (docSnap.exists() && !isSyncingFromCloud) {
-            applyCloudData(docSnap.data());
-            const statusEl = document.getElementById('sync-status');
-            if(statusEl) {
-                statusEl.textContent = "☁️ Cloud Sync Active";
-                statusEl.className = "text-[11px] bg-emerald-100 text-emerald-800 px-3 py-1 rounded-full font-medium inline-block shadow-sm border border-emerald-300";
-            }
-        }
-    });
-};
-
 function applyCloudData(data) {
     if (window.isManualUpdating) return;
 
