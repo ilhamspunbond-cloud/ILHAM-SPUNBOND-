@@ -3,46 +3,60 @@
 // ==========================================
 const cleanDefaultBagSvg = "data:application/octet-stream;base64,PHN2Zz48L3N2Zz4=";
 
+// Pengaturan Global Toko & Logistik
+let storeName = "ILHAM SPUNBOND";
+let storeAddress = "WISMA MAS BLOK G2 NO 10, Tangerang-Banten";
+let storePhone = "0896 3053 9563";
+let storeEmail = "ilhamspunbond@gmail.com";
+let pdfPassword = "ilham123";
+let ownerWaNumber = "6289630539563";
+let extraColorPrice = 400;
+let originCityId = "444"; // Default Kota/Kab Asal Pengiriman (Raja Ongkir)
+
+let brandLogoUrl = "";
+let customStampUrl = "";
+let adminSignatureUrl = "";
+
 const defaultBagModels = [
     { 
         name: "Tas Spunbond Oval", 
         image: "https://via.placeholder.com/400x500/ffffff/334155?text=Tas+Oval", 
         sizes: [
-            { name: "20 x 30 cm", price: 1400, note: "Pas untuk brosur, dokumen, souvenir kecil, dan aksesoris ringan." }, 
-            { name: "25 x 35 cm", price: 1550, note: "Ideal untuk dus nasi ukuran sedang atau baju kaos distro." }, 
-            { name: "30 x 40 cm", price: 2300, note: "Cocok untuk tas belanja toko baju, map besar, dan pameran." }
+            { name: "20 x 30 cm", price: 1400, weight: 30, note: "Pas untuk brosur, dokumen, souvenir kecil, dan aksesoris ringan." }, 
+            { name: "25 x 35 cm", price: 1550, weight: 40, note: "Ideal untuk dus nasi ukuran sedang atau baju kaos distro." }, 
+            { name: "30 x 40 cm", price: 2300, weight: 55, note: "Cocok untuk tas belanja toko baju, map besar, dan pameran." }
         ] 
     },
     { 
         name: "Tas HLS (Handle Lipat Samping)", 
         image: "https://via.placeholder.com/400x500/ffffff/334155?text=Tas+HLS", 
         sizes: [
-            { name: "20 x 30 x 8 cm", price: 2000, note: "Sangat pas untuk kemasan box HP, kosmetik, atau souvenir kotak." }, 
-            { name: "25 x 35 x 10 cm", price: 2500, note: "Cocok untuk tas catering box nasi kuah atau tas toko sepatu anak." },
-            { name: "30 x 40 x 10 cm", price: 3000, note: "Ideal untuk tas butik pakaian tebal dan bingkisan sembako." }
+            { name: "20 x 30 x 8 cm", price: 2000, weight: 40, note: "Sangat pas untuk kemasan box HP, kosmetik, atau souvenir kotak." }, 
+            { name: "25 x 35 x 10 cm", price: 2500, weight: 55, note: "Cocok untuk tas catering box nasi kuah atau tas toko sepatu anak." },
+            { name: "30 x 40 x 10 cm", price: 3000, weight: 75, note: "Ideal untuk tas butik pakaian tebal dan bingkisan sembako." }
         ] 
     },
     { 
         name: "Tas HLB Box (Handle Kotak)", 
         image: "https://via.placeholder.com/400x500/ffffff/334155?text=Tas+HLB+Box", 
         sizes: [
-            { name: "25 x 25 x 10 cm", price: 2800, note: "Rekomendasi terbaik untuk dus kue kotak atau box nasi ukuran 20x20 cm." }, 
-            { name: "30 x 30 x 12 cm", price: 3400, note: "Pas untuk kotak catering besar atau kue tart hajatan." }
+            { name: "25 x 25 x 10 cm", price: 2800, weight: 50, note: "Rekomendasi terbaik untuk dus kue kotak atau box nasi ukuran 20x20 cm." }, 
+            { name: "30 x 30 x 12 cm", price: 3400, weight: 70, note: "Pas untuk kotak catering besar atau kue tart hajatan." }
         ] 
     },
     { 
         name: "Tas HLB Kotak", 
         image: "https://via.placeholder.com/400x500/ffffff/334155?text=Tas+HLB+Kotak", 
         sizes: [
-            { name: "20 x 20 x 15 cm", price: 2500, note: "Cocok untuk tas kotak bekal makanan atau wadah hampers kecil." }, 
-            { name: "30 x 20 x 20 cm", price: 3200, note: "Ideal untuk tas kardus besar, galon mini, atau dus tebal." }
+            { name: "20 x 20 x 15 cm", price: 2500, weight: 45, note: "Cocok untuk tas kotak bekal makanan atau wadah hampers kecil." }, 
+            { name: "30 x 20 x 20 cm", price: 3200, weight: 65, note: "Ideal untuk tas kardus besar, galon mini, atau dus tebal." }
         ] 
     },
     { 
         name: "KARTU NAMA CUSTOM", 
         image: "https://via.placeholder.com/400x500/ffffff/334155?text=Kartu+Nama", 
         sizes: [
-            { name: "KARTU NAMA CUSTOM 4BOX", price: 100000, note: "UNTUK MENAMBAH BRANDING USAHAMU." }
+            { name: "KARTU NAMA CUSTOM 4BOX", price: 100000, weight: 150, note: "UNTUK MENAMBAH BRANDING USAHAMU." }
         ] 
     }
 ];
@@ -68,17 +82,6 @@ let inkColors = [
     { name: "Emas / Gold", hex: "#eab308" }
 ];
 let dtfOptions = [{ name: "Sedang (8x8 cm)", price: 2000 }, { name: "Besar (10x10 cm)", price: 3000 }];
-
-let storeName = "ILHAM SPUNBOND";
-let storeAddress = "Taman Raya Rajeg Blok-K10 No.06, Tangerang-Banten";
-let storePhone = "0896 3053 9563";
-let storeEmail = "ilhamspunbond@gmail.com";
-let pdfPassword = "ilham123";
-let ownerWaNumber = "6289630539563";
-let extraColorPrice = 400;
-let brandLogoUrl = "";
-let customStampUrl = "";
-let adminSignatureUrl = "";
 
 let activeBagTint = "#ffffff";
 let activeColorName = "Putih Bersih";
@@ -106,6 +109,7 @@ try {
     if(localStorage.getItem('ilham_inkColors')) inkColors = JSON.parse(localStorage.getItem('ilham_inkColors'));
     if(localStorage.getItem('ilham_dtfOptions')) dtfOptions = JSON.parse(localStorage.getItem('ilham_dtfOptions'));
     if(localStorage.getItem('ilham_extraColorPrice')) extraColorPrice = parseInt(localStorage.getItem('ilham_extraColorPrice')) || 400;
+    if(localStorage.getItem('ilham_originCityId')) originCityId = localStorage.getItem('ilham_originCityId');
     if(localStorage.getItem('ilham_storeName')) storeName = localStorage.getItem('ilham_storeName');
     if(localStorage.getItem('ilham_storeAddress')) storeAddress = localStorage.getItem('ilham_storeAddress');
     if(localStorage.getItem('ilham_storePhone')) storePhone = localStorage.getItem('ilham_storePhone');
@@ -578,6 +582,13 @@ function saveGlobalConfig() {
     ownerWaNumber = document.getElementById('admin-wa-number').value;
     pdfPassword = document.getElementById('admin-pdf-password').value;
     
+    // ⬅️ Tambahkan penangkapan input asal Raja Ongkir di sini
+    const originInput = document.getElementById('admin-origin-city-id');
+    if(originInput) {
+        originCityId = originInput.value.trim() || "444";
+        safeLocalStorageSet('ilham_originCityId', originCityId);
+    }
+    
     const extraInput = document.getElementById('admin-extra-color-price');
     if(extraInput) {
         extraColorPrice = parseInt(extraInput.value) || 0;
@@ -586,7 +597,6 @@ function saveGlobalConfig() {
     }
     saveToCloud();
 }
-
 function addBank() {
     const bank = document.getElementById('new-bank-name').value.trim();
     const acc = document.getElementById('new-bank-acc').value.trim();
@@ -1167,87 +1177,33 @@ function requestAdminLogin() {
     }
 }
 
-async function saveToCloud() {
-    // 1. Amankan ke localStorage terlebih dahulu
-    safeLocalStorageSet('ilham_bagModels', JSON.stringify(bagModels));
-    safeLocalStorageSet('ilham_bankAccounts', JSON.stringify(bankAccounts));
-    safeLocalStorageSet('ilham_bagColors', JSON.stringify(bagColors));
-    safeLocalStorageSet('ilham_inkColors', JSON.stringify(inkColors));
-    safeLocalStorageSet('ilham_dtfOptions', JSON.stringify(dtfOptions));
-    if(typeof knowledgeFaq !== 'undefined') safeLocalStorageSet('ilham_knowledgeFaq', JSON.stringify(knowledgeFaq));
-    if(typeof blockedWords !== 'undefined') safeLocalStorageSet('ilham_blockedWords', JSON.stringify(blockedWords));
-    if(typeof unansweredLogs !== 'undefined') safeLocalStorageSet('ilham_unansweredLogs', JSON.stringify(unansweredLogs));
-    safeLocalStorageSet('ilham_extraColorPrice', extraColorPrice);
-    safeLocalStorageSet('ilham_storeName', storeName);
-    safeLocalStorageSet('ilham_storeAddress', storeAddress);
-    safeLocalStorageSet('ilham_storePhone', storePhone);
-    safeLocalStorageSet('ilham_storeEmail', storeEmail);
-    safeLocalStorageSet('ilham_pdfPassword', pdfPassword);
-    safeLocalStorageSet('ilham_ownerWaNumber', ownerWaNumber);
-    safeLocalStorageSet('ilham_brandLogoUrl', brandLogoUrl || "");
-    safeLocalStorageSet('ilham_customStampUrl', customStampUrl || "");
-    safeLocalStorageSet('ilham_adminSignatureUrl', adminSignatureUrl || "");
-    safeLocalStorageSet('ilham_customerProfile', JSON.stringify(customerProfile));
-    
-    // 2. Cegah loop sinkronisasi saat admin sedang mengetik/input data baru
-    window.isManualUpdating = true;
 
-    // 3. Sinkronisasi ke Cloud Firestore
-    if(!window.firebaseDb || !window.firebaseDeps) {
-        console.warn("Firebase belum siap, data tersimpan secara lokal.");
-        window.isManualUpdating = false;
-        return;
-    }
 
-    try {
-        const { doc, setDoc } = window.firebaseDeps;
-        const docRef = doc(window.firebaseDb, "settings", "master_data");
-        
-        await setDoc(docRef, {
-            bagModels: bagModels || [],
-            knowledgeFaq: (typeof knowledgeFaq !== 'undefined') ? knowledgeFaq : [],
-            bankAccounts: bankAccounts || [],
-            bagColors: bagColors || [],
-            inkColors: inkColors || [],
-            dtfOptions: dtfOptions || [],
-            blockedWords: (typeof blockedWords !== 'undefined') ? blockedWords : [],
-            unansweredLogs: (typeof unansweredLogs !== 'undefined') ? unansweredLogs : [],
-            extraColorPrice: extraColorPrice || 400,
-            storeName: storeName || "ILHAM SPUNBOND",
-            pdfPassword: pdfPassword || "ilham123",
-            ownerWaNumber: ownerWaNumber || "6289630539563",
-            brandLogoUrl: brandLogoUrl || "",
-            customStampUrl: customStampUrl || "",
-            adminSignatureUrl: adminSignatureUrl || "",
-            storeAddress: storeAddress || "",
-            storePhone: storePhone || "",
-            storeEmail: storeEmail || ""
-        }, { merge: true });
 
-        console.log("Data master admin sukses dikunci dan disimpan ke Cloud Firestore!");
-    } catch(e) { 
-        console.error("Gagal sinkronisasi Cloud Firestore:", e); 
-    } finally {
-        // Buka kembali kunci manual update setelah jeda singkat
-        setTimeout(() => {
-            window.isManualUpdating = false;
-        }, 800);
-    }
-}
 function applyCloudData(data) {
     if (window.isManualUpdating) return;
 
     isSyncingFromCloud = true;
+    
     if(data.bagModels && data.bagModels.length > 0) {  
         bagModels = data.bagModels.map((m, idx) => {
             const localModel = bagModels[idx];
             return {
                 name: m.name,
                 image: (m.image && !m.image.includes('placeholder.com')) ? m.image : (localModel ? localModel.image : "https://via.placeholder.com/400x500/ffffff/334155?text=Tas"),
-                sizes: m.sizes || (localModel ? localModel.sizes : [])
+                sizes: m.sizes ? m.sizes.map((s, sIdx) => {
+                    const localSize = localModel && localModel.sizes ? localModel.sizes[sIdx] : null;
+                    return {
+                        name: s.name,
+                        price: s.price,
+                        weight: s.weight !== undefined ? s.weight : (localSize ? localSize.weight : 40), 
+                        note: s.note || (localSize ? localSize.note : "")
+                    };
+                }) : (localModel ? localModel.sizes : [])
             };
         });
     }
+
     if(data.bankAccounts) bankAccounts = data.bankAccounts;
     if(data.bagColors) bagColors = data.bagColors;
     if(data.inkColors) inkColors = data.inkColors;
@@ -1260,10 +1216,19 @@ function applyCloudData(data) {
 
     if(data.blockedWords && typeof blockedWords !== 'undefined') blockedWords = data.blockedWords;
     if(data.unansweredLogs && typeof unansweredLogs !== 'undefined') unansweredLogs = data.unansweredLogs;
+    
     if(data.extraColorPrice !== undefined) {
         extraColorPrice = data.extraColorPrice;
         safeLocalStorageSet('ilham_extraColorPrice', extraColorPrice);
     }
+
+    if(data.originCityId !== undefined) {
+        originCityId = data.originCityId;
+        safeLocalStorageSet('ilham_originCityId', originCityId);
+        const originInput = document.getElementById('admin-origin-city-id');
+        if(originInput) originInput.value = originCityId;
+    }
+
     if(data.storeName) storeName = data.storeName;
     if(data.pdfPassword) pdfPassword = data.pdfPassword;
     if(data.ownerWaNumber) ownerWaNumber = data.ownerWaNumber;
@@ -1277,10 +1242,9 @@ function applyCloudData(data) {
     updateDynamicManifest();
     renderAdminPanel();
     updateBagCanvas();
+    
     setTimeout(() => { isSyncingFromCloud = false; }, 1000);
 }
-
-
 // ==========================================
 // 5. PDF & ORDER MANAGEMENT
 // ==========================================
@@ -1321,10 +1285,15 @@ async function downloadCustomerInvoicePDF() {
     pdf.text("INFORMASI PELANGGAN:", 15, 48);
     pdf.setFont("helvetica", "normal"); pdf.setFontSize(8.5);
     pdf.text(`Nama: ${safeTitle} ${safeName} (${customerProfile.wa || '-'})`, 15, 54);
-    pdf.text(`Alamat Pengiriman: ${customerProfile.address || '-'}`, 15, 60);
-    pdf.text(`Ket. Pembayaran: ${paymentTypeNote}`, 15, 66);
+    
+    // Auto-wrap alamat pengiriman
+    const addressLines = pdf.splitTextToSize(`Alamat Pengiriman: ${customerProfile.address || '-'}`, 110);
+    pdf.text(addressLines, 15, 60);
+    const nextYAfterAddress = 60 + (addressLines.length * 4.5);
 
-    let startY = 74;
+    pdf.text(`Ket. Pembayaran: ${paymentTypeNote}`, 15, nextYAfterAddress + 2);
+
+    let startY = nextYAfterAddress + 10;
     pdf.setFillColor(224, 242, 254); 
     pdf.setDrawColor(0, 0, 0); pdf.setLineWidth(0.3);
     pdf.rect(15, startY, 180, 8, 'FD');
@@ -1348,7 +1317,7 @@ async function downloadCustomerInvoicePDF() {
         const maxLineCount = Math.max(descLines.length, methodLines.length, 1);
         const cellHeight = Math.max(15, maxLineCount * 4.5 + 4);
 
-        if(startY + cellHeight > 270) {
+        if(startY + cellHeight > 250) {
             pdf.addPage();
             startY = 20;
         }
@@ -1379,17 +1348,36 @@ async function downloadCustomerInvoicePDF() {
     pdf.setFontSize(10);
     pdf.text(`TOTAL TAGIHAN: Rp ${Math.round(grandTotal).toLocaleString('id-ID')}`, 115, startY);
 
-    if(cartItems[0] && cartItems[0].mockupImg) {
+    // Galeri render seluruh mockup item di keranjang
+    if(cartItems.length > 0) {
         try {
             startY += 10;
+            if(startY > 220) { pdf.addPage(); startY = 20; }
             pdf.setFont("helvetica", "bold"); pdf.setFontSize(8.5);
-            pdf.text("ILUSTRASI PRATINJAU DESAIN (BOX 1):", 15, startY);
-            startY += 4;
-            pdf.addImage(cartItems[0].mockupImg, 'JPEG', 15, startY, 38, 38);
+            pdf.text("ILUSTRASI PRATINJAU DESAIN PESANAN:", 15, startY);
+            startY += 5;
+
+            let posX = 15;
+            cartItems.forEach((it, i) => {
+                if(it.mockupImg) {
+                    if(posX + 35 > 195) {
+                        posX = 15;
+                        startY += 38;
+                        if(startY > 230) { pdf.addPage(); startY = 20; }
+                    }
+                    pdf.addImage(it.mockupImg, 'JPEG', posX, startY, 32, 32);
+                    pdf.setFont("helvetica", "normal"); pdf.setFontSize(7);
+                    pdf.text(`Item #${i+1}`, posX, startY + 35);
+                    posX += 38;
+                }
+            });
+            startY += 10;
         } catch(e) {}
     }
 
-    startY += 44;
+    if(startY > 240) { pdf.addPage(); startY = 20; }
+
+    startY += 4;
     pdf.setFont("helvetica", "bold"); pdf.setFontSize(8.5);
     pdf.text("Silakan lakukan transfer pembayaran ke rekening resmi berikut:", 15, startY);
     startY += 5;
@@ -1638,9 +1626,12 @@ async function downloadOwnerInvoicePDF(docId, silent = false) {
     pdf.setFont("helvetica", "bold"); pdf.text("DATA PEMESAN:", 15, 62);
     pdf.setFont("helvetica", "normal"); pdf.setFontSize(8.5);
     pdf.text(`Nama: ${o.name} (${o.wa})`, 15, 68);
-    pdf.text(`Alamat Kirim: ${o.address}`, 15, 74);
+    
+    const ownerAddressLines = pdf.splitTextToSize(`Alamat Kirim: ${o.address}`, 110);
+    pdf.text(ownerAddressLines, 15, 74);
+    const nextYOwnerAfterAddr = 74 + (ownerAddressLines.length * 4.5);
 
-    let startY = 80;
+    let startY = nextYOwnerAfterAddr + 4;
     pdf.setFillColor(224, 242, 254); 
     pdf.setDrawColor(0, 0, 0); pdf.setLineWidth(0.3);
     pdf.rect(15, startY, 180, 8, 'FD');
@@ -1664,7 +1655,7 @@ async function downloadOwnerInvoicePDF(docId, silent = false) {
         const maxLineCount = Math.max(descLines.length, methodLines.length, 1);
         const cellHeight = Math.max(15, maxLineCount * 4.5 + 4);
 
-        if(startY + cellHeight > 270) {
+        if(startY + cellHeight > 250) {
             pdf.addPage();
             startY = 20;
         }
@@ -1694,18 +1685,35 @@ async function downloadOwnerInvoicePDF(docId, silent = false) {
         } catch(e) {}
     }
 
-    if(o.items[0] && o.items[0].mockupImg) {
+    if(o.items && o.items.length > 0) {
         try {
             startY += 10;
+            if(startY > 220) { pdf.addPage(); startY = 20; }
             pdf.setFont("helvetica", "bold"); pdf.setFontSize(8.5);
-            pdf.text("ILUSTRASI PRATINJAU DESAIN (BOX 1):", 15, startY);
-            startY += 4;
-            pdf.addImage(o.items[0].mockupImg, 'JPEG', 15, startY, 38, 38);
+            pdf.text("ILUSTRASI PRATINJAU DESAIN PESANAN:", 15, startY);
+            startY += 5;
+
+            let posX = 15;
+            o.items.forEach((it, i) => {
+                if(it.mockupImg) {
+                    if(posX + 35 > 195) {
+                        posX = 15;
+                        startY += 38;
+                        if(startY > 230) { pdf.addPage(); startY = 20; }
+                    }
+                    pdf.addImage(it.mockupImg, 'JPEG', posX, startY, 32, 32);
+                    pdf.setFont("helvetica", "normal"); pdf.setFontSize(7);
+                    pdf.text(`Item #${i+1}`, posX, startY + 35);
+                    posX += 38;
+                }
+            });
+            startY += 10;
         } catch(e) {}
     }
 
     if(adminSignatureUrl) {
         try {
+            if(startY > 230) { pdf.addPage(); startY = 20; }
             pdf.setFont("helvetica", "normal"); pdf.setFontSize(8);
             pdf.text("Hormat Kami,", 145, startY + 5);
             pdf.addImage(adminSignatureUrl, 'PNG', 140, startY + 8, 35, 18);
