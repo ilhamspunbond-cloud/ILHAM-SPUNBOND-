@@ -1041,6 +1041,27 @@ function onCustomerSizeSelect() {
     updateLivePricePreview(); 
 }
 
+// ==========================================
+// FUNGSI HITUNG TOTAL BERAT PESANAN (UNTUK RAJA ONGKR)
+// ==========================================
+function calculateTotalCartWeight() {
+    let totalWeightGrams = 0;
+
+    cartItems.forEach(item => {
+        // Cari model dan ukuran tas yang sesuai di data bagModels
+        let foundModel = bagModels.find(m => m.name === item.model);
+        let foundSize = foundModel ? foundModel.sizes.find(s => s.name === item.size) : null;
+        
+        // Ambil berat per pcs (default 40 gram jika belum diset)
+        let weightPerPcs = foundSize && foundSize.weight ? foundSize.weight : 40;
+        
+        // Total berat = berat per pcs * quantity item tersebut
+        totalWeightGrams += (weightPerPcs * item.qty);
+    });
+
+    return totalWeightGrams; // Hasil dalam gram (bisa dikonversi ke kg untuk Raja Ongkir)
+}
+
 function updateLivePricePreview() {
     const unitPrice = calculateItemPrice();
     const qtyInput = document.getElementById('item-qty');
