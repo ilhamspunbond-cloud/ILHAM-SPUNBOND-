@@ -1751,7 +1751,6 @@ async function downloadOwnerInvoicePDF(docId, silent = false) {
 // 5. PDF & ORDER MANAGEMENT & PAYMENT
 // ==========================================
 
-// 1. Taruh fungsi QRISly di sini
 async function generateQrisPayment(orderId, totalAmount) {
     try {
         const response = await fetch('https://api.qrisly.id/v1/create', {
@@ -1780,12 +1779,6 @@ async function generateQrisPayment(orderId, totalAmount) {
     }
     return null;
 }
-// Contoh pemanggilan saat buat pesanan:
-const qrisData = await generateQrisPayment(orderId, grandTotal);
-if(qrisData) {
-    // Tampilkan qrImageUrl ke modal atau screen pembeli supaya bisa di-scan
-    console.log("QRIS URL:", qrisData.qrImageUrl);
-}
 
 async function saveOrderAndSendWhatsApp() {
     if(!customerProfile.name || !customerProfile.wa || !customerProfile.address) return alert("Profil pemesan belum lengkap!");
@@ -1802,13 +1795,22 @@ async function saveOrderAndSendWhatsApp() {
     const region = document.getElementById('shipping-region').value;
     const dpVal = grandTotal * 0.50;
 
+    // --- INTEGRASI QRISLY DI DALAM FUNGSI (AMAN) ---
+    const qrisData = await generateQrisPayment(orderId, Math.round(grandTotal));
+    let qrisInfoText = "";
+    if(qrisData) {
+        console.log("QRIS URL:", qrisData.qrImageUrl);
+        qrisInfoText = `\n💳 *Link QRIS Pembayaran:* ${qrisData.qrImageUrl}`;
+    }
+
     const newOrder = {
         id: orderId, name: `${safeTitle} ${safeName}`, wa: customerProfile.wa, address: customerProfile.address,
         region: region, items: cartItems, totalPrice: "Rp " + Math.round(grandTotal).toLocaleString('id-ID'),
         date: new Date().toLocaleString('id-ID', { dateStyle: 'medium', timeStyle: 'medium' }),
         status: "BELUM LUNAS",
         courier: "J&T Express",
-        trackingNumber: ""
+        trackingNumber: "",
+        qrisUrl: qrisData ? qrisData.qrImageUrl : ""
     };
 
     try {
@@ -1827,9 +1829,13 @@ async function saveOrderAndSendWhatsApp() {
             paymentInstruction = `⚠️ *Ket. Pembayaran:* Wilayah Luar Jabodetabek (*Wajib DP 50% sebesar Rp ${Math.round(dpVal).toLocaleString('id-ID')}*) terlebih dahulu sebelum pesanan diproses oleh tim produksi kami.`;
         }
 
-        let waMessage = `Halo Owner *${storeName}*, saya *${safeTitle} ${safeName}* ingin memesan custom tas dengan rincian berikut:\n\n📦 *No PO:* ${orderId}\n👤 *Nama:* ${safeTitle} ${safeName} (${customerProfile.wa})\n📍 *Alamat:* ${customerProfile.address}\n\n*Daftar Item Pesanan:*${itemsDetailText}\n\n💰 *Total Keseluruhan:* *Rp ${Math.round(grandTotal).toLocaleString('id-ID')}*\n${paymentInstruction}\n\nMohon segera diproses ya bosku, terima kasih! 🙏`;
+        let waMessage = `Halo Owner *${storeName}*, saya *${safeTitle} ${safeName}* ingin memesan custom tas dengan rincian berikut:\n\n📦 *No PO:* ${orderId}\n👤 *Nama:* ${safeTitle} ${safeName} (${customerProfile.wa})\n📍 *Alamat:* ${customerProfile.address}\n\n*Daftar Item Pesanan:*${itemsDetailText}\n\n💰 *Total Keseluruhan:* *Rp ${Math.round(grandTotal).toLocaleString('id-ID')}*\n${paymentInstruction}${qrisInfoText}\n\nMohon segera diproses ya bosku, terima kasih! 🙏`;
 
         alert("Pesanan tersimpan & diarahkan ke WhatsApp owner!");
         window.open(`https://wa.me/${ownerWaNumber}?text=${encodeURIComponent(waMessage)}`);
-    } catch(e) { alert("Gagal menyimpan pesanan ke cloud."); }
+    } catch(e) { 
+        console.error(e);
+        alert("Gagal menyimpan pesanan ke cloud."); 
+    }
 }
+```
