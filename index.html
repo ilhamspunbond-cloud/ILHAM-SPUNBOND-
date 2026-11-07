@@ -23,16 +23,15 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getFirestore, doc, setDoc, getDoc, onSnapshot, collection, getDocs, deleteDoc, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-                const firebaseConfig = {
-            apiKey: "AIzaSyCb7WE1y5x6mLYYy507Um-2uAPiSsZveYo",
-            authDomain: "://firebaseapp.com",
+        const firebaseConfig = {
+            apiKey: "AIzaSyCb7WE1y5x6mLYYy56L",
+            authDomain: "ilham-spunbond.firebaseapp.com",
             projectId: "ilham-spunbond",
-            storageBucket: "ilham-spunbond.firebasestorage.app",
-            messagingSenderId: "796529958955",
-            appId: "1:796529958955:web:45c9d0fafe89d5e2fa4a6e",
+            storageBucket: "ilham-spunbond.appspot.com",
+            messagingSenderId: "79652958955",
+            appId: "1:79652958955:web:45c9",
             measurementId: "G-48V3KQGPBN"
         };
-
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
@@ -233,39 +232,30 @@
                     <option value="2" id="option-two-colors-label">2 Warna Tinta (+Rp 400/pcs - Upload 2 File Logo)</option>
                 </select>
             </div>
-<!-- ========================================== -->
-<!-- KODE HTML PILIHAN CAT SABLON (RAPI & PRESISI) -->
-<!-- ========================================== -->
 
-<!-- UPLOAD LOGO 1 -->
-<div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 space-y-2">
-    <label id="label-logo-1" class="block text-xs font-semibold text-slate-600">6. Upload Logo / Desain Utama (Background Transparan)</label>
-    <input type="file" id="customer-logo-upload-1" accept="image/*" onchange="loadCustomerLogo1(event)" class="w-full text-xs text-slate-500 file:mr-3 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100 cursor-pointer">
-    <div id="logo-upload-status-1" class="text-[10px] text-slate-400 italic"></div>
-    
-    <div id="ink-box-1" class="mt-3 pt-2 border-t border-slate-100">
-        <label class="block text-[11px] font-semibold text-slate-700 mb-1.5 flex items-center gap-1">
-            <span>🎨</span> Pilih Warna Tinta Sablon (Desain 1):
-        </label>
-        <!-- INI KONTAINER TOMBOL CAT SABLON 1 -->
-        <div id="ink-color-buttons-1" class="flex flex-wrap gap-2 pt-1"></div>
-    </div>
-</div>
+            <!-- UPLOAD LOGO 1 -->
+            <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 space-y-2">
+                <label id="label-logo-1" class="block text-xs font-semibold text-slate-600">6. Upload Logo / Desain Utama (Background Transparan)</label>
+                <input type="file" id="customer-logo-upload-1" accept="image/*" onchange="loadCustomerLogo1(event)" class="w-full text-xs text-slate-500 file:mr-3 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100 cursor-pointer">
+                <div id="logo-upload-status-1" class="text-[10px] text-slate-400 italic"></div>
+                
+                <div id="ink-box-1" class="mt-2">
+                    <label class="block text-[11px] font-semibold text-slate-500 mb-1">Pilih Warna Tinta Sablon (Desain 1):</label>
+                    <select id="ink-color-select-1" onchange="updateProcessedLogos()" class="w-full bg-slate-50 border border-slate-300 rounded-xl p-2.5 text-xs font-medium outline-none"></select>
+                </div>
+            </div>
 
-<!-- UPLOAD LOGO 2 (KHUSUS 2 WARNA) -->
-<div id="logo-2-container" class="hidden bg-white p-4 rounded-2xl shadow-sm border border-emerald-200 space-y-2 mt-3">
-    <label class="block text-xs font-semibold text-emerald-800">6b. Upload Logo / Desain Kedua (Background Transparan)</label>
-    <input type="file" id="customer-logo-upload-2" accept="image/*" onchange="loadCustomerLogo2(event)" class="w-full text-xs text-slate-500 file:mr-3 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100 cursor-pointer">
-    <div id="logo-upload-status-2" class="text-[10px] text-slate-400 italic"></div>
-    
-    <div class="mt-3 pt-2 border-t border-emerald-100">
-        <label class="block text-[11px] font-semibold text-emerald-900 mb-1.5 flex items-center gap-1">
-            <span>🎨</span> Pilih Warna Tinta Sablon (Desain 2):
-        </label>
-        <!-- INI KONTAINER TOMBOL CAT SABLON 2 -->
-        <div id="ink-color-buttons-2" class="flex flex-wrap gap-2 pt-1"></div>
-    </div>
-</div>
+            <!-- UPLOAD LOGO 2 (KHUSUS 2 WARNA) -->
+            <div id="logo-2-container" class="hidden bg-white p-4 rounded-2xl shadow-sm border border-emerald-200 space-y-2">
+                <label class="block text-xs font-semibold text-emerald-800">6b. Upload Logo / Desain Kedua (Background Transparan)</label>
+                <input type="file" id="customer-logo-upload-2" accept="image/*" onchange="loadCustomerLogo2(event)" class="w-full text-xs text-slate-500 file:mr-3 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100 cursor-pointer">
+                <div id="logo-upload-status-2" class="text-[10px] text-slate-400 italic"></div>
+                
+                <div class="mt-2">
+                    <label class="block text-[11px] font-semibold text-slate-500 mb-1">Pilih Warna Tinta Sablon (Desain 2):</label>
+                    <select id="ink-color-select-2" onchange="updateProcessedLogos()" class="w-full bg-slate-50 border border-slate-300 rounded-xl p-2.5 text-xs font-medium outline-none"></select>
+                </div>
+            </div>
 
             <!-- UKURAN STIKER DTF -->
             <div id="dtf-size-box" class="hidden bg-emerald-50 p-4 rounded-2xl shadow-sm border border-emerald-200 space-y-2">
@@ -409,78 +399,57 @@
                 <p class="text-[11px] text-slate-400 text-center italic">🔒 Area Box 2 dirender dalam kualitas HD anti-pecah khusus untuk film afdruk.</p>
             </div>
 
-            <!-- FORMULIR PESANAN & REKENING BANK -->
-<div class="bg-white p-4 sm:p-5 rounded-2xl shadow-md border border-slate-200 space-y-4">
-    <h3 class="text-sm font-bold text-slate-800 border-b border-slate-100 pb-2 flex items-center gap-2">
-        <span>📋</span> Formulir Pesanan & Pembayaran
-    </h3>
-    
-    <div>
-        <label class="block text-[11px] font-semibold text-slate-500 mb-1">Wilayah Tujuan Pengiriman</label>
-        <select id="shipping-region" onchange="updateCartTotals();" class="w-full bg-slate-50 border border-slate-300 rounded-xl p-3 text-sm font-medium focus:ring-2 focus:ring-emerald-500 outline-none">
-            <option value="jabodetabek">Wilayah Jabodetabek (Bisa COD)</option>
-            <option value="luar">Di Luar Jabodetabek (Wajib DP 50% / Pelunasan)</option>
-        </select>
-    </div>
+            <!-- FORMULIR PEMESANAN & REKENING BANK -->
+            <div class="bg-white p-4 sm:p-5 rounded-2xl shadow-md border border-slate-200 space-y-4">
+                <h3 class="text-sm font-bold text-slate-800 border-b border-slate-100 pb-2 flex items-center gap-2">
+                    <span>📋</span> Formulir Pesanan & Pembayaran
+                </h3>
+                
+                <div>
+                    <label class="block text-[11px] font-semibold text-slate-500 mb-1">Wilayah Tujuan Pengiriman</label>
+                    <select id="shipping-region" onchange="updateCartTotals();" class="w-full bg-slate-50 border border-slate-300 rounded-xl p-3 text-sm font-medium focus:ring-2 focus:ring-emerald-500 outline-none">
+                        <option value="jabodetabek">Wilayah Jabodetabek (Bisa COD)</option>
+                        <option value="luar">Di Luar Jabodetabek (Wajib DP 50% / Pelunasan)</option>
+                    </select>
+                </div>
 
-    <!-- OTOMATIS TARIK ALAMAT / KOTA CUSTOMER & HITUNG BERAT -->
-    <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200 space-y-2.5 text-xs">
-        <div class="flex justify-between items-center text-slate-700">
-            <span>📍 Alamat Tujuan Customer:</span>
-            <span id="display-customer-city" class="font-bold text-emerald-800">Menyesuaikan Profil...</span>
-        </div>
-        <div class="flex justify-between items-center text-slate-700 border-t border-slate-200/60 pt-2">
-            <span>⚖️ Total Berat / Gramasi Pesanan:</span>
-            <span id="display-total-weight" class="font-bold text-slate-900">0 Gram (0 Kg)</span>
-        </div>
-    </div>
+                <div class="text-[11px] text-emerald-700 font-medium bg-emerald-50/80 px-3 py-2 rounded-lg border border-emerald-200/60 flex items-center gap-1.5">
+                    <span>🔥</span> <span>Info Diskon: Total pesanan **1.000 pcs ke atas** otomatis mendapatkan **Diskon 10%**!</span>
+                </div>
 
-    <!-- TOMBOL CEK ONGKIR RAJAONGKIR (OTOMATIS KIRIM BERAT & KOTA) -->
-    <div class="space-y-2 pt-1">
-     <button type="button" onclick="checkShippingCost()" class="w-full bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold py-3 px-4 rounded-xl text-xs cursor-pointer shadow flex items-center justify-center gap-2 transition active:scale-95">
-    <span>🔍</span> Cek Ongkir Otomatis (RajaOngkir + Berat Paket)
-</button>
-        <!-- Container Hasil Pilihan Kurir & Ongkir -->
-        <div id="shipping-cost-results" class="space-y-1"></div>
-    </div>
+                <div class="bg-emerald-50 border border-emerald-200 p-4 rounded-xl space-y-3">
+                    <div class="flex justify-between items-center text-xs text-slate-700 border-b border-emerald-200/60 pb-2">
+                        <span>Total Quantity Pesanan:</span>
+                        <span id="display-total-qty" class="font-bold text-slate-900 text-sm">0 Pcs</span>
+                    </div>
+                    <div id="discount-row" class="hidden flex justify-between items-center text-xs text-emerald-700 font-medium border-b border-emerald-200/60 pb-2">
+                        <span>Diskon Pesanan Besar (10%):</span>
+                        <span id="display-discount-val" class="font-bold">- Rp 0</span>
+                    </div>
+                    <div id="dp-row" class="hidden flex justify-between items-center text-xs text-amber-700 font-medium border-b border-emerald-200/60 pb-2">
+                        <span>Wajib DP 50% (Luar Jabodetabek):</span>
+                        <span id="display-dp-val" class="font-bold">Rp 0</span>
+                    </div>
+                    
+                    <div class="pt-1 flex justify-between items-center">
+                        <div>
+                            <span class="text-xs font-bold text-emerald-900 block">Total Keseluruhan:</span>
+                            <span class="text-[10px] text-emerald-700 block italic">✨ Termasuk ongkir Pulau Jawa</span>
+                        </div>
+                        <div class="text-right">
+                            <span id="display-total-price" class="text-lg font-extrabold text-emerald-950 block">Rp 0</span>
+                        </div>
+                    </div>
+                </div>
 
-    <div class="text-[11px] text-emerald-700 font-medium bg-emerald-50/80 px-3 py-2 rounded-lg border border-emerald-200/60 flex items-center gap-1.5">
-        <span>🔥</span> <span>Info Diskon: Total pesanan **1.000 pcs ke atas** otomatis mendapatkan **Diskon 10%**!</span>
-    </div>
-
-    <div class="bg-emerald-50 border border-emerald-200 p-4 rounded-xl space-y-3">
-        <div class="flex justify-between items-center text-xs text-slate-700 border-b border-emerald-200/60 pb-2">
-            <span>Total Quantity Pesanan:</span>
-            <span id="display-total-qty" class="font-bold text-slate-900 text-sm">0 Pcs</span>
-        </div>
-        <div id="discount-row" class="hidden flex justify-between items-center text-xs text-emerald-700 font-medium border-b border-emerald-200/60 pb-2">
-            <span>Diskon Pesanan Besar (10%):</span>
-            <span id="display-discount-val" class="font-bold">- Rp 0</span>
-        </div>
-        <div id="dp-row" class="hidden flex justify-between items-center text-xs text-amber-700 font-medium border-b border-emerald-200/60 pb-2">
-            <span>Wajib DP 50% (Luar Jabodetabek):</span>
-            <span id="display-dp-val" class="font-bold">Rp 0</span>
-        </div>
-        
-        <div class="pt-1 flex justify-between items-center">
-            <div>
-                <span class="text-xs font-bold text-emerald-900 block">Total Keseluruhan:</span>
-                <span class="text-[10px] text-emerald-700 block italic">✨ Termasuk rincian ongkir pilihan</span>
+                <!-- Info Rekening -->
+                <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200 space-y-2">
+                    <h4 class="text-xs font-bold text-slate-700 flex items-center gap-1.5">
+                        <span>💳</span> Informasi Rekening Pembayaran Resmi
+                    </h4>
+                    <div id="bank-accounts-display" class="space-y-1.5 text-xs text-slate-600"></div>
+                </div>
             </div>
-            <div class="text-right">
-                <span id="display-total-price" class="text-lg font-extrabold text-emerald-950 block">Rp 0</span>
-            </div>
-        </div>
-    </div>
-
-    <!-- Info Rekening -->
-    <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200 space-y-2">
-        <h4 class="text-xs font-bold text-slate-700 flex items-center gap-1.5">
-            <span>💳</span> Informasi Rekening Pembayaran Resmi
-        </h4>
-        <div id="bank-accounts-display" class="space-y-1.5 text-xs text-slate-600"></div>
-    </div>
-</div>
 
             <!-- TOMBOL KIRIM KE WHATSAPP OWNER -->
             <button type="button" onclick="saveOrderAndSendWhatsApp()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-4 px-4 rounded-xl shadow-lg flex items-center justify-center gap-2.5 transition text-sm cursor-pointer active:scale-95">
@@ -535,9 +504,9 @@
                 <label class="block text-xs font-semibold text-amber-300">🧠 AI Knowledge Base & Opsi Pengulangan Kata</label>
                 <p class="text-[10px] text-slate-400">Atur Kata Tambahan Awal, Kata Kunci, Kata Tambahan Akhir, dan aktifkan/matikan pengulangan kata kunci.</p>
                 
-                <div id="knowledge-faq-admin-container" class="space-y-3 max-h-[500px] overflow-y-auto pr-1"></div>
+                <div id="faq-admin-container" class="space-y-3 max-h-[500px] overflow-y-auto pr-1"></div>
                 
-                <div class="space-y-2 pt-2 border-t border-slate-700">    
+                <div class="space-y-2 pt-2 border-t border-slate-700">   
                     <input type="text" id="new-faq-keyword" placeholder="Kata Kunci (Cth: assalamualaikum)" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white outline-none">
                      <input type="text" id="new-faq-prefix" placeholder="Kata Tambahan Awal (Cth: Waalaikumussalam)" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white outline-none">
                     <textarea id="new-faq-suffix" rows="2" placeholder="Kata Tambahan Akhir / Jawaban (Cth: Massyaallah bagaimana kabarnya?)" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white outline-none"></textarea>
@@ -567,9 +536,9 @@
             <!-- LOG PERTANYAAN BELUM TERJAWAB -->
             <div class="bg-slate-800 p-3 rounded-xl border border-rose-500/30 space-y-2">
                <div class="flex justify-between items-center pt-2">
-                    <span class="text-[11px] text-slate-400 font-semibold">Daftar Pertanyaan Customer Belum Terjawab:</span>
-                    <button type="button" onclick="clearAllUnansweredLogs()" class="text-rose-400 hover:text-rose-300 text-[10px] font-bold underline cursor-pointer">🗑️ Bersihkan Semua Log</button>
-                </div>
+    <span class="text-[11px] text-slate-400 font-semibold">Daftar Pertanyaan Customer Belum Terjawab:</span>
+    <button type="button" onclick="clearAllUnansweredLogs()" class="text-rose-400 hover:text-rose-300 text-[10px] font-bold underline cursor-pointer">🗑️ Bersihkan Semua Log</button>
+</div>
                 <div id="missing-log-container" class="space-y-1.5 max-h-32 overflow-y-auto pr-1">
                     <p class="text-[10px] text-slate-500 italic">Belum ada pertanyaan tertinggal.</p>
                 </div>
@@ -583,6 +552,8 @@
                 </div>
                 <div id="brand-upload-status" class="text-[10px] text-slate-400 italic"></div>
             </div>
+
+           
 
             <!-- BIAYA TAMBAHAN SABLON 2 WARNA -->
             <div class="bg-slate-800 p-3 rounded-xl border border-amber-500/30 space-y-2">
@@ -631,7 +602,7 @@
                 </div>
             </div>
 
-          <!-- Kelola Model Tas & Ukuran -->
+            <!-- Kelola Model Tas & Ukuran -->
             <div class="bg-slate-800 p-3 rounded-xl border border-amber-500/30 space-y-3">
                 <div class="flex items-center justify-between">
                     <label class="block text-xs font-semibold text-amber-300">📦 Kelola Model Tas & Ukuran (Edit / Tambah)</label>
@@ -691,7 +662,9 @@
         </div>
     </div>
 
-        <!-- Memanggil file script.js & ai-knowledge.js terpisah -->
-<script type="module" src="script.js"></script>
-<script src="ai-knowledge.js"></script>
-
+    <!-- Memanggil file script.js terpisah -->
+   <script src="ai-knowledge.js"></script>
+    <script src="script.js"></script>
+   
+</body>
+</html>
