@@ -16,7 +16,6 @@ try {
     console.error("Local storage error:", e);
 }
 
-
 const cleanDefaultBagSvg = "data:application/octet-stream;base64,PHN2Zz48L3N2Zz4=";
 
 // Pengaturan Global Toko & Logistik
@@ -27,7 +26,6 @@ let storeEmail = "ilhamspunbond@gmail.com";
 let pdfPassword = "ilham123";
 let ownerWaNumber = "6289630539563";
 let extraColorPrice = 400;
-// originCityId sudah bersih dari sini (tidak ada deklarasi ganda)
 
 let brandLogoUrl = "";
 let customStampUrl = "";
@@ -145,6 +143,48 @@ try {
     console.error("Local storage error:", e);
 }
 
+// ==========================================
+// 1.5 FIREBASE CLOUD SYNC & SAVE TO CLOUD
+// ==========================================
+async function saveToCloud() {
+    if(isSyncingFromCloud) return;
+    try {
+        if(window.firebaseDb && window.firebaseDeps) {
+            const { doc, setDoc } = window.firebaseDeps;
+            await setDoc(doc(window.firebaseDb, "config", "master"), {
+                bagModels, bankAccounts, bagColors, inkColors, dtfOptions,
+                extraColorPrice, originCityId, storeName, storeAddress,
+                storePhone, storeEmail, pdfPassword, ownerWaNumber,
+                brandLogoUrl, customStampUrl, adminSignatureUrl,
+                knowledgeFaq: typeof knowledgeFaq !== 'undefined' ? knowledgeFaq : [],
+                blockedWords: typeof blockedWords !== 'undefined' ? blockedWords : [],
+                unansweredLogs: typeof unansweredLogs !== 'undefined' ? unansweredLogs : []
+            });
+            const syncEl = document.getElementById('sync-status');
+            if(syncEl) {
+                syncEl.textContent = "☁️ Firebase Synced";
+                syncEl.className = "text-[11px] bg-emerald-100 text-emerald-800 px-3.5 py-1.5 rounded-full font-medium inline-block shadow-sm";
+            }
+        }
+    } catch(e) {
+        console.error("Gagal save ke cloud:", e);
+    }
+}
+
+window.initCloudSync = function() {
+    if(!window.firebaseDb || !window.firebaseDeps) return;
+    try {
+        const { doc, onSnapshot } = window.firebaseDeps;
+        onSnapshot(doc(window.firebaseDb, "config", "master"), (docSnap) => {
+            if(docSnap.exists()) {
+                applyCloudData(docSnap.data());
+            }
+        });
+    } catch(e) {
+        console.error("Gagal init sync:", e);
+    }
+};
+
 window.onload = function() {
     updateDynamicManifest();
     renderAdminPanel();
@@ -186,6 +226,7 @@ function checkCustomerOnboarding() {
         updateUIWithProfile();
     }
 }
+
 function submitOnboarding() {
     const title = document.getElementById('user-title-select').value || "Bosku";
     const name = document.getElementById('onboard-name').value.trim() || "Rojak";
@@ -506,6 +547,22 @@ function renderAdminPanel() {
     const extraInput = document.getElementById('admin-extra-color-price');
     if(extraInput) extraInput.value = extraColorPrice;
 
+    const storeNameInp = document.getElementById('admin-store-name');
+    const storeAddrInp = document.getElementById('admin-store-address');
+    const storePhoneInp = document.getElementById('admin-store-phone');
+    const storeEmailInp = document.getElementById('admin-store-email');
+    const ownerWaInp = document.getElementById('admin-wa-number');
+    const pdfPassInp = document.getElementById('admin-pdf-password');
+    const originCityInp = document.getElementById('admin-origin-city-id');
+
+    if(storeNameInp) storeNameInp.value = storeName;
+    if(storeAddrInp) storeAddrInp.value = storeAddress;
+    if(storePhoneInp) storePhoneInp.value = storePhone;
+    if(storeEmailInp) storeEmailInp.value = storeEmail;
+    if(ownerWaInp) ownerWaInp.value = ownerWaNumber;
+    if(pdfPassInp) pdfPassInp.value = pdfPassword;
+    if(originCityInp) originCityInp.value = originCityId;
+
     const appLauncherLogo = document.getElementById('app-launcher-logo');
     if(appLauncherLogo && brandLogoUrl) {
         appLauncherLogo.src = brandLogoUrl;
@@ -579,46 +636,50 @@ function updateSizeLabel() {
     const sizeName = document.getElementById('bag-size-select').value;
     const currentModel = bagModels[mIndex] || bagModels[0];
     const foundSize = currentModel.sizes?.find(s => s.name === sizeName);
-    document.getElementById('preview-size-label').textContent = `[ ${sizeName || '-'} ]`;
+    const sizeLabelEl = document.getElementById('preview-size-label');
+    if(sizeLabelEl) sizeLabelEl.textContent = `[ ${sizeName || '-'} ]`;
+    
     const noteBox = document.getElementById('size-admin-recommendation-note');
-    if(foundSize && foundSize.note) {
-        noteBox.textContent = `💡 Rekomendasi/Kegunaan: ${foundSize.note}`;
-        noteBox.classList.remove('hidden');
-    } else {
-        noteBox.classList.add('hidden');
+    if(noteBox) {
+        if(foundSize && foundSize.note) {
+            noteBox.textContent = `💡 Rekomendasi/Kegunaan: ${foundSize.note}`;
+            noteBox.classList.remove('hidden');
+        } else {
+            noteBox.classList.add('hidden');
+        }
     }
 }
 
 function saveGlobalConfig() {
-    storeName = document.getElementById('admin-store-name').value;
-    storeAddress = document.getElementById('admin-store-address').value;
-    storePhone = document.getElementById('admin-store-phone').value;
-    storeEmail = document.getElementById('admin-store-email').value;
-    ownerWaNumber = document.getElementById('admin-wa-number').value;
-    pdfPassword = document.getElementById('admin-pdf-password').value;
+    const sNameInp = document.getElementById('admin-store-name');
+    const sAddrInp = document.getElementById('admin-store-address');
+    const sPhoneInp = document.getElementById('admin-store-phone');
+    const sEmailInp = document.getElementById('admin-store-email');
+    const oWaInp = document.getElementById('admin-wa-number');
+    const pdfPassInp = document.getElementById('admin-pdf-password');
+
+    if(sNameInp) storeName = sNameInp.value;
+    if(sAddrInp) storeAddress = sAddrInp.value;
+    if(sPhoneInp) storePhone = sPhoneInp.value;
+    if(sEmailInp) storeEmail = sEmailInp.value;
+    if(oWaInp) ownerWaNumber = oWaInp.value;
+    if(pdfPassInp) pdfPassword = pdfPassInp.value;
     
-    // Tangkap Setting API Keys
-    const roKeyInput = document.getElementById('admin-rajaongkir-key');
-    if(roKeyInput && roKeyInput.value.trim() !== "") {
-        rajaOngkirApiKey = roKeyInput.value.trim();
-        safeLocalStorageSet('ilham_rajaOngkirKey', rajaOngkirApiKey);
-    }
-
-    const qrisKeyInput = document.getElementById('admin-qrisly-key');
-    if(qrisKeyInput && qrisKeyInput.value.trim() !== "") {
-        qrislyApiKey = qrisKeyInput.value.trim();
-        safeLocalStorageSet('ilham_qrislyApiKey', qrislyApiKey);
-    }
-
     const originInput = document.getElementById('admin-origin-city-id');
     if(originInput) {
         originCityId = originInput.value.trim() || "444";
         safeLocalStorageSet('ilham_originCityId', originCityId);
     }
+
+    const extraInput = document.getElementById('admin-extra-color-price');
+    if(extraInput) {
+        extraColorPrice = parseInt(extraInput.value) || 400;
+        safeLocalStorageSet('ilham_extraColorPrice', extraColorPrice);
+    }
     
     saveToCloud();
-    alert("Konfigurasi global & API berhasil disimpan!");
 }
+
 function addBank() {
     const bank = document.getElementById('new-bank-name').value.trim();
     const acc = document.getElementById('new-bank-acc').value.trim();
@@ -690,6 +751,7 @@ async function uploadBrandLogo(e) {
             }
             ctx.putImageData(imgData, 0, 0);
             brandLogoUrl = canvas.toDataURL('image/png');
+            safeLocalStorageSet('ilham_brandLogoUrl', brandLogoUrl);
             updateDynamicManifest();
             saveToCloud().then(() => { renderAdminPanel(); });
         };
@@ -717,6 +779,7 @@ async function uploadStampImage(e) {
                 const ctx = canvas.getContext('2d');
                 ctx.drawImage(img, 0, 0);
                 customStampUrl = canvas.toDataURL('image/png');
+                safeLocalStorageSet('ilham_customStampUrl', customStampUrl);
                 saveToCloud(); renderAdminPanel();
             };
             img.src = event.target.result;
@@ -743,6 +806,7 @@ async function uploadAdminSignature(e) {
                 const ctx = canvas.getContext('2d');
                 ctx.drawImage(img, 0, 0);
                 adminSignatureUrl = canvas.toDataURL('image/png');
+                safeLocalStorageSet('ilham_adminSignatureUrl', adminSignatureUrl);
                 saveToCloud(); renderAdminPanel();
             };
             img.src = event.target.result;
@@ -869,8 +933,8 @@ function updateProcessedLogos() {
 
     const select1 = document.getElementById('ink-color-select-1');
     const select2 = document.getElementById('ink-color-select-2');
-    const name1 = select1.options[select1.selectedIndex]?.text || 'Hitam';
-    const name2 = select2.options[select2.selectedIndex]?.text || 'Merah';
+    const name1 = select1 && select1.options[select1.selectedIndex] ? select1.options[select1.selectedIndex].text : 'Hitam';
+    const name2 = select2 && select2.options[select2.selectedIndex] ? select2.options[select2.selectedIndex].text : 'Merah';
 
     const mSelect = document.getElementById('bag-model-select');
     const modelNameText = (mSelect && mSelect.value !== "" && bagModels[mSelect.value]) ? bagModels[mSelect.value].name : bagModels[0].name;
@@ -929,12 +993,12 @@ function renderOwnerHdProductionBox(method, isTwoColors) {
     const placeholderEl = document.getElementById('owner-placeholder-text');
 
     if(!rawCustomerLogoImg1) {
-        placeholderEl.style.display = 'block';
-        canvas.style.display = 'none';
+        if(placeholderEl) placeholderEl.style.display = 'block';
+        if(canvas) canvas.style.display = 'none';
         return;
     }
-    placeholderEl.style.display = 'none';
-    canvas.style.display = 'block';
+    if(placeholderEl) placeholderEl.style.display = 'none';
+    if(canvas) canvas.style.display = 'block';
 
     canvas.width = 1200; 
     canvas.height = 800;
@@ -1119,7 +1183,6 @@ async function addItemToCart() {
         inkNote: document.getElementById('production-ink-notes').textContent
     });
 
-    saveToCloud();
     renderCartItems();
     alert("Item berhasil dimasukkan ke keranjang pesanan!");
 }
@@ -1155,8 +1218,8 @@ function renderCartItems() {
     updateCartTotals();
 }
 
-function removeCartItem(index) { cartItems.splice(index, 1); saveToCloud(); renderCartItems(); }
-function clearCart() { if(confirm("Kosongkan keranjang pesanan?")) { cartItems = []; saveToCloud(); renderCartItems(); } }
+function removeCartItem(index) { cartItems.splice(index, 1); renderCartItems(); }
+function clearCart() { if(confirm("Kosongkan keranjang pesanan?")) { cartItems = []; renderCartItems(); } }
 
 function updateCartTotals() {
     let totalQty = 0, grandSubtotal = 0;
@@ -1181,7 +1244,10 @@ function updateCartTotals() {
     document.getElementById('display-total-price').textContent = "Rp " + Math.round(grandTotal).toLocaleString('id-ID');
 }
 
-function toggleAdminPanel() { document.getElementById('admin-view').classList.toggle('hidden'); }
+function toggleAdminPanel() { 
+    const adminView = document.getElementById('admin-view');
+    if(adminView) adminView.classList.toggle('hidden'); 
+}
 
 function requestAdminLogin() {
     let pass = prompt("Masukkan Password Admin:");
@@ -1190,21 +1256,15 @@ function requestAdminLogin() {
         if (adminView) {
             adminView.classList.remove('hidden');
             adminView.scrollIntoView({ behavior: 'smooth' });
-            if (typeof renderAdminPanel === 'function') {
-                renderAdminPanel();
-            }
+            renderAdminPanel();
         }
     } else if (pass !== null) {
         alert("Password salah, Bosku!");
     }
 }
 
-
-
-
 function applyCloudData(data) {
     if (window.isManualUpdating) return;
-
     isSyncingFromCloud = true;
     
     if(data.bagModels && data.bagModels.length > 0) {  
@@ -1267,8 +1327,9 @@ function applyCloudData(data) {
     
     setTimeout(() => { isSyncingFromCloud = false; }, 1000);
 }
+
 // ==========================================
-// 5. PDF & ORDER MANAGEMENT
+// 5. PDF & ORDER MANAGEMENT & PAYMENT
 // ==========================================
 async function downloadCustomerInvoicePDF() {
     if(cartItems.length === 0) return alert("Keranjang pesanan masih kosong!");
@@ -1308,7 +1369,6 @@ async function downloadCustomerInvoicePDF() {
     pdf.setFont("helvetica", "normal"); pdf.setFontSize(8.5);
     pdf.text(`Nama: ${safeTitle} ${safeName} (${customerProfile.wa || '-'})`, 15, 54);
     
-    // Auto-wrap alamat pengiriman
     const addressLines = pdf.splitTextToSize(`Alamat Pengiriman: ${customerProfile.address || '-'}`, 110);
     pdf.text(addressLines, 15, 60);
     const nextYAfterAddress = 60 + (addressLines.length * 4.5);
@@ -1370,7 +1430,6 @@ async function downloadCustomerInvoicePDF() {
     pdf.setFontSize(10);
     pdf.text(`TOTAL TAGIHAN: Rp ${Math.round(grandTotal).toLocaleString('id-ID')}`, 115, startY);
 
-    // Galeri render seluruh mockup item di keranjang
     if(cartItems.length > 0) {
         try {
             startY += 10;
@@ -1747,10 +1806,6 @@ async function downloadOwnerInvoicePDF(docId, silent = false) {
     if(!silent) alert("Nota / Pelunasan PDF berhasil didownload!");
 }
 
-// ==========================================
-// 5. PDF & ORDER MANAGEMENT & PAYMENT
-// ==========================================
-
 async function generateQrisPayment(orderId, totalAmount) {
     try {
         const response = await fetch('https://api.qrisly.id/v1/create', {
@@ -1763,7 +1818,7 @@ async function generateQrisPayment(orderId, totalAmount) {
                 merchant_id: "ILHAM_SPUNBOND",
                 invoice_id: orderId,
                 amount: totalAmount,
-                expired_time: 30 // dalam menit
+                expired_time: 30
             })
         });
 
@@ -1795,11 +1850,9 @@ async function saveOrderAndSendWhatsApp() {
     const region = document.getElementById('shipping-region').value;
     const dpVal = grandTotal * 0.50;
 
-    // --- INTEGRASI QRISLY DI DALAM FUNGSI (AMAN) ---
     const qrisData = await generateQrisPayment(orderId, Math.round(grandTotal));
     let qrisInfoText = "";
     if(qrisData) {
-        console.log("QRIS URL:", qrisData.qrImageUrl);
         qrisInfoText = `\n💳 *Link QRIS Pembayaran:* ${qrisData.qrImageUrl}`;
     }
 
@@ -1838,4 +1891,3 @@ async function saveOrderAndSendWhatsApp() {
         alert("Gagal menyimpan pesanan ke cloud."); 
     }
 }
-```
