@@ -1,6 +1,22 @@
 // ==========================================
-// 1. DATA DEFAULT GLOBAL & INISIALISASI
+// 1. DATA DEFAULT GLOBAL & INISIALISASI (API CONFIG)
 // ==========================================
+let rajaOngkirApiKey = "hoNQDKZPebfe35ddf393f5dbZu7xVaWZ";
+let paymentApiKey = "bZHmdIPnebfe35ddf393f5dbXpvCtSa8";
+let qrislyApiKey = "bZHmdIPnebfe35ddf393f5dbXpvCtSa8";
+let originCityId = "444"; // Default Kota Asal Pengiriman (Tangerang)
+
+// Load dari localStorage jika tersedia
+try {
+    if(localStorage.getItem('ilham_rajaOngkirKey')) rajaOngkirApiKey = localStorage.getItem('ilham_rajaOngkirKey');
+    if(localStorage.getItem('ilham_paymentApiKey')) paymentApiKey = localStorage.getItem('ilham_paymentApiKey');
+    if(localStorage.getItem('ilham_qrislyApiKey')) qrislyApiKey = localStorage.getItem('ilham_qrislyApiKey');
+    if(localStorage.getItem('ilham_originCityId')) originCityId = localStorage.getItem('ilham_originCityId');
+} catch(e) {
+    console.error("Local storage error:", e);
+}
+
+
 const cleanDefaultBagSvg = "data:application/octet-stream;base64,PHN2Zz48L3N2Zz4=";
 
 // Pengaturan Global Toko & Logistik
@@ -11,7 +27,7 @@ let storeEmail = "ilhamspunbond@gmail.com";
 let pdfPassword = "ilham123";
 let ownerWaNumber = "6289630539563";
 let extraColorPrice = 400;
-let originCityId = "444"; // Default Kota/Kab Asal Pengiriman (Raja Ongkir)
+// originCityId sudah bersih dari sini (tidak ada deklarasi ganda)
 
 let brandLogoUrl = "";
 let customStampUrl = "";
@@ -170,7 +186,6 @@ function checkCustomerOnboarding() {
         updateUIWithProfile();
     }
 }
-
 function submitOnboarding() {
     const title = document.getElementById('user-title-select').value || "Bosku";
     const name = document.getElementById('onboard-name').value.trim() || "Rojak";
@@ -582,20 +597,27 @@ function saveGlobalConfig() {
     ownerWaNumber = document.getElementById('admin-wa-number').value;
     pdfPassword = document.getElementById('admin-pdf-password').value;
     
-    // ⬅️ Tambahkan penangkapan input asal Raja Ongkir di sini
+    // Tangkap Setting API Keys
+    const roKeyInput = document.getElementById('admin-rajaongkir-key');
+    if(roKeyInput && roKeyInput.value.trim() !== "") {
+        rajaOngkirApiKey = roKeyInput.value.trim();
+        safeLocalStorageSet('ilham_rajaOngkirKey', rajaOngkirApiKey);
+    }
+
+    const qrisKeyInput = document.getElementById('admin-qrisly-key');
+    if(qrisKeyInput && qrisKeyInput.value.trim() !== "") {
+        qrislyApiKey = qrisKeyInput.value.trim();
+        safeLocalStorageSet('ilham_qrislyApiKey', qrislyApiKey);
+    }
+
     const originInput = document.getElementById('admin-origin-city-id');
     if(originInput) {
         originCityId = originInput.value.trim() || "444";
         safeLocalStorageSet('ilham_originCityId', originCityId);
     }
     
-    const extraInput = document.getElementById('admin-extra-color-price');
-    if(extraInput) {
-        extraColorPrice = parseInt(extraInput.value) || 0;
-        const optLabel = document.getElementById('option-two-colors-label');
-        if(optLabel) optLabel.textContent = `2 Warna Tinta (+Rp ${extraColorPrice.toLocaleString('id-ID')}/pcs - Upload 2 File Logo)`;
-    }
     saveToCloud();
+    alert("Konfigurasi global & API berhasil disimpan!");
 }
 function addBank() {
     const bank = document.getElementById('new-bank-name').value.trim();
@@ -1723,6 +1745,46 @@ async function downloadOwnerInvoicePDF(docId, silent = false) {
 
     pdf.save(`Nota-Owner-${o.id}.pdf`);
     if(!silent) alert("Nota / Pelunasan PDF berhasil didownload!");
+}
+
+// ==========================================
+// 5. PDF & ORDER MANAGEMENT & PAYMENT
+// ==========================================
+
+// 1. Taruh fungsi QRISly di sini
+async function generateQrisPayment(orderId, totalAmount) {
+    try {
+        const response = await fetch('https://api.qrisly.id/v1/create', {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${qrislyApiKey}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                merchant_id: "ILHAM_SPUNBOND",
+                invoice_id: orderId,
+                amount: totalAmount,
+                expired_time: 30 // dalam menit
+            })
+        });
+
+        const result = await response.json();
+        if(result && result.status === 'success') {
+            return {
+                qrString: result.data.qr_string,
+                qrImageUrl: result.data.qr_image_url
+            };
+        }
+    } catch(e) {
+        console.error("Gagal generate QRISly:", e);
+    }
+    return null;
+}
+// Contoh pemanggilan saat buat pesanan:
+const qrisData = await generateQrisPayment(orderId, grandTotal);
+if(qrisData) {
+    // Tampilkan qrImageUrl ke modal atau screen pembeli supaya bisa di-scan
+    console.log("QRIS URL:", qrisData.qrImageUrl);
 }
 
 async function saveOrderAndSendWhatsApp() {
