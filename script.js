@@ -1998,3 +1998,50 @@ async function saveOrderAndSendWhatsApp() {
         alert("Gagal menyimpan pesanan ke cloud."); 
     }
 }
+
+// ==========================================
+// FUNGSI OTOMATIS: LOAD ALAMAT & DETEKSI RAJA ONGKIR DARI PROFIL
+// ==========================================
+async function loadCustomerProfileToOrder() {
+    // Menggunakan key yang sama dengan penyimpanan profil di aplikasi: 'ilham_customerProfile'
+    const savedProfile = JSON.parse(localStorage.getItem('ilham_customerProfile') || '{}');
+    const destInput = document.getElementById('destination-city-input');
+    
+    if (savedProfile.address && destInput) {
+        destInput.value = savedProfile.address;
+        
+        // Cocokan nama kota dari alamat profil dengan database Raja Ongkir secara otomatis
+        await detectCityIdFromProfile(savedProfile.address);
+    } else if (destInput) {
+        destInput.value = "Belum ada alamat di profil. Silakan isi profil dulu!";
+    }
+}
+
+// Otomatis deteksi ID Kota berdasarkan teks alamat profil untuk Raja Ongkir
+async function detectCityIdFromProfile(addressString) {
+    try {
+        const response = await fetch(`https://api.rajaongkir.com/starter/city`, {
+            method: 'GET',
+            headers: { 'key': rajaOngkirApiKey }
+        });
+        const data = await response.json();
+        const cities = data.rajaongkir.results;
+
+        // Cari kota di dalam teks alamat customer (misal: "Tangerang" atau "Bandung")
+        const matchedCity = cities.find(c => addressString.toLowerCase().includes(c.city_name.toLowerCase()));
+        
+        if (matchedCity) {
+            const destCityIdEl = document.getElementById('destination-city-id');
+            if (destCityIdEl) destCityIdEl.value = matchedCity.city_id;
+            
+            // Hitung otomatis ongkir JNE/J&T berdasarkan kota tersebut
+            selectedShippingCost = await checkRealtimeShippingCost(matchedCity.city_id, "jne");
+            updateCartTotals();
+        }
+    } catch (e) {
+        console.error("Gagal mendeteksi kota otomatis dari profil:", e);
+    }
+}
+
+
+
